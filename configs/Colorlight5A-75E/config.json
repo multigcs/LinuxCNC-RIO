@@ -1,0 +1,240 @@
+{
+    "name": "Colorlight5A-75E",
+    "description": "only for testing",
+    "toolchain": "icestorm",
+    "family": "ecp5",
+    "type": "25k",
+    "package": "CABGA256",
+    "clock": {
+        "speed": "25000000",
+        "pin": "P6"
+    },
+    "interface": {
+        "type": "spi",
+        "pins": {
+            "MOSI": "H13",
+            "MISO": "G12",
+            "SCK": "G13",
+            "SEL": "G14"
+        }
+    },
+    "blink": {
+        "pin": "T6"
+    },
+    "din": [
+        {
+            "comment": "J1.1",
+            "pin": "C4"
+        },
+        {
+            "pin": "D4"
+        },
+        {
+            "pin": "E4"
+        },
+        {
+            "pin": "D3"
+        },
+        {
+            "pin": "E3"
+        },
+        {
+            "pin": "F4"
+        },
+        {
+            "comment": "J2.1",
+            "pin": "F3"
+        },
+        {
+            "pin": "F5"
+        },
+        {
+            "pin": "G3"
+        },
+        {
+            "pin": "G4"
+        },
+        {
+            "pin": "H3"
+        },
+        {
+            "pin": "H4"
+        }
+    ],
+    "vin": [
+        {
+            "comment": "J3.1",
+            "type": "frequency",
+            "freq_min": "10",
+            "pin": "G5"
+        },
+        {
+            "type": "counter",
+            "pin_up": "H5",
+            "pin_down": "J5"
+        },
+        {
+            "type": "pwm",
+            "pin": "J4"
+        },
+        {
+            "type": "frequency",
+            "pin": "B1"
+        },
+        {
+            "type": "frequency",
+            "pin": "C2"
+        },
+        {
+            "comment": "J4.1+2",
+            "type": "quadencoder",
+            "pin_a": "C1",
+            "pin_b": "D1"
+        },
+        {
+            "type": "quadencoder",
+            "pin_a": "E2",
+            "pin_b": "E1"
+        },
+        {
+            "type": "quadencoder",
+            "pin_a": "F2",
+            "pin_b": "F1"
+        }
+    ],
+    "dout": [
+        {
+            "comment": "J5.1",
+            "pin": "G2"
+        },
+        {
+            "pin": "G1"
+        },
+        {
+            "pin": "H2"
+        },
+        {
+            "pin": "K5"
+        },
+        {
+            "pin": "K4"
+        },
+        {
+            "pin": "L3"
+        },
+        {
+            "comment": "J6.1",
+            "pin": "L4"
+        },
+        {
+            "pin": "L5"
+        },
+        {
+            "pin": "P2"
+        },
+        {
+            "pin": "R2"
+        },
+        {
+            "pin": "T2"
+        },
+        {
+            "pin": "R3"
+        }
+    ],
+    "vout": [
+        {
+            "comment": "J7.1",
+            "type": "pwm",
+            "pin": "T3",
+            "dir": "R4"
+        },
+        {
+            "type": "rcservo",
+            "frequency": "100",
+            "pin": "M5"
+        },
+        {
+            "type": "sine",
+            "pins": ["P5", "N6", "N7"]
+        }
+    ],
+    "joints": [
+        {
+            "comment": "J9.1",
+            "type": "stepper",
+            "cl": false,
+            "pins": {
+                "step": "P11",
+                "dir": "N11",
+                "en": "M11"
+            }
+        },
+        {
+            "type": "stepper",
+            "cl": false,
+            "pins": {
+                "step": "T13",
+                "dir": "R12",
+                "en": "R13"
+            }
+        },
+        {
+            "comment": "J10.1",
+            "type": "pwmdir",
+            "cl": false,
+            "pins": {
+                "pwm": "R14",
+                "dir": "T14",
+                "en": "D16"
+            }
+        },
+        {
+            "type": "rcservo",
+            "cl": false,
+            "pins": {
+                "pwm": "C15",
+                "dir": "C16",
+                "en": "B16"
+            }
+        },
+        {
+            "comment": "J11.1",
+            "type": "stepper",
+            "cl": false,
+            "pins": {
+                "step": "B15",
+                "dir": "C14",
+                "en": "T15"
+            }
+        },
+        {
+            "type": "stepper",
+            "cl": false,
+            "pins": {
+                "step": "P15",
+                "dir": "R15",
+                "en": "P12"
+            }
+        },
+        {
+            "comment": "J12.1",
+            "type": "stepper",
+            "cl": false,
+            "pins": {
+                "step": "P13",
+                "dir": "N12",
+                "en": "N13"
+            }
+        },
+        {
+            "type": "stepper",
+            "cl": false,
+            "pins": {
+                "step": "M12",
+                "dir": "P14",
+                "en": "N14"
+            }
+        }
+    ]
+}

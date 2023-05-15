@@ -1,0 +1,60 @@
+### main ###
+set_io  sysclk J3
+
+### blink ###
+set_io  BLINK_LED M12
+
+### error ###
+set_io  ERROR_OUT R16
+
+### vin_quadencoder ###
+
+### dout_bit ###
+set_io  DOUT0 F4
+set_io  DOUT1 D2
+set_io  DOUT2 G5
+set_io  DOUT3 D1
+
+### interface_spislave ###
+set_io  INTERFACE_SPI_MOSI P12
+set_io  INTERFACE_SPI_MISO P11
+set_io  INTERFACE_SPI_SCK R11
+set_io  INTERFACE_SPI_SSEL L11
+
+### vout_pwm ###
+set_io  VOUT0_PWM_PWM J2
+set_io  VOUT1_PWM_PWM H5
+
+### vin_pulsecounter ###
+
+### joint_pwmdir ###
+
+### vin_pwmcounter ###
+
+### joint_stepper ###
+set_io  JOINT0_STEPPER_STP H1
+set_io  JOINT0_STEPPER_DIR G1
+set_io  JOINT1_STEPPER_STP J5
+set_io  JOINT1_STEPPER_DIR H2
+set_io  JOINT2_STEPPER_STP J4
+set_io  JOINT2_STEPPER_DIR G2
+set_io  JOINT3_STEPPER_STP H4
+set_io  JOINT3_STEPPER_DIR F1
+set_io  JOINT4_STEPPER_STP C2
+set_io  JOINT4_STEPPER_DIR C1
+
+### din_bit ###
+set_io  -pullup yes DIN0 H6
+set_io  -pullup yes DIN1 F2
+set_io  -pullup yes DIN2 H3
+set_io  -pullup yes DIN3 F3
+set_io  -pullup yes DIN4 B1
+
+### vin_frequency ###
+
+### joint_rcservo ###
+
+### vout_sinepwm ###
+
+### enable ###
+set_io  ENA F5

@@ -1,0 +1,136 @@
+{
+    "name": "TinyFPGA-BX_BOB",
+    "description": "TinyFPGA-BX_BOB with cheap 5axis-BOB",
+    "toolchain": "icestorm",
+    "family": "ice40",
+    "type": "lp8k",
+    "package": "cm81",
+    "clock": {
+        "osc": "16000000",
+        "speed": "48000000",
+        "pin": "B2"
+    },
+    "interface": {
+        "type": "spi",
+        "max": "4000000",
+        "pins": {
+            "MOSI": "G6",
+            "MISO": "H7",
+            "SCK":  "G7",
+            "SEL":  "G1"
+        }
+    },
+    "____blink": {
+        "pin": "B3"
+    },
+    "error": {
+        "pin": "B3"
+    },
+    "enable": {
+        "pin": "G9"
+    },
+    "dout": [
+        {
+            "pin": "D9"
+        },
+        {
+            "pin": "D8"
+        },
+        {
+            "pin": "C9"
+        },
+        {
+            "pin": "A9"
+        },
+        {
+            "pin": "B8"
+        },
+        {
+            "pin": "A8"
+        }
+    ],
+    "din": [
+        {
+            "pullup": true,
+            "pin": "C2"
+        },
+        {
+            "pullup": true,
+            "pin": "B1"
+        },
+        {
+            "pullup": true,
+            "pin": "A1"
+        },
+        {
+            "pullup": true,
+            "pin": "A2"
+        },
+        {
+            "pullup": true,
+            "pin": "J4"
+        }
+    ],
+    "vout": [
+        {
+            "type": "pwm",
+            "pin": "B7"
+        },
+        {
+            "type": "pwm",
+            "pin": "B6"
+        }
+    ],
+    "vin": [
+        {
+            "type": "frequency",
+            "pin": "A6"
+        },
+        {
+            "type": "frequency",
+            "pin": "A7"
+        }
+    ],
+    "joints": [
+        {
+            "type": "stepper",
+            "cl": false,
+            "pins": {
+                "step": "J1",
+                "dir": "H1"
+            }
+        },
+        {
+            "type": "stepper",
+            "cl": false,
+            "pins": {
+                "step": "G2",
+                "dir": "E1"
+            }
+        },
+        {
+            "type": "stepper",
+            "cl": false,
+            "pins": {
+                "step": "E2",
+                "dir": "D1"
+            }
+        },
+        {
+            "type": "stepper",
+            "cl": false,
+            "pins": {
+                "step": "D2",
+                "dir": "C1"
+            }
+        },
+        {
+            "type": "stepper",
+            "cl": false,
+            "pins": {
+                "step": "J9",
+                "dir": "J3"
+            }
+        }
+    ]
+}

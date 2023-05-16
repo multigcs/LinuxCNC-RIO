@@ -22,12 +22,12 @@ module testb;
         # 2000 $finish;
     end
 
-    stepgen stepgen2 (
-        .clk (clk),
-        .jointFreqCmd (jointFreqCmd),
-        .jointFeedback (jointFeedback),
-        .DIR (DIR),
-        .STP (STP)
-    );
+    joint_stepper joint_stepper1 (
+                .clk (clk),
+                .jointFreqCmd (jointFreqCmd),
+                .jointFeedback (jointFeedback),
+                .DIR (DIR),
+                .STP (STP)
+            );
 
 endmodule

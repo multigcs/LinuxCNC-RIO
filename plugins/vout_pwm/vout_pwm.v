@@ -1,12 +1,12 @@
 
 module vout_pwm
     #(parameter divider = 255)
-    (
-        input clk,
-        input signed [31:0] dty,
-        output dir,
-        output pwm
-    );
+     (
+         input clk,
+         input signed [31:0] dty,
+         output dir,
+         output pwm
+     );
     reg [31:0] jointCounter = 32'd0;
     reg [31:0] dtyAbs = 32'd0;
 

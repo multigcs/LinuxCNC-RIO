@@ -2,7 +2,7 @@
 all: testb
 
 testb:
-	iverilog -Wall -o testb.out testb.v spi_slave.v
+	iverilog -Wall -o testb.out testb.v interface_spislave.v
 	vvp testb.out
 
 wave:

@@ -1,11 +1,11 @@
 
 module vin_pwmcounter
     #(parameter RESET_CNT = 25000000)
-    (
-        input clk,
-        input SIGNAL,
-        output [31:0] frequency
-    );
+     (
+         input clk,
+         input SIGNAL,
+         output [31:0] frequency
+     );
     reg [31:0] freq_cnt = 0;
     reg[31:0] freq = 0;
     assign frequency = freq;

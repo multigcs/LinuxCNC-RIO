@@ -1,11 +1,11 @@
 
 module vout_sinepwm
     #(parameter START = 0)
-    (
-        input clk,
-        input signed [31:0] freq,
-        output pwm_out
-    );
+     (
+         input clk,
+         input signed [31:0] freq,
+         output pwm_out
+     );
 
     reg [31:0] clk_cnt = 0;
     reg [31:0] freq_abs = 0;
@@ -77,22 +77,22 @@ module vout_sinepwm
 
     wire dir1;
     vout_sine_pwm #(255) vout_sine_pwm1 (
-        .clk (clk),
-        .dty ({24'h000000, dty}),
-        .dir (dir1),
-        .pwm (pwm_out)
-    );
+                      .clk (clk),
+                      .dty ({24'h000000, dty}),
+                      .dir (dir1),
+                      .pwm (pwm_out)
+                  );
 
 endmodule
 
 module vout_sine_pwm
     #(parameter divider = 255)
-    (
-        input clk,
-        input signed [31:0] dty,
-        output dir,
-        output pwm
-    );
+     (
+         input clk,
+         input signed [31:0] dty,
+         output dir,
+         output pwm
+     );
     reg [31:0] jointCounter = 32'd0;
     reg [31:0] dtyAbs = 32'd0;
 

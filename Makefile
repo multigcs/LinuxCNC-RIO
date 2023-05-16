@@ -24,6 +24,9 @@ mypy:
 
 check: isort flake8 mypy
 
+istyle:
+	iStyle plugins/*/*.v
+
 schema: files/schema.svg
 
 files/schema.svg: files/schema.sh

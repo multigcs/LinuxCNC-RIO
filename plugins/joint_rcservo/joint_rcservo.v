@@ -13,7 +13,6 @@ module joint_rcservo
     reg pulse = 0;
     assign PWM = pulse;
     reg [31:0] counter = 0;
-
     reg [31:0] jointCounter = 32'd0;
     reg [31:0] jointFreqCmdAbs = 32'd0;
     reg signed [31:0] jointFeedbackMem = 32'd0;

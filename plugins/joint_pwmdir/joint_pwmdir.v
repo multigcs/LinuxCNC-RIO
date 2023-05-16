@@ -1,16 +1,14 @@
 
 module joint_pwmdir
-    #(
-        parameter pwm_freq = 100000, // clk / 1000 * 10
-    )
-    (
-        input clk,
-        input jointEnable,
-        input signed [31:0] jointFreqCmd,
-        output signed [31:0] jointFeedback,
-        output DIR,
-        output PWM
-    );
+    #(parameter pwm_freq = 100000)
+     (
+         input clk,
+         input jointEnable,
+         input signed [31:0] jointFreqCmd,
+         output signed [31:0] jointFeedback,
+         output DIR,
+         output PWM
+     );
     reg [31:0] jointCounter = 32'd0;
     reg [31:0] jointFreqCmdAbs = 32'd0;
     reg signed [31:0] jointFeedbackMem = 32'd0;

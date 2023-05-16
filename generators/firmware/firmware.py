@@ -21,12 +21,6 @@ def generate(project):
     top_data.append("*/")
     top_data.append("")
 
-    for plugin in project['plugins']:
-        if hasattr(project['plugins'][plugin], "ips"):
-            for ipv in project['plugins'][plugin].ips():
-                project['verilog_files'].append(ipv)
-                os.system(f"cp -a plugins/{plugin}/{ipv}* {project['SOURCE_PATH']}/{ipv}")
-
     if project['osc_clock']:
         os.system(
             f"icepll -q -m -f '{project['SOURCE_PATH']}/pll.v' -i {float(project['osc_clock']) / 1000000} -o {float(project['jdata']['clock']['speed']) / 1000000}"

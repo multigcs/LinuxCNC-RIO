@@ -1,8 +1,6 @@
 
 module joint_pwmdir
-    #(
-         parameter pwm_freq = 100000, // clk / 1000 * 10
-     )
+    #(parameter pwm_freq = 100000)
      (
          input clk,
          input jointEnable,

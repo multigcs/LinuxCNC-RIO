@@ -19,7 +19,7 @@ module testb;
         # 10000 $finish;
     end
 
-    freq_counter freq_counter1 (
+    vin_frequency vin_frequency1 (
                      .clk (clk),
                      .SIGNAL (SIGNAL),
                      .frequency (frequency)

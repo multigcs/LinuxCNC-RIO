@@ -13,16 +13,16 @@ module testb;
         $dumpvars(0, clk);
         $dumpvars(1, dty);
         $dumpvars(2, PWM);
-        
+
         # 500000 dty = 32'd30000;
         # 500000 dty = 32'd50000;
         # 500000 $finish;
     end
 
     sine_pwm sine_pwm1 (
-        .clk (clk),
-        .dty (dty),
-        .pwm (PWM)
-    );
+                 .clk (clk),
+                 .dty (dty),
+                 .pwm (PWM)
+             );
 
 endmodule

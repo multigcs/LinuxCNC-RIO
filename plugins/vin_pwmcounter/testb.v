@@ -17,15 +17,15 @@ module testb;
         $dumpvars(1, SIGNAL);
         $dumpvars(2, dty);
         $dumpvars(3, dtyu);
-        
+
         # 10000 $finish;
     end
 
     pwm_counter pwm_counter1 (
-        .clk (clk),
-        .SIGNAL (SIGNAL),
-        .dty (dty),
-        .dtyu (dtyu)
-    );
+                    .clk (clk),
+                    .SIGNAL (SIGNAL),
+                    .dty (dty),
+                    .dtyu (dtyu)
+                );
 
 endmodule

@@ -15,14 +15,14 @@ module testb;
         $dumpvars(0, clk);
         $dumpvars(1, SIGNAL);
         $dumpvars(2, frequency);
-        
+
         # 10000 $finish;
     end
 
     freq_counter freq_counter1 (
-        .clk (clk),
-        .SIGNAL (SIGNAL),
-        .frequency (frequency)
-    );
+                     .clk (clk),
+                     .SIGNAL (SIGNAL),
+                     .frequency (frequency)
+                 );
 
 endmodule

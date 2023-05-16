@@ -15,16 +15,16 @@ module testb;
         $dumpvars(1, jointFreqCmd);
         $dumpvars(2, jointFeedback);
         $dumpvars(3, PWM);
-        
+
         # 3000000 jointFreqCmd = 32'd128000;
         # 3000000 $finish;
     end
 
     rcservo rcservo1 (
-        .clk (clk),
-        .jointFreqCmd (jointFreqCmd),
-        .jointFeedback (jointFeedback),
-        .PWM (PWM)
-    );
+                .clk (clk),
+                .jointFreqCmd (jointFreqCmd),
+                .jointFeedback (jointFeedback),
+                .PWM (PWM)
+            );
 
 endmodule

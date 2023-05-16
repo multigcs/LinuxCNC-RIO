@@ -32,14 +32,14 @@ module testb;
         //$dumpvars(9, counter);
 
         #100
-        SPI_MOSI = 0;
+         SPI_MOSI = 0;
         #5
-        SPI_SSEL = 0;
+         SPI_SSEL = 0;
         #1920
-        //$display("counter = %d", counter);
-        SPI_SSEL = 1;
+         //$display("counter = %d", counter);
+         SPI_SSEL = 1;
         #100
-        $display("-------");
+         $display("-------");
         $display("(%d) rx_data = %h", (rx_data == 96'h17a17a17a17a17a17a17a17a), rx_data);
         $display("(%d) jointFreqCmd0 = %h", (jointFreqCmd0 == 32'ha1177aa1), jointFreqCmd0);
         $display("(%d) setPoint0 = %h", (setPoint0 == 32'h177a), setPoint0);
@@ -85,28 +85,28 @@ module testb;
 
     // tx_data 72
     assign tx_data = {
-        header_tx[7:0], header_tx[15:8], header_tx[23:16], header_tx[31:24],
-        jointFeedback0[7:0], jointFeedback0[15:8], jointFeedback0[23:16], jointFeedback0[31:24],
-        DIN7,
-        DIN6,
-        DIN5,
-        DIN4,
-        DIN3,
-        DIN2,
-        DIN1,
-        DIN0,
-        24'd0
-    };
+               header_tx[7:0], header_tx[15:8], header_tx[23:16], header_tx[31:24],
+               jointFeedback0[7:0], jointFeedback0[15:8], jointFeedback0[23:16], jointFeedback0[31:24],
+               DIN7,
+               DIN6,
+               DIN5,
+               DIN4,
+               DIN3,
+               DIN2,
+               DIN1,
+               DIN0,
+               24'd0
+           };
 
     spi_slave #(BUFFER_SIZE, 32'h17a17a17) spi1 (
-        .clk (clk),
-        .SPI_SCK (SPI_SCK),
-        .SPI_SSEL (SPI_SSEL),
-        .SPI_MOSI (SPI_MOSI),
-        .SPI_MISO (SPI_MISO),
-        .rx_data (rx_data),
-        .tx_data (tx_data),
-        .pkg_timeout (pkg_timeout)
-        //.counter (counter)
-    );
+                  .clk (clk),
+                  .SPI_SCK (SPI_SCK),
+                  .SPI_SSEL (SPI_SSEL),
+                  .SPI_MOSI (SPI_MOSI),
+                  .SPI_MISO (SPI_MISO),
+                  .rx_data (rx_data),
+                  .tx_data (tx_data),
+                  .pkg_timeout (pkg_timeout)
+                  //.counter (counter)
+              );
 endmodule

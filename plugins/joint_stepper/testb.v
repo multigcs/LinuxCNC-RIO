@@ -23,11 +23,11 @@ module testb;
     end
 
     stepgen stepgen2 (
-        .clk (clk),
-        .jointFreqCmd (jointFreqCmd),
-        .jointFeedback (jointFeedback),
-        .DIR (DIR),
-        .STP (STP)
-    );
+                .clk (clk),
+                .jointFreqCmd (jointFreqCmd),
+                .jointFeedback (jointFeedback),
+                .DIR (DIR),
+                .STP (STP)
+            );
 
 endmodule

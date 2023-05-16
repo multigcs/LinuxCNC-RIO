@@ -20,7 +20,7 @@ module testb;
         # 3000000 $finish;
     end
 
-    rcservo rcservo1 (
+    joint_rcservo joint_rcservo1 (
                 .clk (clk),
                 .jointFreqCmd (jointFreqCmd),
                 .jointFeedback (jointFeedback),

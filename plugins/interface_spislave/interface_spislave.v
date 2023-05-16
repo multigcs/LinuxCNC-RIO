@@ -44,11 +44,11 @@ module interface_spislave
         if (SSEL_endmessage) begin
             if (byte_data_receive[BUFFER_SIZE-1:BUFFER_SIZE-32] == MSGID) begin
                 byte_data_received <= byte_data_receive;
-                timeout_counter = 0;
+                timeout_counter <= 0;
             end
         end
         if (timeout_counter < TIMEOUT) begin
-            timeout_counter = timeout_counter + 1;
+            timeout_counter <= timeout_counter + 1;
             timeout <= 0;
         end else begin
             timeout <= 1;
@@ -57,11 +57,11 @@ module interface_spislave
     always @(posedge clk) begin
         if(SSEL_active) begin
             if(SSEL_startmessage) begin
-                byte_data_sent = tx_data;
+                byte_data_sent <= tx_data;
             end else begin
                 if(SCK_fallingedge) begin
                     if(bitcnt==16'd0)
-                        byte_data_sent <= 8'h00;  // after that, we send 0s
+                        byte_data_sent <= 64'h00;  // after that, we send 0s
                     else
                         byte_data_sent <= {byte_data_sent[BUFFER_SIZE-2:0], 1'b0};
                 end

@@ -34,6 +34,7 @@ class Plugin:
                 func_out.append(f"    vout_pwm #({divider}) vout_pwm{num} (")
                 func_out.append("        .clk (sysclk),")
                 func_out.append(f"        .dty (setPoint{num}),")
+                func_out.append(f"        .disabled (ERROR),")
                 func_out.append(f"        .dir (VOUT{num}_PWM_DIR),")
                 func_out.append(f"        .pwm (VOUT{num}_PWM_PWM)")
                 func_out.append("    );")

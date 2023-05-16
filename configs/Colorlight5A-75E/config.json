@@ -18,7 +18,7 @@
             "SEL": "G14"
         }
     },
-    "blink": {
+    "error": {
         "pin": "T6"
     },
     "din": [
@@ -91,6 +91,14 @@
             "cl": false,
             "pins": {
                 "pwm": "T3"
+            }
+        },
+        {
+            "comment": "J9.1",
+            "type": "rcservo",
+            "cl": false,
+            "pins": {
+                "pwm": "P11"
             }
         }
     ]

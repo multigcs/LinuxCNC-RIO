@@ -29,7 +29,7 @@ def generate(project):
 
     top_data.append("")
     argsstr = ",\n        ".join(top_arguments)
-    top_data.append(f"module top (\n        {argsstr}")
+    top_data.append(f"module rio (\n        {argsstr}")
     top_data.append("    );")
     top_data.append("")
     top_data.append("")
@@ -83,9 +83,9 @@ def generate(project):
     top_data.append("    reg signed [31:0] header_tx;")
     top_data.append("    always @(posedge sysclk) begin")
     top_data.append("        if (ESTOP) begin")
-    top_data.append("            header_tx = 32'h65737470;")
+    top_data.append("            header_tx <= 32'h65737470;")
     top_data.append("        end else begin")
-    top_data.append("            header_tx = 32'h64617461;")
+    top_data.append("            header_tx <= 32'h64617461;")
     top_data.append("        end")
     top_data.append("    end")
     top_data.append("")
@@ -245,7 +245,7 @@ def generate(project):
         makefile_data.append("")
         makefile_data.append(f"rio.json: {verilogs}")
         makefile_data.append(
-            f"	yosys -q -l yosys.log -p 'synth_${{FAMILY}} -top top -json rio.json' {verilogs}"
+            f"	yosys -q -l yosys.log -p 'synth_${{FAMILY}} -top rio -json rio.json' {verilogs}"
         )
         makefile_data.append("")
         makefile_data.append("rio.config: rio.json pins.lpf")
@@ -262,6 +262,9 @@ def generate(project):
         )
         makefile_data.append("	")
         makefile_data.append("rio.svf: rio.bit")
+        makefile_data.append("")
+        makefile_data.append("check:")
+        makefile_data.append("	verilator --top-module rio --lint-only -Wall *.v")
         makefile_data.append("")
         makefile_data.append("clean:")
         makefile_data.append(
@@ -300,7 +303,7 @@ def generate(project):
         makefile_data.append("")
         makefile_data.append(f"rio.json: {verilogs}")
         makefile_data.append(
-            f"	yosys -q -l yosys.log -p 'synth_${{FAMILY}} -top top -json rio.json' {verilogs}"
+            f"	yosys -q -l yosys.log -p 'synth_${{FAMILY}} -top rio -json rio.json' {verilogs}"
         )
         makefile_data.append("")
         makefile_data.append("rio.asc: rio.json pins.pcf")
@@ -313,6 +316,9 @@ def generate(project):
         makefile_data.append("")
         makefile_data.append("rio.bin: rio.asc")
         makefile_data.append("	icepack rio.asc rio.bin")
+        makefile_data.append("")
+        makefile_data.append("check:")
+        makefile_data.append("	verilator --top-module rio --lint-only -Wall *.v")
         makefile_data.append("")
         makefile_data.append("clean:")
         makefile_data.append(
@@ -337,7 +343,7 @@ def generate(project):
         ldf_data.append(
             '    <Implementation title="impl1" dir="impl1" description="impl1" synthesis="lse" default_strategy="Strategy1">'
         )
-        ldf_data.append('        <Options def_top="top"/>')
+        ldf_data.append('        <Options def_top="rio"/>')
         for vfile in project['verilog_files']:
             ldf_data.append(
                 f'        <Source name="impl1/source/{vfile}" type="Verilog" type_short="Verilog">'

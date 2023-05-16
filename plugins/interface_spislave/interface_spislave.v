@@ -22,7 +22,6 @@ module interface_spislave
     wire SSEL_startmessage = (SSELr[2:1]==2'b10);  // message starts at falling edge
     wire SSEL_endmessage = (SSELr[2:1]==2'b01);  // message stops at rising edge
     reg[15:0] bitcnt;
-    reg byte_received;  // high when a byte has been received
     reg[BUFFER_SIZE-1:0] byte_data_received;
     reg[BUFFER_SIZE-1:0] byte_data_receive;
     reg[BUFFER_SIZE-1:0] byte_data_sent;
@@ -39,7 +38,6 @@ module interface_spislave
             end
         end
     end
-    always @(posedge clk) byte_received <= SSEL_active && SCK_risingedge && (bitcnt == BUFFER_SIZE);
     always @(posedge clk) begin
         if (SSEL_endmessage) begin
             if (byte_data_receive[BUFFER_SIZE-1:BUFFER_SIZE-32] == MSGID) begin
@@ -61,7 +59,7 @@ module interface_spislave
             end else begin
                 if(SCK_fallingedge) begin
                     if(bitcnt==16'd0)
-                        byte_data_sent <= 64'h00;  // after that, we send 0s
+                        byte_data_sent <= 0;  // after that, we send 0s
                     else
                         byte_data_sent <= {byte_data_sent[BUFFER_SIZE-2:0], 1'b0};
                 end

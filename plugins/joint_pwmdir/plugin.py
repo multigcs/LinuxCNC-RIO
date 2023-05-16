@@ -95,4 +95,7 @@ class Plugin:
         return func_out
 
     def ips(self):
-        return ["joint_pwmdir.v"]
+        for num, joint in enumerate(self.jdata["joints"]):
+            if joint["type"] == "pwmdir":
+                return ["joint_pwmdir.v"]
+        return []

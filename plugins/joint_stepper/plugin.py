@@ -92,4 +92,4 @@ class Plugin:
         return func_out
 
     def ips(self):
-        return ["quad_encoder.v", "joint_stepper.v"]
+        return ["quad_encoder.v", "joint_stepper.v", "joint_stepper_nf.v"]

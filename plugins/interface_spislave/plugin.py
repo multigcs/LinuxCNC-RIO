@@ -25,7 +25,6 @@ class Plugin:
 
     def funcs(self):
         func_out = ["    // interface_spislave"]
-        func_out.append("    wire pkg_ok;")
         func_out.append(
             f"    interface_spislave #(BUFFER_SIZE, 32'h74697277, {self.jdata['clock']['speed']}) spi1 ("
         )

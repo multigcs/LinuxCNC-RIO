@@ -87,25 +87,34 @@ TOOL_TABLE = tool.tbl
     """)
 
 
-    for num in range(min(project['joints'], len(axis_names))):
+    for num, joint in enumerate(project['jdata']["joints"]):
         if num > 2:
             pass # TODO: setup rotating axis
+
+        if joint.get("type") == "rcservo":
+            SCALE = 80.0
+            MIN_LIMIT = -110
+            MAX_LIMIT = 110
+        else:
+            SCALE = 800.0
+            MIN_LIMIT = -1300
+            MAX_LIMIT = 1300
 
         cfgini_data.append(f"""[AXIS_{axis_names[num]}]
 MAX_VELOCITY = 450
 MAX_ACCELERATION = 750.0
-MIN_LIMIT = -1300
-MAX_LIMIT = 1300
+MIN_LIMIT = {MIN_LIMIT}
+MAX_LIMIT = {MAX_LIMIT}
 
 [JOINT_{num}]
 TYPE = LINEAR
 HOME = 0.0
-MIN_LIMIT = -1300
-MAX_LIMIT = 1300
+MIN_LIMIT = {MIN_LIMIT}
+MAX_LIMIT = {MAX_LIMIT}
 MAX_VELOCITY = 450.0
 MAX_ACCELERATION = 750.0
 STEPGEN_MAXACCEL = 2000.0
-SCALE = 800.0
+SCALE = {SCALE}
 FERROR = 2
 MIN_FERROR = 2.0
 HOME_OFFSET = 0.0
@@ -266,7 +275,10 @@ net j{num}enable 		<= joint.{num}.amp-enable-out 	=> rio.joint.{num}.enable
             cfgxml_data.append(f"    <min_>{str(vout.get('min', -100))}</min_>")
             cfgxml_data.append(f"    <max_>{str(vout.get('max', 100))}</max_>")
         elif vout.get('type') == "pwm":
-            cfgxml_data.append(f"    <min_>{str(vout.get('min', -100))}</min_>")
+            if "dir" in vout:
+                cfgxml_data.append(f"    <min_>{str(vout.get('min', -100))}</min_>")
+            else:
+                cfgxml_data.append(f"    <min_>{str(vout.get('min', 0))}</min_>")
             cfgxml_data.append(f"    <max_>{str(vout.get('max', 100))}</max_>")
         elif vout.get('type') == "rcservo":
             cfgxml_data.append(f"    <min_>{str(vout.get('min', -100))}</min_>")

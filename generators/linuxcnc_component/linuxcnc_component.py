@@ -28,18 +28,14 @@ def generate(project):
     rio_data.append(f"#define PRU_BASEFREQ        120000")
     rio_data.append(f"#define PRU_OSC             {project['jdata']['clock']['speed']}")
     rio_data.append("")
-    # TODO: move into plugin
-    for num, joint in enumerate(project['jdata']["joints"]):
-        if joint["type"] == "stepper":
-            if joint.get("cl", False):
-                enc_scale = joint.get("enc_scale", 1)
-                rio_data.append(f"#define ENC_SCALE{num}          {enc_scale}")
-    rio_data.append("")
 
     rio_data.append("#define VOUT_TYPE_PWM  0")
     rio_data.append("#define VOUT_TYPE_RCSERVO 1")
     rio_data.append("#define VOUT_TYPE_SINE 2")
     rio_data.append("#define VOUT_TYPE_FREQ 3")
+
+    rio_data.append("#define JOINT_FB_REL 0")
+    rio_data.append("#define JOINT_FB_ABS 1")
 
     vouts_min = []
     vouts_max = []
@@ -64,12 +60,33 @@ def generate(project):
             vouts_min.append(str(vout.get("min", 0)))
             vouts_max.append(str(vout.get("max", 10.0)))
             vouts_freq.append(str(vout.get("freq", freq)))
-
         vouts_type.append(f"VOUT_TYPE_{vout.get('type', 'freq').upper()}")
+
     rio_data.append(f"float vout_min[VARIABLE_OUTPUTS] = {{{', '.join(vouts_min)}}};")
     rio_data.append(f"float vout_max[VARIABLE_OUTPUTS] = {{{', '.join(vouts_max)}}};")
     rio_data.append(f"float vout_freq[VARIABLE_OUTPUTS] = {{{', '.join(vouts_freq)}}};")
     rio_data.append(f"uint8_t vout_type[VARIABLE_OUTPUTS] = {{{', '.join(vouts_type)}}};")
+    rio_data.append("")
+
+    joints_fb_type = []
+    joints_fb_scale = []
+    for num, joint in enumerate(project['jdata']["joints"]):
+        if joint.get('type') == "rcservo":
+            joints_fb_type.append("JOINT_FB_ABS")
+            joints_fb_scale.append("1.0")
+        elif joint["type"] == "stepper":
+            joints_fb_type.append("JOINT_FB_REL")
+            if joint.get("cl", False):
+                joints_fb_scale.append(joint.get("enc_scale", 1))
+            else:
+                joints_fb_scale.append("1.0")
+        else:
+            joints_fb_type.append("JOINT_FB_REL")
+            joints_fb_scale.append("1.0")
+
+    rio_data.append(f"uint8_t joints_fb_type[JOINTS] = {{{', '.join(joints_fb_type)}}};")
+    rio_data.append(f"uint8_t joints_fb_scale[JOINTS] = {{{', '.join(joints_fb_scale)}}};")
+
     rio_data.append("")
 
     rio_data.append("typedef union {")

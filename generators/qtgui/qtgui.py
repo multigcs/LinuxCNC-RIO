@@ -17,7 +17,7 @@ def generate(project):
     spitest_data.append("device = 1")
     spitest_data.append("spi = spidev.SpiDev()")
     spitest_data.append("spi.open(bus, device)")
-    spitest_data.append(f"spi.max_speed_hz = {project['jdata']['interface'].get('max', 5000000)}")
+    spitest_data.append(f"spi.max_speed_hz = {project['jdata']['interface'].get('max', 2000000)}")
     spitest_data.append("spi.mode = 0")
     spitest_data.append("spi.lsbfirst = False")
     spitest_data.append("")
@@ -78,7 +78,10 @@ def generate(project):
             spitest_data.append(f"    ({vout.get('min', -100)}, {vout.get('max', 100)}, 'sine', 30),")
         elif vout.get('type') == "pwm":
             freq = vout.get('freq', 10000)
-            spitest_data.append(f"    ({vout.get('min', -100)}, {vout.get('max', 100)}, 'pwm', {freq}),")
+            if "dir" in vout:
+                spitest_data.append(f"    ({vout.get('min', -100)}, {vout.get('max', 100)}, 'pwm', {freq}),")
+            else:
+                spitest_data.append(f"    ({vout.get('min', 0)}, {vout.get('max', 100)}, 'pwm', {freq}),")
         elif vout.get('type') == "rcservo":
             freq = vout.get('freq', 100)
             spitest_data.append(f"    ({vout.get('min', -100)}, {vout.get('max', 100)}, 'rcservo', {freq}),")
@@ -320,7 +323,6 @@ class WinForm(QWidget):
                 #print(f'inputs {inputs:08b}')
             else:
                 print(f'Header: 0x{header:x}')
-
 
 
             for jn, value in enumerate(joints):

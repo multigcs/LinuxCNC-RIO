@@ -14,9 +14,7 @@ module joint_pwmdir
     reg signed [31:0] jointFeedbackMem = 32'd0;
     reg step = 0;
     assign jointFeedback = jointFeedbackMem;
-
     assign DIR = (jointFreqCmd > 0);
-
     reg pulse = 0;
     assign PWM = pulse;
     reg [31:0] counter = 0;
@@ -28,7 +26,7 @@ module joint_pwmdir
         end
         if (jointFreqCmdAbs > 0) begin
             counter = counter + 1;
-            if (counter == pwm_freq) begin
+            if (counter == pwm_freq && jointEnable == 1) begin
                 pulse = 1;
                 counter = 0;
             end else if (counter == jointFreqCmdAbs) begin

@@ -125,6 +125,14 @@ if project["jdata"]["toolchain"] == "diamond":
     os.system(f"mkdir -p {project['PINS_PATH']}")
 
 
+for plugin in project["plugins"]:
+    if hasattr(project["plugins"][plugin], "ips"):
+        for ipv in project["plugins"][plugin].ips():
+            project["verilog_files"].append(ipv)
+            # os.system(f"verilator --lint-only -Wall plugins/{plugin}/{ipv}")
+            os.system(f"verilator --lint-only plugins/{plugin}/{ipv}")
+            os.system(f"cp -a plugins/{plugin}/{ipv} {project['SOURCE_PATH']}/{ipv}")
+
 print(f"generating files in {project['OUTPUT_PATH']}")
 
 

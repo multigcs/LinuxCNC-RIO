@@ -98,7 +98,7 @@ module testb;
                24'd0
            };
 
-    spi_slave #(BUFFER_SIZE, 32'h17a17a17) spi1 (
+    interface_spislave #(BUFFER_SIZE, 32'h17a17a17) interface_spislave1 (
                   .clk (clk),
                   .SPI_SCK (SPI_SCK),
                   .SPI_SSEL (SPI_SSEL),

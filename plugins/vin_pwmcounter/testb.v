@@ -4,8 +4,7 @@ module testb;
     reg clk = 0;
     always #1 clk = !clk;
 
-    wire [15:0] dty;
-    wire [15:0] dtyu;
+    wire [31:0] frequency;
 
     reg SIGNAL = 0;
 
@@ -15,17 +14,15 @@ module testb;
         $dumpfile("testb.vcd");
         $dumpvars(0, clk);
         $dumpvars(1, SIGNAL);
-        $dumpvars(2, dty);
-        $dumpvars(3, dtyu);
+        $dumpvars(2, frequency);
 
         # 10000 $finish;
     end
 
-    pwm_counter pwm_counter1 (
+    vin_pwmcounter vin_pwmcounter1 (
                     .clk (clk),
                     .SIGNAL (SIGNAL),
-                    .dty (dty),
-                    .dtyu (dtyu)
+                    .frequency (frequency)
                 );
 
 endmodule

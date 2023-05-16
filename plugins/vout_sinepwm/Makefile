@@ -2,7 +2,7 @@
 all: testb
 
 testb:
-	iverilog -Wall -o testb.out testb.v sine_pwm.v
+	iverilog -Wall -o testb.out testb.v vout_sinepwm.v
 	vvp testb.out
 	gtkwave testb.vcd
 

@@ -2,7 +2,7 @@
 all: testb
 
 testb:
-	iverilog -Wall -o testb.out testb.v pwm_counter.v
+	iverilog -Wall -o testb.out testb.v vin_pwmcounter.v
 	vvp testb.out
 	gtkwave testb.vcd
 

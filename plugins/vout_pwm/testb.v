@@ -19,7 +19,7 @@ module testb;
         # 500000 $finish;
     end
 
-    pwm pwm1 (
+    vout_pwm vout_pwm1 (
             .clk (clk),
             .dty (dty),
             .pwm (PWM)

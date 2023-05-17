@@ -147,6 +147,17 @@ addf rio.write servo-thread
 
     """)
 
+    for num, din in enumerate(project['jdata']["din"]):
+        din_type = din.get("type")
+        din_joint = din.get("joint")
+        if din_type == "alarm" and din_joint:
+            cfghal_data.append(f"net joint.{din_joint}.amp-fault-in <= rio.input.{num}")
+        elif din_type == "home" and din_joint:
+            cfghal_data.append(f"net joint.{din_joint}.home-sw-in <= rio.input.{num}")
+        #neg-lim-sw-in
+        #pos-lim-sw-in
+    cfghal_data.append("")
+
     for num in range(min(project['joints'], len(axis_names))):
         cfghal_data.append(f"""# Joint {num} setup
 

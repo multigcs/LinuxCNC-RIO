@@ -6,6 +6,7 @@ RealtimeIO for LinuxCNC based on an FPGA
 * logic only
 * no jitter
 * fast and small
+* communication via SPI (with Raspberry PI 4)
 * generated verilog-code / setup via json files (free pin-selection)
 * using free FPGA-Toolchain
 

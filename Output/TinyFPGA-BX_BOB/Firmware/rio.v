@@ -14,6 +14,7 @@ module rio (
         output DOUT0,
         output DOUT1,
         output DOUT2,
+        output ENA,
         output ERROR_OUT,
         input INTERFACE_SPI_MOSI,
         output INTERFACE_SPI_MISO,
@@ -31,8 +32,7 @@ module rio (
         output JOINT4_STEPPER_DIR,
         input sysclk_in,
         input VIN0_FREQUENCY,
-        output VOUT0_PWM_PWM,
-        output ENA
+        output VOUT0_PWM_PWM
     );
 
 
@@ -136,6 +136,8 @@ module rio (
         .frequency (processVariable0),
         .SIGNAL (VIN0_FREQUENCY)
     );
+
+    // vin_sonar's
 
     // vout_sinepwm's
 

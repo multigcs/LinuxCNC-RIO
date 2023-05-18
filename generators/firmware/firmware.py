@@ -11,10 +11,6 @@ def generate(project):
         for pin in pins:
             top_arguments.append(f"{pin[2].lower()} {pin[0]}")
 
-    if "enable" in project['jdata']:
-        top_arguments.append("output ENA")
-        project['pinlists']["enable"] = (("ENA", project['jdata']["enable"]["pin"], "OUTPUT"),)
-
     top_data = []
     top_data.append("/*")
     top_data.append(f"    ######### {project['jdata']['name']} #########")
@@ -359,8 +355,6 @@ def generate(project):
         ldf_data.append('    <Strategy name="Strategy1" file="pif21.sty"/>')
         ldf_data.append("</BaliProject>")
         ldf_data.append("")
-        open(f"{project['FIRMWARE_PATH']}/rio.ldf", "w").write("\n".join(ldf_data))
-        open(f"{project['FIRMWARE_PATH']}/rio.ldf", "w").write("\n".join(ldf_data))
         open(f"{project['FIRMWARE_PATH']}/rio.ldf", "w").write("\n".join(ldf_data))
 
         # pins.lpf (diamond)

@@ -39,9 +39,6 @@ class Plugin:
                     func_out.append(
                         f"    assign VOUT{num}_PWM_PWM = !VOUT{num}_PWM_PWM_INVERTED; // invert pwm output"
                     )
-                    
-
-
                 func_out.append(f"    vout_pwm #({divider}) vout_pwm{num} (")
                 func_out.append("        .clk (sysclk),")
                 func_out.append(f"        .dty (setPoint{num}),")

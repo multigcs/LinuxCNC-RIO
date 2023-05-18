@@ -309,6 +309,10 @@ class WinForm(QWidget):
                     unit = "ms"
                     if value != 0:
                         value = 1000 / (PRU_OSC / value)
+                elif vinminmax[vn][2] == 'sonar':
+                    unit = "mm"
+                    if value != 0:
+                        value = 1000 / PRU_OSC / 20 * value * 343.2
                 self.widgets[key].setText(f"{round(value, 2)}{unit}")
 
 

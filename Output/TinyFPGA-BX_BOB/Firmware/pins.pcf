@@ -4,10 +4,15 @@ set_io  sysclk_in B2
 ### error ###
 set_io  ERROR_OUT B3
 
+### enable ###
+set_io  ENA G9
+
 ### vin_pulsecounter ###
 
 ### vin_frequency ###
 set_io  VIN0_FREQUENCY D8
+
+### vin_sonar ###
 
 ### vout_sinepwm ###
 
@@ -53,6 +58,3 @@ set_io  -pullup yes DIN6 D9
 set_io  DOUT0 A6
 set_io  DOUT1 B6
 set_io  DOUT2 A7
-
-### enable ###
-set_io  ENA G9

@@ -51,6 +51,9 @@ if "error" in project["jdata"]:
         ("ERROR_OUT", project["jdata"]["error"]["pin"], "OUTPUT"),
     )
 
+if "enable" in project['jdata']:
+    project['pinlists']["enable"] = (("ENA", project['jdata']["enable"]["pin"], "OUTPUT"),)
+
 for plugin in project["plugins"]:
     if hasattr(project["plugins"][plugin], "pinlist"):
         project["pinlists"][plugin] = project["plugins"][plugin].pinlist()
@@ -129,9 +132,11 @@ project[
     "OUTPUT_PATH"
 ] = f"Output/{project['jdata']['name'].replace(' ', '_').replace('/', '_')}"
 project["FIRMWARE_PATH"] = f"{project['OUTPUT_PATH']}/Firmware"
+project["DOC_PATH"] = f"{project['OUTPUT_PATH']}/doc"
 project["SOURCE_PATH"] = f"{project['FIRMWARE_PATH']}"
 project["PINS_PATH"] = f"{project['FIRMWARE_PATH']}"
 project["LINUXCNC_PATH"] = f"{project['OUTPUT_PATH']}/LinuxCNC"
+os.system(f"mkdir -p {project['DOC_PATH']}")
 os.system(f"mkdir -p {project['OUTPUT_PATH']}")
 os.system(f"mkdir -p {project['SOURCE_PATH']}")
 os.system(f"mkdir -p {project['PINS_PATH']}")

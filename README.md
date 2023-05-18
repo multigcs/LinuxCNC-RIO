@@ -38,3 +38,4 @@ https://youtube.com/shorts/0nTmo4afwWs
 ![test](https://raw.githubusercontent.com/multigcs/LinuxCNC-RIO/main/files/4x.jpg)
 
 
+Thanks to the https://github.com/scottalford75/Remora Project, i'm using a modified version of it's Linux-Component

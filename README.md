@@ -28,7 +28,9 @@ Output: the generated files per config
 
 ## Demo-Video on TinyFPGA-BX board:
 
-https://www.youtube.com/shorts/0nTmo4afwWs
+https://youtube.com/shorts/G5V5OM_ORsk
+
+https://youtube.com/shorts/0nTmo4afwWs
 
 
 ## TinyFPGA-BX board with 5axis BOB:

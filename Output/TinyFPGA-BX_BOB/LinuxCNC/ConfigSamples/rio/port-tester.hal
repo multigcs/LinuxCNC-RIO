@@ -10,11 +10,15 @@ net dout2 ptest.btn2 rio.output.2 ptest.led-out2
 net dout3 ptest.btn3 rio.output.3 ptest.led-out3
 net dout4 ptest.btn4 rio.output.4 ptest.led-out4
 net dout5 ptest.btn5 rio.output.5 ptest.led-out5
+net dout6 ptest.btn6 rio.output.6 ptest.led-out6
+net dout7 ptest.btn7 rio.output.7 ptest.led-out7
 net din0 rio.input.0 ptest.led-in0
 net din1 rio.input.1 ptest.led-in1
 net din2 rio.input.2 ptest.led-in2
 net din3 rio.input.3 ptest.led-in3
 net din4 rio.input.4 ptest.led-in4
+net din5 rio.input.5 ptest.led-in5
+net din6 rio.input.6 ptest.led-in6
+net din7 rio.input.7 ptest.led-in7
 net vout0 ptest.vout0-f rio.SP.0
-net vout1 ptest.vout1-f rio.SP.1
 start

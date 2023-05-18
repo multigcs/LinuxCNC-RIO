@@ -179,7 +179,8 @@ int rtapi_app_main(void)
 	bcm2835_spi_setBitOrder(BCM2835_SPI_BIT_ORDER_MSBFIRST);      // The default
 	bcm2835_spi_setDataMode(BCM2835_SPI_MODE0);                   // The default
 
-	bcm2835_spi_setClockDivider(BCM2835_SPI_CLOCK_DIVIDER_128);		// 3.125MHz on RPI3
+	bcm2835_spi_setClockDivider(BCM2835_SPI_CLOCK_DIVIDER_256);		// 3.125MHz on RPI3
+	//bcm2835_spi_setClockDivider(BCM2835_SPI_CLOCK_DIVIDER_128);		// 3.125MHz on RPI3
 	//bcm2835_spi_setClockDivider(BCM2835_SPI_CLOCK_DIVIDER_64);		// 6.250MHz on RPI3
 	//bcm2835_spi_setClockDivider(BCM2835_SPI_CLOCK_DIVIDER_32);		// 12.5MHz on RPI3
 
@@ -223,23 +224,6 @@ int rtapi_app_main(void)
 		// export pins
 
 		data->pos_mode[n] = (parse_ctrl_type(ctrl_type[n]) == POSITION);
-/*
-This is throwing errors from axis.py for some reason...
-		
-		if (data->pos_mode[n]){
-			rtapi_print_msg(RTAPI_MSG_ERR, "Creating pos_mode[%d] = %d\n", n, data->pos_mode[n]);
-			retval = hal_pin_float_newf(HAL_IN, &(data->pos_cmd[n]),
-					comp_id, "%s.joint.%01d.pos-cmd", prefix, n);
-			if (retval < 0) goto error;
-			*(data->pos_cmd[n]) = 0.0;
-		} else {
-			rtapi_print_msg(RTAPI_MSG_ERR, "Creating vel_mode[%d] = %d\n", n, data->pos_mode[n]);
-			retval = hal_pin_float_newf(HAL_IN, &(data->vel_cmd[n]),
-					comp_id, "%s.joint.%01d.vel-cmd", prefix, n);
-			if (retval < 0) goto error;
-			*(data->vel_cmd[n]) = 0.0;			
-		}
-*/
 
 		retval = hal_pin_bit_newf(HAL_IN, &(data->stepperEnable[n]),
 				comp_id, "%s.joint.%01d.enable", prefix, n);
@@ -322,7 +306,9 @@ This is throwing errors from axis.py for some reason...
 
 	for (bn = 0; bn < DIGITAL_INPUT_BYTES; bn++) {
         for (n = 0; n < 8; n++) {
-            retval = hal_pin_bit_newf(HAL_OUT, &(data->inputs[bn * 8 + n]), comp_id, "%s.input.%01d", prefix, bn * 8 + n);
+            retval = hal_pin_bit_newf(HAL_OUT, &(data->inputs[bn * 8 + n * 2]), comp_id, "%s.input.%01d", prefix, bn * 8 + n);
+            if (retval != 0) goto error;
+            retval = hal_pin_bit_newf(HAL_OUT, &(data->inputs[bn * 8 + n * 2 + 1]), comp_id, "%s.input.%01d-not", prefix, bn * 8 + n);
             if (retval != 0) goto error;
             *(data->inputs[bn * 8 + n]) = 0;
         }
@@ -777,55 +763,32 @@ void spi_read()
 					// we have received a GOOD payload from the PRU
 					*(data->SPIstatus) = 1;
 
-					for (i = 0; i < JOINTS; i++)
-					{
-						// the PRU DDS accumulator uses 32 bit counter, this code converts that counter into 64 bits */
-						
-						    rxData.jointFeedback[i] *= 4194304;
+					for (i = 0; i < JOINTS; i++) {
+                        rxData.jointFeedback[i] /= joints_fb_scale[i];
 
-#ifdef ENC_SCALE0
-if (i == 0) {
-	rxData.jointFeedback[i] /= ENC_SCALE0;
-}
-#endif
-#ifdef ENC_SCALE1
-if (i == 1) {
-	rxData.jointFeedback[i] /= ENC_SCALE1;
-}
-#endif
-#ifdef ENC_SCALE2
-if (i == 2) {
-	rxData.jointFeedback[i] /= ENC_SCALE2;
-}
-#endif
-#ifdef ENC_SCALE3
-if (i == 3) {
-	rxData.jointFeedback[i] /= ENC_SCALE3;
-}
-#endif
-#ifdef ENC_SCALE4
-if (i == 4) {
-	rxData.jointFeedback[i] /= ENC_SCALE4;
-}
-#endif
-						    
-						    
+                        if (joints_fb_type[i] == JOINT_FB_ABS) {
+                            *(data->pos_fb[i]) = (float)(rxData.jointFeedback[i]) / data->pos_scale[i];
+                        } else {
+                            accum_diff = rxData.jointFeedback[i] - old_count[i];
+                            old_count[i] = rxData.jointFeedback[i];
 
-						
-						accum_diff = rxData.jointFeedback[i] - old_count[i];
-						old_count[i] = rxData.jointFeedback[i];
-						accum[i] += accum_diff;
+                            accum[i] += accum_diff;
 
-						*(data->count[i]) = accum[i] >> STEPBIT;
+                            *(data->count[i]) = accum[i];
 
-						data->scale_recip[i] = (1.0 / STEP_MASK) / data->pos_scale[i];
-						curr_pos = (double)(accum[i]-STEP_OFFSET) * (1.0 / STEP_MASK);
-						*(data->pos_fb[i]) = (float)((curr_pos+0.5) / data->pos_scale[i]);
+                            data->scale_recip[i] = data->pos_scale[i];
+
+                            curr_pos = (double)(accum[i]);
+
+                            *(data->pos_fb[i]) = (float)((curr_pos+0.5) / data->pos_scale[i]);
+                        }
+
 					}
 
+                    // printf("%f %i \n", *(data->pos_fb[0]), rxData.jointFeedback[0]);
+
 					// Feedback
-					for (i = 0; i < VARIABLE_INPUTS; i++)
-					{
+					for (i = 0; i < VARIABLE_INPUTS; i++) {
 						*(data->processVariable[i]) = rxData.processVariable[i]; 
 					}
 
@@ -833,10 +796,11 @@ if (i == 4) {
 					for (bi = 0; bi < DIGITAL_INPUT_BYTES; bi++) {
                         for (i = 0; i < 8; i++) {
                             if ((rxData.inputs[bi] & (1 << i)) != 0) {
-                                *(data->inputs[bi * 8 + i]) = 1; 		// input is high
+                                *(data->inputs[bi * 8 + i * 2]) = 1; 		// input is high
                             } else {
-                                *(data->inputs[bi * 8 + i]) = 0;			// input is low
+                                *(data->inputs[bi * 8 + i * 2]) = 0;			// input is low
                             }
+                            *(data->inputs[bi * 8 + i * 2 + 1]) = 1 - *(data->inputs[bi * 8 + i * 2]);
                         }
                     }
 					break;

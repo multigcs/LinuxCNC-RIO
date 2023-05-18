@@ -5,7 +5,7 @@ def generate(project):
 
     cfgini_data = []
 
-    axis_names = ["X", "Y", "Z", "A", "B", "C", "U", "V", "W"]
+    axis_names = ["X", "Y", "Z", "A", "C", "B", "U", "V", "W"]
     axis_str = ""
     axis_str2 = ""
     for num in range(min(project['joints'], len(axis_names))):
@@ -43,6 +43,12 @@ INTRO_TIME = 5
 PROGRAM_PREFIX = ~/linuxcnc/nc_files
 INCREMENTS = 50mm 10mm 5mm 1mm .5mm .1mm .05mm .01mm
 
+DEFAULT_LINEAR_VELOCITY = 0.2
+MAX_LINEAR_VELOCITY = 20.0
+DEFAULT_ANGULAR_VELOCITY = 20.0
+MAX_ANGULAR_VELOCITY = 60
+
+
 [KINS]
 JOINTS = {project['joints']}
 #KINEMATICS =trivkins coordinates={axis_str} kinstype=BOTH
@@ -75,8 +81,8 @@ COORDINATES =  {axis_str2}
 LINEAR_UNITS = mm
 ANGULAR_UNITS = degree
 CYCLE_TIME = 0.010
-DEFAULT_LINEAR_VELOCITY = 50.00
-MAX_LINEAR_VELOCITY = 200.00
+DEFAULT_LINEAR_VELOCITY = 1200.00
+MAX_LINEAR_VELOCITY = 1200.00
 NO_FORCE_HOMING = 1 
 
 [EMCIO]
@@ -88,41 +94,90 @@ TOOL_TABLE = tool.tbl
 
 
     for num, joint in enumerate(project['jdata']["joints"]):
-        if num > 2:
-            pass # TODO: setup rotating axis
-
         if joint.get("type") == "rcservo":
             SCALE = 80.0
             MIN_LIMIT = -110
             MAX_LIMIT = 110
         else:
-            SCALE = 800.0
-            MIN_LIMIT = -1300
-            MAX_LIMIT = 1300
+            if num > 2:
+                SCALE = 223.0
+                MIN_LIMIT = -360
+                MAX_LIMIT = 360
+            else:
+                SCALE = 800.0
+                MIN_LIMIT = -1300
+                MAX_LIMIT = 1300
 
-        cfgini_data.append(f"""[AXIS_{axis_names[num]}]
-MAX_VELOCITY = 450
-MAX_ACCELERATION = 750.0
+        SCALE = joint.get("scale", SCALE)
+        MIN_LIMIT = joint.get("min_limit", MIN_LIMIT)
+        MAX_LIMIT = joint.get("max_limit", MAX_LIMIT)
+
+        if num > 2:
+            cfgini_data.append(f"""[AXIS_{axis_names[num]}]
+MAX_VELOCITY = 30
+MAX_ACCELERATION = 400.0
 MIN_LIMIT = {MIN_LIMIT}
 MAX_LIMIT = {MAX_LIMIT}
 
 [JOINT_{num}]
-TYPE = LINEAR
-HOME = 0.0
+TYPE = ANGULAR
 MIN_LIMIT = {MIN_LIMIT}
 MAX_LIMIT = {MAX_LIMIT}
-MAX_VELOCITY = 450.0
-MAX_ACCELERATION = 750.0
+MAX_VELOCITY = 30.0
+MAX_ACCELERATION = 100.0
 STEPGEN_MAXACCEL = 2000.0
 SCALE = {SCALE}
-FERROR = 2
-MIN_FERROR = 2.0
+FERROR = 1.0
+MIN_FERROR = 0.5
+
 HOME_OFFSET = 0.0
 HOME_SEARCH_VEL = 0
 HOME_LATCH_VEL = 0
 HOME_SEQUENCE = 0
 
-    """)
+#HOME_SEARCH_VEL = 20.0
+#HOME_LATCH_VEL = 3.0
+#HOME_FINAL_VEL = -20
+#HOME_IGNORE_LIMITS = YES
+#HOME_USE_INDEX = NO
+#HOME_OFFSET = 6.5
+#HOME = 0.0
+#HOME_SEQUENCE = 4
+
+""")
+        else:
+            cfgini_data.append(f"""[AXIS_{axis_names[num]}]
+MAX_VELOCITY = 50
+MAX_ACCELERATION = 400.0
+MIN_LIMIT = {MIN_LIMIT}
+MAX_LIMIT = {MAX_LIMIT}
+
+[JOINT_{num}]
+TYPE = LINEAR
+MIN_LIMIT = {MIN_LIMIT}
+MAX_LIMIT = {MAX_LIMIT}
+MAX_VELOCITY = 50.0
+MAX_ACCELERATION = 400.0
+STEPGEN_MAXACCEL = 2000.0
+SCALE = {SCALE}
+FERROR = 1.0
+MIN_FERROR = 0.5
+
+HOME_OFFSET = 0.0
+HOME_SEARCH_VEL = 0
+HOME_LATCH_VEL = 0
+HOME_SEQUENCE = 0
+
+#HOME_SEARCH_VEL = 20.0
+#HOME_LATCH_VEL = 3.0
+#HOME_FINAL_VEL = -20
+#HOME_IGNORE_LIMITS = YES
+#HOME_USE_INDEX = NO
+#HOME_OFFSET = 6.5
+#HOME = 0.0
+#HOME_SEQUENCE = 4
+
+""")
     open(f"{project['LINUXCNC_PATH']}/ConfigSamples/rio/rio.ini", "w").write("\n".join(cfgini_data))
 
 
@@ -150,10 +205,24 @@ addf rio.write servo-thread
     for num, din in enumerate(project['jdata']["din"]):
         din_type = din.get("type")
         din_joint = din.get("joint")
+        invert = din.get("invert", False)
         if din_type == "alarm" and din_joint:
-            cfghal_data.append(f"net joint.{din_joint}.amp-fault-in <= rio.input.{num}")
+            if invert:
+                cfghal_data.append(f"net din{num} joint.{din_joint}.amp-fault-in <= rio.input.{num}-not")
+            else:
+                cfghal_data.append(f"net din{num} joint.{din_joint}.amp-fault-in <= rio.input.{num}")
         elif din_type == "home" and din_joint:
-            cfghal_data.append(f"net joint.{din_joint}.home-sw-in <= rio.input.{num}")
+            if invert:
+                cfghal_data.append(f"net home-{axis_names[int(din_joint)].lower()} <= rio.input.{num}-not")
+            else:
+                cfghal_data.append(f"net home-{axis_names[int(din_joint)].lower()} <= rio.input.{num}")
+            cfghal_data.append(f"net home-{axis_names[int(din_joint)].lower()} => joint.{din_joint}.home-sw-in")
+        elif din_type == "probe":
+            if invert:
+                cfghal_data.append(f"net toolprobe <= rio.input.{num}-not")
+            else:
+                cfghal_data.append(f"net toolprobe <= rio.input.{num}")
+            cfghal_data.append(f"net toolprobe => motion.probe-input")
         #neg-lim-sw-in
         #pos-lim-sw-in
     cfghal_data.append("")
@@ -187,10 +256,10 @@ net j{num}enable 		<= joint.{num}.amp-enable-out 	=> rio.joint.{num}.enable
 
     cfghal_data.append("")
 
-    for num in range(project['douts']):
+    for num in range(project['douts_total']):
         cfghal_data.append(f"net dout{num} ptest.btn{num} rio.output.{num} ptest.led-out{num}")
 
-    for num in range(project['dins']):
+    for num in range(project['dins_total']):
         cfghal_data.append(f"net din{num} rio.input.{num} ptest.led-in{num}")
 
     for num in range(project['vouts']):
@@ -207,11 +276,18 @@ net j{num}enable 		<= joint.{num}.amp-enable-out 	=> rio.joint.{num}.enable
     cfghal_data = []
     cfghal_data.append("")
 
-    for num in range(project['douts']):
+    for num in range(project['douts_total']):
         cfghal_data.append(f"net dout{num} pyvcp.btn{num} rio.output.{num} pyvcp.led-out{num}")
 
-    for num in range(project['dins']):
-        cfghal_data.append(f"net din{num} rio.input.{num} pyvcp.led-in{num}")
+    for num, din in enumerate(project['jdata']["din"]):
+        din_type = din.get("type")
+        din_joint = din.get("joint")
+        if din_type == "alarm" and din_joint:
+            pass
+        elif din_type == "home" and din_joint:
+            pass
+        else:
+            cfghal_data.append(f"net din{num} rio.input.{num} pyvcp.led-in{num}")
 
     for num in range(project['vouts']):
         cfghal_data.append(f"net vout{num} pyvcp.vout{num}-f rio.SP.{num}")
@@ -233,7 +309,7 @@ net j{num}enable 		<= joint.{num}.amp-enable-out 	=> rio.joint.{num}.enable
     cfgxml_data.append(f"      <text>\"DOUT\"</text>")
     cfgxml_data.append("      <font>(\"Helvetica\",12)</font>")
     cfgxml_data.append("    </label>")
-    for num in range(project['douts']):
+    for num in range(project['douts_total']):
         cfgxml_data.append("    <button>")
         cfgxml_data.append(f"      <halpin>\"btn{num}\"</halpin>")
         cfgxml_data.append(f"      <text>\"{num}\"</text>")
@@ -247,7 +323,7 @@ net j{num}enable 		<= joint.{num}.amp-enable-out 	=> rio.joint.{num}.enable
     cfgxml_data.append(f"      <text>\"DOUT\"</text>")
     cfgxml_data.append("      <font>(\"Helvetica\",12)</font>")
     cfgxml_data.append("    </label>")
-    for num in range(project['douts']):
+    for num in range(project['douts_total']):
         cfgxml_data.append("    <led>")
         cfgxml_data.append(f"      <halpin>\"led-out{num}\"</halpin>")
         cfgxml_data.append("      <size>25</size>")
@@ -264,13 +340,20 @@ net j{num}enable 		<= joint.{num}.amp-enable-out 	=> rio.joint.{num}.enable
     cfgxml_data.append(f"      <text>\"DIN\"</text>")
     cfgxml_data.append("      <font>(\"Helvetica\",12)</font>")
     cfgxml_data.append("    </label>")
-    for num in range(project['dins']):
-        cfgxml_data.append("    <led>")
-        cfgxml_data.append(f"      <halpin>\"led-in{num}\"</halpin>")
-        cfgxml_data.append("      <size>25</size>")
-        cfgxml_data.append("      <on_color>\"green\"</on_color>")
-        cfgxml_data.append("      <off_color>\"red\"</off_color>")
-        cfgxml_data.append("    </led>")
+    for num, din in enumerate(project['jdata']["din"]):
+        din_type = din.get("type")
+        din_joint = din.get("joint")
+        if din_type == "alarm" and din_joint:
+            pass
+        elif din_type == "home" and din_joint:
+            pass
+        else:
+            cfgxml_data.append("    <led>")
+            cfgxml_data.append(f"      <halpin>\"led-in{num}\"</halpin>")
+            cfgxml_data.append("      <size>25</size>")
+            cfgxml_data.append("      <on_color>\"green\"</on_color>")
+            cfgxml_data.append("      <off_color>\"red\"</off_color>")
+            cfgxml_data.append("    </led>")
     cfgxml_data.append("  </hbox>")
 
     for num, vout in enumerate(project['jdata']["vout"]):

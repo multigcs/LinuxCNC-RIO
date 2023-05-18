@@ -31,69 +31,78 @@
     },
     "dout": [
         {
-            "pin": "D9"
+            "pin": "A6"
         },
         {
-            "pin": "D8"
+            "pin": "B6"
         },
         {
-            "pin": "C9"
-        },
-        {
-            "pin": "A9"
-        },
-        {
-            "pin": "B8"
-        },
-        {
-            "pin": "A8"
+            "pin": "A7"
         }
     ],
     "din": [
         {
+            "joint": "0",
+            "type": "home",
+            "pin": "C2",
             "pullup": true,
-            "pin": "C2"
+            "invert": true
         },
         {
+            "joint": "1",
+            "type": "home",
+            "pin": "B1",
             "pullup": true,
-            "pin": "B1"
+            "invert": true
         },
         {
+            "joint": "2",
+            "type": "home",
+            "pin": "A1",
             "pullup": true,
-            "pin": "A1"
+            "invert": true
         },
         {
+            "joint": "3",
+            "type": "home",
+            "pin": "A2",
             "pullup": true,
-            "pin": "A2"
+            "invert": true
         },
         {
+            "joint": "4",
+            "type": "home",
+            "pin": "J4",
             "pullup": true,
-            "pin": "J4"
+            "invert": true
+        },
+        {
+            "type": "probe",
+            "pin": "H9",
+            "pullup": true
+        },
+        {
+            "pin": "D9",
+            "pullup": true
         }
     ],
     "vout": [
         {
             "type": "pwm",
-            "pin": "B7"
-        },
-        {
-            "type": "pwm",
-            "pin": "B6"
+            "pin": "H2",
+            "invert_pwm": true
         }
     ],
     "vin": [
         {
             "type": "frequency",
-            "pin": "A6"
-        },
-        {
-            "type": "frequency",
-            "pin": "A7"
+            "pin": "D8"
         }
     ],
     "joints": [
         {
             "type": "stepper",
+            "scale": "1600",
             "cl": false,
             "pins": {
                 "step": "J1",
@@ -102,6 +111,7 @@
         },
         {
             "type": "stepper",
+            "scale": "1600",
             "cl": false,
             "pins": {
                 "step": "G2",
@@ -110,6 +120,7 @@
         },
         {
             "type": "stepper",
+            "scale": "1600",
             "cl": false,
             "pins": {
                 "step": "E2",
@@ -118,6 +129,7 @@
         },
         {
             "type": "stepper",
+            "scale": "360",
             "cl": false,
             "pins": {
                 "step": "D2",
@@ -126,6 +138,7 @@
         },
         {
             "type": "stepper",
+            "scale": "360",
             "cl": false,
             "pins": {
                 "step": "J9",

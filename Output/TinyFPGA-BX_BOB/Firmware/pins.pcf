@@ -4,31 +4,19 @@ set_io  sysclk_in B2
 ### error ###
 set_io  ERROR_OUT B3
 
-### vin_quadencoder ###
-
-### dout_bit ###
-set_io  DOUT0 D9
-set_io  DOUT1 D8
-set_io  DOUT2 C9
-set_io  DOUT3 A9
-set_io  DOUT4 B8
-set_io  DOUT5 A8
-
-### interface_spislave ###
-set_io  INTERFACE_SPI_MOSI G6
-set_io  INTERFACE_SPI_MISO H7
-set_io  INTERFACE_SPI_SCK G7
-set_io  INTERFACE_SPI_SSEL G1
-
-### vout_pwm ###
-set_io  VOUT0_PWM_PWM B7
-set_io  VOUT1_PWM_PWM B6
-
 ### vin_pulsecounter ###
 
-### joint_pwmdir ###
+### vin_frequency ###
+set_io  VIN0_FREQUENCY D8
+
+### vout_sinepwm ###
+
+### vout_pwm ###
+set_io  VOUT0_PWM_PWM H2
 
 ### vin_pwmcounter ###
+
+### vin_quadencoder ###
 
 ### joint_stepper ###
 set_io  JOINT0_STEPPER_STP J1
@@ -42,20 +30,29 @@ set_io  JOINT3_STEPPER_DIR C1
 set_io  JOINT4_STEPPER_STP J9
 set_io  JOINT4_STEPPER_DIR J3
 
+### joint_rcservo ###
+
+### interface_spislave ###
+set_io  INTERFACE_SPI_MOSI G6
+set_io  INTERFACE_SPI_MISO H7
+set_io  INTERFACE_SPI_SCK G7
+set_io  INTERFACE_SPI_SSEL G1
+
 ### din_bit ###
 set_io  -pullup yes DIN0 C2
 set_io  -pullup yes DIN1 B1
 set_io  -pullup yes DIN2 A1
 set_io  -pullup yes DIN3 A2
 set_io  -pullup yes DIN4 J4
+set_io  -pullup yes DIN5 H9
+set_io  -pullup yes DIN6 D9
 
-### vin_frequency ###
-set_io  VIN0_FREQUENCY A6
-set_io  VIN1_FREQUENCY A7
+### joint_pwmdir ###
 
-### joint_rcservo ###
-
-### vout_sinepwm ###
+### dout_bit ###
+set_io  DOUT0 A6
+set_io  DOUT1 B6
+set_io  DOUT2 A7
 
 ### enable ###
 set_io  ENA G9

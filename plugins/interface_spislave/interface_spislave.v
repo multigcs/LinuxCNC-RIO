@@ -26,7 +26,7 @@ module interface_spislave
     reg[BUFFER_SIZE-1:0] byte_data_receive;
     reg[BUFFER_SIZE-1:0] byte_data_sent;
     reg timeout = 0;
-    assign pkg_timeout = timeout;
+    assign pkg_timeout = 0;
     assign rx_data = byte_data_received;
     always @(posedge clk) begin
         if(~SSEL_active) begin

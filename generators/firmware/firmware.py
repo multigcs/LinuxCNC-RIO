@@ -189,7 +189,7 @@ def generate(project):
 
     for dbyte in range(project['dins_total'] // 8):
         for num in range(8):
-            tdins.append(f"DIN{num + (project['dins_total'] // 8 - 1 - dbyte) * 8}")
+            tdins.append(f"DIN{(8 - 1 - num) + (project['dins_total'] // 8 - 1 - dbyte) * 8}")
 
 
     fill = project['data_size'] - project['tx_data_size']

@@ -3,14 +3,14 @@
 
 #define JOINTS               5
 #define JOINT_ENABLE_BYTES   1
-#define VARIABLE_OUTPUTS     2
-#define VARIABLE_INPUTS      2
-#define VARIABLES            2
+#define VARIABLE_OUTPUTS     1
+#define VARIABLE_INPUTS      1
+#define VARIABLES            1
 #define DIGITAL_OUTPUTS      8
 #define DIGITAL_OUTPUT_BYTES 1
 #define DIGITAL_INPUTS       8
 #define DIGITAL_INPUT_BYTES  1
-#define SPIBUFSIZE           34
+#define SPIBUFSIZE           30
 
 #define PRU_DATA            0x64617461
 #define PRU_READ            0x72656164
@@ -22,15 +22,19 @@
 #define PRU_BASEFREQ        120000
 #define PRU_OSC             48000000
 
-
 #define VOUT_TYPE_PWM  0
 #define VOUT_TYPE_RCSERVO 1
 #define VOUT_TYPE_SINE 2
 #define VOUT_TYPE_FREQ 3
-float vout_min[VARIABLE_OUTPUTS] = {-100, -100};
-float vout_max[VARIABLE_OUTPUTS] = {100.0, 100.0};
-float vout_freq[VARIABLE_OUTPUTS] = {10000, 10000};
-uint8_t vout_type[VARIABLE_OUTPUTS] = {VOUT_TYPE_PWM, VOUT_TYPE_PWM};
+#define JOINT_FB_REL 0
+#define JOINT_FB_ABS 1
+float vout_min[VARIABLE_OUTPUTS] = {-100};
+float vout_max[VARIABLE_OUTPUTS] = {100.0};
+float vout_freq[VARIABLE_OUTPUTS] = {10000};
+uint8_t vout_type[VARIABLE_OUTPUTS] = {VOUT_TYPE_PWM};
+
+uint8_t joints_fb_type[JOINTS] = {JOINT_FB_REL, JOINT_FB_REL, JOINT_FB_REL, JOINT_FB_REL, JOINT_FB_REL};
+uint8_t joints_fb_scale[JOINTS] = {1.0, 1.0, 1.0, 1.0, 1.0};
 
 typedef union {
     struct {

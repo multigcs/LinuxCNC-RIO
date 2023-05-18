@@ -5,12 +5,9 @@ net dout2 pyvcp.btn2 rio.output.2 pyvcp.led-out2
 net dout3 pyvcp.btn3 rio.output.3 pyvcp.led-out3
 net dout4 pyvcp.btn4 rio.output.4 pyvcp.led-out4
 net dout5 pyvcp.btn5 rio.output.5 pyvcp.led-out5
-net din0 rio.input.0 pyvcp.led-in0
-net din1 rio.input.1 pyvcp.led-in1
-net din2 rio.input.2 pyvcp.led-in2
-net din3 rio.input.3 pyvcp.led-in3
-net din4 rio.input.4 pyvcp.led-in4
+net dout6 pyvcp.btn6 rio.output.6 pyvcp.led-out6
+net dout7 pyvcp.btn7 rio.output.7 pyvcp.led-out7
+net din5 rio.input.5 pyvcp.led-in5
+net din6 rio.input.6 pyvcp.led-in6
 net vout0 pyvcp.vout0-f rio.SP.0
-net vout1 pyvcp.vout1-f rio.SP.1
 net vin0 rio.PV.0 pyvcp.vin0
-net vin1 rio.PV.1 pyvcp.vin1

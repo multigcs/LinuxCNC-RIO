@@ -5,8 +5,8 @@ PACKAGE := cm81
 
 all: rio.bin
 
-rio.json: vin_quadencoder.v interface_spislave.v vout_pwm.v vin_pulsecounter.v joint_pwmdir.v vin_pwmcounter.v quad_encoder.v joint_stepper.v vin_frequency.v joint_rcservo.v vout_sinepwm.v pll.v rio.v
-	yosys -q -l yosys.log -p 'synth_${FAMILY} -top top -json rio.json' vin_quadencoder.v interface_spislave.v vout_pwm.v vin_pulsecounter.v joint_pwmdir.v vin_pwmcounter.v quad_encoder.v joint_stepper.v vin_frequency.v joint_rcservo.v vout_sinepwm.v pll.v rio.v
+rio.json: vin_pulsecounter.v vin_frequency.v vout_sinepwm.v vout_pwm.v vin_pwmcounter.v vin_quadencoder.v quad_encoder.v joint_stepper.v joint_stepper_nf.v joint_rcservo.v interface_spislave.v pll.v rio.v
+	yosys -q -l yosys.log -p 'synth_${FAMILY} -top rio -json rio.json' vin_pulsecounter.v vin_frequency.v vout_sinepwm.v vout_pwm.v vin_pwmcounter.v vin_quadencoder.v quad_encoder.v joint_stepper.v joint_stepper_nf.v joint_rcservo.v interface_spislave.v pll.v rio.v
 
 rio.asc: rio.json pins.pcf
 	nextpnr-${FAMILY} -q -l nextpnr.log --${TYPE} --package ${PACKAGE} --json rio.json --pcf pins.pcf --asc rio.asc
@@ -16,6 +16,9 @@ rio.asc: rio.json pins.pcf
 
 rio.bin: rio.asc
 	icepack rio.asc rio.bin
+
+check:
+	verilator --top-module rio --lint-only -Wall *.v
 
 clean:
 	rm -rf rio.bin rio.asc rio.json yosys.log nextpnr.log

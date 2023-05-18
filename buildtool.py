@@ -55,6 +55,27 @@ for plugin in project["plugins"]:
     if hasattr(project["plugins"][plugin], "pinlist"):
         project["pinlists"][plugin] = project["plugins"][plugin].pinlist()
 
+
+# check for double assigned pins
+double_pins = False
+uniq_pins = {}
+for pinlist in project["pinlists"].values():
+    for pinsetup in pinlist:
+        pin_name = pinsetup[0]
+        pin_id = pinsetup[1]
+        if pin_id in uniq_pins:
+            print()
+            print(f"ERROR: pin {pin_id} allready in use")
+            print(f"  old: {uniq_pins[pin_id]}")
+            print(f"  old: {pinsetup}")
+            double_pins = True
+        else:
+            uniq_pins[pin_id] = pinsetup
+if double_pins:
+    print("")
+    exit(1)
+    
+
 project["dins"] = 0
 for plugin in project["plugins"]:
     if hasattr(project["plugins"][plugin], "dins"):

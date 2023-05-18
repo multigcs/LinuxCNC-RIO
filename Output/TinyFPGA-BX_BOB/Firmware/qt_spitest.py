@@ -15,17 +15,17 @@ spi.max_speed_hz = 4000000
 spi.mode = 0
 spi.lsbfirst = False
 
-data = [0] * 34
+data = [0] * 30
 data[0] = 0x74
 data[1] = 0x69
 data[2] = 0x72
 data[3] = 0x77
 
 JOINTS = 5
-VOUTS = 2
-VINS = 2
-DOUTS = 6
-DINS = 6
+VOUTS = 1
+VINS = 1
+DOUTS = 3
+DINS = 3
 
 joints = [
     0,
@@ -39,13 +39,9 @@ jointcalcs = {0: ('oscdiv', 10000), 1: ('oscdiv', 10000), 2: ('oscdiv', 10000), 
 
 vouts = [
     0,
-    0,
 ]
 
 douts = [
-    0,
-    0,
-    0,
     0,
     0,
     0,
@@ -55,12 +51,10 @@ PRU_OSC = 48000000
 
 vinminmax = [
     (-100, 100, 'frequency', 0),
-    (-100, 100, 'frequency', 0),
 ]
 
 voutminmax = [
-    (-100, 100, 'pwm', 10000),
-    (-100, 100, 'pwm', 10000),
+    (0, 100, 'pwm', 10000),
 ]
 
 JOINT_ENABLE_BYTES = 1
@@ -296,7 +290,6 @@ class WinForm(QWidget):
                 #print(f'inputs {inputs:08b}')
             else:
                 print(f'Header: 0x{header:x}')
-
 
 
             for jn, value in enumerate(joints):

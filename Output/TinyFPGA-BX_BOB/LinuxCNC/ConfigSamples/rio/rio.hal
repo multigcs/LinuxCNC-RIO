@@ -17,6 +17,19 @@ addf rio.update-freq servo-thread
 addf rio.write servo-thread
 
     
+net home-x <= rio.input.0-not
+net home-x => joint.0.home-sw-in
+net home-y <= rio.input.1-not
+net home-y => joint.1.home-sw-in
+net home-z <= rio.input.2-not
+net home-z => joint.2.home-sw-in
+net home-a <= rio.input.3-not
+net home-a => joint.3.home-sw-in
+net home-c <= rio.input.4-not
+net home-c => joint.4.home-sw-in
+net toolprobe <= rio.input.5
+net toolprobe => motion.probe-input
+
 # Joint 0 setup
 
 setp rio.joint.0.scale 		[JOINT_0]SCALE
@@ -62,7 +75,7 @@ net j3enable 		<= joint.3.amp-enable-out 	=> rio.joint.3.enable
 setp rio.joint.4.scale 		[JOINT_4]SCALE
 setp rio.joint.4.maxaccel 	[JOINT_4]STEPGEN_MAXACCEL
 
-net bpos-cmd 		<= joint.4.motor-pos-cmd 	=> rio.joint.4.pos-cmd  
+net cpos-cmd 		<= joint.4.motor-pos-cmd 	=> rio.joint.4.pos-cmd  
 net j4pos-fb 		<= rio.joint.4.pos-fb 	=> joint.4.motor-pos-fb
 net j4enable 		<= joint.4.amp-enable-out 	=> rio.joint.4.enable
 

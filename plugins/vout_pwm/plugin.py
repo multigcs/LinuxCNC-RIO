@@ -31,12 +31,26 @@ class Plugin:
                     func_out.append(
                         f"    wire VOUT{num}_PWM_DIR; // fake direction output"
                     )
+                invert_pwm = vout.get("invert_pwm", False)
+                if invert_pwm:
+                    func_out.append(
+                        f"    wire VOUT{num}_PWM_PWM_INVERTED; // inverted pwm wire"
+                    )
+                    func_out.append(
+                        f"    assign VOUT{num}_PWM_PWM = !VOUT{num}_PWM_PWM_INVERTED; // invert pwm output"
+                    )
+                    
+
+
                 func_out.append(f"    vout_pwm #({divider}) vout_pwm{num} (")
                 func_out.append("        .clk (sysclk),")
                 func_out.append(f"        .dty (setPoint{num}),")
                 func_out.append(f"        .disabled (ERROR),")
                 func_out.append(f"        .dir (VOUT{num}_PWM_DIR),")
-                func_out.append(f"        .pwm (VOUT{num}_PWM_PWM)")
+                if invert_pwm:
+                    func_out.append(f"        .pwm (VOUT{num}_PWM_PWM_INVERTED)")
+                else:
+                    func_out.append(f"        .pwm (VOUT{num}_PWM_PWM)")
                 func_out.append("    );")
 
         return func_out

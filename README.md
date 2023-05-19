@@ -36,6 +36,7 @@ https://youtube.com/shorts/0nTmo4afwWs
 ## TinyFPGA-BX board with 5axis BOB:
 
 ![test](https://raw.githubusercontent.com/multigcs/LinuxCNC-RIO/main/files/4x.jpg)
+![test](https://raw.githubusercontent.com/multigcs/LinuxCNC-RIO/main/files/schema.svg)
 
 
 Thanks to the https://github.com/scottalford75/Remora Project, i'm using a modified version of it's Linux-Component

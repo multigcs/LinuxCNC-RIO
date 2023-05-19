@@ -489,13 +489,13 @@ def generate(project):
                 innerhtml += f"### Modul: {plugin}:\n"
 
                 if hasattr(project['plugins'][plugin], "ips"):
+                    innerhtml += f"files: "
                     for ipv in project["plugins"][plugin].ips():
-                        innerhtml += f"files: [{ipv}](Firmware/{ipv})\n"
+                        innerhtml += f"[{ipv}](Firmware/{ipv}) "
+                    innerhtml += "\n"
 
                 for module, wires in module_wires.items():
-
                     innerhtml += f"#### {module}\n"
-
                     innerhtml += f"| Name | Direction |\n"
                     innerhtml += f"| --- | --- |\n"
                     for wire in wires:

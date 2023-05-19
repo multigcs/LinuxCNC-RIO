@@ -18,7 +18,6 @@ def generate(project):
     top_data.append("")
 
     if project['osc_clock']:
-        print("##########################", project['jdata']['family'])
         if project['jdata']['family'] == "ecp5":
             print()
             os.system(

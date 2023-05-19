@@ -18,9 +18,9 @@ Generated Output of [configs/TinyFPGA-BX_BOB/config.json](/configs/TinyFPGA-BX_B
 ## Files:
 | Name | Wert |
 | --- | --- |
-| Bitstream | [rio.bin](../Firmware/rio.bin) |
-| LinuxCNC Components | [Components](../LinuxCNC/Components/) |
-| LinuxCNC ConfigSample | [ConfigSample](../LinuxCNC/ConfigSamples/rio/) |
+| Bitstream | [rio.bin](Firmware/rio.bin) |
+| LinuxCNC Components | [Components](LinuxCNC/Components/) |
+| LinuxCNC ConfigSample | [ConfigSample](LinuxCNC/ConfigSamples/rio/) |
 
 ## PLL:
 | Signal | Frequency |
@@ -181,7 +181,7 @@ Generated Output of [configs/TinyFPGA-BX_BOB/config.json](/configs/TinyFPGA-BX_B
 | INTERFACE_TIMEOUT | --- |
 
 
-![Flowchart](flowchart.png)
+![Flowchart](doc/flowchart.png)
 
 
 

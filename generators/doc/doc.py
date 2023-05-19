@@ -385,11 +385,11 @@ def generate(project):
     innerhtml += f"| Name | Wert |\n"
     innerhtml += f"| --- | --- |\n"
     if project['jdata']["toolchain"] == "icestorm" and project['jdata']["family"] == "ecp5":
-        innerhtml += f"| Bitstream | [rio.bit](../Firmware/rio.bit) |\n"
+        innerhtml += f"| Bitstream | [rio.bit](Firmware/rio.bit) |\n"
     elif project['jdata']["toolchain"] == "icestorm":
-        innerhtml += f"| Bitstream | [rio.bin](../Firmware/rio.bin) |\n"
-    innerhtml += f"| LinuxCNC Components | [Components](../LinuxCNC/Components/) |\n"
-    innerhtml += f"| LinuxCNC ConfigSample | [ConfigSample](../LinuxCNC/ConfigSamples/rio/) |\n"
+        innerhtml += f"| Bitstream | [rio.bin](Firmware/rio.bin) |\n"
+    innerhtml += f"| LinuxCNC Components | [Components](LinuxCNC/Components/) |\n"
+    innerhtml += f"| LinuxCNC ConfigSample | [ConfigSample](LinuxCNC/ConfigSamples/rio/) |\n"
     innerhtml += "\n"
 
     if project['osc_clock']:
@@ -501,10 +501,7 @@ def generate(project):
 
     innerhtml += "\n"
 
-    innerhtml += "![Flowchart](flowchart.png)\n"
-    #/assets/images/electrocat.png
-
+    innerhtml += "![Flowchart](doc/flowchart.png)\n"
     innerhtml += "\n\n\n"
 
-
-    open(f"{project['DOC_PATH']}/README.md", "w").write(innerhtml)
+    open(f"{project['OUTPUT_PATH']}/README.md", "w").write(innerhtml)

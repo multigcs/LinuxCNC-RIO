@@ -16,7 +16,7 @@ module vin_frequency
     always @(posedge clk)
     begin
         if (SIG_risingedge) begin
-            freq <= freq_cnt;
+            freq <= freq_cnt + 1;
             freq_cnt <= 0;
         end else begin
             freq_cnt <= freq_cnt + 1;

@@ -6,7 +6,9 @@ import sys
 
 project = {}
 
-data = open(sys.argv[1], "r").read()
+project["config"] = sys.argv[1]
+
+data = open(project["config"], "r").read()
 project["jdata"] = json.loads(data)
 
 

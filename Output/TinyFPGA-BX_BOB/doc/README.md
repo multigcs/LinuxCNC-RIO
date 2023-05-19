@@ -1,0 +1,187 @@
+# TinyFPGA-BX_BOB
+
+Generated Output of [configs/TinyFPGA-BX_BOB/config.json](/configs/TinyFPGA-BX_BOB/config.json)
+
+
+
+## Build-Options:
+
+| Name | Wert |
+| --- | --- |
+| Name | TinyFPGA-BX_BOB |
+| Description | TinyFPGA-BX_BOB with cheap 5axis-BOB |
+| Toolchain | icestorm |
+| Family | ice40 |
+| Type | lp8k |
+| Package | cm81 |
+
+## Files:
+| Name | Wert |
+| --- | --- |
+| Bitstream | [rio.bin](../Firmware/rio.bin) |
+| LinuxCNC Components | [Components](../LinuxCNC/Components/) |
+| LinuxCNC ConfigSample | [ConfigSample](../LinuxCNC/ConfigSamples/rio/) |
+
+## PLL:
+| Signal | Frequency |
+| --- | --- |
+|sysclk_in | 16.0MHz |
+| sysclk | 48.0MHz |
+
+## Pins:
+| Name | Pin | Direction |
+| --- | --- | --- |
+| DIN0 | C2</TD> | INPUT |
+| DIN1 | B1</TD> | INPUT |
+| DIN2 | A1</TD> | INPUT |
+| DIN3 | A2</TD> | INPUT |
+| DIN4 | J4</TD> | INPUT |
+| DIN5 | H9</TD> | INPUT |
+| DIN6 | D9</TD> | INPUT |
+| DOUT0 | A6</TD> | OUTPUT |
+| DOUT1 | B6</TD> | OUTPUT |
+| DOUT2 | A7</TD> | OUTPUT |
+| ENA | G9</TD> | OUTPUT |
+| ERROR_OUT | B3</TD> | OUTPUT |
+| INTERFACE_SPI_MOSI | G6</TD> | INPUT |
+| INTERFACE_SPI_MISO | H7</TD> | OUTPUT |
+| INTERFACE_SPI_SCK | G7</TD> | INPUT |
+| INTERFACE_SPI_SSEL | G1</TD> | INPUT |
+| JOINT0_STEPPER_STP | J1</TD> | OUTPUT |
+| JOINT0_STEPPER_DIR | H1</TD> | OUTPUT |
+| JOINT1_STEPPER_STP | G2</TD> | OUTPUT |
+| JOINT1_STEPPER_DIR | E1</TD> | OUTPUT |
+| JOINT2_STEPPER_STP | E2</TD> | OUTPUT |
+| JOINT2_STEPPER_DIR | D1</TD> | OUTPUT |
+| JOINT3_STEPPER_STP | D2</TD> | OUTPUT |
+| JOINT3_STEPPER_DIR | C1</TD> | OUTPUT |
+| JOINT4_STEPPER_STP | J9</TD> | OUTPUT |
+| JOINT4_STEPPER_DIR | J3</TD> | OUTPUT |
+| sysclk_in | B2</TD> | INPUT |
+| VIN0_FREQUENCY | D8</TD> | INPUT |
+| VOUT0_PWM_PWM | H2</TD> | OUTPUT |
+
+## RX-Data:
+| Name | Size |
+| --- | --- |
+| jointFreqCmd0 | 32bit |
+| jointFreqCmd1 | 32bit |
+| jointFreqCmd2 | 32bit |
+| jointFreqCmd3 | 32bit |
+| jointFreqCmd4 | 32bit |
+| setPoint0 | 32bit |
+| jointEnable0 | 1bit |
+| jointEnable1 | 1bit |
+| jointEnable2 | 1bit |
+| jointEnable3 | 1bit |
+| jointEnable4 | 1bit |
+| DOUT0 | 1bit |
+| DOUT1 | 1bit |
+| DOUT2 | 1bit |
+
+## TX-Data:
+| Name | Wert |
+| --- | --- |
+| jointFeedback0 | 32bit |
+| jointFeedback1 | 32bit |
+| jointFeedback2 | 32bit |
+| jointFeedback3 | 32bit |
+| jointFeedback4 | 32bit |
+| processVariable0 | 32bit |
+| DIN0 | 1bit |
+| DIN1 | 1bit |
+| DIN2 | 1bit |
+| DIN3 | 1bit |
+| DIN4 | 1bit |
+| DIN5 | 1bit |
+| DIN6 | 1bit |
+
+## Plugins:
+### Modul: vin_frequency:
+#### vin_frequency0
+| Name | Direction |
+| --- | --- |
+| sysclk | --- |
+| processVariable0 | to TX_DATA |
+| VIN0_FREQUENCY | from PINS |
+
+### Modul: vout_pwm:
+#### vout_pwm0
+| Name | Direction |
+| --- | --- |
+| sysclk | --- |
+| setPoint0 | from RX_DATA |
+| ERROR | --- |
+| VOUT0_PWM_DIR | --- |
+| VOUT0_PWM_PWM | to PINS |
+| VOUT0_PWM_PWM_INVERTED | to PINS |
+
+### Modul: joint_stepper:
+#### joint_stepper0
+| Name | Direction |
+| --- | --- |
+| sysclk | --- |
+| jointEnable0 | from RX_DATA |
+| jointFreqCmd0 | from RX_DATA |
+| jointFeedback0 | to TX_DATA |
+| JOINT0_STEPPER_DIR | to PINS |
+| JOINT0_STEPPER_STP | to PINS |
+
+#### joint_stepper1
+| Name | Direction |
+| --- | --- |
+| sysclk | --- |
+| jointEnable1 | from RX_DATA |
+| jointFreqCmd1 | from RX_DATA |
+| jointFeedback1 | to TX_DATA |
+| JOINT1_STEPPER_DIR | to PINS |
+| JOINT1_STEPPER_STP | to PINS |
+
+#### joint_stepper2
+| Name | Direction |
+| --- | --- |
+| sysclk | --- |
+| jointEnable2 | from RX_DATA |
+| jointFreqCmd2 | from RX_DATA |
+| jointFeedback2 | to TX_DATA |
+| JOINT2_STEPPER_DIR | to PINS |
+| JOINT2_STEPPER_STP | to PINS |
+
+#### joint_stepper3
+| Name | Direction |
+| --- | --- |
+| sysclk | --- |
+| jointEnable3 | from RX_DATA |
+| jointFreqCmd3 | from RX_DATA |
+| jointFeedback3 | to TX_DATA |
+| JOINT3_STEPPER_DIR | to PINS |
+| JOINT3_STEPPER_STP | to PINS |
+
+#### joint_stepper4
+| Name | Direction |
+| --- | --- |
+| sysclk | --- |
+| jointEnable4 | from RX_DATA |
+| jointFreqCmd4 | from RX_DATA |
+| jointFeedback4 | to TX_DATA |
+| JOINT4_STEPPER_DIR | to PINS |
+| JOINT4_STEPPER_STP | to PINS |
+
+### Modul: interface_spislave:
+#### spi1
+| Name | Direction |
+| --- | --- |
+| sysclk | --- |
+| INTERFACE_SPI_SCK | from PINS |
+| INTERFACE_SPI_SSEL | from PINS |
+| INTERFACE_SPI_MOSI | from PINS |
+| INTERFACE_SPI_MISO | to PINS |
+| rx_data | from RX_DATA |
+| tx_data | to TX_DATA |
+| INTERFACE_TIMEOUT | --- |
+
+
+![Flowchart](flowchart.png)
+
+
+

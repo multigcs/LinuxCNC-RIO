@@ -19,7 +19,6 @@ def generate(project):
 
     if project['osc_clock']:
         if project['jdata']['family'] == "ecp5":
-            print()
             os.system(
                 f"ecppll -f '{project['SOURCE_PATH']}/pll.v' -i {float(project['osc_clock']) / 1000000} -o {float(project['jdata']['clock']['speed']) / 1000000}"
             )

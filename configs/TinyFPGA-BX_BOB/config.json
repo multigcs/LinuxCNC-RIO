@@ -78,11 +78,11 @@
         },
         {
             "type": "probe",
-            "pin": "H9",
+            "pin": "D9",
             "pullup": true
         },
         {
-            "pin": "D9",
+            "pin": "C9",
             "pullup": true
         }
     ],
@@ -96,7 +96,8 @@
     "vin": [
         {
             "type": "frequency",
-            "pin": "D8"
+            "pin": "H9",
+            "pullup": true
         }
     ],
     "joints": [

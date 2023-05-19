@@ -10,7 +10,7 @@ set_io  ENA G9
 ### vin_pulsecounter ###
 
 ### vin_frequency ###
-set_io  VIN0_FREQUENCY D8
+set_io  -pullup yes VIN0_FREQUENCY H9
 
 ### vin_sonar ###
 
@@ -49,8 +49,8 @@ set_io  -pullup yes DIN1 B1
 set_io  -pullup yes DIN2 A1
 set_io  -pullup yes DIN3 A2
 set_io  -pullup yes DIN4 J4
-set_io  -pullup yes DIN5 H9
-set_io  -pullup yes DIN6 D9
+set_io  -pullup yes DIN5 D9
+set_io  -pullup yes DIN6 C9
 
 ### joint_pwmdir ###
 

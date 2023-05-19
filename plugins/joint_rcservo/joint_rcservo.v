@@ -17,6 +17,8 @@ module joint_rcservo
     reg [31:0] jointFreqCmdAbs = 32'd0;
     reg signed [31:0] jointFeedbackMem = 32'd0;
     reg step = 0;
+    wire signed [31:0] jointFeedbackMemCalc;
+    assign jointFeedbackMemCalc = {jointFeedbackMem[23:0], 8'h0};
     assign jointFeedback = jointFeedbackMem;
     always @ (posedge clk) begin
 
@@ -31,9 +33,9 @@ module joint_rcservo
                 step <= ~step;
                 jointCounter <= 32'b0;
                 if (step) begin
-                    if (jointFreqCmd > 0 && jointFeedbackMem < servo_minmax) begin
+                    if (jointFreqCmd > 0 && jointFeedbackMemCalc < servo_minmax) begin
                         jointFeedbackMem <= jointFeedbackMem + 1;
-                    end else if (jointFeedbackMem > -servo_minmax) begin
+                    end else if (jointFeedbackMemCalc > -servo_minmax) begin
                         jointFeedbackMem <= jointFeedbackMem - 1;
                     end
                 end
@@ -44,7 +46,7 @@ module joint_rcservo
         if (counter == servo_freq) begin
             pulse <= 1;
             counter <= 0;
-        end else if (counter == servo_center + jointFeedbackMem) begin
+        end else if (counter == servo_center + jointFeedbackMemCalc) begin
             pulse <= 0;
         end
 

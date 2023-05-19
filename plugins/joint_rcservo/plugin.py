@@ -27,7 +27,7 @@ class Plugin:
         sysclk = int(self.jdata["clock"]["speed"])
         for num, joint in enumerate(self.jdata["joints"]):
             if joint["type"] == "rcservo":
-                jointcalcs_out[num] = ("oscdiv", int(10000))  # max 100khz
+                jointcalcs_out[num] = ("oscdiv", int(10000))  # set to max 10khz
         return jointcalcs_out
 
     def funcs(self):
@@ -40,8 +40,9 @@ class Plugin:
                     func_out.append(
                         f"    assign JOINT{num}_EN = jointEnable{num} && ~ERROR;"
                     )
+                func_out.append("    // output at 100Hz(10ms), center: 1.5ms, range: +-0.5ms")
                 func_out.append(
-                    f"    joint_rcservo #({int(sysclk / 1000 * 12)}, {int(sysclk / 1000 * 1.5)}, {int(sysclk / 1000 * 0.5)}) joint_rcservo{num} ("
+                    f"    joint_rcservo #({int(sysclk / 1000 * 10)}, {int(sysclk / 1000 * 1.5)}, {int(sysclk / 1000 * 0.5)}) joint_rcservo{num} ("
                 )
                 func_out.append("        .clk (sysclk),")
                 func_out.append(f"        .jointFreqCmd (jointFreqCmd{num}),")

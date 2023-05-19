@@ -36,8 +36,8 @@ Generated Output of [configs/TinyFPGA-BX_BOB/config.json](/configs/TinyFPGA-BX_B
 | DIN2 | A1</TD> | INPUT |
 | DIN3 | A2</TD> | INPUT |
 | DIN4 | J4</TD> | INPUT |
-| DIN5 | H9</TD> | INPUT |
-| DIN6 | D9</TD> | INPUT |
+| DIN5 | D9</TD> | INPUT |
+| DIN6 | C9</TD> | INPUT |
 | DOUT0 | A6</TD> | OUTPUT |
 | DOUT1 | B6</TD> | OUTPUT |
 | DOUT2 | A7</TD> | OUTPUT |
@@ -58,7 +58,7 @@ Generated Output of [configs/TinyFPGA-BX_BOB/config.json](/configs/TinyFPGA-BX_B
 | JOINT4_STEPPER_STP | J9</TD> | OUTPUT |
 | JOINT4_STEPPER_DIR | J3</TD> | OUTPUT |
 | sysclk_in | B2</TD> | INPUT |
-| VIN0_FREQUENCY | D8</TD> | INPUT |
+| VIN0_FREQUENCY | H9</TD> | INPUT |
 | VOUT0_PWM_PWM | H2</TD> | OUTPUT |
 
 ## RX-Data:
@@ -98,7 +98,7 @@ Generated Output of [configs/TinyFPGA-BX_BOB/config.json](/configs/TinyFPGA-BX_B
 
 ## Plugins:
 ### Modul: vin_frequency:
-files: [vin_frequency.v](Firmware/vin_frequency.v)
+files: [vin_frequency.v](Firmware/vin_frequency.v) 
 #### vin_frequency0
 | Name | Direction |
 | --- | --- |
@@ -107,7 +107,7 @@ files: [vin_frequency.v](Firmware/vin_frequency.v)
 | VIN0_FREQUENCY | from PINS |
 
 ### Modul: vout_pwm:
-files: [vout_pwm.v](Firmware/vout_pwm.v)
+files: [vout_pwm.v](Firmware/vout_pwm.v) 
 #### vout_pwm0
 | Name | Direction |
 | --- | --- |
@@ -119,9 +119,7 @@ files: [vout_pwm.v](Firmware/vout_pwm.v)
 | VOUT0_PWM_PWM_INVERTED | to PINS |
 
 ### Modul: joint_stepper:
-files: [quad_encoder.v](Firmware/quad_encoder.v)
-files: [joint_stepper.v](Firmware/joint_stepper.v)
-files: [joint_stepper_nf.v](Firmware/joint_stepper_nf.v)
+files: [quad_encoder.v](Firmware/quad_encoder.v) [joint_stepper.v](Firmware/joint_stepper.v) [joint_stepper_nf.v](Firmware/joint_stepper_nf.v) 
 #### joint_stepper0
 | Name | Direction |
 | --- | --- |
@@ -173,7 +171,7 @@ files: [joint_stepper_nf.v](Firmware/joint_stepper_nf.v)
 | JOINT4_STEPPER_STP | to PINS |
 
 ### Modul: interface_spislave:
-files: [interface_spislave.v](Firmware/interface_spislave.v)
+files: [interface_spislave.v](Firmware/interface_spislave.v) 
 #### spi1
 | Name | Direction |
 | --- | --- |

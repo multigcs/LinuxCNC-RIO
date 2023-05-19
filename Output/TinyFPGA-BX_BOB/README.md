@@ -98,6 +98,7 @@ Generated Output of [configs/TinyFPGA-BX_BOB/config.json](/configs/TinyFPGA-BX_B
 
 ## Plugins:
 ### Modul: vin_frequency:
+files: [vin_frequency.v](Firmware/vin_frequency.v)
 #### vin_frequency0
 | Name | Direction |
 | --- | --- |
@@ -106,6 +107,7 @@ Generated Output of [configs/TinyFPGA-BX_BOB/config.json](/configs/TinyFPGA-BX_B
 | VIN0_FREQUENCY | from PINS |
 
 ### Modul: vout_pwm:
+files: [vout_pwm.v](Firmware/vout_pwm.v)
 #### vout_pwm0
 | Name | Direction |
 | --- | --- |
@@ -117,6 +119,9 @@ Generated Output of [configs/TinyFPGA-BX_BOB/config.json](/configs/TinyFPGA-BX_B
 | VOUT0_PWM_PWM_INVERTED | to PINS |
 
 ### Modul: joint_stepper:
+files: [quad_encoder.v](Firmware/quad_encoder.v)
+files: [joint_stepper.v](Firmware/joint_stepper.v)
+files: [joint_stepper_nf.v](Firmware/joint_stepper_nf.v)
 #### joint_stepper0
 | Name | Direction |
 | --- | --- |
@@ -168,6 +173,7 @@ Generated Output of [configs/TinyFPGA-BX_BOB/config.json](/configs/TinyFPGA-BX_B
 | JOINT4_STEPPER_STP | to PINS |
 
 ### Modul: interface_spislave:
+files: [interface_spislave.v](Firmware/interface_spislave.v)
 #### spi1
 | Name | Direction |
 | --- | --- |

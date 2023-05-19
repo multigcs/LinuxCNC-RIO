@@ -487,6 +487,11 @@ def generate(project):
 
             if module_wires:
                 innerhtml += f"### Modul: {plugin}:\n"
+
+                if hasattr(project['plugins'][plugin], "ips"):
+                    for ipv in project["plugins"][plugin].ips():
+                        innerhtml += f"files: [{ipv}](Firmware/{ipv})\n"
+
                 for module, wires in module_wires.items():
 
                     innerhtml += f"#### {module}\n"

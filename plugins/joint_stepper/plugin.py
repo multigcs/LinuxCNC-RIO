@@ -55,11 +55,15 @@ class Plugin:
         func_out = ["    // joint_stepper's"]
         for num, joint in enumerate(self.jdata["joints"]):
             if joint["type"] == "stepper":
+                invert_dir = joint.get("invert_dir", False)
 
                 if "enable" in joint["pins"]:
                     func_out.append(
                         f"    assign JOINT{num}_EN = jointEnable{num} && ~ERROR;"
                     )
+                if invert_dir:
+                    func_out.append(f"    wire JOINT{num}_STEPPER_DIR_INVERTED; // inverted dir wire")
+                    func_out.append(f"    assign JOINT{num}_STEPPER_DIR = !JOINT{num}_STEPPER_DIR_INVERTED; // invert dir output")
 
                 if joint.get("cl"):
                     func_out.append(f"    quad_encoder quad{num} (")
@@ -74,9 +78,7 @@ class Plugin:
                         f"        .jointEnable (jointEnable{num} && !ERROR),"
                     )
                     func_out.append(f"        .jointFreqCmd (jointFreqCmd{num}),")
-                    func_out.append(f"        .DIR (JOINT{num}_STEPPER_DIR),")
-                    func_out.append(f"        .STP (JOINT{num}_STEPPER_STP)")
-                    func_out.append("    );")
+
                 else:
                     func_out.append(f"    joint_stepper joint_stepper{num} (")
                     func_out.append("        .clk (sysclk),")
@@ -85,9 +87,14 @@ class Plugin:
                     )
                     func_out.append(f"        .jointFreqCmd (jointFreqCmd{num}),")
                     func_out.append(f"        .jointFeedback (jointFeedback{num}),")
+
+                if invert_dir:
+                    func_out.append(f"        .DIR (JOINT{num}_STEPPER_DIR_INVERTED),")
+                else:
                     func_out.append(f"        .DIR (JOINT{num}_STEPPER_DIR),")
-                    func_out.append(f"        .STP (JOINT{num}_STEPPER_STP)")
-                    func_out.append("    );")
+                func_out.append(f"        .STP (JOINT{num}_STEPPER_STP)")
+                func_out.append("    );")
+
 
         return func_out
 

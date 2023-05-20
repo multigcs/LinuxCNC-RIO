@@ -114,6 +114,7 @@
             "type": "stepper",
             "scale": "1600",
             "cl": false,
+            "invert_dir": true,
             "pins": {
                 "step": "G2",
                 "dir": "E1"
@@ -132,6 +133,7 @@
             "type": "stepper",
             "scale": "360",
             "cl": false,
+            "invert_dir": true,
             "pins": {
                 "step": "D2",
                 "dir": "C1"

@@ -138,6 +138,7 @@ files: [quad_encoder.v](Firmware/quad_encoder.v) [joint_stepper.v](Firmware/join
 | jointFreqCmd1 | from RX_DATA |
 | jointFeedback1 | to TX_DATA |
 | JOINT1_STEPPER_DIR | to PINS |
+| JOINT1_STEPPER_DIR_INVERTED | to PINS |
 | JOINT1_STEPPER_STP | to PINS |
 
 #### joint_stepper2
@@ -158,6 +159,7 @@ files: [quad_encoder.v](Firmware/quad_encoder.v) [joint_stepper.v](Firmware/join
 | jointFreqCmd3 | from RX_DATA |
 | jointFeedback3 | to TX_DATA |
 | JOINT3_STEPPER_DIR | to PINS |
+| JOINT3_STEPPER_DIR_INVERTED | to PINS |
 | JOINT3_STEPPER_STP | to PINS |
 
 #### joint_stepper4

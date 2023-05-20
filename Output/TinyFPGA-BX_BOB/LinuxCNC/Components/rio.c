@@ -83,8 +83,8 @@ typedef struct {
 	float			cmd_d[JOINTS];					// command derivative
 	hal_float_t 	*setPoint[VARIABLE_OUTPUTS];
 	hal_float_t 	*processVariable[VARIABLE_INPUTS];
-	hal_bit_t   	*outputs[DIGITAL_OUTPUTS];
-	hal_bit_t   	*inputs[DIGITAL_INPUTS];
+	hal_bit_t   	*outputs[DIGITAL_OUTPUT_BYTES * 8];
+	hal_bit_t   	*inputs[DIGITAL_INPUT_BYTES * 8 * 2]; // for not pins * 2
 } data_t;
 
 static data_t *data;
@@ -179,8 +179,8 @@ int rtapi_app_main(void)
 	bcm2835_spi_setBitOrder(BCM2835_SPI_BIT_ORDER_MSBFIRST);      // The default
 	bcm2835_spi_setDataMode(BCM2835_SPI_MODE0);                   // The default
 
-	bcm2835_spi_setClockDivider(BCM2835_SPI_CLOCK_DIVIDER_256);		// 3.125MHz on RPI3
-	//bcm2835_spi_setClockDivider(BCM2835_SPI_CLOCK_DIVIDER_128);		// 3.125MHz on RPI3
+	//bcm2835_spi_setClockDivider(BCM2835_SPI_CLOCK_DIVIDER_256);		// 3.125MHz on RPI3
+	bcm2835_spi_setClockDivider(BCM2835_SPI_CLOCK_DIVIDER_128);		// 3.125MHz on RPI3
 	//bcm2835_spi_setClockDivider(BCM2835_SPI_CLOCK_DIVIDER_64);		// 6.250MHz on RPI3
 	//bcm2835_spi_setClockDivider(BCM2835_SPI_CLOCK_DIVIDER_32);		// 12.5MHz on RPI3
 
@@ -308,9 +308,10 @@ int rtapi_app_main(void)
         for (n = 0; n < 8; n++) {
             retval = hal_pin_bit_newf(HAL_OUT, &(data->inputs[bn * 8 + n * 2]), comp_id, "%s.input.%01d", prefix, bn * 8 + n);
             if (retval != 0) goto error;
+            *(data->inputs[bn * 8 + n * 2]) = 0;
             retval = hal_pin_bit_newf(HAL_OUT, &(data->inputs[bn * 8 + n * 2 + 1]), comp_id, "%s.input.%01d-not", prefix, bn * 8 + n);
             if (retval != 0) goto error;
-            *(data->inputs[bn * 8 + n]) = 0;
+            *(data->inputs[bn * 8 + n * 2 + 1]) = 1;
         }
     }
 
@@ -797,10 +798,11 @@ void spi_read()
                         for (i = 0; i < 8; i++) {
                             if ((rxData.inputs[bi] & (1 << i)) != 0) {
                                 *(data->inputs[bi * 8 + i * 2]) = 1; 		// input is high
+                                *(data->inputs[bi * 8 + i * 2 + 1]) = 0;  // not
                             } else {
                                 *(data->inputs[bi * 8 + i * 2]) = 0;			// input is low
+                                *(data->inputs[bi * 8 + i * 2 + 1]) = 1;  // not
                             }
-                            *(data->inputs[bi * 8 + i * 2 + 1]) = 1 - *(data->inputs[bi * 8 + i * 2]);
                         }
                     }
 					break;

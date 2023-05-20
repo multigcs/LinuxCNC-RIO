@@ -166,12 +166,14 @@ module rio (
         .DIR (JOINT0_STEPPER_DIR),
         .STP (JOINT0_STEPPER_STP)
     );
+    wire JOINT1_STEPPER_DIR_INVERTED; // inverted dir wire
+    assign JOINT1_STEPPER_DIR = !JOINT1_STEPPER_DIR_INVERTED; // invert dir output
     joint_stepper joint_stepper1 (
         .clk (sysclk),
         .jointEnable (jointEnable1 && !ERROR),
         .jointFreqCmd (jointFreqCmd1),
         .jointFeedback (jointFeedback1),
-        .DIR (JOINT1_STEPPER_DIR),
+        .DIR (JOINT1_STEPPER_DIR_INVERTED),
         .STP (JOINT1_STEPPER_STP)
     );
     joint_stepper joint_stepper2 (
@@ -182,12 +184,14 @@ module rio (
         .DIR (JOINT2_STEPPER_DIR),
         .STP (JOINT2_STEPPER_STP)
     );
+    wire JOINT3_STEPPER_DIR_INVERTED; // inverted dir wire
+    assign JOINT3_STEPPER_DIR = !JOINT3_STEPPER_DIR_INVERTED; // invert dir output
     joint_stepper joint_stepper3 (
         .clk (sysclk),
         .jointEnable (jointEnable3 && !ERROR),
         .jointFreqCmd (jointFreqCmd3),
         .jointFeedback (jointFeedback3),
-        .DIR (JOINT3_STEPPER_DIR),
+        .DIR (JOINT3_STEPPER_DIR_INVERTED),
         .STP (JOINT3_STEPPER_STP)
     );
     joint_stepper joint_stepper4 (

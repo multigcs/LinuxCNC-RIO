@@ -72,7 +72,7 @@ for pinlist in project["pinlists"].values():
             print()
             print(f"ERROR: pin {pin_id} allready in use")
             print(f"  old: {uniq_pins[pin_id]}")
-            print(f"  old: {pinsetup}")
+            print(f"  new: {pinsetup}")
             double_pins = True
         else:
             uniq_pins[pin_id] = pinsetup

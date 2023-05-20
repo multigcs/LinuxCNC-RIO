@@ -11,6 +11,6 @@ class Plugin:
 
     def dins(self):
         dins_out = 0
-        for _num, _pwmout in enumerate(self.jdata["din"]):
+        for _num, _din in enumerate(self.jdata["din"]):
             dins_out += 1
         return dins_out

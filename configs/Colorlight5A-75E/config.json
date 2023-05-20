@@ -24,6 +24,7 @@
     },
     "din": [
         {
+            "debounce": true,
             "pin": "E4"
         }
     ],
@@ -37,6 +38,7 @@
         {
             "comment": "J2.1+2",
             "type": "quadencoder",
+            "debounce": true,
             "pin_a": "G5",
             "pin_b": "H5"
         },

@@ -17,6 +17,10 @@ def generate(project):
     top_data.append("*/")
     top_data.append("")
 
+    # general verilog-files
+    project['verilog_files'].append("debouncer.v")
+    os.system(f"cp -a generators/firmware/debouncer.v* {project['SOURCE_PATH']}/debouncer.v")
+
     if project['osc_clock']:
         if project['jdata']['family'] == "ecp5":
             os.system(
@@ -66,7 +70,7 @@ def generate(project):
         top_data.append("    );")
         top_data.append("")
         project['verilog_files'].append("blink.v")
-        os.system(f"cp -a files/blink.v* {project['SOURCE_PATH']}/blink.v")
+        os.system(f"cp -a generators/firmware/blink.v* {project['SOURCE_PATH']}/debouncer.v")
 
 
     if "error" in project['jdata']:

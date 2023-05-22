@@ -30,6 +30,7 @@ for path in glob.glob("generators/*"):
 
 project["verilog_files"] = []
 project["pinlists"] = {}
+project["expansions"] = {}
 
 project["osc_clock"] = False
 if project["jdata"]["toolchain"] == "icestorm":
@@ -59,6 +60,8 @@ if "enable" in project['jdata']:
 for plugin in project["plugins"]:
     if hasattr(project["plugins"][plugin], "pinlist"):
         project["pinlists"][plugin] = project["plugins"][plugin].pinlist()
+    if hasattr(project["plugins"][plugin], "expansions"):
+        project["expansions"][plugin] = project["plugins"][plugin].expansions()
 
 
 # check for double assigned pins

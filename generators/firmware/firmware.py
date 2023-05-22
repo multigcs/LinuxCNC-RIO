@@ -9,6 +9,8 @@ def generate(project):
     for pname in sorted(list(project['pinlists'])):
         pins = project['pinlists'][pname]
         for pin in pins:
+            if pin[1].startswith("EXPANSION"):
+                continue
             top_arguments.append(f"{pin[2].lower()} {pin[0]}")
 
     top_data = []
@@ -205,6 +207,53 @@ def generate(project):
     else:
         top_data.append(f"        {', '.join(tdins)}")
     top_data.append("    };")
+    top_data.append("")
+
+
+
+    expansion_size = {}
+    for expansions in project["expansions"].values():
+        for enum, size in expansions.items():
+            expansion_size[enum] = size
+
+    expansion_ports = {}
+    for pname, pins in project['pinlists'].items():
+        for pin in pins:
+            if pin[1].startswith("EXPANSION"):
+                port = pin[1].split("[")[0]
+                pnum = int(pin[1].split("[")[1].split("]")[0])
+                size = expansion_size[port]
+                if port.endswith("_OUTPUT"):
+                    if port not in expansion_ports:
+                        expansion_ports[port] = {}
+                        for n in range(size):
+                            expansion_ports[port][n] = "1'd0"
+                if pin[2] == "OUTPUT":
+                    if "_OUTPUT" not in pin[1]:
+                        print("ERROR: pin-direction do not match:", pin)
+                        exit(1)
+                    expansion_ports[port][pnum] = pin[0]
+                else:
+                    if "_INPUT" not in pin[1]:
+                        print("ERROR: pin-direction do not match:", pin)
+                        exit(1)
+
+    top_data.append("    // expansion I/O's")
+    for pname, pins in project['pinlists'].items():
+        for pin in pins:
+            if pin[1].startswith("EXPANSION"):
+                if pin[2] == "OUTPUT":
+                    top_data.append(f"    wire {pin[0]};")
+                else:
+                    top_data.append(f"    wire {pin[0]};")
+                    top_data.append(f"    assign {pin[0]} = {pin[1]};")
+
+    for port, pins in expansion_ports.items():
+        assign_list = []
+        size = expansion_size[port]
+        for n in range(size):
+            assign_list.append(f"{pins[size - 1 - n]}")
+        top_data.append(f"    assign {port} = {{{', '.join(assign_list)}}};")
 
     top_data.append("")
 
@@ -230,6 +279,8 @@ def generate(project):
         for pname, pins in project['pinlists'].items():
             lpf_data.append(f"### {pname} ###")
             for pin in pins:
+                if pin[1].startswith("EXPANSION"):
+                    continue
                 lpf_data.append(f'LOCATE COMP "{pin[0]}"           SITE "{pin[1]}";')
                 lpf_data.append(f'IOBUF PORT "{pin[0]}" IO_TYPE=LVCMOS33;')
 
@@ -288,7 +339,8 @@ def generate(project):
         for pname, pins in project['pinlists'].items():
             pcf_data.append(f"### {pname} ###")
             for pin in pins:
-
+                if pin[1].startswith("EXPANSION"):
+                    continue
                 options = ""
                 if len(pin) > 3 and pin[3]:
                     options += " -pullup yes"
@@ -410,6 +462,8 @@ def generate(project):
         for pname, pins in project['pinlists'].items():
             pcf_data.append(f"### {pname} ###")
             for pin in pins:
+                if pin[1].startswith("EXPANSION"):
+                    continue
                 pcf_data.append(f'LOCATE COMP "{pin[0]}"           SITE "{pin[1]}";')
             pcf_data.append("")
         pcf_data.append("")

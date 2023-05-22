@@ -19,10 +19,29 @@
             "SEL": "G14"
         }
     },
+    "expansion": [
+        {
+            "type": "shiftreg",
+            "speed": "1000000",
+            "bits": "8",
+            "pins": {
+                "clock": "G2",
+                "load": "G1",
+                "in": "C4",
+                "out": "H2"
+            }
+        }
+    ],
     "error": {
         "pin": "T6"
     },
     "din": [
+        {
+            "pin": "EXPANSION0_INPUT[0]"
+        },
+        {
+            "pin": "EXPANSION0_INPUT[1]"
+        },
         {
             "debounce": true,
             "pin": "E4"
@@ -61,14 +80,14 @@
         {
             "comment": "J6.1",
             "type": "pwm",
-            "pin": "L4",
-            "dir": "L5"
+            "pin": "EXPANSION0_OUTPUT[1]",
+            "dir": "EXPANSION0_OUTPUT[2]"
         },
         {
             "comment": "J7.3",
             "type": "rcservo",
             "frequency": "100",
-            "pin": "M5"
+            "pin": "EXPANSION0_OUTPUT[0]"
         },
         {
             "comment": "J8.1+2+3",

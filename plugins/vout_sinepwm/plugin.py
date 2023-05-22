@@ -24,12 +24,15 @@ class Plugin:
         func_out = ["    // vout_sinepwm's"]
         for num, vout in enumerate(self.jdata["vout"]):
             if vout["type"] == "sine":
+                frequency = int(vout.get("frequency", 100000))
+                #divider = int(self.jdata["clock"]["speed"]) // frequency // 2
+                divider = 255
                 if "pins" in vout:
                     pstep = 30 // len(vout["pins"])
                     start = 0
                     for pn, _pin in enumerate(vout["pins"]):
                         func_out.append(
-                            f"    vout_sinepwm #({start}) vout_sinepwm{num}_{pn} ("
+                            f"    vout_sinepwm #({start}, {divider}) vout_sinepwm{num}_{pn} ("
                         )
                         func_out.append("        .clk (sysclk),")
                         func_out.append(f"        .freq (setPoint{num}),")
@@ -39,7 +42,7 @@ class Plugin:
 
                 else:
                     start = vout.get("start", 0)
-                    func_out.append(f"    vout_sinepwm #({start}) vout_sinepwm{num} (")
+                    func_out.append(f"    vout_sinepwm #({start}, {divider}) vout_sinepwm{num} (")
                     func_out.append("        .clk (sysclk),")
                     func_out.append(f"        .freq (setPoint{num}),")
                     func_out.append(f"        .pwm_out (VOUT{num}_SINEPWM)")

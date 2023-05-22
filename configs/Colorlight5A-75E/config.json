@@ -22,7 +22,7 @@
     "expansion": [
         {
             "type": "shiftreg",
-            "speed": "1000000",
+            "speed": "10000000",
             "bits": "8",
             "pins": {
                 "clock": "G2",
@@ -37,6 +37,7 @@
     },
     "din": [
         {
+            "invert": true,
             "pin": "EXPANSION0_INPUT[0]"
         },
         {
@@ -68,21 +69,21 @@
     ],
     "dout": [
         {
-            "comment": "J8.6",
-            "pin": "M8"
+            "invert": true,
+            "pin": "EXPANSION0_OUTPUT[4]"
         },
         {
-            "comment": "J8.7",
-            "pin": "M9"
+            "invert": true,
+            "pin": "EXPANSION0_OUTPUT[5]"
+        },
+        {
+            "pin": "EXPANSION0_OUTPUT[6]"
+        },
+        {
+            "pin": "EXPANSION0_OUTPUT[7]"
         }
     ],
     "vout": [
-        {
-            "comment": "J6.1",
-            "type": "pwm",
-            "pin": "EXPANSION0_OUTPUT[1]",
-            "dir": "EXPANSION0_OUTPUT[2]"
-        },
         {
             "comment": "J7.3",
             "type": "rcservo",
@@ -90,14 +91,21 @@
             "pin": "EXPANSION0_OUTPUT[0]"
         },
         {
+            "comment": "J6.1",
+            "type": "pwm",
+            "pin": "EXPANSION0_OUTPUT[1]"
+        },
+        {
             "comment": "J8.1+2+3",
+            "frequency": "10000",
             "type": "sine",
-            "pins": ["M7", "P8"]
+            "pins": ["EXPANSION0_OUTPUT[2]"],
+            "_pins": ["M7", "P8"]
         },
         {
             "comment": "J8.5",
             "type": "frequency",
-            "pin": "R8"
+            "pin": "EXPANSION0_OUTPUT[3]"
         }
     ],
     "joints": [

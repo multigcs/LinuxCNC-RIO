@@ -168,7 +168,10 @@ def generate(project):
         for num in range(8):
             bitnum = dbyte * 8 + (7 - num)
             if bitnum < project['douts']:
-                top_data.append(f"    assign DOUT{bitnum} = rx_data[{pos-1}];")
+                if project['jdata']["dout"][bitnum].get("invert", False):
+                    top_data.append(f"    assign DOUT{bitnum} = ~rx_data[{pos-1}];")
+                else:
+                    top_data.append(f"    assign DOUT{bitnum} = rx_data[{pos-1}];")
             else:
                 top_data.append(
                     f"    // assign DOUT{bitnum} = rx_data[{pos-1}];"
@@ -196,7 +199,11 @@ def generate(project):
 
     for dbyte in range(project['dins_total'] // 8):
         for num in range(8):
-            tdins.append(f"DIN{(8 - 1 - num) + (project['dins_total'] // 8 - 1 - dbyte) * 8}")
+            bitnum = (8 - 1 - num) + (project['dins_total'] // 8 - 1 - dbyte) * 8
+            if bitnum < project['dins'] and project['jdata']["din"][bitnum].get("invert", False):
+                tdins.append(f"~DIN{bitnum}")
+            else:
+                tdins.append(f"DIN{bitnum}")
 
 
     fill = project['data_size'] - project['tx_data_size']

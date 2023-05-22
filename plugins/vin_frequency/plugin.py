@@ -2,6 +2,33 @@ class Plugin:
     def __init__(self, jdata):
         self.jdata = jdata
 
+    def setup(self):
+        return {
+            "basetype": "vin",
+            "options": {
+                "pin": {
+                    "type": "input",
+                    "name": "input pin",
+                },
+                "pullup": {
+                    "type": "bool",
+                    "name": "internal pullup",
+                },
+            },
+        }
+
+    def types(self):
+        return ["frequency", ]
+
+    def entry_info(self, joint):
+        info = ""
+        if joint.get("type") == "frequency":
+            pin = joint["pin"]
+            pullup = joint.get("pullup", False)
+            info += f"Variable frequency (pin:{pin}, pullup:{pullup})"
+        return info
+
+
     def pinlist(self):
         pinlist_out = []
         for num, vin in enumerate(self.jdata.get("vin", [])):

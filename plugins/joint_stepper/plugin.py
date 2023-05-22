@@ -2,6 +2,60 @@ class Plugin:
     def __init__(self, jdata):
         self.jdata = jdata
 
+    def setup(self):
+        return {
+            "basetype": "joint",
+            "options": {
+                "cl": {
+                    "type": bool,
+                    "name": "closed loop",
+                },
+                "pins": {
+                    "type": dict,
+                    "name": "pin config",
+                    "options": {
+                        "step": {
+                            "type": "output",
+                            "name": "stepper pin",
+                        },
+                        "dir": {
+                            "type": "output",
+                            "name": "dir pin",
+                        },
+                        "en": {
+                            "type": "output",
+                            "name": "enable pin",
+                        },
+                        "enc_a": {
+                            "type": "input",
+                            "name": "encoder A pin",
+                        },
+                        "enc_b": {
+                            "type": "input",
+                            "name": "encoder B pin",
+                        },
+                    },
+                },
+
+            },
+        }
+
+    def types(self):
+        return ["stepper", ]
+
+    def entry_info(self, joint):
+        info = ""
+        if joint.get("type") == "stepper":
+            if joint.get("cl"):
+                info += "CL-Stepper ("
+            else:
+                info += "Stepper ("
+            for ptype, pname in joint["pins"].items():
+                info += f" {ptype}:{pname}"
+            info += ")"
+        return info
+
+
     def pinlist(self):
         pinlist_out = []
         for num, joint in enumerate(self.jdata["joints"]):

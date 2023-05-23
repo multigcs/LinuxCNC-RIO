@@ -1,0 +1,109 @@
+{
+    "name": "ICEBreakerV1.0e",
+    "description": "Small and low cost FPGA educational and development board",
+    "toolchain": "icestorm",
+    "family": "ice40",
+    "type": "up5k",
+    "package": "sg48",
+    "clock": {
+        "speed": "120000000",
+        "pin": "35"
+    },
+    "interface": [
+    	{
+	        "type": "spi",
+	        "pins": {
+	            "MOSI": "42",
+	            "MISO": "43",
+	            "SCK": "36",
+	            "SEL": "38"
+	        }
+    	}
+   ],
+    "din": [
+        {
+            "debounce": true,
+            "pin": "10"
+        },
+        {
+            "debounce": true,
+            "pin": "20"
+        },
+        {
+            "debounce": true,
+            "pin": "19"
+        },
+        {
+            "debounce": true,
+            "pin": "18"
+        }
+    ],
+    "dout": [
+        {
+            "pin": "23"
+        },
+        {
+            "pin": "25"
+        },
+        {
+            "pin": "26"
+        },
+        {
+            "pin": "21"
+        },
+        {
+            "pin": "27"
+        }
+    ],
+    "vin": [
+        {
+            "type": "frequency",
+            "pin": "44",
+            "pullup": true
+        }
+    ],
+    "vout": [
+        {
+            "type": "pwm",
+            "pin": "37",
+            "invert_pwm": true
+        },
+        {
+            "type": "pwm",
+            "pin": "11",
+            "invert_pwm": true
+        }
+    ],
+    "joints": [
+        {
+            "comment": "J9.1+3+4",
+            "type": "stepper",
+            "cl": false,
+            "pins": {
+                "dir": "3",
+                "step": "4",
+                "enable": "48"
+            }
+        },
+        {
+            "comment": "J9.1+3+4_2",
+            "type": "stepper",
+            "cl": false,
+            "pins": {
+                "dir": "2",
+                "step": "46",
+                "enable": "47"
+            }
+        },
+        {
+            "comment": "J9.1+3+4_3",
+            "type": "stepper",
+            "cl": false,
+            "pins": {
+                "dir": "32",
+                "step": "34",
+                "enable": "28"
+            }
+        }
+    ]
+}

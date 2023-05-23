@@ -1,7 +1,7 @@
 
 #export PATH=$PATH:/opt/oss-cad-suite/bin/
 
-CONFIG ?= configs/Olimex-ICE40HX8K-EVB_BOB/config.json
+CONFIG ?= configs/ICEBreakerV1.0e/config.json
 TARGETNAME = $(shell jq -r '.name' < ${CONFIG})
 
 all: build firmware components

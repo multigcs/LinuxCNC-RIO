@@ -9,15 +9,17 @@
         "speed": "120000000",
         "pin": "CLK"
     },
-    "interface": {
-        "type": "spi",
-        "pins": {
-            "MOSI": "P1_B1",
-            "MISO": "P1_B2",
-            "SCK": "P1_B3",
-            "SEL": "P1_B4"
-        }
-    },
+    "interface": [
+    	{
+	        "type": "spi",
+	        "pins": {
+	            "MOSI": "P1_B1",
+	            "MISO": "P1_B2",
+	            "SCK": "P1_B3",
+	            "SEL": "P1_B4"
+	        }
+    	}
+   ],
     "din": [
         {
             "debounce": true,

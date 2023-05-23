@@ -1,0 +1,92 @@
+{
+    "name": "ICEBreakerV1.0e",
+    "description": "only for testing",
+    "toolchain": "icestorm",
+    "family": "ice40",
+    "type": "25dk",
+    "package": "CABGA256",
+    "clock": {
+        "speed": "120000000",
+        "pin": "CLK"
+    },
+    "interface": {
+        "type": "spi",
+        "pins": {
+            "MOSI": "P1_B1",
+            "MISO": "P1_B2",
+            "SCK": "P1_B3",
+            "SEL": "P1_B4"
+        }
+    },
+    "din": [
+        {
+            "debounce": true,
+            "pin": "BTN1"
+        },
+        {
+            "debounce": true,
+            "pin": "BTN2"
+        },
+        {
+            "debounce": true,
+            "pin": "BTN3"
+        }
+    ],
+    "dout": [
+        {
+            "pin": "LED0"
+        },
+        {
+            "pin": "LED1"
+        },
+        {
+            "pin": "LED2"
+        }
+    ],
+    "vin": [
+        {
+            "type": "frequency",
+            "pin": "P1A_10",
+            "pullup": true
+        }
+    ],
+    "vout": [
+        {
+            "type": "pwm",
+            "pin": "LED3",
+            "invert_pwm": true
+        }
+    ],
+    "joints": [
+        {
+            "comment": "J9.1+3+4",
+            "type": "stepper",
+            "cl": false,
+            "pins": {
+                "dir": "P1_A1",
+                "step": "P1_A2",
+                "enable": "P1_A3"
+            }
+        },
+        {
+            "comment": "J9.1+3+4_2",
+            "type": "stepper",
+            "cl": false,
+            "pins": {
+                "dir": "P1_A4",
+                "step": "P1_A5",
+                "enable": "P1_A6"
+            }
+        },
+        {
+            "comment": "J9.1+3+4_3",
+            "type": "stepper",
+            "cl": false,
+            "pins": {
+                "dir": "P1_A7",
+                "step": "P1_A8",
+                "enable": "P1_A9"
+            }
+        }
+    ]
+}

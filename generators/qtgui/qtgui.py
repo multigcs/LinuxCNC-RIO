@@ -17,7 +17,7 @@ def generate(project):
     spitest_data.append("device = 1")
     spitest_data.append("spi = spidev.SpiDev()")
     spitest_data.append("spi.open(bus, device)")
-    spitest_data.append(f"spi.max_speed_hz = {project['jdata']['interface'].get('max', 2000000)}")
+    spitest_data.append(f"spi.max_speed_hz = {project['jdata']['interface'][0].get('max', 2000000)}")
     spitest_data.append("spi.mode = 0")
     spitest_data.append("spi.lsbfirst = False")
     spitest_data.append("")

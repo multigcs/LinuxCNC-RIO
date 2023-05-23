@@ -9,15 +9,17 @@
         "speed": "100000000",
         "pin": "J3"
     },
-    "interface": {
-        "type": "spi",
-        "pins": {
-            "MOSI": "P12",
-            "MISO": "P11",
-            "SCK": "R11",
-            "SEL": "L11"
+    "interface": [
+        {
+            "type": "spi",
+            "pins": {
+                "MOSI": "P12",
+                "MISO": "P11",
+                "SCK": "R11",
+                "SEL": "L11"
+            }
         }
-    },
+    ],
     "blink": {
         "pin": "M12"
     },

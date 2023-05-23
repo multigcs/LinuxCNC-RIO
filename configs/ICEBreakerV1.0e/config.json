@@ -6,7 +6,7 @@
     "type": "up5k",
     "package": "sg48",
     "clock": {
-        "speed": "48000000",
+        "speed": "120000000",
         "pin": "35"
     },
     "interface": [
@@ -21,6 +21,10 @@
     	}
    ],
     "din": [
+        {
+            "debounce": true,
+            "pin": "10"
+        },
         {
             "debounce": true,
             "pin": "20"
@@ -42,7 +46,13 @@
             "pin": "25"
         },
         {
+            "pin": "26"
+        },
+        {
             "pin": "21"
+        },
+        {
+            "pin": "27"
         }
     ],
     "vin": [
@@ -55,7 +65,12 @@
     "vout": [
         {
             "type": "pwm",
-            "pin": "26",
+            "pin": "37",
+            "invert_pwm": true
+        },
+        {
+            "type": "pwm",
+            "pin": "11",
             "invert_pwm": true
         }
     ],

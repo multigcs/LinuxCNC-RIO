@@ -245,7 +245,7 @@ def generate(project):
                     pins_input.append(pin[0])
                 else:
                     pins_output.append(pin[0])
-                innerhtml += f"| {pin[0]} | {pin[1]}</TD> | {pin[2]} |\n"
+                innerhtml += f"| {pin[0]} | {pin[1]} | {pin[2]} |\n"
     innerhtml += "\n"
 
 
@@ -330,7 +330,7 @@ def generate(project):
                     innerhtml += f"files: "
                     for ipv in project["plugins"][plugin].ips():
                         innerhtml += f"[{ipv}](Firmware/{ipv}) "
-                    innerhtml += "\n"
+                    innerhtml += "\n\n"
 
                 for module, wires in module_wires.items():
                     innerhtml += f"#### {module}\n"

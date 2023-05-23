@@ -124,9 +124,11 @@ module rio (
         jointFeedback3[7:0], jointFeedback3[15:8], jointFeedback3[23:16], jointFeedback3[31:24],
         jointFeedback4[7:0], jointFeedback4[15:8], jointFeedback4[23:16], jointFeedback4[31:24],
         processVariable0[7:0], processVariable0[15:8], processVariable0[23:16], processVariable0[31:24],
-        DIN7, DIN6, DIN5, DIN4, DIN3, DIN2, DIN1, DIN0,
+        DIN7, DIN6, DIN5, ~DIN4, ~DIN3, ~DIN2, ~DIN1, ~DIN0,
         8'd0
     };
+
+    // expansion I/O's
 
     // vin_pulsecounter's
 
@@ -140,6 +142,8 @@ module rio (
     // vin_sonar's
 
     // vout_sinepwm's
+
+    // expansion_shiftreg's
 
     // vout_pwm's
     wire VOUT0_PWM_DIR; // fake direction output
@@ -204,6 +208,8 @@ module rio (
     );
 
     // joint_rcservo's
+
+    // vout_frequency's
 
     // interface_spislave
     interface_spislave #(BUFFER_SIZE, 32'h74697277, 48000000) spi1 (

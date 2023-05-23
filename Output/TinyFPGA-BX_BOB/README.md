@@ -31,35 +31,35 @@ Generated Output of [configs/TinyFPGA-BX_BOB/config.json](/configs/TinyFPGA-BX_B
 ## Pins:
 | Name | Pin | Direction |
 | --- | --- | --- |
-| DIN0 | C2</TD> | INPUT |
-| DIN1 | B1</TD> | INPUT |
-| DIN2 | A1</TD> | INPUT |
-| DIN3 | A2</TD> | INPUT |
-| DIN4 | J4</TD> | INPUT |
-| DIN5 | D9</TD> | INPUT |
-| DIN6 | C9</TD> | INPUT |
-| DOUT0 | A6</TD> | OUTPUT |
-| DOUT1 | B6</TD> | OUTPUT |
-| DOUT2 | A7</TD> | OUTPUT |
-| ENA | G9</TD> | OUTPUT |
-| ERROR_OUT | B3</TD> | OUTPUT |
-| INTERFACE_SPI_MOSI | G6</TD> | INPUT |
-| INTERFACE_SPI_MISO | H7</TD> | OUTPUT |
-| INTERFACE_SPI_SCK | G7</TD> | INPUT |
-| INTERFACE_SPI_SSEL | G1</TD> | INPUT |
-| JOINT0_STEPPER_STP | J1</TD> | OUTPUT |
-| JOINT0_STEPPER_DIR | H1</TD> | OUTPUT |
-| JOINT1_STEPPER_STP | G2</TD> | OUTPUT |
-| JOINT1_STEPPER_DIR | E1</TD> | OUTPUT |
-| JOINT2_STEPPER_STP | E2</TD> | OUTPUT |
-| JOINT2_STEPPER_DIR | D1</TD> | OUTPUT |
-| JOINT3_STEPPER_STP | D2</TD> | OUTPUT |
-| JOINT3_STEPPER_DIR | C1</TD> | OUTPUT |
-| JOINT4_STEPPER_STP | J9</TD> | OUTPUT |
-| JOINT4_STEPPER_DIR | J3</TD> | OUTPUT |
-| sysclk_in | B2</TD> | INPUT |
-| VIN0_FREQUENCY | H9</TD> | INPUT |
-| VOUT0_PWM_PWM | H2</TD> | OUTPUT |
+| DIN0 | C2 | INPUT |
+| DIN1 | B1 | INPUT |
+| DIN2 | A1 | INPUT |
+| DIN3 | A2 | INPUT |
+| DIN4 | J4 | INPUT |
+| DIN5 | D9 | INPUT |
+| DIN6 | C9 | INPUT |
+| DOUT0 | A6 | OUTPUT |
+| DOUT1 | B6 | OUTPUT |
+| DOUT2 | A7 | OUTPUT |
+| ENA | G9 | OUTPUT |
+| ERROR_OUT | B3 | OUTPUT |
+| INTERFACE_SPI_MOSI | G6 | INPUT |
+| INTERFACE_SPI_MISO | H7 | OUTPUT |
+| INTERFACE_SPI_SCK | G7 | INPUT |
+| INTERFACE_SPI_SSEL | G1 | INPUT |
+| JOINT0_STEPPER_STP | J1 | OUTPUT |
+| JOINT0_STEPPER_DIR | H1 | OUTPUT |
+| JOINT1_STEPPER_STP | G2 | OUTPUT |
+| JOINT1_STEPPER_DIR | E1 | OUTPUT |
+| JOINT2_STEPPER_STP | E2 | OUTPUT |
+| JOINT2_STEPPER_DIR | D1 | OUTPUT |
+| JOINT3_STEPPER_STP | D2 | OUTPUT |
+| JOINT3_STEPPER_DIR | C1 | OUTPUT |
+| JOINT4_STEPPER_STP | J9 | OUTPUT |
+| JOINT4_STEPPER_DIR | J3 | OUTPUT |
+| sysclk_in | B2 | INPUT |
+| VIN0_FREQUENCY | H9 | INPUT |
+| VOUT0_PWM_PWM | H2 | OUTPUT |
 
 ## RX-Data:
 | Name | Size |
@@ -99,6 +99,7 @@ Generated Output of [configs/TinyFPGA-BX_BOB/config.json](/configs/TinyFPGA-BX_B
 ## Plugins:
 ### Modul: vin_frequency:
 files: [vin_frequency.v](Firmware/vin_frequency.v) 
+
 #### vin_frequency0
 | Name | Direction |
 | --- | --- |
@@ -108,6 +109,7 @@ files: [vin_frequency.v](Firmware/vin_frequency.v)
 
 ### Modul: vout_pwm:
 files: [vout_pwm.v](Firmware/vout_pwm.v) 
+
 #### vout_pwm0
 | Name | Direction |
 | --- | --- |
@@ -120,6 +122,7 @@ files: [vout_pwm.v](Firmware/vout_pwm.v)
 
 ### Modul: joint_stepper:
 files: [quad_encoder.v](Firmware/quad_encoder.v) [joint_stepper.v](Firmware/joint_stepper.v) [joint_stepper_nf.v](Firmware/joint_stepper_nf.v) 
+
 #### joint_stepper0
 | Name | Direction |
 | --- | --- |
@@ -174,6 +177,7 @@ files: [quad_encoder.v](Firmware/quad_encoder.v) [joint_stepper.v](Firmware/join
 
 ### Modul: interface_spislave:
 files: [interface_spislave.v](Firmware/interface_spislave.v) 
+
 #### spi1
 | Name | Direction |
 | --- | --- |

@@ -233,8 +233,11 @@ class WinForm(QWidget):
                     value = int(value * (PRU_OSC / voutminmax[vn][3]) / 100)
                 elif voutminmax[vn][2] == 'rcservo':
                     value = int(((value + 300)) * (PRU_OSC / 200000))
-                else:
-                    value = int((value - voutminmax[vn][0]) * (0xFFFFFFFF // 2) / (voutminmax[vn][1] - voutminmax[vn][0]))
+                elif voutminmax[vn][2] == 'frequency':
+                    if value != 0:
+                        value = int(PRU_OSC / value)
+                    else:
+                        value = 0
 
                 print(vn, value)
 

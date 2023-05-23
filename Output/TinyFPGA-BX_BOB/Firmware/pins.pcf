@@ -16,6 +16,8 @@ set_io  -pullup yes VIN0_FREQUENCY H9
 
 ### vout_sinepwm ###
 
+### expansion_shiftreg ###
+
 ### vout_pwm ###
 set_io  VOUT0_PWM_PWM H2
 
@@ -36,6 +38,8 @@ set_io  JOINT4_STEPPER_STP J9
 set_io  JOINT4_STEPPER_DIR J3
 
 ### joint_rcservo ###
+
+### vout_frequency ###
 
 ### interface_spislave ###
 set_io  INTERFACE_SPI_MOSI G6

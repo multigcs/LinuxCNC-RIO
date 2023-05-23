@@ -40,7 +40,6 @@ make CONFIG=configs/TinyFPGA-BX_BOB/config.json build
 ```
 
 
-
 ## Structure:
 
 buildtool.py plugins:  this are python scripts to generates the verilog files from a configuration

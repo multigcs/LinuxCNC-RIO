@@ -3,7 +3,7 @@
 */
 
 
-module top (
+module rio (
         output BLINK_LED,
         input DIN0,
         input DIN1,
@@ -14,6 +14,7 @@ module top (
         output DOUT1,
         output DOUT2,
         output DOUT3,
+        output ENA,
         output ERROR_OUT,
         input INTERFACE_SPI_MOSI,
         output INTERFACE_SPI_MISO,
@@ -31,8 +32,7 @@ module top (
         output JOINT4_STEPPER_DIR,
         input sysclk,
         output VOUT0_PWM_PWM,
-        output VOUT1_PWM_PWM,
-        output ENA
+        output VOUT1_PWM_PWM
     );
 
 
@@ -56,9 +56,9 @@ module top (
     reg signed [31:0] header_tx;
     always @(posedge sysclk) begin
         if (ESTOP) begin
-            header_tx = 32'h65737470;
+            header_tx <= 32'h65737470;
         end else begin
-            header_tx = 32'h64617461;
+            header_tx <= 32'h64617461;
         end
     end
 
@@ -128,14 +128,15 @@ module top (
         jointFeedback2[7:0], jointFeedback2[15:8], jointFeedback2[23:16], jointFeedback2[31:24],
         jointFeedback3[7:0], jointFeedback3[15:8], jointFeedback3[23:16], jointFeedback3[31:24],
         jointFeedback4[7:0], jointFeedback4[15:8], jointFeedback4[23:16], jointFeedback4[31:24],
-        DIN0, DIN1, DIN2, DIN3, DIN4, DIN5, DIN6, DIN7,
+        DIN7, DIN6, DIN5, DIN4, DIN3, DIN2, DIN1, DIN0,
         72'd0
     };
+
+    // expansion I/O's
 
     // vin_quadencoder's
 
     // interface_spislave
-    wire pkg_ok;
     interface_spislave #(BUFFER_SIZE, 32'h74697277, 100000000) spi1 (
         .clk (sysclk),
         .SPI_SCK (INTERFACE_SPI_SCK),
@@ -147,11 +148,14 @@ module top (
         .pkg_timeout (INTERFACE_TIMEOUT)
     );
 
+    // expansion_shiftreg's
+
     // vout_pwm's
     wire VOUT0_PWM_DIR; // fake direction output
     vout_pwm #(10000) vout_pwm0 (
         .clk (sysclk),
         .dty (setPoint0),
+        .disabled (ERROR),
         .dir (VOUT0_PWM_DIR),
         .pwm (VOUT0_PWM_PWM)
     );
@@ -159,11 +163,14 @@ module top (
     vout_pwm #(10000) vout_pwm1 (
         .clk (sysclk),
         .dty (setPoint1),
+        .disabled (ERROR),
         .dir (VOUT1_PWM_DIR),
         .pwm (VOUT1_PWM_PWM)
     );
 
     // vin_pulsecounter's
+
+    // vout_frequency's
 
     // joint_pwmdir's
 
@@ -210,6 +217,8 @@ module top (
         .DIR (JOINT4_STEPPER_DIR),
         .STP (JOINT4_STEPPER_STP)
     );
+
+    // vin_sonar's
 
     // vin_frequency's
 

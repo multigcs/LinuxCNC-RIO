@@ -11,7 +11,7 @@ bus = 0
 device = 1
 spi = spidev.SpiDev()
 spi.open(bus, device)
-spi.max_speed_hz = 5000000
+spi.max_speed_hz = 2000000
 spi.mode = 0
 spi.lsbfirst = False
 
@@ -57,7 +57,7 @@ vinminmax = [
 ]
 
 voutminmax = [
-    (-100, 100, 'pwm', 10000),
+    (0, 100, 'pwm', 10000),
     (-10, +10, 'pwm', 10000),
 ]
 
@@ -237,8 +237,11 @@ class WinForm(QWidget):
                     value = int(value * (PRU_OSC / voutminmax[vn][3]) / 100)
                 elif voutminmax[vn][2] == 'rcservo':
                     value = int(((value + 300)) * (PRU_OSC / 200000))
-                else:
-                    value = int((value - voutminmax[vn][0]) * (0xFFFFFFFF // 2) / (voutminmax[vn][1] - voutminmax[vn][0]))
+                elif voutminmax[vn][2] == 'frequency':
+                    if value != 0:
+                        value = int(PRU_OSC / value)
+                    else:
+                        value = 0
 
                 print(vn, value)
 
@@ -296,7 +299,6 @@ class WinForm(QWidget):
                 print(f'Header: 0x{header:x}')
 
 
-
             for jn, value in enumerate(joints):
                 key = f"jf{jn}"
                 self.widgets[key].setText(str(jointFeedback[jn]))
@@ -314,6 +316,10 @@ class WinForm(QWidget):
                     unit = "ms"
                     if value != 0:
                         value = 1000 / (PRU_OSC / value)
+                elif vinminmax[vn][2] == 'sonar':
+                    unit = "mm"
+                    if value != 0:
+                        value = 1000 / PRU_OSC / 20 * value * 343.2
                 self.widgets[key].setText(f"{round(value, 2)}{unit}")
 
 

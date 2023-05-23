@@ -22,6 +22,22 @@
       <halpin>"btn3"</halpin>
       <text>"3"</text>
     </button>
+    <button>
+      <halpin>"btn4"</halpin>
+      <text>"4"</text>
+    </button>
+    <button>
+      <halpin>"btn5"</halpin>
+      <text>"5"</text>
+    </button>
+    <button>
+      <halpin>"btn6"</halpin>
+      <text>"6"</text>
+    </button>
+    <button>
+      <halpin>"btn7"</halpin>
+      <text>"7"</text>
+    </button>
   </hbox>
   <hbox>
     <relief>RIDGE</relief>
@@ -50,6 +66,30 @@
     </led>
     <led>
       <halpin>"led-out3"</halpin>
+      <size>25</size>
+      <on_color>"green"</on_color>
+      <off_color>"red"</off_color>
+    </led>
+    <led>
+      <halpin>"led-out4"</halpin>
+      <size>25</size>
+      <on_color>"green"</on_color>
+      <off_color>"red"</off_color>
+    </led>
+    <led>
+      <halpin>"led-out5"</halpin>
+      <size>25</size>
+      <on_color>"green"</on_color>
+      <off_color>"red"</off_color>
+    </led>
+    <led>
+      <halpin>"led-out6"</halpin>
+      <size>25</size>
+      <on_color>"green"</on_color>
+      <off_color>"red"</off_color>
+    </led>
+    <led>
+      <halpin>"led-out7"</halpin>
       <size>25</size>
       <on_color>"green"</on_color>
       <off_color>"red"</off_color>
@@ -100,7 +140,7 @@
     <resolution>0.1</resolution>
     <orient>HORIZONTAL</orient>
     <initval>0</initval>
-    <min_>-100</min_>
+    <min_>0</min_>
     <max_>100</max_>
     <param_pin>1</param_pin>
   </scale>

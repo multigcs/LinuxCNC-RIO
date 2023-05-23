@@ -17,6 +17,7 @@ addf rio.update-freq servo-thread
 addf rio.write servo-thread
 
     
+
 # Joint 0 setup
 
 setp rio.joint.0.scale 		[JOINT_0]SCALE
@@ -62,7 +63,7 @@ net j3enable 		<= joint.3.amp-enable-out 	=> rio.joint.3.enable
 setp rio.joint.4.scale 		[JOINT_4]SCALE
 setp rio.joint.4.maxaccel 	[JOINT_4]STEPGEN_MAXACCEL
 
-net bpos-cmd 		<= joint.4.motor-pos-cmd 	=> rio.joint.4.pos-cmd  
+net cpos-cmd 		<= joint.4.motor-pos-cmd 	=> rio.joint.4.pos-cmd  
 net j4pos-fb 		<= rio.joint.4.pos-fb 	=> joint.4.motor-pos-fb
 net j4enable 		<= joint.4.amp-enable-out 	=> rio.joint.4.enable
 

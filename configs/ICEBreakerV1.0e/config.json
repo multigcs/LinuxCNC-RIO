@@ -1,61 +1,61 @@
 {
     "name": "ICEBreakerV1.0e",
-    "description": "only for testing",
+    "description": "Small and low cost FPGA educational and development board",
     "toolchain": "icestorm",
     "family": "ice40",
     "type": "up5k",
     "package": "sg48",
     "clock": {
-        "speed": "120000000",
-        "pin": "CLK"
+        "speed": "48000000",
+        "pin": "35"
     },
     "interface": [
     	{
 	        "type": "spi",
 	        "pins": {
-	            "MOSI": "P1_B1",
-	            "MISO": "P1_B2",
-	            "SCK": "P1_B3",
-	            "SEL": "P1_B4"
+	            "MOSI": "42",
+	            "MISO": "43",
+	            "SCK": "36",
+	            "SEL": "38"
 	        }
     	}
    ],
     "din": [
         {
             "debounce": true,
-            "pin": "BTN1"
+            "pin": "20"
         },
         {
             "debounce": true,
-            "pin": "BTN2"
+            "pin": "19"
         },
         {
             "debounce": true,
-            "pin": "BTN3"
+            "pin": "18"
         }
     ],
     "dout": [
         {
-            "pin": "LED0"
+            "pin": "23"
         },
         {
-            "pin": "LED1"
+            "pin": "25"
         },
         {
-            "pin": "LED2"
+            "pin": "21"
         }
     ],
     "vin": [
         {
             "type": "frequency",
-            "pin": "P1A_10",
+            "pin": "44",
             "pullup": true
         }
     ],
     "vout": [
         {
             "type": "pwm",
-            "pin": "LED3",
+            "pin": "26",
             "invert_pwm": true
         }
     ],
@@ -65,9 +65,9 @@
             "type": "stepper",
             "cl": false,
             "pins": {
-                "dir": "P1_A1",
-                "step": "P1_A2",
-                "enable": "P1_A3"
+                "dir": "3",
+                "step": "4",
+                "enable": "48"
             }
         },
         {
@@ -75,9 +75,9 @@
             "type": "stepper",
             "cl": false,
             "pins": {
-                "dir": "P1_A4",
-                "step": "P1_A5",
-                "enable": "P1_A6"
+                "dir": "2",
+                "step": "46",
+                "enable": "47"
             }
         },
         {
@@ -85,9 +85,9 @@
             "type": "stepper",
             "cl": false,
             "pins": {
-                "dir": "P1_A7",
-                "step": "P1_A8",
-                "enable": "P1_A9"
+                "dir": "32",
+                "step": "34",
+                "enable": "28"
             }
         }
     ]

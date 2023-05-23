@@ -3,8 +3,8 @@
     "description": "only for testing",
     "toolchain": "icestorm",
     "family": "ice40",
-    "type": "25dk",
-    "package": "CABGA256",
+    "type": "up5k",
+    "package": "sg48",
     "clock": {
         "speed": "120000000",
         "pin": "CLK"

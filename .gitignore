@@ -166,3 +166,5 @@ rio.json
 rio.bin
 rio.asc
 
+.project
+.pydevproject

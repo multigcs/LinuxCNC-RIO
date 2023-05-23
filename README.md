@@ -23,6 +23,8 @@ RealtimeIO for LinuxCNC based on an FPGA
 
 * Chipselect: CE_1
 
+* do not reuse the chipselect pin of your SPI-Flash !!!
+
 
 ## test-tool
 

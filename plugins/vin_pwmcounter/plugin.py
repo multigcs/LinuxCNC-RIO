@@ -2,6 +2,24 @@ class Plugin:
     def __init__(self, jdata):
         self.jdata = jdata
 
+    def setup(self):
+        return [
+            {
+                "basetype": "vin",
+                "subtype": "pwm",
+                "options": {
+                    "pin": {
+                        "type": "input",
+                        "name": "input pin",
+                    },
+                    "freq_min": {
+                        "type": "int",
+                        "name": "minimum frequency",
+                    },
+                },
+            }
+        ]
+
     def pinlist(self):
         pinlist_out = []
         for num, vin in enumerate(self.jdata.get("vin", [])):

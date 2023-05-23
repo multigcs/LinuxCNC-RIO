@@ -2,6 +2,20 @@ class Plugin:
     def __init__(self, jdata):
         self.jdata = jdata
 
+    def setup(self):
+        return [
+            {
+                "basetype": "vout",
+                "subtype": "frequency",
+                "options": {
+                    "pin": {
+                        "type": "input",
+                        "name": "output pin",
+                    },
+                },
+            }
+        ]
+
     def pinlist(self):
         pinlist_out = []
         for num, vout in enumerate(self.jdata["vout"]):
@@ -20,10 +34,7 @@ class Plugin:
         func_out = ["    // vout_frequency's"]
         for num, vout in enumerate(self.jdata["vout"]):
             if vout["type"] in ["frequency"]:
-                if vout["type"] == "rcservo":
-                    freq = int(vout.get("frequency", 100))
-                else:
-                    freq = int(vout.get("frequency", 10000))
+                freq = int(vout.get("frequency", 10000))
                 divider = int(self.jdata["clock"]["speed"]) // freq
                 func_out.append(f"    vout_frequency vout_frequency{num} (")
                 func_out.append("        .clk (sysclk),")

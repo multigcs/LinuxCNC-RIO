@@ -2,6 +2,26 @@ class Plugin:
     def __init__(self, jdata):
         self.jdata = jdata
 
+    def setup(self):
+        return [
+            {
+                "basetype": "joints",
+                "subtype": "rcservo",
+                "options": {
+                    "pins": {
+                        "type": "dict",
+                        "name": "pin config",
+                        "options": {
+                            "pwm": {
+                                "type": "output",
+                                "name": "pwm pin",
+                            },
+                        },
+                    },
+                },
+            }
+        ]
+
     def pinlist(self):
         pinlist_out = []
         for num, joint in enumerate(self.jdata["joints"]):

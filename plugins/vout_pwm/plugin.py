@@ -3,41 +3,43 @@ class Plugin:
         self.jdata = jdata
 
     def setup(self):
-        return {
-            "basetype": "vout",
-            "options": {
-                "dir": {
-                    "type": "output",
-                    "name": "dir output pin",
-                },
-                "pin": {
-                    "type": "output",
-                    "name": "pwm output pin",
-                },
-                "invert_pwm": {
-                    "type": "bool",
-                    "name": "inverted pwm pin",
-                },
-                "pullup": {
-                    "type": "bool",
-                    "name": "internal pullup",
+        return [
+            {
+                "basetype": "vout",
+                "subtype": "pwm",
+                "options": {
+                    "dir": {
+                        "type": "output",
+                        "name": "dir output pin",
+                    },
+                    "pin": {
+                        "type": "output",
+                        "name": "pwm output pin",
+                    },
+                    "invert_pwm": {
+                        "type": "bool",
+                        "name": "inverted pwm pin",
+                    },
                 },
             },
-        }
+            {
+                "basetype": "vout",
+                "subtype": "rcservo",
+                "options": {
+                    "pin": {
+                        "type": "output",
+                        "name": "pwm output pin",
+                    },
+                    "invert_pwm": {
+                        "type": "bool",
+                        "name": "inverted pwm pin",
+                    },
+                },
+            }
+        ]
 
     def types(self):
         return ["pwm", "rcservo", ]
-
-    def entry_info(self, joint):
-        info = ""
-        if joint.get("type") == "rcservo":
-            pin = joint["pin"]
-            info += f"rcservo (pin:{pin})"
-        elif joint.get("type") == "pwm":
-            pin = joint["pin"]
-            dirp = joint.get("dir", "none")
-            info += f"pwm out (pin:{pin}, dir:{dirp})"
-        return info
 
     def pinlist(self):
         pinlist_out = []

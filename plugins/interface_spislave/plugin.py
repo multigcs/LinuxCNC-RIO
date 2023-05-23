@@ -2,6 +2,38 @@ class Plugin:
     def __init__(self, jdata):
         self.jdata = jdata
 
+    def setup(self):
+        return [
+            {
+                "basetype": "interface",
+                "subtype": "spi",
+                "options": {
+                    "pins": {
+                        "type": "dict",
+                        "name": "pin config",
+                        "options": {
+                            "MOSI": {
+                                "type": "input",
+                                "name": "mosi pin",
+                            },
+                            "MISO": {
+                                "type": "output",
+                                "name": "miso pin",
+                            },
+                            "SCK": {
+                                "type": "input",
+                                "name": "clock pin",
+                            },
+                            "SEL": {
+                                "type": "input",
+                                "name": "selectionpin",
+                            },
+                        },
+                    },
+                },
+            }
+        ]
+
     def pinlist(self):
         pinlist_out = []
         if self.jdata["interface"]["type"] == "spi":

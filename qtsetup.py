@@ -1,5 +1,6 @@
 import importlib
 import glob
+import os
 import time
 from struct import *
 import json
@@ -23,7 +24,35 @@ from PyQt5.QtGui import QFont
 
 jdata = json.loads(open(sys.argv[1], "r").read())
 
+
+print("family:", jdata["family"])
+print("type:",   jdata["type"])
+print("package", jdata["package"])
+
 pinlist = {}
+
+if os.path.isfile(f"chipdata/{jdata['family']}.json"):
+    chiptype_mapping = {
+        "up5k": "5k",
+        "hx1k": "1k",
+        "hx4k": "4k",
+        "hx8k": "8k",
+    }
+    print("try to load chipdata")
+    chipdata = json.loads(open(f"chipdata/{jdata['family']}.json").read())
+    ctype = chiptype_mapping.get(jdata["type"], jdata["type"])
+    package = jdata["package"]
+    if ctype in chipdata:
+        print(" type found:", ctype)
+        if package in chipdata[ctype]:
+            print(" package found:", package)
+            for pin in chipdata[ctype][package]:
+                pinlist[pin] = "IO"
+        else:
+            print(" package not found:", package)
+    else:
+        print(" type not found:", ctype)
+
 
 plugins = {}
 for path in glob.glob("plugins/*"):
@@ -31,10 +60,6 @@ for path in glob.glob("plugins/*"):
     vplugin = importlib.import_module(".plugin", f"plugins.{plugin}")
     plugins[plugin] = vplugin.Plugin(jdata)
 
-
-for char in "ABCDEFGHIJKLMNOPQRSTUVWXYZ":
-    for num in range(32):
-        pinlist[f"{char}{num}"] = "IO"
 
 
 setup_data = {}

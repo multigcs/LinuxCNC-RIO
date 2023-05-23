@@ -74,6 +74,12 @@ def generate(project):
     spitest_data.append("]")
     spitest_data.append("")
 
+    spitest_data.append("vout_types = [")
+    for num, vout in enumerate(project['jdata']["vout"]):
+        spitest_data.append(f"    '{vout['type']}',")
+    spitest_data.append("]")
+    spitest_data.append("")
+
     spitest_data.append("voutminmax = [")
     for num, vout in enumerate(project['jdata']["vout"]):
         if vout.get('type') == "sine":
@@ -89,6 +95,8 @@ def generate(project):
             spitest_data.append(f"    ({vout.get('min', -100)}, {vout.get('max', 100)}, 'rcservo', {freq}),")
         elif vout.get('type') == "frequency":
             spitest_data.append(f"    ({vout.get('min', 0)}, {vout.get('max', 100000)}, 'frequency', 0),")
+        elif vout.get('type') == "udpoti":
+            spitest_data.append(f"    ({vout.get('min', 0)}, {vout.get('max', 100)}, 'udpoti', 0),")
         else:
             spitest_data.append(f"    ({vout.get('min', 0)}, {vout.get('max', 10)}, 'scale', 1),")
     spitest_data.append("]")
@@ -141,6 +149,13 @@ class WinForm(QWidget):
         layout.addWidget(QLabel(f'VARIABLE:'), gpy, 0)
         layout.addWidget(QLabel(f'OUT'), gpy, 1)
         for vn in range(VOUTS):
+            layout.addWidget(QLabel(vout_types[vn]), gpy, vn + 3)
+        gpy += 1
+
+
+        #layout.addWidget(QLabel(f'VARIABLE:'), gpy, 0)
+        layout.addWidget(QLabel(f'OUT'), gpy, 1)
+        for vn in range(VOUTS):
             key = f'vos{vn}'
             self.widgets[key] = QSlider(Qt.Horizontal)
             self.widgets[key].setMinimum(voutminmax[vn][0])
@@ -148,6 +163,7 @@ class WinForm(QWidget):
             self.widgets[key].setValue(0)
             layout.addWidget(self.widgets[key], gpy, vn + 3)
         gpy += 1
+
 
         for vn in range(VOUTS):
             key = f'vo{vn}'
@@ -270,6 +286,8 @@ class WinForm(QWidget):
                     value = int(value * (PRU_OSC / voutminmax[vn][3]) / 100)
                 elif voutminmax[vn][2] == 'rcservo':
                     value = int(((value + 300)) * (PRU_OSC / 200000))
+                elif voutminmax[vn][2] == 'udpoti':
+                    value = value
                 elif voutminmax[vn][2] == 'frequency':
                     if value != 0:
                         value = int(PRU_OSC / value)

@@ -73,16 +73,6 @@
         {
             "invert": true,
             "pin": "EXPANSION0_OUTPUT[4]"
-        },
-        {
-            "invert": true,
-            "pin": "EXPANSION0_OUTPUT[5]"
-        },
-        {
-            "pin": "EXPANSION0_OUTPUT[6]"
-        },
-        {
-            "pin": "EXPANSION0_OUTPUT[7]"
         }
     ],
     "vout": [
@@ -98,16 +88,14 @@
             "pin": "EXPANSION0_OUTPUT[1]"
         },
         {
-            "comment": "J8.1+2+3",
-            "frequency": "10000",
-            "type": "sine",
-            "pins": ["EXPANSION0_OUTPUT[2]"],
-            "_pins": ["M7", "P8"]
-        },
-        {
-            "comment": "J8.5",
-            "type": "frequency",
-            "pin": "EXPANSION0_OUTPUT[3]"
+            "comment": "J7.1+2",
+            "type": "udpoti",
+            "resolution": "100",
+            "speed": "10000",
+            "pins": {
+                "updown": "T3",
+                "incr": "R4"
+            }
         }
     ],
     "joints": [
@@ -119,14 +107,6 @@
                 "dir": "R14",
                 "step": "T14",
                 "enable": "D16"
-            }
-        },
-        {
-            "comment": "J7.1",
-            "type": "rcservo",
-            "cl": false,
-            "pins": {
-                "pwm": "T3"
             }
         },
         {

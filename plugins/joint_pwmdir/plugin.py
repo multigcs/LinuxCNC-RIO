@@ -2,6 +2,28 @@ class Plugin:
     def __init__(self, jdata):
         self.jdata = jdata
 
+    def setup(self):
+        return [
+            {
+                "basetype": "joints",
+                "subtype": "pwmdir",
+                "options": {
+                    "enable": {
+                        "type": "output",
+                        "name": "enable pin",
+                    },
+                    "pwm": {
+                        "type": "output",
+                        "name": "pwm pin",
+                    },
+                    "dir": {
+                        "type": "output",
+                        "name": "dir pin",
+                    },
+                },
+            }
+        ]
+
     def pinlist(self):
         pinlist_out = []
         for num, joint in enumerate(self.jdata["joints"]):

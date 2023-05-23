@@ -2,6 +2,40 @@ class Plugin:
     def __init__(self, jdata):
         self.jdata = jdata
 
+    def setup(self):
+        return [
+            {
+                "basetype": "expansion",
+                "subtype": "shiftreg",
+                "options": {
+                    "clock": {
+                        "type": "output",
+                        "name": "clock pin",
+                    },
+                    "load": {
+                        "type": "output",
+                        "name": "load pin",
+                    },
+                    "in": {
+                        "type": "input",
+                        "name": "input data",
+                    },
+                    "out": {
+                        "type": "output",
+                        "name": "output data",
+                    },
+                    "bits": {
+                        "type": "int",
+                        "name": "number of bits",
+                    },
+                    "speed": {
+                        "type": "int",
+                        "name": "clock speed",
+                    },
+                },
+            }
+        ]
+
     def pinlist(self):
         pinlist_out = []
         for num, expansion in enumerate(self.jdata.get("expansion", [])):

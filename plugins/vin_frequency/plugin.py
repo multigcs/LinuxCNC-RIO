@@ -3,19 +3,22 @@ class Plugin:
         self.jdata = jdata
 
     def setup(self):
-        return {
-            "basetype": "vin",
-            "options": {
-                "pin": {
-                    "type": "input",
-                    "name": "input pin",
+        return [
+            {
+                "basetype": "vin",
+                "subtype": "frequency",
+                "options": {
+                    "pin": {
+                        "type": "input",
+                        "name": "input pin",
+                    },
+                    "pullup": {
+                        "type": "bool",
+                        "name": "internal pullup",
+                    },
                 },
-                "pullup": {
-                    "type": "bool",
-                    "name": "internal pullup",
-                },
-            },
-        }
+            }
+        ]
 
     def types(self):
         return ["frequency", ]

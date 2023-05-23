@@ -3,43 +3,44 @@ class Plugin:
         self.jdata = jdata
 
     def setup(self):
-        return {
-            "basetype": "joint",
-            "options": {
-                "cl": {
-                    "type": bool,
-                    "name": "closed loop",
-                },
-                "pins": {
-                    "type": dict,
-                    "name": "pin config",
-                    "options": {
-                        "step": {
-                            "type": "output",
-                            "name": "stepper pin",
-                        },
-                        "dir": {
-                            "type": "output",
-                            "name": "dir pin",
-                        },
-                        "en": {
-                            "type": "output",
-                            "name": "enable pin",
-                        },
-                        "enc_a": {
-                            "type": "input",
-                            "name": "encoder A pin",
-                        },
-                        "enc_b": {
-                            "type": "input",
-                            "name": "encoder B pin",
+        return [
+            {
+                "basetype": "joints",
+                "subtype": "stepper",
+                "options": {
+                    "cl": {
+                        "type": "bool",
+                        "name": "closed loop",
+                    },
+                    "pins": {
+                        "type": "dict",
+                        "name": "pin config",
+                        "options": {
+                            "step": {
+                                "type": "output",
+                                "name": "stepper pin",
+                            },
+                            "dir": {
+                                "type": "output",
+                                "name": "dir pin",
+                            },
+                            "en": {
+                                "type": "output",
+                                "name": "enable pin",
+                            },
+                            "enc_a": {
+                                "type": "input",
+                                "name": "encoder A pin",
+                            },
+                            "enc_b": {
+                                "type": "input",
+                                "name": "encoder B pin",
+                            },
                         },
                     },
                 },
-
-            },
-        }
-
+            }
+        ]
     def types(self):
         return ["stepper", ]
 

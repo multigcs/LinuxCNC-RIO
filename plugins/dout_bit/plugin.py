@@ -2,6 +2,20 @@ class Plugin:
     def __init__(self, jdata):
         self.jdata = jdata
 
+    def setup(self):
+        return [
+            {
+                "basetype": "dout",
+                "subtype": "",
+                "options": {
+                    "pin": {
+                        "type": "output",
+                        "name": "output pin",
+                    },
+                },
+            }
+        ]
+
     def pinlist(self):
         pinlist_out = []
         for num, dout in enumerate(self.jdata["dout"]):

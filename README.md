@@ -31,6 +31,16 @@ RealtimeIO for LinuxCNC based on an FPGA
 python3 Output/BOARD_NAME/Firmware/qt_spitest.py
 
 
+## buildtool
+
+you can select a config via make argument:
+
+```
+make CONFIG=configs/TinyFPGA-BX_BOB/config.json build
+```
+
+
+
 ## Structure:
 
 buildtool.py plugins:  this are python scripts to generates the verilog files from a configuration

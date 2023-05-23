@@ -12,6 +12,36 @@ def generate(project):
     txdata = []
     pins_input = []
     pins_output = []
+    expansion_input = []
+    expansion_output = []
+
+
+    innerhtml = "<<TABLE bgcolor=\"#a2c635\" BORDER=\"0\" CELLBORDER=\"1\" CELLSPACING=\"0\">"
+    innerhtml += "<TR>"
+    innerhtml += f"<TD><B>{project['jdata']['family']} - {project['jdata']['type']}</B></TD>"
+    innerhtml += "</TR>"
+    for pname in sorted(list(project['pinlists'])):
+        pins = project['pinlists'][pname]
+        for pin in pins:
+            if pin[1].startswith("EXPANSION"):
+                if pin[2] == "INPUT":
+                    expansion_input.append(pin[0])
+                else:
+                    expansion_output.append(pin[0])
+            else:
+                if pin[2] == "INPUT":
+                    pins_input.append(pin[0])
+                else:
+                    pins_output.append(pin[0])
+                innerhtml += "<TR>"
+                if pin[2] == "INPUT":
+                    innerhtml += f"<TD PORT=\"{pin[0]}\">{pin[0]} &lt;- {pin[1]}</TD>"
+                else:
+                    innerhtml += f"<TD PORT=\"{pin[0]}\">{pin[0]} -&gt; {pin[1]}</TD>"
+                innerhtml += "</TR>"
+    innerhtml += f"</TABLE>>"
+    s.node('pins', innerhtml)
+
 
     innerhtml = "<<TABLE bgcolor=\"#fffd7a\" BORDER=\"0\" CELLBORDER=\"1\" CELLSPACING=\"0\">"
     innerhtml += "<TR>"
@@ -37,8 +67,12 @@ def generate(project):
         innerhtml += "<TR>"
         innerhtml += f"<TD PORT=\"DOUT{num}\">DOUT{num}</TD>"
         innerhtml += "</TR>"
-        rxdata.append(f"DOUT{num}")
-        s.edge(f'rx_data:DOUT{num}', f'pins:DOUT{num}', color="blue")
+        wire = f"DOUT{num}"
+        rxdata.append(wire)
+        if wire in expansion_output:
+            s.edge(f'rx_data:{wire}', f'expansion_shiftreg0:EXPANSION0_OUTPUT', color="red")
+        else:
+            s.edge(f'rx_data:{wire}', f'pins:{wire}', color="blue")
     innerhtml += f"</TABLE>>"
     s.node('rx_data', innerhtml)
 
@@ -61,31 +95,15 @@ def generate(project):
         innerhtml += "<TR>"
         innerhtml += f"<TD PORT=\"DIN{num}\">DIN{num}</TD>"
         innerhtml += "</TR>"
-        txdata.append(f"DIN{num}")
-        s.edge(f'pins:DIN{num}', f'tx_data:DIN{num}', color="green")
+        wire = f"DIN{num}"
+        txdata.append(wire)
+        if wire in expansion_input:
+            s.edge(f'expansion_shiftreg0:EXPANSION0_INPUT', f'tx_data:{wire}', color="red")
+        else:
+            s.edge(f'pins:{wire}', f'tx_data:{wire}', color="green")
     innerhtml += f"</TABLE>>"
     s.node('tx_data', innerhtml)
 
-
-    innerhtml = "<<TABLE bgcolor=\"#a2c635\" BORDER=\"0\" CELLBORDER=\"1\" CELLSPACING=\"0\">"
-    innerhtml += "<TR>"
-    innerhtml += f"<TD><B>{project['jdata']['family']} - {project['jdata']['type']}</B></TD>"
-    innerhtml += "</TR>"
-    for pname in sorted(list(project['pinlists'])):
-        pins = project['pinlists'][pname]
-        for pin in pins:
-            if pin[2] == "INPUT":
-                pins_input.append(pin[0])
-            else:
-                pins_output.append(pin[0])
-            innerhtml += "<TR>"
-            if pin[2] == "INPUT":
-                innerhtml += f"<TD PORT=\"{pin[0]}\">{pin[0]} &lt;- {pin[1]}</TD>"
-            else:
-                innerhtml += f"<TD PORT=\"{pin[0]}\">{pin[0]} -&gt; {pin[1]}</TD>"
-            innerhtml += "</TR>"
-    innerhtml += f"</TABLE>>"
-    s.node('pins', innerhtml)
 
     if project['osc_clock']:
         innerhtml = "<<TABLE bgcolor=\"#bca0cc\" BORDER=\"0\" CELLBORDER=\"1\" CELLSPACING=\"0\">"
@@ -127,7 +145,13 @@ def generate(project):
                     if wire in mapping:
                         wire = mapping[wire]
                     if module_id:
-                        if wire in pins_input:
+                        if wire in expansion_input:
+                            module_wires[module_id].append((wire, wire_org))
+                            s.edge(f'expansion_shiftreg0:EXPANSION0_INPUT', f'{module_id}:{wire}', color="red")
+                        elif wire in expansion_output:
+                            module_wires[module_id].append((wire, wire_org))
+                            s.edge(f'{module_id}:{wire}', f'expansion_shiftreg0:EXPANSION0_OUTPUT', color="red")
+                        elif wire in pins_input:
                             module_wires[module_id].append((wire, wire_org))
                             s.edge(f'pins:{wire}', f'{module_id}:{wire}', color="green")
                         elif wire in pins_output:
@@ -163,202 +187,6 @@ def generate(project):
 
     s.save()
     os.system(f"dot -Tpng {project['DOC_PATH']}/flowchart.gv > {project['DOC_PATH']}/flowchart.png")
-
-
-
-
-    # index
-    innerhtml = "<html>"
-    innerhtml += "<img src=\"flowchart.png\" style=\"float:right\"/>"
-    innerhtml += f"<H2>General:</H2>"
-    innerhtml += "<TABLE>"
-    for key in ("name", "description", "toolchain", "family", "type", "package"):
-        if key in project['jdata']:
-            innerhtml += "<TR>"
-            innerhtml += f"<TD>{key.title()}</TD><TD>{project['jdata'][key]}</TD>"
-            innerhtml += "</TR>"
-    innerhtml += "</TABLE>"
-
-
-    innerhtml += f"<H2>Files:</H2>"
-    innerhtml += "<TABLE>"
-
-    if project['jdata']["toolchain"] == "icestorm" and project['jdata']["family"] == "ecp5":
-        innerhtml += "<TR>"
-        innerhtml += f"<TD>Bitstream</TD>"
-        innerhtml += f"<TD><a href=\"../Firmware/rio.bit\">rio.bit</a></TD>"
-        innerhtml += "</TR>"
-    elif project['jdata']["toolchain"] == "icestorm":
-        innerhtml += "<TR>"
-        innerhtml += f"<TD>Bitstream</TD>"
-        innerhtml += f"<TD><a href=\"../Firmware/rio.bin\">rio.bin</a></TD>"
-        innerhtml += "</TR>"
-
-    innerhtml += "<TR>"
-    innerhtml += f"<TD>LinuxCNC Components</TD>"
-    innerhtml += f"<TD><a href=\"../LinuxCNC/Components/\">Components</a></TD>"
-    innerhtml += "</TR>"
-
-    innerhtml += "<TR>"
-    innerhtml += f"<TD>LinuxCNC ConfigSample</TD>"
-    innerhtml += f"<TD><a href=\"../LinuxCNC/ConfigSamples/rio/\">ConfigSample</a></TD>"
-    innerhtml += "</TR>"
-
-    innerhtml += f"</TABLE>"
-    innerhtml += f"<br/>"
-
-
-    if project['osc_clock']:
-        innerhtml += f"<H2>PLL:</H2>"
-        innerhtml += "<TABLE>"
-        innerhtml += "<TR>"
-        innerhtml += f"<TD>sysclk_in {float(project['osc_clock']) // 1000000}MHz</TD>"
-        innerhtml += "</TR>"
-        innerhtml += "<TR>"
-        innerhtml += f"<TD>sysclk {float(project['jdata']['clock']['speed']) // 1000000}MHz</TD>"
-        innerhtml += "</TR>"
-        innerhtml += f"</TABLE>"
-        innerhtml += f"<br/>"
-
-    innerhtml += f"<H2>Pins:</H2>"
-    innerhtml += "<TABLE>"
-    for pname in sorted(list(project['pinlists'])):
-        pins = project['pinlists'][pname]
-        for pin in pins:
-            if pin[2] == "INPUT":
-                pins_input.append(pin[0])
-            else:
-                pins_output.append(pin[0])
-            innerhtml += "<TR>"
-            innerhtml += f"<TD>{pin[0]}</TD>"
-            innerhtml += f"<TD>{pin[1]}</TD>"
-            innerhtml += f"<TD>{pin[2]}</TD>"
-            innerhtml += "</TR>"
-    innerhtml += f"</TABLE>"
-    innerhtml += f"<br/>"
-
-
-    innerhtml += f"<H2>RX-Data:</H2>"
-    innerhtml += "<TABLE>"
-    rxdata.append(f"rx_data")
-    for num in range(project['joints']):
-        innerhtml += "<TR>"
-        innerhtml += f"<TD>jointFreqCmd{num}</TD>"
-        innerhtml += f"<TD>32bit</TD>"
-        innerhtml += "</TR>"
-        rxdata.append(f"jointFreqCmd{num}")
-    for num in range(project['vouts']):
-        innerhtml += "<TR>"
-        innerhtml += f"<TD>setPoint{num}</TD>"
-        innerhtml += f"<TD>32bit</TD>"
-        innerhtml += "</TR>"
-        rxdata.append(f"setPoint{num}")
-    for num in range(project['joints']):
-        innerhtml += "<TR>"
-        innerhtml += f"<TD>jointEnable{num}</TD>"
-        innerhtml += f"<TD>1bit</TD>"
-        innerhtml += "</TR>"
-        rxdata.append(f"jointEnable{num}")
-    for num in range(project['douts']):
-        innerhtml += "<TR>"
-        innerhtml += f"<TD>DOUT{num}</TD>"
-        innerhtml += f"<TD>1bit</TD>"
-        innerhtml += "</TR>"
-        rxdata.append(f"DOUT{num}")
-    innerhtml += f"</TABLE>"
-    innerhtml += f"<br/>"
-
-    innerhtml += f"<H2>TX-Data:</H2>"
-    innerhtml += "<TABLE>"
-    txdata.append(f"tx_data")
-    for num in range(project['joints']):
-        innerhtml += "<TR>"
-        innerhtml += f"<TD>jointFeedback{num}</TD>"
-        innerhtml += f"<TD>32bit</TD>"
-        innerhtml += "</TR>"
-        txdata.append(f"jointFeedback{num}")
-    for num in range(project['vins']):
-        innerhtml += "<TR>"
-        innerhtml += f"<TD>processVariable{num}</TD>"
-        innerhtml += f"<TD>32bit</TD>"
-        innerhtml += "</TR>"
-        txdata.append(f"processVariable{num}")
-    for num in range(project['dins']):
-        innerhtml += "<TR>"
-        innerhtml += f"<TD>DIN{num}</TD>"
-        innerhtml += f"<TD>1bit</TD>"
-        innerhtml += "</TR>"
-        txdata.append(f"DIN{num}")
-    innerhtml += f"</TABLE>"
-    innerhtml += f"<br/>"
-
-
-    innerhtml += f"<H2>Plugins:</H2>"
-    for plugin in project['plugins']:
-        if hasattr(project['plugins'][plugin], "funcs"):
-            module_name = ""
-            module_id = ""
-            mapping = {}
-            module_wires = {}
-            funcs = project['plugins'][plugin].funcs()
-            code = "\n".join(funcs)
-            for line in code.split("\n"):
-                line = line.strip()
-                if line.endswith("("):
-                    module_name = line.split()[0]
-                    module_id = line.split()[-2]
-                    module_wires[module_id] = []
-                elif line.startswith("assign "):
-                    wire_to = line.split()[1]
-                    wire_from = line.split()[3].strip("!;")
-                    mapping[wire_from] = wire_to
-                elif line.startswith("."):
-                    wire = line.split("(")[1].split(")")[0].split()[0]
-                    wire_org = wire
-                    if wire in mapping:
-                        wire = mapping[wire]
-                    if module_id:
-                        if wire in pins_input:
-                            module_wires[module_id].append((wire, wire_org, "from PINS"))
-                        elif wire in pins_output:
-                            module_wires[module_id].append((wire, wire_org, "to PINS"))
-                        elif wire in txdata:
-                            module_wires[module_id].append((wire, wire_org, "to TX_DATA"))
-                        elif wire in rxdata:
-                            module_wires[module_id].append((wire, wire_org, "from RX_DATA"))
-                        else:
-                            module_wires[module_id].append((wire, wire_org, "---"))
-
-            if module_wires:
-                innerhtml += f"<H3>Modul: {plugin}:</H3>"
-                for module, wires in module_wires.items():
-                    innerhtml += "<TABLE>"
-                    innerhtml += "<TR>"
-                    innerhtml += f"<TD><B>{module}</B></TD>"
-                    innerhtml += "</TR>"
-                    for wire in wires:
-                        innerhtml += "<TR>"
-                        innerhtml += f"<TD>{wire[0]}</TD>"
-                        innerhtml += f"<TD>{wire[2]}</TD>"
-                        innerhtml += "</TR>"
-                        if wire[1] != wire[0]:
-                            innerhtml += "<TR>"
-                            innerhtml += f"<TD>{wire[1]}</TD>"
-                            innerhtml += f"<TD>{wire[2]}</TD>"
-                            innerhtml += "</TR>"
-                    innerhtml += f"</TABLE>"
-                    innerhtml += "<br/>"
-
-    innerhtml += "<br/>"
-    innerhtml += "<br/>"
-    innerhtml += "</html>"
-
-    open(f"{project['DOC_PATH']}/README.html", "w").write(innerhtml)
-
-
-
-
-
 
 
 
@@ -407,11 +235,17 @@ def generate(project):
     for pname in sorted(list(project['pinlists'])):
         pins = project['pinlists'][pname]
         for pin in pins:
-            if pin[2] == "INPUT":
-                pins_input.append(pin[0])
+            if pin[1].startswith("EXPANSION"):
+                if pin[2] == "INPUT":
+                    expansion_input.append(pin[0])
+                else:
+                    expansion_output.append(pin[0])
             else:
-                pins_output.append(pin[0])
-            innerhtml += f"| {pin[0]} | {pin[1]}</TD> | {pin[2]} |\n"
+                if pin[2] == "INPUT":
+                    pins_input.append(pin[0])
+                else:
+                    pins_output.append(pin[0])
+                innerhtml += f"| {pin[0]} | {pin[1]} | {pin[2]} |\n"
     innerhtml += "\n"
 
 
@@ -474,7 +308,11 @@ def generate(project):
                     if wire in mapping:
                         wire = mapping[wire]
                     if module_id:
-                        if wire in pins_input:
+                        if wire in expansion_input:
+                            module_wires[module_id].append((wire, wire_org, "EXPANSION0_INPUT"))
+                        elif wire in expansion_output:
+                            module_wires[module_id].append((wire, wire_org, "EXPANSION0_OUTPUT"))
+                        elif wire in pins_input:
                             module_wires[module_id].append((wire, wire_org, "from PINS"))
                         elif wire in pins_output:
                             module_wires[module_id].append((wire, wire_org, "to PINS"))
@@ -492,7 +330,7 @@ def generate(project):
                     innerhtml += f"files: "
                     for ipv in project["plugins"][plugin].ips():
                         innerhtml += f"[{ipv}](Firmware/{ipv}) "
-                    innerhtml += "\n"
+                    innerhtml += "\n\n"
 
                 for module, wires in module_wires.items():
                     innerhtml += f"#### {module}\n"

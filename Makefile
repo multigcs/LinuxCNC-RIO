@@ -1,4 +1,6 @@
 
+#export PATH=$PATH:/opt/oss-cad-suite/bin/
+
 CONFIG ?= configs/Olimex-ICE40HX8K-EVB_BOB/config.json
 TARGETNAME = $(shell jq -r '.name' < ${CONFIG})
 

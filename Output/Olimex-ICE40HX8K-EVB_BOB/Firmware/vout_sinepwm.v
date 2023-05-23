@@ -1,6 +1,6 @@
 
 module vout_sinepwm
-    #(parameter START = 0)
+    #(parameter START = 0, parameter DIVIDER = 255)
      (
          input clk,
          input signed [31:0] freq,
@@ -76,7 +76,7 @@ module vout_sinepwm
     end
 
     wire dir1;
-    vout_sine_pwm #(255) vout_sine_pwm1 (
+    vout_sine_pwm #(DIVIDER) vout_sine_pwm1 (
                       .clk (clk),
                       .dty ({24'h000000, dty}),
                       .dir (dir1),
@@ -86,7 +86,7 @@ module vout_sinepwm
 endmodule
 
 module vout_sine_pwm
-    #(parameter divider = 255)
+    #(parameter DIVIDER = 255)
      (
          input clk,
          input signed [31:0] dty,
@@ -111,7 +111,7 @@ module vout_sine_pwm
         end
         if (dtyAbs != 0) begin
             counter = counter + 1;
-            if (counter == divider) begin
+            if (counter == DIVIDER) begin
                 pulse = 1;
                 counter = 0;
             end else if (counter == dtyAbs) begin

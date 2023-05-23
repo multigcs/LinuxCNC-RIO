@@ -7,6 +7,9 @@ set_io  BLINK_LED M12
 ### error ###
 set_io  ERROR_OUT R16
 
+### enable ###
+set_io  ENA F5
+
 ### vin_quadencoder ###
 
 ### dout_bit ###
@@ -21,11 +24,15 @@ set_io  INTERFACE_SPI_MISO P11
 set_io  INTERFACE_SPI_SCK R11
 set_io  INTERFACE_SPI_SSEL L11
 
+### expansion_shiftreg ###
+
 ### vout_pwm ###
 set_io  VOUT0_PWM_PWM J2
 set_io  VOUT1_PWM_PWM H5
 
 ### vin_pulsecounter ###
+
+### vout_frequency ###
 
 ### joint_pwmdir ###
 
@@ -43,6 +50,8 @@ set_io  JOINT3_STEPPER_DIR F1
 set_io  JOINT4_STEPPER_STP C2
 set_io  JOINT4_STEPPER_DIR C1
 
+### vin_sonar ###
+
 ### din_bit ###
 set_io  -pullup yes DIN0 H6
 set_io  -pullup yes DIN1 F2
@@ -55,6 +64,3 @@ set_io  -pullup yes DIN4 B1
 ### joint_rcservo ###
 
 ### vout_sinepwm ###
-
-### enable ###
-set_io  ENA F5

@@ -64,7 +64,7 @@
         },
         {
             "type": "frequency",
-            "pin": "G3"
+            "pin": "EXPANSION0_INPUT[2]"
         }
     ],
     "dout": [

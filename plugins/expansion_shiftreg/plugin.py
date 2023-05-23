@@ -8,22 +8,6 @@ class Plugin:
                 "basetype": "expansion",
                 "subtype": "shiftreg",
                 "options": {
-                    "clock": {
-                        "type": "output",
-                        "name": "clock pin",
-                    },
-                    "load": {
-                        "type": "output",
-                        "name": "load pin",
-                    },
-                    "in": {
-                        "type": "input",
-                        "name": "input data",
-                    },
-                    "out": {
-                        "type": "output",
-                        "name": "output data",
-                    },
                     "bits": {
                         "type": "int",
                         "name": "number of bits",
@@ -31,6 +15,28 @@ class Plugin:
                     "speed": {
                         "type": "int",
                         "name": "clock speed",
+                    },
+                    "pins": {
+                        "type": "dict",
+                        "name": "pin config",
+                        "options": {
+                            "clock": {
+                                "type": "output",
+                                "name": "clock pin",
+                            },
+                            "load": {
+                                "type": "output",
+                                "name": "load pin",
+                            },
+                            "in": {
+                                "type": "input",
+                                "name": "input data",
+                            },
+                            "out": {
+                                "type": "output",
+                                "name": "output data",
+                            },
+                        },
                     },
                 },
             }

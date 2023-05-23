@@ -10,16 +10,18 @@
         "speed": "48000000",
         "pin": "B2"
     },
-    "interface": {
-        "type": "spi",
-        "max": "4000000",
-        "pins": {
-            "MOSI": "G6",
-            "MISO": "H7",
-            "SCK":  "G7",
-            "SEL":  "G1"
+    "interface": [
+        {
+            "type": "spi",
+            "max": "4000000",
+            "pins": {
+                "MOSI": "G6",
+                "MISO": "H7",
+                "SCK":  "G7",
+                "SEL":  "G1"
+            }
         }
-    },
+    ],
     "____blink": {
         "pin": "B3"
     },

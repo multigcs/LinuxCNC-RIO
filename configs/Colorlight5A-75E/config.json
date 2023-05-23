@@ -10,15 +10,17 @@
         "speed": "100000000",
         "pin": "P6"
     },
-    "interface": {
-        "type": "spi",
-        "pins": {
-            "MOSI": "H13",
-            "MISO": "G12",
-            "SCK": "G13",
-            "SEL": "G14"
+    "interface": [
+        {
+            "type": "spi",
+            "pins": {
+                "MOSI": "H13",
+                "MISO": "G12",
+                "SCK": "G13",
+                "SEL": "G14"
+            }
         }
-    },
+    ],
     "expansion": [
         {
             "type": "shiftreg",

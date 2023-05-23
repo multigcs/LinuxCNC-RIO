@@ -6,14 +6,13 @@ from struct import *
 import json
 import sys
 from functools import partial
-from PyQt5.QtWidgets import QWidget,QPushButton,QApplication,QListWidget,QGridLayout,QLabel,QSlider,QCheckBox,QComboBox,QLineEdit
+from PyQt5.QtWidgets import QWidget,QPushButton,QApplication,QListWidget,QGridLayout,QLabel,QSlider,QCheckBox,QComboBox,QLineEdit,QSpinBox
 from PyQt5.QtCore import QTimer,QDateTime, Qt
 from PyQt5.QtGui import QFont
 
 jdata = json.loads(open(sys.argv[1], "r").read())
 
-
-pinlist = []
+pinlist = {}
 
 plugins = {}
 for path in glob.glob("plugins/*"):
@@ -22,9 +21,18 @@ for path in glob.glob("plugins/*"):
     plugins[plugin] = vplugin.Plugin(jdata)
 
 
+for char in "ABCDEFGHIJKLMNOPQRSTUVWXYZ":
+    for num in range(32):
+        pinlist[f"{char}{num}"] = "IO"
+
+
 setup_data = {}
 for plugin in plugins:
-    #print(plugin)
+    if hasattr(plugins[plugin], "pinlist"):
+        for pins in plugins[plugin].pinlist():
+            if not pins[1].startswith("EXPANSION"):
+                pinlist[pins[1]] = "IO"
+
     if hasattr(plugins[plugin], "setup"):
         setups = plugins[plugin].setup()
         for setup in setups:
@@ -36,14 +44,13 @@ for plugin in plugins:
 
     if hasattr(plugins[plugin], "expansions"):
         expansions = plugins[plugin].expansions()
-        print("####", expansions)
         for name, bits in expansions.items():
             if name.endswith("OUTPUT"):
                 for bit in range(bits):
-                    pinlist.append((f"{name}[{bit}]", "OUTPUT"))
+                    pinlist[f"{name}[{bit}]"] = "OUTPUT"
             else:
                 for bit in range(bits):
-                    pinlist.append((f"{name}[{bit}]", "INPUT"))
+                    pinlist[f"{name}[{bit}]"] = "INPUT"
 
 
 
@@ -57,7 +64,7 @@ class WinForm(QWidget):
         self.layout_col = 0
         self.setLayout(self.layout)
 
-        for section in ["vout", "vin", "joints", "dout", "din"]:
+        for section in ["vout", "vin", "joints", "dout", "din", "interface", "expansion"]:
             #print(section)
             label = QLabel(section.title())
             #label.setStyleSheet("border: 1px solid black;")
@@ -69,12 +76,9 @@ class WinForm(QWidget):
             
             if section in jdata:
                 for num, entry in enumerate(jdata[section]):
-                    #print("##", num, entry)
-                    
                     plugin_name = "???"
                     etype = entry.get("type", "---")
                     description = f"Type: {etype}"
-
                     for plugin in plugins:
                         if hasattr(plugins[plugin], "types"):
                             if etype in plugins[plugin].types():
@@ -108,7 +112,6 @@ class WinForm(QWidget):
 class EditAdd(QWidget):
 
     def __init__(self, section, num, parent=None):
-
         super(EditAdd, self).__init__(parent)
 
         self.section = section
@@ -147,9 +150,9 @@ class EditAdd(QWidget):
                 value = str(data.get(name, ""))
                 self.layout.addWidget(QLabel(name), self.layout_row, self.layout_col)
                 combo = QComboBox()
-                for pin in pinlist:
-                    if pin[1] == "INPUT":
-                        combo.addItem(pin[0])
+                for pin, pdir in pinlist.items():
+                    if pdir in ["INPUT", "IO"]:
+                        combo.addItem(pin)
                 combo.setEditable(True)
                 combo.setCurrentText(value)
                 self.layout.addWidget(combo, self.layout_row, self.layout_col + 1)
@@ -159,19 +162,30 @@ class EditAdd(QWidget):
                 value = str(data.get(name, ""))
                 self.layout.addWidget(QLabel(name), self.layout_row, self.layout_col)
                 combo = QComboBox()
-                for pin in pinlist:
-                    if pin[1] == "OUTPUT":
-                        combo.addItem(pin[0])
+                for pin, pdir in pinlist.items():
+                    if pdir in ["OUTPUT", "IO"]:
+                        combo.addItem(pin)
                 combo.setEditable(True)
                 combo.setCurrentText(value)
                 self.layout.addWidget(combo, self.layout_row, self.layout_col + 1)
                 self.layout_row += 1
 
+            elif option["type"] == "int":
+                value = int(data.get(name, 0))
+                self.layout.addWidget(QLabel(name), self.layout_row, self.layout_col)
+                spinbox = QSpinBox()
+                spinbox.setSingleStep(1)
+                spinbox.setMinimum(-900000000)
+                spinbox.setMaximum(900000000)
+                spinbox.setValue(value)
+                self.layout.addWidget(spinbox, self.layout_row, self.layout_col + 1)
+                self.layout_row += 1
+
             else:
-                value = data.get(name, "")
+                value = str(data.get(name, ""))
                 self.layout.addWidget(QLabel(name), self.layout_row, self.layout_col)
                 tedit = QLineEdit()
-                tedit.setText(str(value))
+                tedit.setText(value)
                 self.layout.addWidget(tedit, self.layout_row, self.layout_col + 1)
                 self.layout_row += 1
 

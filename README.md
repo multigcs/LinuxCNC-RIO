@@ -17,6 +17,18 @@ RealtimeIO for LinuxCNC based on an FPGA
  https://github.com/YosysHQ/oss-cad-suite-build
 
 
+## interfacing with the raspberry
+
+* Interface: SPI
+
+* Chipselect: CE_1
+
+
+## test-tool
+
+python3 Output/BOARD_NAME/Firmware/qt_spitest.py
+
+
 ## Structure:
 
 buildtool.py plugins:  this are python scripts to generates the verilog files from a configuration

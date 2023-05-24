@@ -1,4 +1,4 @@
-
+/* verilator lint_off WIDTH */
 module vout_sinepwm
     #(parameter START = 0, parameter DIVIDER = 255)
      (

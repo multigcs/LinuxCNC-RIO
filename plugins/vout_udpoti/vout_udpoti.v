@@ -5,7 +5,7 @@ module vout_udpoti
         input clk,
         input wire [31:0] value,
         output reg UPDOWN = 0,
-        output reg INCREMENT = 0,
+        output reg INCREMENT = 0
     );
 
     reg ctrl_clk = 0;

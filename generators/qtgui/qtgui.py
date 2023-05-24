@@ -97,6 +97,8 @@ def generate(project):
             spitest_data.append(f"    ({vout.get('min', 0)}, {vout.get('max', 100000)}, 'frequency', 0),")
         elif vout.get('type') == "udpoti":
             spitest_data.append(f"    ({vout.get('min', 0)}, {vout.get('max', 100)}, 'udpoti', 0),")
+        elif vout.get('type') == "spipoti":
+            spitest_data.append(f"    ({vout.get('min', 0)}, {vout.get('max', 255)}, 'spipoti', 0),")
         else:
             spitest_data.append(f"    ({vout.get('min', 0)}, {vout.get('max', 10)}, 'scale', 1),")
     spitest_data.append("]")
@@ -287,6 +289,8 @@ class WinForm(QWidget):
                 elif voutminmax[vn][2] == 'rcservo':
                     value = int(((value + 300)) * (PRU_OSC / 200000))
                 elif voutminmax[vn][2] == 'udpoti':
+                    value = value
+                elif voutminmax[vn][2] == 'spipoti':
                     value = value
                 elif voutminmax[vn][2] == 'frequency':
                     if value != 0:

@@ -5,6 +5,7 @@ import time
 from struct import *
 import json
 import sys
+from copy import deepcopy
 from functools import partial
 from PyQt5.QtWidgets import (
     QWidget,
@@ -33,6 +34,7 @@ pinlist = {}
 
 if os.path.isfile(f"chipdata/{jdata['family']}.json"):
     chiptype_mapping = {
+        "25k": "LFE5U-25F",
         "up5k": "5k",
         "hx1k": "1k",
         "hx4k": "4k",
@@ -89,14 +91,34 @@ for plugin in plugins:
                     pinlist[f"{name}[{bit}]"] = "INPUT"
 
 
+
+setup_data["clock"] = {
+    "speed": {
+        "type": "int",
+        "name": "clock speed",
+    },
+    "pin": {
+        "type": "input",
+        "name": "clock pin",
+    },
+}
+
+
+
 class WinForm(QWidget):
     def __init__(self, parent=None):
         super(WinForm, self).__init__(parent)
         self.setWindowTitle("Setup")
         self.layout = QGridLayout()
+        self.setLayout(self.layout)
+        self.load()
+
+    def load(self):
+        for i in reversed(range(self.layout.count())): 
+            self.layout.itemAt(i).widget().setParent(None)
+
         self.layout_row = 0
         self.layout_col = 0
-        self.setLayout(self.layout)
 
         for section in [
             "vout",
@@ -150,28 +172,79 @@ class WinForm(QWidget):
                     self.layout.addWidget(
                         editbutton, self.layout_row, self.layout_col + 1
                     )
+                    editbutton.clicked.connect(partial(self.edit_callback, section, num))
 
-                    editbutton.clicked.connect(partial(self.open_edit, section, num))
+
+                    delbutton = QPushButton("del")
+                    self.layout.addWidget(
+                        delbutton, self.layout_row, self.layout_col + 2
+                    )
+                    delbutton.clicked.connect(partial(self.del_callback, section, num))
+
                     self.layout_row += 1
 
-            self.layout.addWidget(
-                QPushButton("add"), self.layout_row, self.layout_col + 1
-            )
+
+            addbutton = QPushButton("add")
+            addbutton.clicked.connect(partial(self.add_callback, section))
+            self.layout.addWidget(addbutton, self.layout_row, self.layout_col + 1)
             self.layout_row += 1
             self.layout_col -= 1
 
-    def open_edit(self, section, num):
-        print("open edit", section, num)
-        self.edit = EditAdd(section, num)
+
+
+    def add_setup_options(self, options, data, dpath=""):
+        for name, option in options.items():
+            if option["type"] == "dict":
+                data[name] = {}
+                value = data[name]
+                self.add_setup_options(option["options"], value, f"{dpath}/{name}")
+            elif option["type"] == "bool":
+                data[name] = False
+            elif option["type"] == "input":
+                data[name] = ""
+            elif option["type"] == "output":
+                data[name] = ""
+            elif option["type"] == "int":
+                data[name] = 0
+            else:
+                data[name] = ""
+
+
+    def add_callback(self, section):
+        num = 0
+        if section in jdata:
+            num = len(jdata[section])
+        else:
+            jdata[section] = []
+
+        for subtype in setup_data[section]:
+            print(subtype)
+
+        jdata[section].append({"type": subtype})
+        self.add_setup_options(setup_data[section][subtype], jdata[section][num])
+
+        self.edit = EditAdd(section, num, self)
         self.edit.show()
+
+    def edit_callback(self, section, num):
+        self.edit = EditAdd(section, num, self)
+        self.edit.show()
+
+    def del_callback(self, section, num):
+        del jdata[section][num]
+        self.load()
+
+
 
 
 class EditAdd(QWidget):
-    def __init__(self, section, num, parent=None):
+    def __init__(self, section, num, gui, parent=None):
         super(EditAdd, self).__init__(parent)
 
+        self.gui = gui
         self.section = section
         self.num = num
+        self.widgets = {}
 
         self.setWindowTitle(f"Edit ({section}:{num})")
         self.layout = QGridLayout()
@@ -179,10 +252,56 @@ class EditAdd(QWidget):
         self.layout_col = 0
         self.setLayout(self.layout)
 
-        subtype = jdata[section][num].get("type", "")
-        self.gen_setup_options(setup_data[section][subtype], jdata[section][num])
+        self.subtype = jdata[section][num].get("type", "")
+        self.layout.addWidget(QLabel(f"Type: {self.subtype}"), self.layout_row, 0)
+        self.layout_row += 1
+        self.gen_setup_options(setup_data[section][self.subtype], jdata[section][num])
 
-    def gen_setup_options(self, options, data):
+        button = QPushButton("Save")
+        button.clicked.connect(self.save_callback)
+        self.layout.addWidget(button, self.layout_row, self.layout_col + 1)
+
+        button = QPushButton("Cancel")
+        button.clicked.connect(self.cancel_callback)
+        self.layout.addWidget(button, self.layout_row, self.layout_col)
+
+        self.layout_row += 1
+        
+
+    def save_setup_options(self, options, data, dpath=""):
+        for name, option in options.items():
+            if option["type"] == "dict":
+                value = data.get(name)
+                self.save_setup_options(option["options"], value, f"{dpath}/{name}")
+            elif option["type"] == "bool":
+                data[name] = self.widgets[f"{dpath}/{name}"].isChecked()
+            elif option["type"] == "input":
+                data[name] = self.widgets[f"{dpath}/{name}"].currentText()
+            elif option["type"] == "output":
+                data[name] = self.widgets[f"{dpath}/{name}"].currentText()
+            elif option["type"] == "int":
+                data[name] = self.widgets[f"{dpath}/{name}"].value()
+            else:
+                data[name] = self.widgets[f"{dpath}/{name}"].getText()
+
+
+    def cancel_callback(self):
+        self.close()
+        self.gui.load()
+
+
+    def save_callback(self):
+        self.save_setup_options(setup_data[self.section][self.subtype], jdata[self.section][self.num])
+        print("############################################################")
+        #print(jdata[self.section][self.num])
+        print(json.dumps(jdata, indent=4))
+        print("############################################################")
+        self.close()
+        self.gui.load()
+
+
+
+    def gen_setup_options(self, options, data, dpath=""):
         for name, option in options.items():
             if option["type"] == "dict":
                 value = data.get(name, {})
@@ -191,7 +310,7 @@ class EditAdd(QWidget):
                 self.layout.addWidget(label, self.layout_row, self.layout_col)
                 self.layout_row += 1
                 self.layout_col += 1
-                self.gen_setup_options(option["options"], value)
+                self.gen_setup_options(option["options"], value, f"{dpath}/{name}")
                 self.layout_col -= 1
 
             elif option["type"] == "bool":
@@ -199,6 +318,7 @@ class EditAdd(QWidget):
                 self.layout.addWidget(QLabel(name), self.layout_row, self.layout_col)
                 tedit = QCheckBox()
                 tedit.setChecked(value)
+                self.widgets[f"{dpath}/{name}"] = tedit
                 self.layout.addWidget(tedit, self.layout_row, self.layout_col + 1)
                 self.layout_row += 1
 
@@ -211,6 +331,7 @@ class EditAdd(QWidget):
                         combo.addItem(pin)
                 combo.setEditable(True)
                 combo.setCurrentText(value)
+                self.widgets[f"{dpath}/{name}"] = combo
                 self.layout.addWidget(combo, self.layout_row, self.layout_col + 1)
                 self.layout_row += 1
 
@@ -223,6 +344,7 @@ class EditAdd(QWidget):
                         combo.addItem(pin)
                 combo.setEditable(True)
                 combo.setCurrentText(value)
+                self.widgets[f"{dpath}/{name}"] = combo
                 self.layout.addWidget(combo, self.layout_row, self.layout_col + 1)
                 self.layout_row += 1
 
@@ -234,6 +356,7 @@ class EditAdd(QWidget):
                 spinbox.setMinimum(-900000000)
                 spinbox.setMaximum(900000000)
                 spinbox.setValue(value)
+                self.widgets[f"{dpath}/{name}"] = spinbox
                 self.layout.addWidget(spinbox, self.layout_row, self.layout_col + 1)
                 self.layout_row += 1
 
@@ -242,6 +365,7 @@ class EditAdd(QWidget):
                 self.layout.addWidget(QLabel(name), self.layout_row, self.layout_col)
                 tedit = QLineEdit()
                 tedit.setText(value)
+                self.widgets[f"{dpath}/{name}"] = tedit
                 self.layout.addWidget(tedit, self.layout_row, self.layout_col + 1)
                 self.layout_row += 1
 

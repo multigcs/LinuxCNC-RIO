@@ -79,14 +79,10 @@
     ],
     "vin": [
         {
-            "type": "encoder",
+            "type": "quadencoder",
             "pullup": true,
-            "pina": "E2",
-            "pinb": "G3"
-        },
-        {
-            "type": "none",
-            "pin": "G3"
+            "pin_a": "E2",
+            "pin_b": "G3"
         }
     ],
     "joints": [

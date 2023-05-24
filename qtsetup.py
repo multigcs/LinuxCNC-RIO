@@ -141,7 +141,7 @@ class WinForm(QWidget):
             if section in jdata:
                 for num, entry in enumerate(jdata[section]):
                     plugin_name = "???"
-                    etype = entry.get("type", "")
+                    etype = entry.get("type", "base")
                     description = f"Type: {etype}"
                     pin = entry.get("pin")
                     if pin:
@@ -184,9 +184,14 @@ class WinForm(QWidget):
                     self.layout_row += 1
 
 
+            combo = QComboBox()
+            for subtype in setup_data[section]:
+                combo.addItem(subtype)
             addbutton = QPushButton("add")
-            addbutton.clicked.connect(partial(self.add_callback, section))
-            self.layout.addWidget(addbutton, self.layout_row, self.layout_col + 1)
+            addbutton.clicked.connect(partial(self.add_callback, section, combo))
+
+            self.layout.addWidget(combo, self.layout_row, self.layout_col + 1)
+            self.layout.addWidget(addbutton, self.layout_row, self.layout_col + 2)
             self.layout_row += 1
             self.layout_col -= 1
 
@@ -210,15 +215,15 @@ class WinForm(QWidget):
                 data[name] = ""
 
 
-    def add_callback(self, section):
+    def add_callback(self, section, combo):
         num = 0
+        
         if section in jdata:
             num = len(jdata[section])
         else:
             jdata[section] = []
 
-        for subtype in setup_data[section]:
-            print(subtype)
+        subtype = combo.currentText()
 
         jdata[section].append({"type": subtype})
         self.add_setup_options(setup_data[section][subtype], jdata[section][num])

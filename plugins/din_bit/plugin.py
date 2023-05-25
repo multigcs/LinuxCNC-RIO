@@ -7,30 +7,51 @@ class Plugin:
             {
                 "basetype": "din",
                 "subtype": "",
+                "comment": "normal binary input pin",
                 "options": {
                     "pin": {
                         "type": "input",
                         "name": "input pin",
+                    },
+                    "pullup": {
+                        "type": "bool",
+                        "name": "input pin",
+                        "comment": "activates the internal pullup resistor for this pin",
+                        "default": False,
                     },
                 },
             },
             {
                 "basetype": "din",
                 "subtype": "home",
+                "comment": "input pin used for home-switches",
                 "options": {
                     "pin": {
                         "type": "input",
                         "name": "input pin",
+                    },
+                    "pullup": {
+                        "type": "bool",
+                        "name": "input pin",
+                        "comment": "activates the internal pullup resistor for this pin",
+                        "default": False,
                     },
                 },
             },
             {
                 "basetype": "din",
                 "subtype": "probe",
+                "comment": "input pin used for the probe-switche",
                 "options": {
                     "pin": {
                         "type": "input",
                         "name": "input pin",
+                    },
+                    "pullup": {
+                        "type": "bool",
+                        "name": "input pin",
+                        "comment": "activates the internal pullup resistor for this pin",
+                        "default": False,
                     },
                 },
             },

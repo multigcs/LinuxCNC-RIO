@@ -7,10 +7,12 @@ class Plugin:
             {
                 "basetype": "joints",
                 "subtype": "pwmdir",
+                "comment": "using pwm/dir signals for joints / axis movements (DC-Motors)",
                 "options": {
                     "enable": {
                         "type": "output",
                         "name": "enable pin",
+                        "comment": "optional",
                     },
                     "pwm": {
                         "type": "output",

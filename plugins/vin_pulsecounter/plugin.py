@@ -7,18 +7,22 @@ class Plugin:
             {
                 "basetype": "vin",
                 "subtype": "counter",
+                "comment": "counting signals on the input pins (up/down), can be reset by the reset-pin",
                 "options": {
                     "pin_up": {
                         "type": "input",
                         "name": "up pin",
+                        "comment": "to count up",
                     },
                     "pin_down": {
                         "type": "input",
                         "name": "down pin",
+                        "comment": "to count down",
                     },
                     "pin_reset": {
                         "type": "input",
                         "name": "reset pin",
+                        "comment": "reset the counter to zero",
                     },
                 },
             }

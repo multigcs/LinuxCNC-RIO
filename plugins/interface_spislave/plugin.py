@@ -7,6 +7,7 @@ class Plugin:
             {
                 "basetype": "interface",
                 "subtype": "spi",
+                "comment": "spi slave interface for the communication with LinuxCNC",
                 "options": {
                     "pins": {
                         "type": "dict",
@@ -27,6 +28,7 @@ class Plugin:
                             "SEL": {
                                 "type": "input",
                                 "name": "selectionpin",
+                                "comment": "do not use the spi-flash pin !!!",
                             },
                         },
                     },

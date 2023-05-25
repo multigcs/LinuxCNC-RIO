@@ -8,6 +8,12 @@ class Plugin:
                 "basetype": "vout",
                 "subtype": "pwm",
                 "options": {
+                    "frequency": {
+                        "type": "int",
+                        "name": "pwm frequency",
+                        "comment": "pwm frequency in Hz",
+                        "defaut": 10000,
+                    },
                     "dir": {
                         "type": "output",
                         "name": "dir output pin",
@@ -19,6 +25,8 @@ class Plugin:
                     "invert_pwm": {
                         "type": "bool",
                         "name": "inverted pwm pin",
+                        "default": False,
+                        "comment": "this option inverts the pwm signal",
                     },
                 },
             },
@@ -26,6 +34,12 @@ class Plugin:
                 "basetype": "vout",
                 "subtype": "rcservo",
                 "options": {
+                    "frequency": {
+                        "type": "int",
+                        "name": "pwm frequency",
+                        "comment": "servo update-rate in Hz (max 50Hz for old analog servos)",
+                        "defaut": 100,
+                    },
                     "pin": {
                         "type": "output",
                         "name": "pwm output pin",
@@ -33,6 +47,7 @@ class Plugin:
                     "invert_pwm": {
                         "type": "bool",
                         "name": "inverted pwm pin",
+                        "comment": "this option inverts the pwm signal",
                     },
                 },
             }

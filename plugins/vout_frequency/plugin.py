@@ -7,6 +7,7 @@ class Plugin:
             {
                 "basetype": "vout",
                 "subtype": "frequency",
+                "comment": "generates a variable frequency on the output pin",
                 "options": {
                     "pin": {
                         "type": "input",
@@ -34,8 +35,6 @@ class Plugin:
         func_out = ["    // vout_frequency's"]
         for num, vout in enumerate(self.jdata["vout"]):
             if vout["type"] in ["frequency"]:
-                freq = int(vout.get("frequency", 10000))
-                divider = int(self.jdata["clock"]["speed"]) // freq
                 func_out.append(f"    vout_frequency vout_frequency{num} (")
                 func_out.append("        .clk (sysclk),")
                 func_out.append(f"        .frequency (setPoint{num}),")

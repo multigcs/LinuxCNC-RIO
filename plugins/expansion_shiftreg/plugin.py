@@ -7,14 +7,17 @@ class Plugin:
             {
                 "basetype": "expansion",
                 "subtype": "shiftreg",
+                "comment": "to expand the number of IO's via fast shiftregisters like 74hc595(8 outputs) / 74hc165(8 inputs)",
                 "options": {
                     "bits": {
                         "type": "int",
                         "name": "number of bits",
+                        "comment": "total number of bits to send/receive N = max(8bit * num input-devices, 8bit * num output-devices)",
                     },
                     "speed": {
                         "type": "int",
                         "name": "clock speed",
+                        "comment": "the clock-speed in Hz",
                     },
                     "pins": {
                         "type": "dict",
@@ -23,18 +26,22 @@ class Plugin:
                             "clock": {
                                 "type": "output",
                                 "name": "clock pin",
+                                "comment": "used for input and output expansions",
                             },
                             "load": {
                                 "type": "output",
                                 "name": "load pin",
+                                "comment": "used for input and output expansions",
                             },
                             "in": {
                                 "type": "input",
                                 "name": "input data",
+                                "comment": "used only for the input expansions",
                             },
                             "out": {
                                 "type": "output",
                                 "name": "output data",
+                                "comment": "used only for the output expansions",
                             },
                         },
                     },

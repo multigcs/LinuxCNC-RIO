@@ -7,7 +7,14 @@ class Plugin:
             {
                 "basetype": "vin",
                 "subtype": "quadencoder",
+                "comment": "quad-encoder input",
                 "options": {
+                    "debounce": {
+                        "type": "bool",
+                        "name": "debounce",
+                        "default": False,
+                        "comment": "this option adds an debouncer to the input-pins",
+                    },
                     "pin_a": {
                         "type": "input",
                         "name": "input pin A",

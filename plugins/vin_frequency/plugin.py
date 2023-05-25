@@ -7,6 +7,7 @@ class Plugin:
             {
                 "basetype": "vin",
                 "subtype": "frequency",
+                "comment": "measures the frequency of signals on the input-pin in Hz",
                 "options": {
                     "pin": {
                         "type": "input",
@@ -15,6 +16,12 @@ class Plugin:
                     "pullup": {
                         "type": "bool",
                         "name": "internal pullup",
+                    },
+                    "freq_min": {
+                        "type": "int",
+                        "name": "internal pullup",
+                        "default": 10,
+                        "comment": "this is the minumum frequency in Hz on the input-pin, all below is set to 0 Hz",
                     },
                 },
             }

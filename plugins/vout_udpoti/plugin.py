@@ -11,10 +11,14 @@ class Plugin:
                     "resolution": {
                         "type": "int",
                         "name": "resolution",
+                        "default": "100",
+                        "comment": "number of steps / resolution of the poti",
                     },
                     "speed": {
                         "type": "int",
                         "name": "speed",
+                        "default": "100000",
+                        "comment": "the clock speed in Hz",
                     },
                     "pins": {
                         "type": "dict",
@@ -23,6 +27,7 @@ class Plugin:
                             "updown": {
                                 "type": "output",
                                 "name": "updown pin",
+                                "comment": "this pin set the direction for increment (UP/Down)",
                             },
                             "incr": {
                                 "type": "output",

@@ -7,6 +7,7 @@ class Plugin:
             {
                 "basetype": "vin",
                 "subtype": "sonar",
+                "comment": "to messure distance via ultrasonic modules with trigger/echo pins",
                 "options": {
                     "pin_trigger": {
                         "type": "input",

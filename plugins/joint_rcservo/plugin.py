@@ -7,6 +7,7 @@ class Plugin:
             {
                 "basetype": "joints",
                 "subtype": "rcservo",
+                "comment": "using rcservo's for joints / axis movements",
                 "options": {
                     "pins": {
                         "type": "dict",

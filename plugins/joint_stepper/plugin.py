@@ -11,6 +11,7 @@ class Plugin:
                     "cl": {
                         "type": "bool",
                         "name": "closed loop",
+                        "comment": "using encoder for the feedback, this needs 2 extra pins (enc_a / enc_b)",
                     },
                     "pins": {
                         "type": "dict",
@@ -19,6 +20,7 @@ class Plugin:
                             "step": {
                                 "type": "output",
                                 "name": "stepper pin",
+                                "comment": "do not use expansion-pins here, we need very fast pulses",
                             },
                             "dir": {
                                 "type": "output",
@@ -27,14 +29,17 @@ class Plugin:
                             "en": {
                                 "type": "output",
                                 "name": "enable pin",
+                                "comment": "this pin is optional",
                             },
                             "enc_a": {
                                 "type": "input",
                                 "name": "encoder A pin",
+                                "comment": "this pin is optional / needed for closed-loop systems",
                             },
                             "enc_b": {
                                 "type": "input",
                                 "name": "encoder B pin",
+                                "comment": "this pin is optional / needed for closed-loop systems",
                             },
                         },
                     },

@@ -7,6 +7,7 @@ class Plugin:
             {
                 "basetype": "vin",
                 "subtype": "pwm",
+                "comment": "measures the puls-lenght of pwm-signals on the input-pin",
                 "options": {
                     "pin": {
                         "type": "input",
@@ -15,6 +16,8 @@ class Plugin:
                     "freq_min": {
                         "type": "int",
                         "name": "minimum frequency",
+                        "default": 10,
+                        "comment": "this is the minumum frequency in Hz on the input-pin, all below is set to zero",
                     },
                 },
             }

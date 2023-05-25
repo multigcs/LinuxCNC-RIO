@@ -108,7 +108,7 @@ setup_data["clock"] = {
 class WinForm(QWidget):
     def __init__(self, parent=None):
         super(WinForm, self).__init__(parent)
-        self.setWindowTitle("Setup")
+        self.setWindowTitle("RIO-Setup")
         self.layout = QGridLayout()
         self.setLayout(self.layout)
 
@@ -122,13 +122,13 @@ class WinForm(QWidget):
         self.layout_col = 0
 
         for section in [
-            "vout",
-            "vin",
-            "joints",
-            "dout",
-            "din",
             "interface",
             "expansion",
+            "joints",
+            "vout",
+            "vin",
+            "dout",
+            "din",
         ]:
             # print(section)
             label = QLabel(section.title())
@@ -205,15 +205,20 @@ class WinForm(QWidget):
                 value = data[name]
                 self.add_setup_options(option["options"], value, f"{dpath}/{name}")
             elif option["type"] == "bool":
-                data[name] = False
+                default = option.get("default", False)
+                data[name] = default
             elif option["type"] == "input":
-                data[name] = ""
+                default = option.get("default", "")
+                data[name] = default
             elif option["type"] == "output":
-                data[name] = ""
+                default = option.get("default", "")
+                data[name] = default
             elif option["type"] == "int":
-                data[name] = 0
+                default = int(option.get("default", 0))
+                data[name] = default
             else:
-                data[name] = ""
+                default = option.get("default", "")
+                data[name] = default
 
 
     def add_callback(self, section, combo):
@@ -267,7 +272,7 @@ class EditAdd(QWidget):
 
         button = QPushButton("Save")
         button.clicked.connect(self.save_callback)
-        self.layout.addWidget(button, self.layout_row, self.layout_col + 1)
+        self.layout.addWidget(button, self.layout_row, self.layout_col + 2)
 
         button = QPushButton("Cancel")
         button.clicked.connect(self.cancel_callback)
@@ -311,9 +316,13 @@ class EditAdd(QWidget):
 
     def gen_setup_options(self, options, data, dpath=""):
         for name, option in options.items():
+            label = option.get("name", name)
+            if name != label:
+                label = f"{label} ({name})"
+            tooltip = option.get("comment", label)
             if option["type"] == "dict":
                 value = data.get(name, {})
-                label = QLabel(name)
+                label = QLabel(label)
                 label.setStyleSheet("font-weight: bold")
                 self.layout.addWidget(label, self.layout_row, self.layout_col)
                 self.layout_row += 1
@@ -323,16 +332,17 @@ class EditAdd(QWidget):
 
             elif option["type"] == "bool":
                 value = data.get(name, False)
-                self.layout.addWidget(QLabel(name), self.layout_row, self.layout_col)
+                self.layout.addWidget(QLabel(label), self.layout_row, self.layout_col)
                 tedit = QCheckBox()
                 tedit.setChecked(value)
                 self.widgets[f"{dpath}/{name}"] = tedit
+                self.widgets[f"{dpath}/{name}"].setToolTip(tooltip)
                 self.layout.addWidget(tedit, self.layout_row, self.layout_col + 1)
                 self.layout_row += 1
 
             elif option["type"] == "input":
                 value = str(data.get(name, ""))
-                self.layout.addWidget(QLabel(name), self.layout_row, self.layout_col)
+                self.layout.addWidget(QLabel(label), self.layout_row, self.layout_col)
                 combo = QComboBox()
                 for pin, pdir in pinlist.items():
                     if pdir in ["INPUT", "IO"]:
@@ -340,12 +350,13 @@ class EditAdd(QWidget):
                 combo.setEditable(True)
                 combo.setCurrentText(value)
                 self.widgets[f"{dpath}/{name}"] = combo
+                self.widgets[f"{dpath}/{name}"].setToolTip(tooltip)
                 self.layout.addWidget(combo, self.layout_row, self.layout_col + 1)
                 self.layout_row += 1
 
             elif option["type"] == "output":
                 value = str(data.get(name, ""))
-                self.layout.addWidget(QLabel(name), self.layout_row, self.layout_col)
+                self.layout.addWidget(QLabel(label), self.layout_row, self.layout_col)
                 combo = QComboBox()
                 for pin, pdir in pinlist.items():
                     if pdir in ["OUTPUT", "IO"]:
@@ -353,27 +364,30 @@ class EditAdd(QWidget):
                 combo.setEditable(True)
                 combo.setCurrentText(value)
                 self.widgets[f"{dpath}/{name}"] = combo
+                self.widgets[f"{dpath}/{name}"].setToolTip(tooltip)
                 self.layout.addWidget(combo, self.layout_row, self.layout_col + 1)
                 self.layout_row += 1
 
             elif option["type"] == "int":
                 value = int(data.get(name, 0))
-                self.layout.addWidget(QLabel(name), self.layout_row, self.layout_col)
+                self.layout.addWidget(QLabel(label), self.layout_row, self.layout_col)
                 spinbox = QSpinBox()
                 spinbox.setSingleStep(1)
                 spinbox.setMinimum(-900000000)
                 spinbox.setMaximum(900000000)
                 spinbox.setValue(value)
                 self.widgets[f"{dpath}/{name}"] = spinbox
+                self.widgets[f"{dpath}/{name}"].setToolTip(tooltip)
                 self.layout.addWidget(spinbox, self.layout_row, self.layout_col + 1)
                 self.layout_row += 1
 
             else:
                 value = str(data.get(name, ""))
-                self.layout.addWidget(QLabel(name), self.layout_row, self.layout_col)
+                self.layout.addWidget(QLabel(label), self.layout_row, self.layout_col)
                 tedit = QLineEdit()
                 tedit.setText(value)
                 self.widgets[f"{dpath}/{name}"] = tedit
+                self.widgets[f"{dpath}/{name}"].setToolTip(tooltip)
                 self.layout.addWidget(tedit, self.layout_row, self.layout_col + 1)
                 self.layout_row += 1
 

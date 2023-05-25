@@ -80,6 +80,12 @@ def generate(project):
     spitest_data.append("]")
     spitest_data.append("")
 
+    spitest_data.append("vin_types = [")
+    for num, vout in enumerate(project['jdata']["vin"]):
+        spitest_data.append(f"    '{vout['type']}',")
+    spitest_data.append("]")
+    spitest_data.append("")
+
     spitest_data.append("voutminmax = [")
     for num, vout in enumerate(project['jdata']["vout"]):
         if vout.get('type') == "sine":
@@ -194,6 +200,12 @@ class WinForm(QWidget):
         gpy += 1
 
         layout.addWidget(QLabel(f'VARIABLE:'), gpy, 0)
+        layout.addWidget(QLabel(f'IN'), gpy, 1)
+        for vn in range(VINS):
+            layout.addWidget(QLabel(vin_types[vn]), gpy, vn + 3)
+        gpy += 1
+
+        #layout.addWidget(QLabel(f'VARIABLE:'), gpy, 0)
         layout.addWidget(QLabel(f'IN'), gpy, 1)
         for vn in range(VINS):
             key = f'vi{vn}'

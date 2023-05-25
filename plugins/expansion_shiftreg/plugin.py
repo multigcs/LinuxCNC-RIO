@@ -88,5 +88,7 @@ class Plugin:
         return func_out
 
     def ips(self):
-        files = ["expansion_shiftreg.v"]
-        return files
+        for num, expansion in enumerate(self.jdata.get("expansion", [])):
+            if joint["type"] in ["shiftreg"]:
+                return ["expansion_shiftreg.v"]
+        return []

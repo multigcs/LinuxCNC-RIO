@@ -73,5 +73,7 @@ class Plugin:
         return func_out
 
     def ips(self):
-        files = ["vin_quadencoder.v"]
-        return files
+        for num, vin in enumerate(self.jdata["vin"]):
+            if vin["type"] in ["quadencoder"]:
+                return ["vin_quadencoder.v"]
+        return []

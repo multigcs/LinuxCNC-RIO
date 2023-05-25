@@ -92,5 +92,7 @@ class Plugin:
         return func_out
 
     def ips(self):
-        files = ["vout_pwm.v"]
-        return files
+        for num, vout in enumerate(self.jdata["vout"]):
+            if vout["type"] in ["pwm", "rcservo"]:
+                return ["vout_pwm.v"]
+        return []

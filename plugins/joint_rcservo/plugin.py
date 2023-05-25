@@ -73,4 +73,7 @@ class Plugin:
         return func_out
 
     def ips(self):
-        return ["joint_rcservo.v"]
+        for num, joint in enumerate(self.jdata["joints"]):
+            if joint["type"] in ["rcservo"]:
+                return ["joint_rcservo.v"]
+        return []

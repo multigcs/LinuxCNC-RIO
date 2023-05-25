@@ -64,5 +64,7 @@ class Plugin:
         return func_out
 
     def ips(self):
-        files = ["vout_sinepwm.v"]
-        return files
+        for num, vout in enumerate(self.jdata["vout"]):
+            if vout["type"] in ["sine"]:
+                return ["vout_sinepwm.v"]
+        return []

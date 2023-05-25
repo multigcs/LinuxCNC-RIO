@@ -97,15 +97,20 @@ Generated Output of [configs/TinyFPGA-BX_BOB/config.json](/configs/TinyFPGA-BX_B
 | DIN6 | 1bit |
 
 ## Plugins:
-### Modul: vin_frequency:
-files: [vin_frequency.v](Firmware/vin_frequency.v) 
+### Modul: interface_spislave:
+files: [interface_spislave.v](Firmware/interface_spislave.v) 
 
-#### vin_frequency0
+#### spi1
 | Name | Direction |
 | --- | --- |
 | sysclk | --- |
-| processVariable0 | to TX_DATA |
-| VIN0_FREQUENCY | from PINS |
+| INTERFACE_SPI_SCK | from PINS |
+| INTERFACE_SPI_SSEL | from PINS |
+| INTERFACE_SPI_MOSI | from PINS |
+| INTERFACE_SPI_MISO | to PINS |
+| rx_data | from RX_DATA |
+| tx_data | to TX_DATA |
+| INTERFACE_TIMEOUT | --- |
 
 ### Modul: vout_pwm:
 files: [vout_pwm.v](Firmware/vout_pwm.v) 
@@ -175,20 +180,15 @@ files: [quad_encoder.v](Firmware/quad_encoder.v) [joint_stepper.v](Firmware/join
 | JOINT4_STEPPER_DIR | to PINS |
 | JOINT4_STEPPER_STP | to PINS |
 
-### Modul: interface_spislave:
-files: [interface_spislave.v](Firmware/interface_spislave.v) 
+### Modul: vin_frequency:
+files: [vin_frequency.v](Firmware/vin_frequency.v) 
 
-#### spi1
+#### vin_frequency0
 | Name | Direction |
 | --- | --- |
 | sysclk | --- |
-| INTERFACE_SPI_SCK | from PINS |
-| INTERFACE_SPI_SSEL | from PINS |
-| INTERFACE_SPI_MOSI | from PINS |
-| INTERFACE_SPI_MISO | to PINS |
-| rx_data | from RX_DATA |
-| tx_data | to TX_DATA |
-| INTERFACE_TIMEOUT | --- |
+| processVariable0 | to TX_DATA |
+| VIN0_FREQUENCY | from PINS |
 
 
 ![Flowchart](doc/flowchart.png)

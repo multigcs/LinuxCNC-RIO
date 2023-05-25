@@ -154,4 +154,7 @@ class Plugin:
         return func_out
 
     def ips(self):
-        return ["quad_encoder.v", "joint_stepper.v", "joint_stepper_nf.v"]
+        for num, joint in enumerate(self.jdata["joints"]):
+            if joint["type"] in ["stepper"]:
+                return ["quad_encoder.v", "joint_stepper.v", "joint_stepper_nf.v"]
+        return []

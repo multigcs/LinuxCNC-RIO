@@ -63,5 +63,7 @@ class Plugin:
         return func_out
 
     def ips(self):
-        files = ["vin_frequency.v"]
-        return files
+        for num, vin in enumerate(self.jdata["vin"]):
+            if vin["type"] in ["frequency"]:
+                return ["vin_frequency.v"]
+        return []

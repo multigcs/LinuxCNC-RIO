@@ -19,7 +19,7 @@
 #define STEPBIT             22
 #define STEP_MASK           (1L<<STEPBIT)
 #define STEP_OFFSET         (1L<<(STEPBIT-1))
-#define PRU_BASEFREQ        120000
+#define PRU_BASEFREQ        20000000
 #define PRU_OSC             48000000
 
 #define VOUT_TYPE_PWM  0

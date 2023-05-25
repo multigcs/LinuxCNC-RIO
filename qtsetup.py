@@ -111,6 +111,7 @@ class WinForm(QWidget):
         self.setWindowTitle("Setup")
         self.layout = QGridLayout()
         self.setLayout(self.layout)
+
         self.load()
 
     def load(self):
@@ -245,6 +246,8 @@ class WinForm(QWidget):
 class EditAdd(QWidget):
     def __init__(self, section, num, gui, parent=None):
         super(EditAdd, self).__init__(parent)
+
+        self.setFixedWidth(600)
 
         self.gui = gui
         self.section = section

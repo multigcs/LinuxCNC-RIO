@@ -66,7 +66,9 @@ class Plugin:
         return func_out
 
     def ips(self):
-        files = ["vout_udpoti.v"]
-        return files
+        for num, vout in enumerate(self.jdata["vout"]):
+            if vout["type"] in ["udpoti"]:
+                return ["vout_udpoti.v"]
+        return []
 
 

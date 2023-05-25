@@ -51,5 +51,7 @@ class Plugin:
         return func_out
 
     def ips(self):
-        files = ["vin_pwmcounter.v"]
-        return files
+        for num, vin in enumerate(self.jdata["vin"]):
+            if vin["type"] in ["pwm"]:
+                return ["vin_pwmcounter.v"]
+        return []

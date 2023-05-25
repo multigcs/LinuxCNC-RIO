@@ -53,6 +53,10 @@ vinminmax = [
     (-100, 100, 'frequency', 0),
 ]
 
+vout_types = [
+    'pwm',
+]
+
 voutminmax = [
     (0, 100, 'pwm', 10000),
 ]
@@ -104,6 +108,13 @@ class WinForm(QWidget):
         layout.addWidget(QLabel(f'VARIABLE:'), gpy, 0)
         layout.addWidget(QLabel(f'OUT'), gpy, 1)
         for vn in range(VOUTS):
+            layout.addWidget(QLabel(vout_types[vn]), gpy, vn + 3)
+        gpy += 1
+
+
+        #layout.addWidget(QLabel(f'VARIABLE:'), gpy, 0)
+        layout.addWidget(QLabel(f'OUT'), gpy, 1)
+        for vn in range(VOUTS):
             key = f'vos{vn}'
             self.widgets[key] = QSlider(Qt.Horizontal)
             self.widgets[key].setMinimum(voutminmax[vn][0])
@@ -111,6 +122,7 @@ class WinForm(QWidget):
             self.widgets[key].setValue(0)
             layout.addWidget(self.widgets[key], gpy, vn + 3)
         gpy += 1
+
 
         for vn in range(VOUTS):
             key = f'vo{vn}'
@@ -233,6 +245,10 @@ class WinForm(QWidget):
                     value = int(value * (PRU_OSC / voutminmax[vn][3]) / 100)
                 elif voutminmax[vn][2] == 'rcservo':
                     value = int(((value + 300)) * (PRU_OSC / 200000))
+                elif voutminmax[vn][2] == 'udpoti':
+                    value = value
+                elif voutminmax[vn][2] == 'spipoti':
+                    value = value
                 elif voutminmax[vn][2] == 'frequency':
                     if value != 0:
                         value = int(PRU_OSC / value)

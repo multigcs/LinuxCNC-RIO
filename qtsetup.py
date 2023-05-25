@@ -121,6 +121,16 @@ class WinForm(QWidget):
         self.layout_row = 0
         self.layout_col = 0
 
+        label = QLabel("!!! work in progress !!!")
+        label.setStyleSheet("border: 1px solid red;")
+        self.layout.addWidget(label, self.layout_row, self.layout_col + 1)
+        self.layout_row += 1
+        label = QLabel("!!! please edit your config by hand !!!")
+        label.setStyleSheet("border: 1px solid red;")
+        self.layout.addWidget(label, self.layout_row, self.layout_col + 1)
+        self.layout_row += 1
+
+
         for section in [
             "interface",
             "expansion",
@@ -134,7 +144,6 @@ class WinForm(QWidget):
             label = QLabel(section.title())
             # label.setStyleSheet("border: 1px solid black;")
             label.setStyleSheet("font-weight: bold")
-
             self.layout.addWidget(label, self.layout_row, self.layout_col)
             self.layout_row += 1
             self.layout_col += 1

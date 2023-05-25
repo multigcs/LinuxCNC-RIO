@@ -77,7 +77,7 @@
         {
             "type": "spipoti",
             "bits": "8",
-            "speed": "1000",
+            "speed": "1000000",
             "pins": {
                 "MOSI": "L4",
                 "SCLK": "L5",

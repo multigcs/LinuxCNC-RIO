@@ -96,6 +96,6 @@ class Plugin:
 
     def ips(self):
         for num, expansion in enumerate(self.jdata.get("expansion", [])):
-            if joint["type"] in ["shiftreg"]:
+            if expansion["type"] in ["shiftreg"]:
                 return ["expansion_shiftreg.v"]
         return []

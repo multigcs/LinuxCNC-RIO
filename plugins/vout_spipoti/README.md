@@ -15,5 +15,4 @@ Variable-Output using digital poti with SPI Interface (like MCP413X/415X/423X/42
 },
 ```
 
-but have a problem with my X9C104, it need only 31 steps for the full range,
-don't know why :(
+https://cdn-reichelt.de/documents/datenblatt/A200/MCP4151_MIC.pdf

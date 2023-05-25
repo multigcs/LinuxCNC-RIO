@@ -31,6 +31,11 @@ RealtimeIO for LinuxCNC based on an FPGA
 python3 Output/BOARD_NAME/Firmware/qt_spitest.py
 
 
+## some hints
+at the moment, you need at least configure one item of each of the following sections:
+ vin, vout, din, dout, joints
+
+
 ## buildtool
 
 you can select a config via make argument:

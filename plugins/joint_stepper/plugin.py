@@ -57,7 +57,8 @@ class Plugin:
             else:
                 info += "Stepper ("
             for ptype, pname in joint["pins"].items():
-                info += f" {ptype}:{pname}"
+                if pname:
+                    info += f" {ptype}:{pname}"
             info += ")"
         return info
 

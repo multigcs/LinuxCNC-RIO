@@ -30,7 +30,7 @@ print("family:", jdata["family"])
 print("type:",   jdata["type"])
 print("package", jdata["package"])
 
-pinlist = {}
+pinlist = {"": "IO"}
 
 if os.path.isfile(f"chipdata/{jdata['family']}.json"):
     chiptype_mapping = {
@@ -196,6 +196,23 @@ class WinForm(QWidget):
             self.layout_row += 1
             self.layout_col -= 1
 
+
+        exitbutton = QPushButton("Exit")
+        exitbutton.clicked.connect(self.exit_callback)
+        self.layout.addWidget(exitbutton, self.layout_row, self.layout_col)
+
+        savebutton = QPushButton("Save")
+        savebutton.clicked.connect(self.save_callback)
+        self.layout.addWidget(savebutton, self.layout_row, self.layout_col + 3)
+
+
+    def exit_callback(self):
+        exit(0)
+
+    def save_callback(self):
+        print("############################################################")
+        print(json.dumps(jdata, indent=4))
+        print("############################################################")
 
 
     def add_setup_options(self, options, data, dpath=""):

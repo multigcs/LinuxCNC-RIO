@@ -389,6 +389,11 @@ def generate(project):
             "	rm -rf rio.bin rio.asc rio.json yosys.log nextpnr.log"
         )
         makefile_data.append("")
+
+        makefile_data.append(f"sim: {verilogs}")
+        makefile_data.append(f"	verilator --cc --exe --build -j 0 -Wall --top-module rio sim_main.cpp {verilogs}")
+        makefile_data.append("")
+
         makefile_data.append("tinyprog: rio.bin")
         makefile_data.append("	tinyprog -p rio.bin")
         makefile_data.append("")

@@ -39,7 +39,7 @@ class Plugin:
                 func_out.append("        .clk (sysclk),")
                 func_out.append(f"        .frequency (setPoint{num}),")
                 func_out.append(f"        .disabled (ERROR),")
-                func_out.append(f"        .SIGNAL (VOUT{num}_FREQUENCY),")
+                func_out.append(f"        .SIGNAL (VOUT{num}_FREQUENCY)")
                 func_out.append("    );")
 
         return func_out

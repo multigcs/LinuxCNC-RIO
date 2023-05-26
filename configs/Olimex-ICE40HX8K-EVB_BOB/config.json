@@ -20,9 +20,6 @@
             }
         }
     ],
-    "blink": {
-        "pin": "M12"
-    },
     "error": {
         "pin": "R16"
     },
@@ -68,13 +65,15 @@
     "vout": [
         {
             "type": "pwm",
-            "pin": "J2"
+            "pin": "J2",
+            "dir": "J14"
         },
         {
             "type": "pwm",
             "min": "-10",
             "max": "+10",
-            "pin": "H5"
+            "pin": "H5",
+            "dir": "J12"
         }
     ],
     "vin": [

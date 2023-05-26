@@ -17,7 +17,7 @@ module debouncer
     if (SIGNAL_idle) begin
         SIGNAL_cnt <= 0;
     end else begin
-        SIGNAL_cnt <= SIGNAL_cnt + WIDTH'd1;
+        SIGNAL_cnt <= SIGNAL_cnt + 1;
         if (SIGNAL_cnt_max) begin
             SIGNAL_state <= ~SIGNAL_state;
         end

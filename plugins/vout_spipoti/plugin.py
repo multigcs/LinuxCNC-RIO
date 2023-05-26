@@ -71,7 +71,7 @@ class Plugin:
                 func_out.append(f"        .value (setPoint{num}),")
                 func_out.append(f"        .MOSI (VOUT{num}_SPIPOTI_MOSI),")
                 func_out.append(f"        .SCLK (VOUT{num}_SPIPOTI_SCLK),")
-                func_out.append(f"        .CS (VOUT{num}_SPIPOTI_CS),")
+                func_out.append(f"        .CS (VOUT{num}_SPIPOTI_CS)")
                 func_out.append("    );")
 
         return func_out

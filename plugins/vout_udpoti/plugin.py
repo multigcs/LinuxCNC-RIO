@@ -65,7 +65,7 @@ class Plugin:
                 func_out.append("        .clk (sysclk),")
                 func_out.append(f"        .value (setPoint{num}),")
                 func_out.append(f"        .UPDOWN (VOUT{num}_UDPOTI_UPDOWN),")
-                func_out.append(f"        .INCREMENT (VOUT{num}_UDPOTI_INCR),")
+                func_out.append(f"        .INCREMENT (VOUT{num}_UDPOTI_INCR)")
                 func_out.append("    );")
 
         return func_out

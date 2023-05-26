@@ -31,20 +31,26 @@
 #include <stdio.h>
 #include <string.h>
 
-
-// Using BCM2835 driver library by Mike McCauley, why reinvent the wheel!
-// http://www.airspayce.com/mikem/bcm2835/index.html
-// Include these in the source directory when using "halcompile --install rio.c"
-#include "bcm2835.h"
-#include "bcm2835.c"
-
 #include "rio.h"
 
+
+#include <sys/socket.h>
+#include <arpa/inet.h>
+#include <netinet/in.h>
+
+#ifdef TRANSPORT_UDP
+#include <sys/socket.h>
+#include <arpa/inet.h>
+#include <netinet/in.h>
+#else
+#include "bcm2835.h"
+#include "bcm2835.c"
+#endif
 
 #define MODNAME "rio"
 #define PREFIX "rio"
 
-MODULE_AUTHOR("Oliver Dippel");
+MODULE_AUTHOR("Oliver Dippel (based on Scott Alford AKA scotta)");
 MODULE_DESCRIPTION("Driver for RIO FPGA boards");
 MODULE_LICENSE("GPL v2");
 
@@ -112,6 +118,23 @@ static int reset_gpio_pin = 25;				// RPI GPIO pin number used to force watchdog
 
 
 
+#ifdef TRANSPORT_UDP
+#define DST_PORT 2390
+#define SRC_PORT 2390
+#define SEND_TIMEOUT_US 10
+#define RECV_TIMEOUT_US 10
+#define READ_PCK_DELAY_NS 10000
+
+static int udpSocket;
+static int errCount;
+struct sockaddr_in dstAddr, srcAddr;
+struct hostent *server;
+static const char *dstAddress = UDP_IP;
+static int UDP_init(void);
+#endif
+
+
+
 /***********************************************************************
 *                  LOCAL FUNCTION DECLARATIONS                         *
 ************************************************************************/
@@ -159,6 +182,14 @@ int rtapi_app_main(void)
         return -1;
     }
 
+#ifdef TRANSPORT_UDP
+	// Initialize the UDP socket
+	if (UDP_init() < 0)
+	{
+		rtapi_print_msg(RTAPI_MSG_ERR, "Error: The board is unreachable\n");
+		return -1;
+	}
+#else
     // Map the RPi BCM2835 peripherals - uses "rtapi_open_as_root" in place of "open"
     if (!rt_bcm2835_init()) {
         rtapi_print_msg(RTAPI_MSG_ERR,"rt_bcm2835_init failed. Are you running with root privlages??\n");
@@ -196,8 +227,8 @@ int rtapi_app_main(void)
     bcm2835_gpio_set_pud(RPI_GPIO_P1_19, BCM2835_GPIO_PUD_DOWN);	// MOSI
     bcm2835_gpio_set_pud(RPI_GPIO_P1_21, BCM2835_GPIO_PUD_DOWN);	// MISO
     bcm2835_gpio_set_pud(RPI_GPIO_P1_24, BCM2835_GPIO_PUD_UP);		// CS0
+#endif
 
-    // export spiPRU SPI enable and status bits
     retval = hal_pin_bit_newf(HAL_IN, &(data->SPIenable),
                               comp_id, "%s.SPI-enable", prefix);
     if (retval != 0) goto error;
@@ -373,6 +404,69 @@ void rtapi_app_exit(void)
 // This is the same as the standard bcm2835 library except for the use of
 // "rtapi_open_as_root" in place of "open"
 
+#ifdef TRANSPORT_UDP
+int UDP_init(void)
+{
+	int ret;
+
+	// Create a UDP socket
+	udpSocket = socket(PF_INET, SOCK_DGRAM, IPPROTO_UDP);
+	if (udpSocket < 0)
+	{
+		rtapi_print("ERROR: can't open socket: %s\n", strerror(errno));
+		return -errno;
+	}
+
+	bzero((char*) &dstAddr, sizeof(dstAddr));
+	dstAddr.sin_family = AF_INET;
+	dstAddr.sin_addr.s_addr = inet_addr(dstAddress);
+	dstAddr.sin_port = htons(DST_PORT);
+
+	bzero((char*) &srcAddr, sizeof(srcAddr));
+	srcAddr.sin_family = AF_INET;
+	srcAddr.sin_addr.s_addr = htonl(INADDR_ANY);
+	srcAddr.sin_port = htons(SRC_PORT);
+	
+	// bind the local socket to SCR_PORT
+	ret = bind(udpSocket, (struct sockaddr *) &srcAddr, sizeof(srcAddr));
+	if (ret < 0)
+	{
+		rtapi_print("ERROR: can't bind: %s\n", strerror(errno));
+		return -errno;
+	}
+	
+	// Connect to send and receive only to the server_addr
+	ret = connect(udpSocket, (struct sockaddr*) &dstAddr, sizeof(struct sockaddr_in));
+	if (ret < 0)
+	{
+		rtapi_print("ERROR: can't connect: %s\n", strerror(errno));
+		return -errno;
+	}
+
+	struct timeval timeout;
+	timeout.tv_sec = 0;
+	timeout.tv_usec = RECV_TIMEOUT_US;
+
+	ret = setsockopt(udpSocket, SOL_SOCKET, SO_RCVTIMEO, (char*) &timeout, sizeof(timeout));
+	if (ret < 0) {
+	rtapi_print("ERROR: can't set receive timeout socket option: %s\n",
+		strerror(errno));
+	return -errno;
+	}
+
+	timeout.tv_usec = SEND_TIMEOUT_US;
+	ret = setsockopt(udpSocket, SOL_SOCKET, SO_SNDTIMEO, (char*) &timeout,
+	  sizeof(timeout));
+	if (ret < 0) {
+	rtapi_print("ERROR: can't set send timeout socket option: %s\n",
+		strerror(errno));
+	return -errno;
+	}
+
+	return 0;
+}
+
+#else
 int rt_bcm2835_init(void)
 {
     int  memfd;
@@ -507,6 +601,8 @@ exit:
 
     return ok;
 }
+
+#endif
 
 void update_freq(void *arg, long period)
 {
@@ -852,8 +948,37 @@ void spi_write()
 
 void spi_transfer()
 {
-    // send and receive data to and from the RIO concurrently
 
+#ifdef TRANSPORT_UDP
+	int ret;
+	long long t1, t2;
+
+	// Send datagram
+	ret = send(udpSocket, txData.txBuffer, SPIBUFSIZE, 0);
+
+	// Receive incoming datagram
+    t1 = rtapi_get_time();
+    do {
+        ret = recv(udpSocket, rxData.rxBuffer, SPIBUFSIZE, 0);
+        if(ret < 0) rtapi_delay(READ_PCK_DELAY_NS);
+        t2 = rtapi_get_time();
+    } while ((ret < 0) && ((t2 - t1) < 200*1000*1000));
+
+	if (ret > 0)
+	{
+		errCount = 0;
+	}
+	else
+	{
+		errCount++;
+	}
+	
+	if (errCount > 2)
+	{
+		*(data->SPIstatus) = 0;
+		rtapi_print("Ethernet ERROR: %s\n", strerror(errno));
+	}
+#else
     int i;
 
     bcm2835_gpio_fsel(RPI_GPIO_P1_26, BCM2835_GPIO_FSEL_OUTP);
@@ -862,8 +987,8 @@ void spi_transfer()
     for (i = 0; i < SPIBUFSIZE; i++) {
         rxData.rxBuffer[i] = bcm2835_spi_transfer(txData.txBuffer[i]);
     }
-
     bcm2835_gpio_write(RPI_GPIO_P1_26, HIGH);
+#endif
 
 }
 

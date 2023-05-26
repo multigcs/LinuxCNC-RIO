@@ -7,6 +7,10 @@ def generate(project):
     rio_data.append("#ifndef RIO_H")
     rio_data.append("#define RIO_H")
     rio_data.append("")
+    if project['jdata'].get('transport', 'SPI') == 'UDP':
+        rio_data.append("#define TRANSPORT_UDP")
+        rio_data.append("#define UDP_IP \"192.168.10.132\"")
+        rio_data.append("")
     rio_data.append(f"#define JOINTS               {project['joints']}")
     rio_data.append(f"#define JOINT_ENABLE_BYTES   {project['joints_en_total'] // 8}")
     rio_data.append(f"#define VARIABLE_OUTPUTS     {project['vouts']}")
@@ -33,6 +37,7 @@ def generate(project):
     rio_data.append("#define VOUT_TYPE_RCSERVO 1")
     rio_data.append("#define VOUT_TYPE_SINE 2")
     rio_data.append("#define VOUT_TYPE_FREQ 3")
+    rio_data.append("#define VOUT_TYPE_UDPOTI 4")
 
     rio_data.append("#define JOINT_FB_REL 0")
     rio_data.append("#define JOINT_FB_ABS 1")

@@ -44,6 +44,12 @@
         },
         {
             "pin": "EXPANSION0_INPUT[1]"
+        },
+        {
+            "pin": "EXPANSION0_INPUT[2]"
+        },
+        {
+            "pin": "EXPANSION0_INPUT[3]"
         }
     ],
     "vin": [

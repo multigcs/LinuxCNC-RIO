@@ -337,9 +337,12 @@ class WinForm(QWidget):
 
             print("tx:", data)
             if IP:
+                start = time.time()
                 UDPClientSocket = socket.socket(family=socket.AF_INET, type=socket.SOCK_DGRAM)
                 UDPClientSocket.sendto(bytes(data), (IP, 2390))
+                UDPClientSocket.settimeout(0.2)
                 msgFromServer = UDPClientSocket.recvfrom(len(data))
+                print("Duration", time.time() - start)
                 rec = list(msgFromServer[0])
             else:
                 rec = spi.xfer2(data)

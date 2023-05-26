@@ -279,7 +279,7 @@ def generate(project):
 
 
 
-    if project['jdata']["board"] == "tango9k":
+    if project['jdata'].get("board") == "tango9k":
         lpf_data = []
         lpf_data.append("")
 

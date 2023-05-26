@@ -58,7 +58,7 @@ class Plugin:
         func_out = ["    // vin_frequency's"]
         for num, vin in enumerate(self.jdata.get("vin", [])):
             if vin.get("type") == "frequency":
-                freq_min = int(vin.get("freq_min", 1))
+                freq_min = int(vin.get("freq_min", 10))
                 func_out.append(
                     f"    vin_frequency #({int(self.jdata['clock']['speed']) // freq_min}) vin_frequency{num} ("
                 )

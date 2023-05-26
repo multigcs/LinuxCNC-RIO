@@ -24,8 +24,8 @@
     "expansion": [
         {
             "type": "shiftreg",
-            "speed": 20000000,
-            "bits": 8,
+            "speed": "20000000",
+            "bits": "8",
             "pins": {
                 "clock": "G2",
                 "load": "G1",
@@ -44,16 +44,12 @@
         },
         {
             "pin": "EXPANSION0_INPUT[1]"
-        },
-        {
-            "debounce": true,
-            "pin": "E4"
         }
     ],
     "vin": [
         {
-            "type": "counter",
-            "pin_up": "C1"
+            "type": "frequency",
+            "pin": "J5"
         },
         {
             "comment": "J2.1+2",
@@ -61,10 +57,6 @@
             "debounce": true,
             "pin_a": "G5",
             "pin_b": "H5"
-        },
-        {
-            "type": "frequency",
-            "pin": "EXPANSION0_INPUT[2]"
         }
     ],
     "dout": [
@@ -74,16 +66,6 @@
         }
     ],
     "vout": [
-        {
-            "type": "spipoti",
-            "bits": "8",
-            "speed": "1000000",
-            "pins": {
-                "MOSI": "L4",
-                "SCLK": "L5",
-                "CS": "P2"
-            }
-        },
         {
             "comment": "J7.1+2",
             "type": "udpoti",

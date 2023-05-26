@@ -6,20 +6,27 @@ def generate(project):
     spitest_data = []
     spitest_data.append("")
     spitest_data.append("import time")
-    spitest_data.append("import spidev")
     spitest_data.append("from struct import *")
     spitest_data.append("import sys")
     spitest_data.append("from PyQt5.QtWidgets import QWidget,QPushButton,QApplication,QListWidget,QGridLayout,QLabel,QSlider,QCheckBox")
     spitest_data.append("from PyQt5.QtCore import QTimer,QDateTime, Qt")
     spitest_data.append("")
+    spitest_data.append("IP = ''")
+    spitest_data.append("if len(sys.argv) > 1 and sys.argv[1] != '':")
+    spitest_data.append("    IP = sys.argv[1]")
+    spitest_data.append("    print('IP:', IP)")
+    spitest_data.append("    import socket")
+    spitest_data.append("else:")
+    spitest_data.append("    import spidev")
+    spitest_data.append("    bus = 0")
+    spitest_data.append("    device = 1")
+    spitest_data.append("    spi = spidev.SpiDev()")
+    spitest_data.append("    spi.open(bus, device)")
+    spitest_data.append(f"    spi.max_speed_hz = {project['jdata']['interface'][0].get('max', 2000000)}")
+    spitest_data.append("    spi.mode = 0")
+    spitest_data.append("    spi.lsbfirst = False")
+    spitest_data.append("")
     spitest_data.append("INTERVAL = 100")
-    spitest_data.append("bus = 0")
-    spitest_data.append("device = 1")
-    spitest_data.append("spi = spidev.SpiDev()")
-    spitest_data.append("spi.open(bus, device)")
-    spitest_data.append(f"spi.max_speed_hz = {project['jdata']['interface'][0].get('max', 2000000)}")
-    spitest_data.append("spi.mode = 0")
-    spitest_data.append("spi.lsbfirst = False")
     spitest_data.append("")
     spitest_data.append(f"data = [0] * {project['data_size'] // 8}")
 
@@ -328,12 +335,16 @@ class WinForm(QWidget):
                 data[bn] = douts[dbyte]
                 bn += 1
 
-
             print("tx:", data)
-            rec = spi.xfer2(data)
+            if IP:
+                UDPClientSocket = socket.socket(family=socket.AF_INET, type=socket.SOCK_DGRAM)
+                UDPClientSocket.sendto(bytes(data), (IP, 2390))
+                msgFromServer = UDPClientSocket.recvfrom(len(data))
+                rec = list(msgFromServer[0])
+            else:
+                rec = spi.xfer2(data)
+
             print("rx:", rec)
-
-
 
             jointFeedback = [0] * JOINTS
             processVariable = [0] * VINS

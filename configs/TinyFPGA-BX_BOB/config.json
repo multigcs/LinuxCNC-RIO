@@ -17,8 +17,8 @@
             "pins": {
                 "MOSI": "G6",
                 "MISO": "H7",
-                "SCK":  "G7",
-                "SEL":  "G1"
+                "SCK": "G7",
+                "SEL": "G1"
             }
         }
     ],

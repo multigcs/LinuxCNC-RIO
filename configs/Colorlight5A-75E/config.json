@@ -24,8 +24,8 @@
     "expansion": [
         {
             "type": "shiftreg",
-            "speed": "20000000",
-            "bits": "8",
+            "speed": 20000000,
+            "bits": 8,
             "pins": {
                 "clock": "G2",
                 "load": "G1",

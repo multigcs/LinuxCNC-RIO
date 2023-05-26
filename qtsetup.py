@@ -1,33 +1,43 @@
-import importlib
+import argparse
 import glob
-import os
-import time
-from struct import *
+import importlib
 import json
+import os
 import sys
+import time
 from copy import deepcopy
 from functools import partial
+from struct import *
+
+from PyQt5.QtCore import QDateTime, Qt, QTimer
+from PyQt5.QtGui import QFont
 from PyQt5.QtWidgets import (
-    QWidget,
-    QPushButton,
     QApplication,
-    QListWidget,
-    QGridLayout,
-    QLabel,
-    QSlider,
     QCheckBox,
     QComboBox,
+    QGridLayout,
+    QLabel,
     QLineEdit,
+    QListWidget,
+    QPushButton,
+    QSlider,
     QSpinBox,
+    QWidget,
 )
-from PyQt5.QtCore import QTimer, QDateTime, Qt
-from PyQt5.QtGui import QFont
 
-jdata = json.loads(open(sys.argv[1], "r").read())
+parser = argparse.ArgumentParser()
+parser.add_argument(
+    "configfile", help="json config file", type=str, nargs="?", default=None
+)
+
+args = parser.parse_args()
+
+print(f"loading json config: {args.configfile}")
+jdata = json.loads(open(args.configfile, "r").read())
 
 
 print("family:", jdata["family"])
-print("type:",   jdata["type"])
+print("type:", jdata["type"])
 print("package", jdata["package"])
 
 pinlist = {"": "IO"}
@@ -63,7 +73,6 @@ for path in glob.glob("plugins/*"):
     plugins[plugin] = vplugin.Plugin(jdata)
 
 
-
 setup_data = {}
 for plugin in plugins:
     if hasattr(plugins[plugin], "pinlist"):
@@ -91,7 +100,6 @@ for plugin in plugins:
                     pinlist[f"{name}[{bit}]"] = "INPUT"
 
 
-
 setup_data["clock"] = {
     "speed": {
         "type": "int",
@@ -104,7 +112,6 @@ setup_data["clock"] = {
 }
 
 
-
 class WinForm(QWidget):
     def __init__(self, parent=None):
         super(WinForm, self).__init__(parent)
@@ -115,7 +122,7 @@ class WinForm(QWidget):
         self.load()
 
     def load(self):
-        for i in reversed(range(self.layout.count())): 
+        for i in reversed(range(self.layout.count())):
             self.layout.itemAt(i).widget().setParent(None)
 
         self.layout_row = 0
@@ -129,7 +136,6 @@ class WinForm(QWidget):
         label.setStyleSheet("border: 1px solid red;")
         self.layout.addWidget(label, self.layout_row, self.layout_col + 1)
         self.layout_row += 1
-
 
         for section in [
             "interface",
@@ -182,8 +188,9 @@ class WinForm(QWidget):
                     self.layout.addWidget(
                         editbutton, self.layout_row, self.layout_col + 1
                     )
-                    editbutton.clicked.connect(partial(self.edit_callback, section, num))
-
+                    editbutton.clicked.connect(
+                        partial(self.edit_callback, section, num)
+                    )
 
                     delbutton = QPushButton("del")
                     self.layout.addWidget(
@@ -192,7 +199,6 @@ class WinForm(QWidget):
                     delbutton.clicked.connect(partial(self.del_callback, section, num))
 
                     self.layout_row += 1
-
 
             combo = QComboBox()
             for subtype in setup_data[section]:
@@ -205,7 +211,6 @@ class WinForm(QWidget):
             self.layout_row += 1
             self.layout_col -= 1
 
-
         exitbutton = QPushButton("Exit")
         exitbutton.clicked.connect(self.exit_callback)
         self.layout.addWidget(exitbutton, self.layout_row, self.layout_col)
@@ -214,7 +219,6 @@ class WinForm(QWidget):
         savebutton.clicked.connect(self.save_callback)
         self.layout.addWidget(savebutton, self.layout_row, self.layout_col + 3)
 
-
     def exit_callback(self):
         exit(0)
 
@@ -222,7 +226,7 @@ class WinForm(QWidget):
         print("############################################################")
         print(json.dumps(jdata, indent=4))
         print("############################################################")
-
+        open(args.configfile, "w").write(json.dumps(jdata, indent=4))
 
     def add_setup_options(self, options, data, dpath=""):
         for name, option in options.items():
@@ -246,10 +250,9 @@ class WinForm(QWidget):
                 default = option.get("default", "")
                 data[name] = default
 
-
     def add_callback(self, section, combo):
         num = 0
-        
+
         if section in jdata:
             num = len(jdata[section])
         else:
@@ -270,8 +273,6 @@ class WinForm(QWidget):
     def del_callback(self, section, num):
         del jdata[section][num]
         self.load()
-
-
 
 
 class EditAdd(QWidget):
@@ -305,7 +306,6 @@ class EditAdd(QWidget):
         self.layout.addWidget(button, self.layout_row, self.layout_col)
 
         self.layout_row += 1
-        
 
     def save_setup_options(self, options, data, dpath=""):
         for name, option in options.items():
@@ -315,30 +315,35 @@ class EditAdd(QWidget):
             elif option["type"] == "bool":
                 data[name] = self.widgets[f"{dpath}/{name}"].isChecked()
             elif option["type"] == "input":
-                data[name] = self.widgets[f"{dpath}/{name}"].currentText()
+                value = self.widgets[f"{dpath}/{name}"].currentText()
+                if value:
+                    data[name] = value
+                elif name in data:
+                    del data[name]
             elif option["type"] == "output":
-                data[name] = self.widgets[f"{dpath}/{name}"].currentText()
+                value = self.widgets[f"{dpath}/{name}"].currentText()
+                if value:
+                    data[name] = value
+                elif name in data:
+                    del data[name]
             elif option["type"] == "int":
                 data[name] = self.widgets[f"{dpath}/{name}"].value()
             else:
                 data[name] = self.widgets[f"{dpath}/{name}"].getText()
 
-
     def cancel_callback(self):
         self.close()
         self.gui.load()
 
-
     def save_callback(self):
-        self.save_setup_options(setup_data[self.section][self.subtype], jdata[self.section][self.num])
+        self.save_setup_options(
+            setup_data[self.section][self.subtype], jdata[self.section][self.num]
+        )
         print("############################################################")
-        #print(jdata[self.section][self.num])
         print(json.dumps(jdata, indent=4))
         print("############################################################")
         self.close()
         self.gui.load()
-
-
 
     def gen_setup_options(self, options, data, dpath=""):
         for name, option in options.items():

@@ -277,7 +277,55 @@ def generate(project):
     project['verilog_files'].append("rio.v")
 
 
-    if project['jdata']["toolchain"] == "icestorm" and project['jdata']["family"] == "ecp5":
+
+
+    if project['jdata']["board"] == "tango9k":
+        lpf_data = []
+        lpf_data.append("")
+
+        lpf_data.append("")
+        for pname, pins in project['pinlists'].items():
+            lpf_data.append(f"// ### {pname} ###")
+            for pin in pins:
+                if pin[1].startswith("EXPANSION"):
+                    continue
+
+                lpf_data.append(f'IO_LOC "{pin[0]}" {pin[1]};')
+                lpf_data.append(f'IO_PORT "{pin[0]}" IO_TYPE=LVCMOS33;;')
+                if len(pin) > 3 and pin[3]:
+                    lpf_data.append(f'IO_PORT "{pin[0]}" PULL_MODE=UP;')
+
+
+            lpf_data.append("")
+        lpf_data.append("")
+        open(f"{project['PINS_PATH']}/pins.cst", "w").write("\n".join(lpf_data))
+
+
+        verilogs = " ".join(project['verilog_files'])
+        makefile_data = []
+        makefile_data.append("")
+        makefile_data.append("BOARD=tangnano9k")
+        makefile_data.append("FAMILY=GW1N-9C")
+        makefile_data.append("DEVICE=GW1NR-LV9QN88PC6/I5")
+        makefile_data.append("")
+        makefile_data.append("all: rio.fs")
+        makefile_data.append("")
+        makefile_data.append(f"rio.json: {verilogs}")
+        makefile_data.append(f"	yosys -q -l yosys.log -p 'synth_gowin -top rio -json rio.json' {verilogs}")
+        makefile_data.append("")
+        makefile_data.append("rio_pnr.json: rio.json")
+        makefile_data.append("	nextpnr-gowin --json rio.json --write rio_pnr.json --freq 27 --device ${DEVICE} --family ${FAMILY} --cst pins.cst")
+        makefile_data.append("")
+        makefile_data.append("rio.fs: rio_pnr.json")
+        makefile_data.append("	gowin_pack -d ${FAMILY} -o rio.fs rio_pnr.json")
+        makefile_data.append("")
+        makefile_data.append("load: rio.fs")
+        makefile_data.append("	openFPGALoader -b ${BOARD} rio.fs -f")
+        makefile_data.append("")
+        open(f"{project['FIRMWARE_PATH']}/Makefile", "w").write("\n".join(makefile_data))
+
+
+    elif project['jdata']["toolchain"] == "icestorm" and project['jdata']["family"] == "ecp5":
 
         lpf_data = []
         lpf_data.append("")

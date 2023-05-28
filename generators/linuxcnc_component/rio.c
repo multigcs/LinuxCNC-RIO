@@ -42,7 +42,13 @@
 #include <sys/socket.h>
 #include <arpa/inet.h>
 #include <netinet/in.h>
-#else
+#endif
+#ifdef TRANSPORT_USB
+#include <fcntl.h> 
+#include <string.h>
+#include <termios.h>
+#endif
+#ifdef TRANSPORT_SPI
 #include "bcm2835.h"
 #include "bcm2835.c"
 #endif
@@ -134,6 +140,9 @@ static int UDP_init(void);
 #endif
 
 
+#ifdef TRANSPORT_USB
+int serial_fd = -1;
+#endif
 
 /***********************************************************************
 *                  LOCAL FUNCTION DECLARATIONS                         *
@@ -148,6 +157,55 @@ static CONTROL parse_ctrl_type(const char *ctrl);
 /***********************************************************************
 *                       INIT AND EXIT CODE                             *
 ************************************************************************/
+
+
+#ifdef TRANSPORT_USB
+
+int set_interface_attribs (int fd, int speed, int parity) {
+        struct termios tty;
+        if (tcgetattr (fd, &tty) != 0) {
+            rtapi_print("ERROR: can't setup usb: %s\n", strerror(errno));
+            return errno;
+        }
+        cfsetospeed (&tty, speed);
+        cfsetispeed (&tty, speed);
+        tty.c_cflag = (tty.c_cflag & ~CSIZE) | CS8;     // 8-bit chars
+        tty.c_iflag &= ~IGNBRK;         // disable break processing
+        tty.c_lflag = 0;                // no signaling chars, no echo,
+        tty.c_oflag = 0;                // no remapping, no delays
+        tty.c_cc[VMIN]  = 0;            // read doesn't block
+        tty.c_cc[VTIME] = 5;            // 0.5 seconds read timeout
+        tty.c_iflag &= ~(IXON | IXOFF | IXANY); // shut off xon/xoff ctrl
+        tty.c_cflag |= (CLOCAL | CREAD);// ignore modem controls, enable reading
+        tty.c_cflag &= ~(PARENB | PARODD);      // shut off parity
+        tty.c_cflag |= parity;
+        tty.c_cflag &= ~CSTOPB;
+        tty.c_cflag &= ~CRTSCTS;
+
+        if (tcsetattr (fd, TCSANOW, &tty) != 0) {
+            rtapi_print("ERROR: can't setup usb: %s\n", strerror(errno));
+            return errno;
+        }
+        return 0;
+}
+
+int set_blocking (int fd, int should_block) {
+        struct termios tty;
+        memset (&tty, 0, sizeof tty);
+        if (tcgetattr (fd, &tty) != 0) {
+            rtapi_print("ERROR: can't setup usb: %s\n", strerror(errno));
+            return errno;
+        }
+        tty.c_cc[VMIN]  = should_block ? 1 : 0;
+        tty.c_cc[VTIME] = 5;            // 0.5 seconds read timeout
+        if (tcsetattr (fd, TCSANOW, &tty) != 0) {
+            rtapi_print("ERROR: can't setup usb: %s\n", strerror(errno));
+            return errno;
+        }
+}
+
+#endif
+
 
 int rtapi_app_main(void)
 {
@@ -181,13 +239,26 @@ int rtapi_app_main(void)
         return -1;
     }
 
+
 #ifdef TRANSPORT_UDP
     // Initialize the UDP socket
     if (UDP_init() < 0) {
         rtapi_print_msg(RTAPI_MSG_ERR, "Error: The board is unreachable\n");
         return -1;
     }
-#else
+#endif
+
+#ifdef TRANSPORT_SERIAL
+    serial_fd = open (SERIAL_PORT, O_RDWR | O_NOCTTY | O_SYNC);
+    if (serial_fd < 0) {
+        rtapi_print_msg(RTAPI_MSG_ERR,"usb setup error\n");
+        return errno;
+    }
+    set_interface_attribs (serial_fd, SERIAL_SPEED, 0);
+    set_blocking (serial_fd, 100);
+#endif
+
+#ifdef TRANSPORT_SPI
     // Map the RPi BCM2835 peripherals - uses "rtapi_open_as_root" in place of "open"
     if (!rt_bcm2835_init()) {
         rtapi_print_msg(RTAPI_MSG_ERR,"rt_bcm2835_init failed. Are you running with root privlages??\n");
@@ -416,8 +487,7 @@ int UDP_init(void)
 
     ret = setsockopt(udpSocket, SOL_SOCKET, SO_RCVTIMEO, (char*) &timeout, sizeof(timeout));
     if (ret < 0) {
-        rtapi_print("ERROR: can't set receive timeout socket option: %s\n",
-                    strerror(errno));
+        rtapi_print("ERROR: can't set receive timeout socket option: %s\n", strerror(errno));
         return -errno;
     }
 
@@ -425,15 +495,16 @@ int UDP_init(void)
     ret = setsockopt(udpSocket, SOL_SOCKET, SO_SNDTIMEO, (char*) &timeout,
                      sizeof(timeout));
     if (ret < 0) {
-        rtapi_print("ERROR: can't set send timeout socket option: %s\n",
-                    strerror(errno));
+        rtapi_print("ERROR: can't set send timeout socket option: %s\n", strerror(errno));
         return -errno;
     }
 
     return 0;
 }
 
-#else
+#endif
+
+#ifdef TRANSPORT_SPI
 int rt_bcm2835_init(void)
 {
     int  memfd;
@@ -933,7 +1004,16 @@ void rio_transfer()
         *(data->SPIstatus) = 0;
         rtapi_print("Ethernet ERROR: %s\n", strerror(errno));
     }
-#else
+#endif
+
+#ifdef TRANSPORT_USB
+
+    write (serial_fd, txData.txBuffer, SPIBUFSIZE);
+    read(serial_fd, rxData.rxBuffer, SPIBUFSIZE);
+
+#endif
+
+#ifdef TRANSPORT_SPI
     int i;
 
     bcm2835_gpio_fsel(RPI_GPIO_P1_26, BCM2835_GPIO_FSEL_OUTP);

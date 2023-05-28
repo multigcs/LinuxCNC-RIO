@@ -1,4 +1,5 @@
 import os
+import sys
 
 def generate(project):
     print("generating linux-cnc component")
@@ -7,11 +8,20 @@ def generate(project):
     rio_data.append("#ifndef RIO_H")
     rio_data.append("#define RIO_H")
     rio_data.append("")
-    if project['jdata'].get('transport', 'SPI') == 'UDP':
+    transport = project['jdata'].get('transport', 'SPI')
+    if transport == 'UDP':
         rio_data.append("#define TRANSPORT_UDP")
         rio_data.append("#define UDP_IP \"192.168.10.132\"")
-    else:
+    elif transport == 'SERIAL':
+        rio_data.append("#define TRANSPORT_SERIAL")
+        rio_data.append("#define SERIAL_PORT \"/dev/ttyUSB0\"")
+        rio_data.append("#define SERIAL_SPEED B2000000")
+    elif transport == 'SPI':
+        rio_data.append("#define TRANSPORT_SPI")
         rio_data.append("#define SPI_SPEED BCM2835_SPI_CLOCK_DIVIDER_128")
+    else:
+        print("ERROR: UNKNOWN transport protocol:", transport)
+        sys.exit(1)
     rio_data.append("")
     rio_data.append(f"#define JOINTS               {project['joints']}")
     rio_data.append(f"#define JOINT_ENABLE_BYTES   {project['joints_en_total'] // 8}")

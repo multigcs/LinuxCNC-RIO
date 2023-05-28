@@ -11,10 +11,16 @@ def generate(project):
     spitest_data.append("from PyQt5.QtWidgets import QWidget,QPushButton,QApplication,QListWidget,QGridLayout,QLabel,QSlider,QCheckBox")
     spitest_data.append("from PyQt5.QtCore import QTimer,QDateTime, Qt")
     spitest_data.append("")
-    spitest_data.append("IP = ''")
-    spitest_data.append("if len(sys.argv) > 1 and sys.argv[1] != '':")
-    spitest_data.append("    IP = sys.argv[1]")
-    spitest_data.append("    print('IP:', IP)")
+    spitest_data.append("SERIAL = ''")
+    spitest_data.append("NET_IP = ''")
+    spitest_data.append("if len(sys.argv) > 1 and sys.argv[1].startswith('/dev/tty'):")
+    spitest_data.append("    import serial")
+    spitest_data.append("    SERIAL = '/dev/ttyUSB0'")
+    spitest_data.append("    ser = serial.Serial(SERIAL, 2000000, timeout=1)")
+    spitest_data.append("elif len(sys.argv) > 1 and sys.argv[1] != '':")
+    spitest_data.append("    NET_IP = sys.argv[1]")
+    spitest_data.append("    NET_PORT = 2390")
+    spitest_data.append("    print('IP:', NET_IP)")
     spitest_data.append("    import socket")
     spitest_data.append("else:")
     spitest_data.append("    import spidev")
@@ -336,17 +342,21 @@ class WinForm(QWidget):
                 bn += 1
 
             print("tx:", data)
-            if IP:
-                start = time.time()
+            start = time.time()
+            if NET_IP:
                 UDPClientSocket = socket.socket(family=socket.AF_INET, type=socket.SOCK_DGRAM)
-                UDPClientSocket.sendto(bytes(data), (IP, 2390))
+                UDPClientSocket.sendto(bytes(data), (NET_IP, NET_PORT))
                 UDPClientSocket.settimeout(0.2)
                 msgFromServer = UDPClientSocket.recvfrom(len(data))
-                print("Duration", time.time() - start)
                 rec = list(msgFromServer[0])
+            elif SERIAL:
+                ser.write(bytes(data))
+                msgFromServer = ser.read(len(data))
+                rec = list(msgFromServer)
             else:
                 rec = spi.xfer2(data)
 
+            print("Duration", time.time() - start)
             print("rx:", rec)
 
             jointFeedback = [0] * JOINTS

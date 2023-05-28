@@ -21,9 +21,13 @@ unsigned int localPort = 2390;
 WiFiUDP Udp;
 SPIClass * hspi = NULL;
 
+
 void setup(){
     delay(250);
-    Serial.begin(115200);
+    //Serial.begin(115200);
+    Serial.begin(2000000);
+    while (!Serial);
+
     ETH.begin();
 
     Udp.begin(localPort);
@@ -48,5 +52,21 @@ void loop(){
         Udp.beginPacket(Udp.remoteIP(), Udp.remotePort());
         Udp.write((uint8_t*)packetBuffer, len);
         Udp.endPacket();
+    }
+
+    if (Serial.available() > 0) {
+        int len = 0;
+        while (Serial.available() > 0 && len < BUFFER_SIZE) {
+            packetBuffer[len] = Serial.read();
+            len++;
+        }
+        if (len < BUFFER_SIZE) {
+            hspi->beginTransaction(SPISettings(spiClk, MSBFIRST, SPI_MODE0));
+            digitalWrite(hspi->pinSS(), LOW);
+            hspi->transfer(packetBuffer, len);
+            digitalWrite(hspi->pinSS(), HIGH);
+            hspi->endTransaction();
+            Serial.write((uint8_t*)packetBuffer, len);
+        }
     }
 }

@@ -94,7 +94,7 @@ def generate(project):
         elif joint["type"] == "stepper":
             joints_fb_type.append("JOINT_FB_REL")
             if joint.get("cl", False):
-                joints_fb_scale.append(joint.get("enc_scale", 1))
+                joints_fb_scale.append(str(joint.get("enc_scale", "1")))
             else:
                 joints_fb_scale.append("1.0")
         else:
@@ -102,8 +102,7 @@ def generate(project):
             joints_fb_scale.append("1.0")
 
     rio_data.append(f"uint8_t joints_fb_type[JOINTS] = {{{', '.join(joints_fb_type)}}};")
-    rio_data.append(f"uint8_t joints_fb_scale[JOINTS] = {{{', '.join(joints_fb_scale)}}};")
-
+    rio_data.append(f"float joints_fb_scale[JOINTS] = {{{', '.join(joints_fb_scale)}}};")
     rio_data.append("")
 
     rio_data.append("typedef union {")

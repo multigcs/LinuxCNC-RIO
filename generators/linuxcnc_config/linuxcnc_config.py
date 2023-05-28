@@ -132,14 +132,19 @@ MAX_LIMIT = {MAX_LIMIT}
         scales = f"SCALE = {OUTPUT_SCALE}"
 
         if joint.get("cl", False):
-            cfgini_data.append(f"P = 60")
-            cfgini_data.append(f"I = 0.0")
-            cfgini_data.append(f"D = 0.0")
-            cfgini_data.append(f"FF0 = 0.0")
-            cfgini_data.append(f"FF1 = 1.00025")
-            cfgini_data.append(f"FF2 = 0.01")
-            cfgini_data.append(f"BIAS = 0.0")
-            cfgini_data.append(f"DEADBAND = 2.0")
+            for key, default in {
+                "P": "1",
+                "I": "0.0",
+                "D": "0.0",
+                "FF0": "0.0",
+                "FF1": "1.00025",
+                "FF2": "0.01",
+                "BIAS": "0.0",
+                "DEADBAND": "2.0",
+            }.items():
+                value = joint.get("pid", {}).get(key, default)
+                cfgini_data.append(f"{key} = {value}")
+
             scales = f"OUTPUT_SCALE = {OUTPUT_SCALE}\nINPUT_SCALE = {INPUT_SCALE}"
 
         if num > 2:

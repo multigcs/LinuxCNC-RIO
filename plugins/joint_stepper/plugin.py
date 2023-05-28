@@ -46,6 +46,7 @@ class Plugin:
                 },
             }
         ]
+
     def types(self):
         return ["stepper", ]
 

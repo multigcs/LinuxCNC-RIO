@@ -87,18 +87,22 @@ class Plugin:
                         f"    assign JOINT{num}_EN = jointEnable{num} && ~ERROR;"
                     )
                 if joint.get("cl"):
-                    func_out.append(f"    quad_encoder joint_pwmdir_quad{num} (")
+                    func_out.append(f"    quad_encoder_pwm quad_encoder_pwm{num} (")
                     func_out.append("        .clk (sysclk),")
                     func_out.append(f"        .quadA (JOINT{num}_PWMDIR_ENCA),")
                     func_out.append(f"        .quadB (JOINT{num}_PWMDIR_ENCB),")
                     func_out.append(f"        .pos (jointFeedback{num})")
                     func_out.append("    );")
-                    func_out.append(f"    joint_pwmdir_nf joint_pwmdir_nf{num} (")
+                    func_out.append("    wire signed [31:0] jointFeedbackFake;")
+                    func_out.append(
+                        f"    joint_pwmdir #({int(sysclk / pwm_freq)}) joint_pwmdir{num} ("
+                    )
                     func_out.append("        .clk (sysclk),")
                     func_out.append(
                         f"        .jointEnable (jointEnable{num} && !ERROR),"
                     )
                     func_out.append(f"        .jointFreqCmd (jointFreqCmd{num}),")
+                    func_out.append(f"        .jointFeedback (jointFeedbackFake),")
                     func_out.append(f"        .DIR (JOINT{num}_PWMDIR_DIR),")
                     func_out.append(f"        .PWM (JOINT{num}_PWMDIR_PWM)")
                     func_out.append("    );")

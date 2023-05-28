@@ -81,24 +81,33 @@
         {
             "comment": "J9.1",
             "type": "stepper",
-            "cl": true,
             "scale": "800",
-            "enc_scale": "640",
             "pins": {
                 "dir": "P11",
-                "step": "N11",
-                "enc_a": "G5",
-                "enc_b": "H5"
+                "step": "N11"
             }
         },
         {
             "comment": "J10.1",
-            "type": "stepper",
-            "cl": false,
+            "type": "pwmdir",
+            "cl": true,
+            "scale": "10",
+            "enc_scale": "1000",
+            "pid": {
+                "P": "3.0",
+                "I": "0.0",
+                "D": "0.0",
+                "FF0": "0.0",
+                "FF1": "36.0",
+                "FF2": "0.0",
+                "BIAS": "0.0",
+                "DEADBAND": "0.0"
+            },
             "pins": {
-                "dir": "R14",
-                "step": "T14",
-                "enable": "D16"
+                "dir": "L4",
+                "pwm": "L5",
+                "enc_a": "G5",
+                "enc_b": "H5"
             }
         },
         {

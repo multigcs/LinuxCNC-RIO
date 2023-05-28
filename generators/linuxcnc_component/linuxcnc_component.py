@@ -54,6 +54,10 @@ def generate(project):
     rio_data.append("#define JOINT_FB_REL 0")
     rio_data.append("#define JOINT_FB_ABS 1")
 
+    rio_data.append("#define JOINT_STEPPER 0")
+    rio_data.append("#define JOINT_RCSERVO 1")
+    rio_data.append("#define JOINT_PWMDIR  2")
+
     vouts_min = []
     vouts_max = []
     vouts_type = []
@@ -91,8 +95,18 @@ def generate(project):
             joints_fb_type.append("JOINT_FB_ABS")
         else:
             joints_fb_type.append("JOINT_FB_REL")
-
     rio_data.append(f"uint8_t joints_fb_type[JOINTS] = {{{', '.join(joints_fb_type)}}};")
+    rio_data.append("")
+
+    joints_type = []
+    for num, joint in enumerate(project['jdata']["joints"]):
+        if joint.get('type') == "rcservo":
+            joints_type.append("JOINT_RCSERVO")
+        elif joint.get('type') == "pwmdir":
+            joints_type.append("JOINT_PWMDIR")
+        else:
+            joints_type.append("JOINT_STEPPER")
+    rio_data.append(f"uint8_t joints_type[JOINTS] = {{{', '.join(joints_type)}}};")
     rio_data.append("")
 
     rio_data.append("typedef union {")

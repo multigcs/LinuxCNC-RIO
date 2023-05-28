@@ -70,7 +70,7 @@ EMCMOT = motmod
 COMM_TIMEOUT = 1.0
 COMM_WAIT = 0.010
 BASE_PERIOD = 0
-SERVO_PERIOD = 10000000
+SERVO_PERIOD = 1000000
 
 [HAL]
 HALFILE = rio.hal
@@ -194,11 +194,10 @@ net user-request-enable <= iocontrol.0.user-request-enable	=> rio.SPI-reset
 net rio-status 	<= rio.SPI-status 			=> iocontrol.0.emc-enable-in
 
 # add the rio and motion functions to threads
-addf rio.read servo-thread
 addf motion-command-handler servo-thread
 addf motion-controller servo-thread
 addf rio.update-freq servo-thread
-addf rio.write servo-thread
+addf rio.readwrite servo-thread
 
     """)
 
@@ -242,18 +241,11 @@ net j{num}enable 		<= joint.{num}.amp-enable-out 	=> rio.joint.{num}.enable
 
 
 
-
-
-
-
     cfghal_data = []
     cfghal_data.append("loadrt rio")
     cfghal_data.append("loadusr -Wn ptest pyvcp -c ptest port-tester.xml")
     cfghal_data.append("loadrt threads name1=porttest period1=1000000")
-
-    cfghal_data.append("addf rio.read porttest")
-    cfghal_data.append("addf rio.write porttest")
-
+    cfghal_data.append("addf rio.readwrite porttest")
     cfghal_data.append("")
 
     for num in range(project['douts_total']):
@@ -265,11 +257,8 @@ net j{num}enable 		<= joint.{num}.amp-enable-out 	=> rio.joint.{num}.enable
     for num in range(project['vouts']):
         cfghal_data.append(f"net vout{num} ptest.vout{num}-f rio.SP.{num}")
 
-
     cfghal_data.append("start")
     open(f"{project['LINUXCNC_PATH']}/ConfigSamples/rio/port-tester.hal", "w").write("\n".join(cfghal_data))
-
-
 
 
 

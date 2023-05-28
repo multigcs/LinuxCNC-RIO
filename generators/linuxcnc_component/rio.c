@@ -141,9 +141,8 @@ static int UDP_init(void);
 static int rt_bcm2835_init(void);
 
 static void update_freq(void *arg, long period);
-static void spi_write();
-static void spi_read();
-static void spi_transfer();
+static void rio_readwrite();
+static void rio_transfer();
 static CONTROL parse_ctrl_type(const char *ctrl);
 
 /***********************************************************************
@@ -183,12 +182,11 @@ int rtapi_app_main(void)
     }
 
 #ifdef TRANSPORT_UDP
-	// Initialize the UDP socket
-	if (UDP_init() < 0)
-	{
-		rtapi_print_msg(RTAPI_MSG_ERR, "Error: The board is unreachable\n");
-		return -1;
-	}
+    // Initialize the UDP socket
+    if (UDP_init() < 0) {
+        rtapi_print_msg(RTAPI_MSG_ERR, "Error: The board is unreachable\n");
+        return -1;
+    }
 #else
     // Map the RPi BCM2835 peripherals - uses "rtapi_open_as_root" in place of "open"
     if (!rt_bcm2835_init()) {
@@ -204,29 +202,14 @@ int rtapi_app_main(void)
     }
 
     // Configure SPI0
-    bcm2835_spi_setBitOrder(BCM2835_SPI_BIT_ORDER_MSBFIRST);      // The default
-    bcm2835_spi_setDataMode(BCM2835_SPI_MODE0);                   // The default
-
-    //bcm2835_spi_setClockDivider(BCM2835_SPI_CLOCK_DIVIDER_256);		// 3.125MHz on RPI3
-    bcm2835_spi_setClockDivider(BCM2835_SPI_CLOCK_DIVIDER_128);		// 3.125MHz on RPI3
-    //bcm2835_spi_setClockDivider(BCM2835_SPI_CLOCK_DIVIDER_64);		// 6.250MHz on RPI3
-    //bcm2835_spi_setClockDivider(BCM2835_SPI_CLOCK_DIVIDER_32);		// 12.5MHz on RPI3
-
-    bcm2835_spi_chipSelect(BCM2835_SPI_CS_NONE);                      // The default
-    //bcm2835_spi_setChipSelectPolarity(BCM2835_SPI_CS0, LOW);      // the default
-
-
-    /* RPI_GPIO_P1_19        = 10 		MOSI when SPI0 in use
-     * RPI_GPIO_P1_21        =  9 		MISO when SPI0 in use
-     * RPI_GPIO_P1_23        = 11 		CLK when SPI0 in use
-     * RPI_GPIO_P1_24        =  8 		CE0 when SPI0 in use
-     * RPI_GPIO_P1_26        =  7 		CE1 when SPI0 in use
-     */
-
-    // Configure pullups on SPI0 pins - source termination and CS high (does this allows for higher clock frequencies??? wiring is more important here)
+    bcm2835_spi_setBitOrder(BCM2835_SPI_BIT_ORDER_MSBFIRST);
+    bcm2835_spi_setDataMode(BCM2835_SPI_MODE0);
+    bcm2835_spi_setClockDivider(SPI_SPEED);
+    bcm2835_spi_chipSelect(BCM2835_SPI_CS_NONE);
     bcm2835_gpio_set_pud(RPI_GPIO_P1_19, BCM2835_GPIO_PUD_DOWN);	// MOSI
     bcm2835_gpio_set_pud(RPI_GPIO_P1_21, BCM2835_GPIO_PUD_DOWN);	// MISO
     bcm2835_gpio_set_pud(RPI_GPIO_P1_24, BCM2835_GPIO_PUD_UP);		// CS0
+
 #endif
 
     retval = hal_pin_bit_newf(HAL_IN, &(data->SPIenable),
@@ -353,9 +336,6 @@ error:
     }
 
 
-
-
-
     // Export functions
     rtapi_snprintf(name, sizeof(name), "%s.update-freq", prefix);
     retval = hal_export_funct(name, update_freq, data, 1, 0, comp_id);
@@ -366,18 +346,8 @@ error:
         return -1;
     }
 
-    rtapi_snprintf(name, sizeof(name), "%s.write", prefix);
-    /* no FP operations */
-    retval = hal_export_funct(name, spi_write, 0, 0, 0, comp_id);
-    if (retval < 0) {
-        rtapi_print_msg(RTAPI_MSG_ERR,
-                        "%s: ERROR: write function export failed\n", modname);
-        hal_exit(comp_id);
-        return -1;
-    }
-
-    rtapi_snprintf(name, sizeof(name), "%s.read", prefix);
-    retval = hal_export_funct(name, spi_read, data, 1, 0, comp_id);
+    rtapi_snprintf(name, sizeof(name), "%s.readwrite", prefix);
+    retval = hal_export_funct(name, rio_readwrite, data, 1, 0, comp_id);
     if (retval < 0) {
         rtapi_print_msg(RTAPI_MSG_ERR,
                         "%s: ERROR: read function export failed\n", modname);
@@ -407,63 +377,60 @@ void rtapi_app_exit(void)
 #ifdef TRANSPORT_UDP
 int UDP_init(void)
 {
-	int ret;
+    int ret;
 
-	// Create a UDP socket
-	udpSocket = socket(PF_INET, SOCK_DGRAM, IPPROTO_UDP);
-	if (udpSocket < 0)
-	{
-		rtapi_print("ERROR: can't open socket: %s\n", strerror(errno));
-		return -errno;
-	}
+    // Create a UDP socket
+    udpSocket = socket(PF_INET, SOCK_DGRAM, IPPROTO_UDP);
+    if (udpSocket < 0) {
+        rtapi_print("ERROR: can't open socket: %s\n", strerror(errno));
+        return -errno;
+    }
 
-	bzero((char*) &dstAddr, sizeof(dstAddr));
-	dstAddr.sin_family = AF_INET;
-	dstAddr.sin_addr.s_addr = inet_addr(dstAddress);
-	dstAddr.sin_port = htons(DST_PORT);
+    bzero((char*) &dstAddr, sizeof(dstAddr));
+    dstAddr.sin_family = AF_INET;
+    dstAddr.sin_addr.s_addr = inet_addr(dstAddress);
+    dstAddr.sin_port = htons(DST_PORT);
 
-	bzero((char*) &srcAddr, sizeof(srcAddr));
-	srcAddr.sin_family = AF_INET;
-	srcAddr.sin_addr.s_addr = htonl(INADDR_ANY);
-	srcAddr.sin_port = htons(SRC_PORT);
-	
-	// bind the local socket to SCR_PORT
-	ret = bind(udpSocket, (struct sockaddr *) &srcAddr, sizeof(srcAddr));
-	if (ret < 0)
-	{
-		rtapi_print("ERROR: can't bind: %s\n", strerror(errno));
-		return -errno;
-	}
-	
-	// Connect to send and receive only to the server_addr
-	ret = connect(udpSocket, (struct sockaddr*) &dstAddr, sizeof(struct sockaddr_in));
-	if (ret < 0)
-	{
-		rtapi_print("ERROR: can't connect: %s\n", strerror(errno));
-		return -errno;
-	}
+    bzero((char*) &srcAddr, sizeof(srcAddr));
+    srcAddr.sin_family = AF_INET;
+    srcAddr.sin_addr.s_addr = htonl(INADDR_ANY);
+    srcAddr.sin_port = htons(SRC_PORT);
 
-	struct timeval timeout;
-	timeout.tv_sec = 0;
-	timeout.tv_usec = RECV_TIMEOUT_US;
+    // bind the local socket to SCR_PORT
+    ret = bind(udpSocket, (struct sockaddr *) &srcAddr, sizeof(srcAddr));
+    if (ret < 0) {
+        rtapi_print("ERROR: can't bind: %s\n", strerror(errno));
+        return -errno;
+    }
 
-	ret = setsockopt(udpSocket, SOL_SOCKET, SO_RCVTIMEO, (char*) &timeout, sizeof(timeout));
-	if (ret < 0) {
-	rtapi_print("ERROR: can't set receive timeout socket option: %s\n",
-		strerror(errno));
-	return -errno;
-	}
+    // Connect to send and receive only to the server_addr
+    ret = connect(udpSocket, (struct sockaddr*) &dstAddr, sizeof(struct sockaddr_in));
+    if (ret < 0) {
+        rtapi_print("ERROR: can't connect: %s\n", strerror(errno));
+        return -errno;
+    }
 
-	timeout.tv_usec = SEND_TIMEOUT_US;
-	ret = setsockopt(udpSocket, SOL_SOCKET, SO_SNDTIMEO, (char*) &timeout,
-	  sizeof(timeout));
-	if (ret < 0) {
-	rtapi_print("ERROR: can't set send timeout socket option: %s\n",
-		strerror(errno));
-	return -errno;
-	}
+    struct timeval timeout;
+    timeout.tv_sec = 0;
+    timeout.tv_usec = RECV_TIMEOUT_US;
 
-	return 0;
+    ret = setsockopt(udpSocket, SOL_SOCKET, SO_RCVTIMEO, (char*) &timeout, sizeof(timeout));
+    if (ret < 0) {
+        rtapi_print("ERROR: can't set receive timeout socket option: %s\n",
+                    strerror(errno));
+        return -errno;
+    }
+
+    timeout.tv_usec = SEND_TIMEOUT_US;
+    ret = setsockopt(udpSocket, SOL_SOCKET, SO_SNDTIMEO, (char*) &timeout,
+                     sizeof(timeout));
+    if (ret < 0) {
+        rtapi_print("ERROR: can't set send timeout socket option: %s\n",
+                    strerror(errno));
+        return -errno;
+    }
+
+    return 0;
 }
 
 #else
@@ -789,7 +756,7 @@ void update_freq(void *arg, long period)
 }
 
 
-void spi_read()
+void rio_readwrite()
 {
     int i = 0;
     int bi = 0;
@@ -810,8 +777,56 @@ void spi_read()
         if( (*(data->SPIreset) && !(data->SPIresetOld)) || *(data->SPIstatus) ) {
             // reset rising edge detected, try SPI transfer and reset OR PRU running
 
-            // Transfer to and from the PRU
-            spi_transfer();
+
+            int i = 0;
+            int bi = 0;
+
+            // Data header
+            txData.header = PRU_WRITE;
+
+
+            // Joint frequency commands
+            for (i = 0; i < JOINTS; i++) {
+                txData.jointFreqCmd[i] = PRU_OSC / data->freq[i];
+            }
+
+
+            for (bi = 0; bi < JOINT_ENABLE_BYTES; bi++) {
+                txData.jointEnable[bi] = 0;
+                for (i = 0; i < JOINTS; i++) {
+                    if (*(data->stepperEnable[bi * 8 + i]) == 1) {
+                        txData.jointEnable[bi] |= (1 << i);
+                    }
+                }
+            }
+
+            // Set points
+            for (i = 0; i < VARIABLE_OUTPUTS; i++) {
+                if (vout_type[i] == VOUT_TYPE_SINE) {
+                    txData.setPoint[i] = PRU_OSC / *(data->setPoint[i]) / vout_freq[i];
+                }
+                else if (vout_type[i] == VOUT_TYPE_PWM) {
+                    txData.setPoint[i] = *(data->setPoint[i]) * (PRU_OSC / vout_freq[i]) / 100;
+                }
+                else if (vout_type[i] == VOUT_TYPE_RCSERVO) {
+                    txData.setPoint[i] = (*(data->setPoint[i]) + 200 + 100) * (PRU_OSC / 200000);
+                }
+                else {
+                    txData.setPoint[i] = (*(data->setPoint[i]) - vout_min[i]) * (0xFFFFFFFF / 2) / (vout_max[i] - vout_min[i]);
+                }
+            }
+
+            // Outputs
+            for (bi = 0; bi < DIGITAL_OUTPUT_BYTES; bi++) {
+                txData.outputs[bi] = 0;
+                for (i = 0; i < 8; i++) {
+                    if (*(data->outputs[bi * 8 + i]) == 1) {
+                        txData.outputs[bi] |= (1 << i);		// output is high
+                    }
+                }
+            }
+
+            rio_transfer();
 
             switch (rxData.header) {	// only process valid SPI payloads. This rejects bad payloads
             case PRU_DATA:
@@ -888,96 +903,36 @@ void spi_read()
 }
 
 
-void spi_write()
-{
-    int i = 0;
-    int bi = 0;
-
-    // Data header
-    txData.header = PRU_WRITE;
-
-
-    // Joint frequency commands
-    for (i = 0; i < JOINTS; i++) {
-        txData.jointFreqCmd[i] = PRU_OSC / data->freq[i];
-    }
-
-
-    for (bi = 0; bi < JOINT_ENABLE_BYTES; bi++) {
-        txData.jointEnable[bi] = 0;
-        for (i = 0; i < JOINTS; i++) {
-            if (*(data->stepperEnable[bi * 8 + i]) == 1) {
-                txData.jointEnable[bi] |= (1 << i);
-            }
-        }
-    }
-
-    // Set points
-    for (i = 0; i < VARIABLE_OUTPUTS; i++) {
-        if (vout_type[i] == VOUT_TYPE_SINE) {
-            txData.setPoint[i] = PRU_OSC / *(data->setPoint[i]) / vout_freq[i];
-        }
-        else if (vout_type[i] == VOUT_TYPE_PWM) {
-            txData.setPoint[i] = *(data->setPoint[i]) * (PRU_OSC / vout_freq[i]) / 100;
-        }
-        else if (vout_type[i] == VOUT_TYPE_RCSERVO) {
-            txData.setPoint[i] = (*(data->setPoint[i]) + 200 + 100) * (PRU_OSC / 200000);
-        }
-        else {
-            txData.setPoint[i] = (*(data->setPoint[i]) - vout_min[i]) * (0xFFFFFFFF / 2) / (vout_max[i] - vout_min[i]);
-        }
-    }
-
-    // Outputs
-    for (bi = 0; bi < DIGITAL_OUTPUT_BYTES; bi++) {
-        txData.outputs[bi] = 0;
-        for (i = 0; i < 8; i++) {
-            if (*(data->outputs[bi * 8 + i]) == 1) {
-                txData.outputs[bi] |= (1 << i);		// output is high
-            }
-        }
-    }
-
-    if( *(data->SPIstatus) ) {
-        // Transfer to and from the PRU
-        spi_transfer();
-    }
-
-}
-
-
-void spi_transfer()
+void rio_transfer()
 {
 
 #ifdef TRANSPORT_UDP
-	int ret;
-	long long t1, t2;
+    int ret;
+    long long t1, t2;
 
-	// Send datagram
-	ret = send(udpSocket, txData.txBuffer, SPIBUFSIZE, 0);
+    // Send datagram
+    ret = send(udpSocket, txData.txBuffer, SPIBUFSIZE, 0);
 
-	// Receive incoming datagram
+    // Receive incoming datagram
     t1 = rtapi_get_time();
     do {
         ret = recv(udpSocket, rxData.rxBuffer, SPIBUFSIZE, 0);
         if(ret < 0) rtapi_delay(READ_PCK_DELAY_NS);
         t2 = rtapi_get_time();
-    } while ((ret < 0) && ((t2 - t1) < 200*1000*1000));
+    }
+    while ((ret < 0) && ((t2 - t1) < 200*1000*1000));
 
-	if (ret > 0)
-	{
-		errCount = 0;
-	}
-	else
-	{
-		errCount++;
-	}
-	
-	if (errCount > 2)
-	{
-		*(data->SPIstatus) = 0;
-		rtapi_print("Ethernet ERROR: %s\n", strerror(errno));
-	}
+    if (ret > 0) {
+        errCount = 0;
+    }
+    else {
+        errCount++;
+    }
+
+    if (errCount > 2) {
+        *(data->SPIstatus) = 0;
+        rtapi_print("Ethernet ERROR: %s\n", strerror(errno));
+    }
 #else
     int i;
 

@@ -5,7 +5,7 @@
     "family": "ecp5",
     "type": "25k",
     "package": "CABGA256",
-    "transport": "UDP",
+    "transport": "SPI",
     "clock": {
         "osc": "25000000",
         "speed": "100000000",
@@ -86,7 +86,17 @@
     ],
     "joints": [
         {
-            "comment": "J9.1+3+4",
+            "comment": "J9.1",
+            "type": "stepper",
+            "cl": false,
+            "pins": {
+                "dir": "P11",
+                "step": "N11",
+                "enable": "M11"
+            }
+        },
+        {
+            "comment": "J10.1",
             "type": "stepper",
             "cl": false,
             "pins": {
@@ -96,11 +106,13 @@
             }
         },
         {
-            "comment": "J9.1",
-            "type": "rcservo",
+            "comment": "J11.1",
+            "type": "stepper",
             "cl": false,
             "pins": {
-                "pwm": "P11"
+                "dir": "B15",
+                "step": "C14",
+                "enable": "T15"
             }
         }
     ]

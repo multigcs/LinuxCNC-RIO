@@ -10,7 +10,9 @@ def generate(project):
     if project['jdata'].get('transport', 'SPI') == 'UDP':
         rio_data.append("#define TRANSPORT_UDP")
         rio_data.append("#define UDP_IP \"192.168.10.132\"")
-        rio_data.append("")
+    else:
+        rio_data.append("#define SPI_SPEED BCM2835_SPI_CLOCK_DIVIDER_128")
+    rio_data.append("")
     rio_data.append(f"#define JOINTS               {project['joints']}")
     rio_data.append(f"#define JOINT_ENABLE_BYTES   {project['joints_en_total'] // 8}")
     rio_data.append(f"#define VARIABLE_OUTPUTS     {project['vouts']}")

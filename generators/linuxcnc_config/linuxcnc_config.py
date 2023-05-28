@@ -92,7 +92,6 @@ TOOL_TABLE = tool.tbl
 
     """)
 
-
     for num, joint in enumerate(project['jdata']["joints"]):
         if joint.get("type") == "rcservo":
             SCALE = 80.0
@@ -108,25 +107,50 @@ TOOL_TABLE = tool.tbl
                 MIN_LIMIT = -1300
                 MAX_LIMIT = 1300
 
-        SCALE = joint.get("scale", SCALE)
+        OUTPUT_SCALE = joint.get("scale", SCALE)
+        INPUT_SCALE = joint.get("enc_scale", OUTPUT_SCALE)
         MIN_LIMIT = joint.get("min_limit", MIN_LIMIT)
         MAX_LIMIT = joint.get("max_limit", MAX_LIMIT)
+        cfgini_data.append(f"[AXIS_{axis_names[num]}]")
 
         if num > 2:
-            cfgini_data.append(f"""[AXIS_{axis_names[num]}]
-MAX_VELOCITY = 50
+            cfgini_data.append(f"""MAX_VELOCITY = 50
 MAX_ACCELERATION = 400.0
 MIN_LIMIT = {MIN_LIMIT}
 MAX_LIMIT = {MAX_LIMIT}
 
-[JOINT_{num}]
+""")
+        else:
+            cfgini_data.append(f"""MAX_VELOCITY = 50
+MAX_ACCELERATION = 400.0
+MIN_LIMIT = {MIN_LIMIT}
+MAX_LIMIT = {MAX_LIMIT}
+
+""")
+
+        cfgini_data.append(f"[JOINT_{num}]")
+        scales = f"SCALE = {OUTPUT_SCALE}"
+
+        if joint.get("cl", False):
+            cfgini_data.append(f"P = 60")
+            cfgini_data.append(f"I = 0.0")
+            cfgini_data.append(f"D = 0.0")
+            cfgini_data.append(f"FF0 = 0.0")
+            cfgini_data.append(f"FF1 = 1.00025")
+            cfgini_data.append(f"FF2 = 0.01")
+            cfgini_data.append(f"BIAS = 0.0")
+            cfgini_data.append(f"DEADBAND = 2.0")
+            scales = f"OUTPUT_SCALE = {OUTPUT_SCALE}\nINPUT_SCALE = {INPUT_SCALE}"
+
+        if num > 2:
+            cfgini_data.append(f"""
 TYPE = ANGULAR
 MIN_LIMIT = {MIN_LIMIT}
 MAX_LIMIT = {MAX_LIMIT}
 MAX_VELOCITY = 50.0
 MAX_ACCELERATION = 100.0
 STEPGEN_MAXACCEL = 4000.0
-SCALE = {SCALE}
+{scales}
 FERROR = 1.0
 MIN_FERROR = 0.5
 
@@ -146,20 +170,14 @@ HOME_SEQUENCE = 0
 
 """)
         else:
-            cfgini_data.append(f"""[AXIS_{axis_names[num]}]
-MAX_VELOCITY = 50
-MAX_ACCELERATION = 400.0
-MIN_LIMIT = {MIN_LIMIT}
-MAX_LIMIT = {MAX_LIMIT}
-
-[JOINT_{num}]
+            cfgini_data.append(f"""
 TYPE = LINEAR
 MIN_LIMIT = {MIN_LIMIT}
 MAX_LIMIT = {MAX_LIMIT}
 MAX_VELOCITY = 50.0
 MAX_ACCELERATION = 400.0
 STEPGEN_MAXACCEL = 4000.0
-SCALE = {SCALE}
+{scales}
 FERROR = 1.0
 MIN_FERROR = 0.5
 
@@ -180,13 +198,23 @@ HOME_SEQUENCE = 0
 """)
     open(f"{project['LINUXCNC_PATH']}/ConfigSamples/rio/rio.ini", "w").write("\n".join(cfgini_data))
 
-
     cfghal_data = []
+    ctrl_types = []
+
+    num_pids = 0
+    for num, joint in enumerate(project['jdata']["joints"]):
+        if joint.get("cl", False):
+            num_pids += 1
+            ctrl_types.append("v") # velocity mode
+        else:
+            ctrl_types.append("p") # position mode
+    
     cfghal_data.append(f"""
 # load the realtime components
 loadrt [KINS]KINEMATICS
 loadrt [EMCMOT]EMCMOT base_period_nsec=[EMCMOT]BASE_PERIOD servo_period_nsec=[EMCMOT]SERVO_PERIOD num_joints=[KINS]JOINTS
-loadrt rio
+
+loadrt rio ctrl_type={','.join(ctrl_types)}
 
 # estop loopback, SPI comms enable and feedback
 net user-enable-out 	<= iocontrol.0.user-enable-out		=> rio.SPI-enable
@@ -200,6 +228,11 @@ addf rio.update-freq servo-thread
 addf rio.readwrite servo-thread
 
     """)
+
+    if num_pids > 0:
+        cfghal_data.append(f"loadrt pid num_chan={num_pids}")
+        for pidn in range(num_pids):
+            cfghal_data.append(f"addf pid.{pidn}.do-pid-calcs        servo-thread")
 
     for num, din in enumerate(project['jdata']["din"]):
         din_type = din.get("type")
@@ -226,8 +259,40 @@ addf rio.readwrite servo-thread
         #pos-lim-sw-in
     cfghal_data.append("")
 
-    for num in range(min(project['joints'], len(axis_names))):
-        cfghal_data.append(f"""# Joint {num} setup
+    pidn = 0
+    for num, joint in enumerate(project['jdata']["joints"]):
+        if joint.get("cl", False):
+            cfghal_data.append(f"""# Joint {num} setup
+
+setp pid.{pidn}.maxoutput 300
+setp pid.{pidn}.Pgain [JOINT_{num}]P
+setp pid.{pidn}.Igain [JOINT_{num}]I
+setp pid.{pidn}.Dgain [JOINT_{num}]D
+setp pid.{pidn}.bias [JOINT_{num}]BIAS
+setp pid.{pidn}.FF0 [JOINT_{num}]FF0
+setp pid.{pidn}.FF1 [JOINT_{num}]FF1
+setp pid.{pidn}.FF2 [JOINT_{num}]FF2
+setp pid.{pidn}.deadband [JOINT_{num}]DEADBAND
+
+setp rio.joint.{num}.scale 		[JOINT_{num}]OUTPUT_SCALE
+setp rio.joint.{num}.fb-scale 	[JOINT_{num}]INPUT_SCALE
+setp rio.joint.{num}.maxaccel 	[JOINT_{num}]STEPGEN_MAXACCEL
+
+net {axis_names[num].lower()}vel-cmd 		<= pid.{pidn}.output 	=> rio.joint.{num}.vel-cmd  
+net {axis_names[num].lower()}pos-cmd 		<= joint.{num}.motor-pos-cmd 	=> pid.{pidn}.command
+net j{num}pos-fb 		<= rio.joint.{num}.pos-fb 	=> joint.{num}.motor-pos-fb
+net j{num}pos-fb 		=> pid.{pidn}.feedback
+
+net j{num}enable 		<= joint.{num}.amp-enable-out 	=> rio.joint.{num}.enable
+net j{num}enable 		=> pid.{pidn}.enable
+
+""")
+
+            pidn += 1
+        else:
+
+
+            cfghal_data.append(f"""# Joint {num} setup
 
 setp rio.joint.{num}.scale 		[JOINT_{num}]SCALE
 setp rio.joint.{num}.maxaccel 	[JOINT_{num}]STEPGEN_MAXACCEL
@@ -236,7 +301,7 @@ net {axis_names[num].lower()}pos-cmd 		<= joint.{num}.motor-pos-cmd 	=> rio.join
 net j{num}pos-fb 		<= rio.joint.{num}.pos-fb 	=> joint.{num}.motor-pos-fb
 net j{num}enable 		<= joint.{num}.amp-enable-out 	=> rio.joint.{num}.enable
 
-    """)
+""")
     open(f"{project['LINUXCNC_PATH']}/ConfigSamples/rio/rio.hal", "w").write("\n".join(cfghal_data))
 
 

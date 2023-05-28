@@ -61,7 +61,7 @@ MODULE_DESCRIPTION("Driver for RIO FPGA boards");
 MODULE_LICENSE("GPL v2");
 
 char *ctrl_type[JOINTS] = { "p" };
-RTAPI_MP_ARRAY_STRING(ctrl_type,JOINTS,"control type (pos or vel)");
+RTAPI_MP_ARRAY_STRING(ctrl_type, JOINTS, "control type (pos or vel)");
 
 /***********************************************************************
 *                STRUCTURES AND GLOBAL VARIABLES                       *
@@ -80,6 +80,7 @@ typedef struct {
     hal_float_t 	*pos_fb[JOINTS];			// pin: position feedback (position units)
     hal_s32_t		*count[JOINTS];				// pin: psition feedback (raw counts)
     hal_float_t 	pos_scale[JOINTS];			// param: steps per position unit
+    hal_float_t 	fb_scale[JOINTS];			// param: steps per position unit
     float 			freq[JOINTS];				// param: frequency command sent to PRU
     hal_float_t 	*freq_cmd[JOINTS];			// pin: frequency command monitoring, available in LinuxCNC
     hal_float_t 	maxvel[JOINTS];				// param: max velocity, (pos units/sec)
@@ -337,6 +338,11 @@ int rtapi_app_main(void)
                                       comp_id, "%s.joint.%01d.scale", prefix, n);
         if (retval < 0) goto error;
         data->pos_scale[n] = 1.0;
+
+        retval = hal_param_float_newf(HAL_RW, &(data->fb_scale[n]),
+                                      comp_id, "%s.joint.%01d.fb-scale", prefix, n);
+        if (retval < 0) goto error;
+        data->fb_scale[n] = 0.0;
 
         retval = hal_pin_s32_newf(HAL_OUT, &(data->count[n]),
                                   comp_id, "%s.joint.%01d.counts", prefix, n);
@@ -783,9 +789,7 @@ void update_freq(void *arg, long period)
 
         }
         else {
-
             /* VELOCITY CONTROL MODE */
-
             // calculate velocity command in counts/sec
             vel_cmd = *(data->vel_cmd[i]);
         }
@@ -905,10 +909,12 @@ void rio_readwrite()
                 *(data->SPIstatus) = 1;
 
                 for (i = 0; i < JOINTS; i++) {
-                    rxData.jointFeedback[i] /= joints_fb_scale[i];
+                    if (data->fb_scale[i] == 0.0) {
+                        data->fb_scale[i] = data->pos_scale[i];
+                    }
 
                     if (joints_fb_type[i] == JOINT_FB_ABS) {
-                        *(data->pos_fb[i]) = (float)(rxData.jointFeedback[i]) / data->pos_scale[i];
+                        *(data->pos_fb[i]) = (float)(rxData.jointFeedback[i]) / data->fb_scale[i];
                     }
                     else {
                         accum_diff = rxData.jointFeedback[i] - old_count[i];
@@ -918,11 +924,11 @@ void rio_readwrite()
 
                         *(data->count[i]) = accum[i];
 
-                        data->scale_recip[i] = data->pos_scale[i];
+                        data->scale_recip[i] = data->fb_scale[i];
 
                         curr_pos = (double)(accum[i]);
 
-                        *(data->pos_fb[i]) = (float)((curr_pos+0.5) / data->pos_scale[i]);
+                        *(data->pos_fb[i]) = (float)((curr_pos+0.5) / data->fb_scale[i]);
                     }
 
                 }

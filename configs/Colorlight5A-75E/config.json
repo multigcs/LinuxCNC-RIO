@@ -82,7 +82,8 @@
             "comment": "J9.1",
             "type": "stepper",
             "cl": true,
-            "enc_scale": "0.8",
+            "scale": "800",
+            "enc_scale": "640",
             "pins": {
                 "dir": "P11",
                 "step": "N11",

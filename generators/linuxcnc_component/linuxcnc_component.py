@@ -86,23 +86,13 @@ def generate(project):
     rio_data.append("")
 
     joints_fb_type = []
-    joints_fb_scale = []
     for num, joint in enumerate(project['jdata']["joints"]):
         if joint.get('type') == "rcservo":
             joints_fb_type.append("JOINT_FB_ABS")
-            joints_fb_scale.append("1.0")
-        elif joint["type"] == "stepper":
-            joints_fb_type.append("JOINT_FB_REL")
-            if joint.get("cl", False):
-                joints_fb_scale.append(str(joint.get("enc_scale", "1")))
-            else:
-                joints_fb_scale.append("1.0")
         else:
             joints_fb_type.append("JOINT_FB_REL")
-            joints_fb_scale.append("1.0")
 
     rio_data.append(f"uint8_t joints_fb_type[JOINTS] = {{{', '.join(joints_fb_type)}}};")
-    rio_data.append(f"float joints_fb_scale[JOINTS] = {{{', '.join(joints_fb_scale)}}};")
     rio_data.append("")
 
     rio_data.append("typedef union {")

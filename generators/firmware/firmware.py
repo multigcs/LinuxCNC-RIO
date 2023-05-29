@@ -30,7 +30,7 @@ def generate(project):
             )
         elif project['jdata']['type'] == "up5k":
             os.system(
-                f"files/icepll -p -m -f '{project['SOURCE_PATH']}/pll.v' -i {float(project['osc_clock']) / 1000000} -o {float(project['jdata']['clock']['speed']) / 1000000}"
+                f"icepll -p -m -f '{project['SOURCE_PATH']}/pll.v' -i {float(project['osc_clock']) / 1000000} -o {float(project['jdata']['clock']['speed']) / 1000000}"
             )
         else:
             os.system(

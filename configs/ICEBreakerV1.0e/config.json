@@ -6,7 +6,8 @@
     "type": "up5k",
     "package": "sg48",
     "clock": {
-        "speed": "120000000",
+        "osc": "12000000",
+        "speed": "50000000",
         "pin": "35"
     },
     "interface": [

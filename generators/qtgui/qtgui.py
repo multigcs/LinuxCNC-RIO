@@ -137,6 +137,7 @@ class WinForm(QWidget):
         layout=QGridLayout()
         self.widgets = {}
         self.animation = 0
+        self.doutcounter = 0
 
         COLS = max(JOINTS, DOUTS, VOUTS, DINS, VINS)
 
@@ -202,6 +203,8 @@ class WinForm(QWidget):
                 self.widgets[key] = QCheckBox()
                 self.widgets[key].setChecked(False)
                 layout.addWidget(self.widgets[key], gpy, dbyte * 8 + dn + 3)
+                if dbyte * 8 + dn == DOUTS - 1:
+                    break
         gpy += 1
 
         layout.addWidget(QLabel(f'JOINTS:'), gpy, 0)
@@ -233,6 +236,8 @@ class WinForm(QWidget):
                 key = f'dic{dbyte}{dn}'
                 self.widgets[key] = QLabel("0")
                 layout.addWidget(self.widgets[key], gpy, dbyte * 8 + dn + 3)
+                if dbyte * 8 + dn == DINS - 1:
+                    break
         gpy += 1
 
         self.setLayout(layout)
@@ -265,18 +270,22 @@ class WinForm(QWidget):
                 self.widgets[key].setText(str(vouts[vn]))
 
             if self.widgets["dout_auto"].isChecked():
-                timer = int(time.time() * 50)
                 for dbyte in range(DIGITAL_OUTPUT_BYTES):
                     for dn in range(8):
                         key = f"doc{dbyte}{dn}"
-
-                        #stat = (timer & (dn+1) == 0)
-                        stat = ((self.animation // 50) == dbyte * 8 + dn)
-                        self.animation += 1
-                        if self.animation // 50 > DOUTS:
-                            self.animation = 0
-
+                        stat = (self.animation - 1) == dbyte * 8 + dn
                         self.widgets[key].setChecked(stat)
+                        if dbyte * 8 + dn == DOUTS - 1:
+                            break
+
+                if self.doutcounter > 10:
+                    self.doutcounter = 0
+                    if self.animation >= DOUTS:
+                        self.animation = 0
+                    else:
+                        self.animation += 1
+                else:
+                    self.doutcounter += 1
 
             douts = []
             for dbyte in range(DIGITAL_OUTPUT_BYTES):
@@ -285,6 +294,8 @@ class WinForm(QWidget):
                     key = f"doc{dbyte}{dn}"
                     if self.widgets[key].isChecked():
                         douts[dbyte] |= (1<<(dn))
+                    if dbyte * 8 + dn == DOUTS - 1:
+                        break
 
 
             bn = 4
@@ -389,11 +400,9 @@ class WinForm(QWidget):
             else:
                 print(f'Header: 0x{header:x}')
 
-
             for jn, value in enumerate(joints):
                 key = f"jf{jn}"
                 self.widgets[key].setText(str(jointFeedback[jn]))
-
 
             for vn in range(VINS):
                 key = f"vi{vn}"
@@ -413,7 +422,6 @@ class WinForm(QWidget):
                         value = 1000 / PRU_OSC / 20 * value * 343.2
                 self.widgets[key].setText(f"{round(value, 2)}{unit}")
 
-
             for dbyte in range(DIGITAL_INPUT_BYTES):
                 for dn in range(8):
                     key = f"dic{dbyte}{dn}"
@@ -428,6 +436,8 @@ class WinForm(QWidget):
                     else:
                         self.widgets[key].setStyleSheet("background-color: yellow")
 
+                    if dbyte * 8 + dn == DINS - 1:
+                        break
 
         except Exception as e:
             print("ERROR", e)

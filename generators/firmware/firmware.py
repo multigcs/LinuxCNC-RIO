@@ -279,14 +279,14 @@ def generate(project):
     top_data.append("")
     open(f"{project['SOURCE_PATH']}/rio.v", "w").write("\n".join(top_data))
     project['verilog_files'].append("rio.v")
+    board = project['jdata'].get("board")
 
+    if board == "TangNano9K":
+        family = project['jdata']["family"]
+        ftype = project['jdata']["type"]
 
-
-
-    if project['jdata'].get("board") == "tango9k":
         lpf_data = []
         lpf_data.append("")
-
         lpf_data.append("")
         for pname, pins in project['pinlists'].items():
             lpf_data.append(f"// ### {pname} ###")
@@ -304,13 +304,12 @@ def generate(project):
         lpf_data.append("")
         open(f"{project['PINS_PATH']}/pins.cst", "w").write("\n".join(lpf_data))
 
-
         verilogs = " ".join(project['verilog_files'])
         makefile_data = []
         makefile_data.append("")
-        makefile_data.append("BOARD=tangnano9k")
-        makefile_data.append("FAMILY=GW1N-9C")
-        makefile_data.append("DEVICE=GW1NR-LV9QN88PC6/I5")
+        makefile_data.append(f"BOARD={family}")
+        makefile_data.append(f"FAMILY=GW1N-9C")
+        makefile_data.append(f"DEVICE={ftype}")
         makefile_data.append("")
         makefile_data.append("all: rio.fs")
         makefile_data.append("")

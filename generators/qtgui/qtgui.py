@@ -35,12 +35,10 @@ def generate(project):
     spitest_data.append("INTERVAL = 100")
     spitest_data.append("")
     spitest_data.append(f"data = [0] * {project['data_size'] // 8}")
-
     spitest_data.append("data[0] = 0x74")
     spitest_data.append("data[1] = 0x69")
     spitest_data.append("data[2] = 0x72")
     spitest_data.append("data[3] = 0x77")
-
     spitest_data.append("")
     spitest_data.append(f"JOINTS = {project['joints']}")
     spitest_data.append(f"VOUTS = {project['vouts']}")
@@ -138,6 +136,8 @@ class WinForm(QWidget):
         self.widgets = {}
         self.animation = 0
         self.doutcounter = 0
+        self.error_counter_spi = 0
+        self.error_counter_net = 0
 
         COLS = max(JOINTS, DOUTS, VOUTS, DINS, VINS)
 
@@ -238,6 +238,19 @@ class WinForm(QWidget):
                 layout.addWidget(self.widgets[key], gpy, dbyte * 8 + dn + 3)
                 if dbyte * 8 + dn == DINS - 1:
                     break
+        gpy += 1
+
+        layout.addWidget(QLabel(''), gpy, 0)
+        gpy += 1
+
+        layout.addWidget(QLabel(f'ERRORS:'), gpy, 0)
+        layout.addWidget(QLabel(f'SPI:'), gpy, 1)
+        self.widgets["errors_spi"] = QLabel("0")
+        layout.addWidget(self.widgets["errors_spi"], gpy, 2)
+
+        layout.addWidget(QLabel(f'NET:'), gpy, 3)
+        self.widgets["errors_net"] = QLabel("0")
+        layout.addWidget(self.widgets["errors_net"], gpy, 4)
         gpy += 1
 
         self.setLayout(layout)
@@ -367,7 +380,7 @@ class WinForm(QWidget):
             else:
                 rec = spi.xfer2(data)
 
-            print("Duration", time.time() - start)
+            print(f"Duration: {(time.time() - start):0.5f}")
             print("rx:", rec)
 
             jointFeedback = [0] * JOINTS
@@ -398,7 +411,8 @@ class WinForm(QWidget):
                     print(f' Var({num}): {processVariable[num]}')
                 #print(f'inputs {inputs:08b}')
             else:
-                print(f'Header: 0x{header:x}')
+                print(f'ERROR: Unknown Header: 0x{header:x}')
+                self.error_counter_spi += 1
 
             for jn, value in enumerate(joints):
                 key = f"jf{jn}"
@@ -441,6 +455,10 @@ class WinForm(QWidget):
 
         except Exception as e:
             print("ERROR", e)
+            self.error_counter_net += 1
+
+        self.widgets["errors_spi"].setText(str(self.error_counter_spi))
+        self.widgets["errors_net"].setText(str(self.error_counter_net))
 
 
 if __name__ == '__main__':

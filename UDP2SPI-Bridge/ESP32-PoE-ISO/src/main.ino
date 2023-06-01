@@ -7,24 +7,25 @@
 #include <WiFiUdp.h>
 #include <SPI.h>
 
-static const int spiClk = 2000000;
+IPAddress myIP(192, 168, 10, 232);
+IPAddress myGW(192, 168, 10, 1);
+IPAddress mySN(255, 255, 255, 0);
+
 
 #define HSPI_MOSI 13
 #define HSPI_MISO 16
 #define HSPI_CLK 14
 #define HSPI_SS 15
 #define BUFFER_SIZE 4096
-
+static const int spiClk = 2000000;
 char packetBuffer[BUFFER_SIZE];
 unsigned int localPort = 2390;
+SPIClass * hspi = NULL;
 
 WiFiUDP Udp;
-SPIClass * hspi = NULL;
 
 
 void setup(){
-    delay(250);
-    //Serial.begin(115200);
     Serial.begin(2000000);
     while (!Serial);
 
@@ -35,11 +36,10 @@ void setup(){
     hspi->begin(HSPI_CLK, HSPI_MISO, HSPI_MOSI, HSPI_SS);
     pinMode(HSPI_SS, OUTPUT);
 
-    Serial.println("UDP2SPI Bridge");
+    Serial.println("UDP2SPI Bridge for LinuxCNC - RIO");
 }
 
-
-void loop(){
+void loop() {
     int packetSize = Udp.parsePacket();
     if (packetSize) {
         IPAddress remoteIp = Udp.remoteIP();

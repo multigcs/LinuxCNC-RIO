@@ -20,7 +20,7 @@ do
     do
         NAME=`echo "$P" | sed "s|^plugins/${S}_||g"`
         DESC=`head -n 3 $P/README.md | tail -n1`
-        echo "| $S | $NAME | $DESC |"
+        echo "| $S | [$NAME]($P) | $DESC |"
     done
 done
 

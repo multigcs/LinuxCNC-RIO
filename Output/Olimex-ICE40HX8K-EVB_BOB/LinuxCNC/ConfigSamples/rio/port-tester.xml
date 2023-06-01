@@ -140,7 +140,7 @@
     <resolution>0.1</resolution>
     <orient>HORIZONTAL</orient>
     <initval>0</initval>
-    <min_>0</min_>
+    <min_>-100</min_>
     <max_>100</max_>
     <param_pin>1</param_pin>
   </scale>
@@ -158,19 +158,7 @@
 <meter>
     <halpin>"vin0"</halpin>
     <text>"VIN0"</text>
-    <subtext>"encoder"</subtext>
-    <size>150</size>
-    <min_>-32800</min_>
-    <max_>32800</max_>
-    <majorscale>10000</majorscale>
-    <minorscale>1000</minorscale>
-    <region1>(-32800,0,"red")</region1>
-    <region2>(0,32800,"green")</region2>
-</meter>
-<meter>
-    <halpin>"vin1"</halpin>
-    <text>"VIN1"</text>
-    <subtext>"none"</subtext>
+    <subtext>"quadencoder"</subtext>
     <size>150</size>
     <min_>-32800</min_>
     <max_>32800</max_>

@@ -12,6 +12,29 @@ RealtimeIO for LinuxCNC based on an FPGA
 
 !! work in progress !!
 
+## Plugins:
+
+| Type | Name | Description |
+| --- | --- | --- |
+| joint | [pwmdir](plugins/joint_pwmdir) | PWM Joint Output with DIR-Pin |
+| joint | [rcservo](plugins/joint_rcservo) | RCSERVO Joint Output |
+| joint | [stepper](plugins/joint_stepper) | Stepper Joint Output with STEP/DIR/ENABLE(optional) pins |
+| vin | [frequency](plugins/vin_frequency) | Variable-Input for frequency measurement |
+| vin | [pulsecounter](plugins/vin_pulsecounter) | Variable-Input for pulse counting with up to 3 pins (all optional) |
+| vin | [pwmcounter](plugins/vin_pwmcounter) | Variable-Input for pulse width measurement |
+| vin | [quadencoder](plugins/vin_quadencoder) | Variable-Input for Quad-Encoder (int32_t) |
+| vin | [sonar](plugins/vin_sonar) | Variable-Input for distance measurement via ultrasonic sonar sensor (HC-SR04) |
+| vout | [frequency](plugins/vout_frequency) | Variable-Output for frequencys |
+| vout | [pwm](plugins/vout_pwm) | Variable-Output for PWM-Signals with optional DIR pin |
+| vout | [sinepwm](plugins/vout_sinepwm) | Variable-Output for Sine-Waves via PWM-Signal |
+| vout | [spipoti](plugins/vout_spipoti) | Variable-Output using digital poti with SPI Interface (like MCP413X/415X/423X/425X) |
+| vout | [udpoti](plugins/vout_udpoti) | Variable-Output using digital poti with UpDown/Incr. Interface (like X9C104) |
+| din | [bit](plugins/din_bit) | Digital Input Pin (1bit) |
+| dout | [bit](plugins/dout_bit) | Digital Output Pin (1bit) |
+| expansion | [shiftreg](plugins/expansion_shiftreg) | Expansion to add I/O's via shiftregister's |
+| interface | [spislave](plugins/interface_spislave) | communication interface ( RPI(Master) <-SPI-> FPGA(Slave) ) |
+
+
 ## FPGA-Toolchain:
 
  https://github.com/YosysHQ/oss-cad-suite-build

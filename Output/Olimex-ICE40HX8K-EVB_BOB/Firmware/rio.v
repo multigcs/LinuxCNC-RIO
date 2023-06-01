@@ -4,7 +4,6 @@
 
 
 module rio (
-        output BLINK_LED,
         input DIN0,
         input DIN1,
         input DIN2,
@@ -31,7 +30,11 @@ module rio (
         output JOINT4_STEPPER_STP,
         output JOINT4_STEPPER_DIR,
         input sysclk,
+        input VIN0_ENCODER_A,
+        input VIN0_ENCODER_B,
+        output VOUT0_PWM_DIR,
         output VOUT0_PWM_PWM,
+        output VOUT1_PWM_DIR,
         output VOUT1_PWM_PWM
     );
 
@@ -40,12 +43,6 @@ module rio (
     wire ERROR;
     wire INTERFACE_TIMEOUT;
     assign ERROR = (INTERFACE_TIMEOUT | ESTOP);
-    blink blink1 (
-        .clk (sysclk),
-        .speed (50000000),
-        .led (BLINK_LED)
-    );
-
     assign ERROR_OUT = ERROR;
 
     parameter BUFFER_SIZE = 272;
@@ -79,7 +76,8 @@ module rio (
     wire signed [31:0] setPoint0;
     wire signed [31:0] setPoint1;
 
-    // vins 0
+    // vins 1
+    wire signed [31:0] processVariable0;
 
     // joints 5
     wire signed [31:0] jointFreqCmd0;
@@ -120,7 +118,7 @@ module rio (
     assign DOUT1 = rx_data[1];
     assign DOUT0 = rx_data[0];
 
-    // tx_data 200
+    // tx_data 232
     assign tx_data = {
         header_tx[7:0], header_tx[15:8], header_tx[23:16], header_tx[31:24],
         jointFeedback0[7:0], jointFeedback0[15:8], jointFeedback0[23:16], jointFeedback0[31:24],
@@ -128,13 +126,20 @@ module rio (
         jointFeedback2[7:0], jointFeedback2[15:8], jointFeedback2[23:16], jointFeedback2[31:24],
         jointFeedback3[7:0], jointFeedback3[15:8], jointFeedback3[23:16], jointFeedback3[31:24],
         jointFeedback4[7:0], jointFeedback4[15:8], jointFeedback4[23:16], jointFeedback4[31:24],
+        processVariable0[7:0], processVariable0[15:8], processVariable0[23:16], processVariable0[31:24],
         DIN7, DIN6, DIN5, DIN4, DIN3, DIN2, DIN1, DIN0,
-        72'd0
+        40'd0
     };
 
     // expansion I/O's
 
     // vin_quadencoder's
+    vin_quadencoder #(32) vin_quadencoder0 (
+        .clk (sysclk),
+        .quadA (VIN0_ENCODER_A),
+        .quadB (VIN0_ENCODER_B),
+        .pos (processVariable0)
+    );
 
     // interface_spislave
     interface_spislave #(BUFFER_SIZE, 32'h74697277, 100000000) spi1 (
@@ -148,10 +153,11 @@ module rio (
         .pkg_timeout (INTERFACE_TIMEOUT)
     );
 
+    // vout_spipoti's
+
     // expansion_shiftreg's
 
     // vout_pwm's
-    wire VOUT0_PWM_DIR; // fake direction output
     vout_pwm #(10000) vout_pwm0 (
         .clk (sysclk),
         .dty (setPoint0),
@@ -159,7 +165,6 @@ module rio (
         .dir (VOUT0_PWM_DIR),
         .pwm (VOUT0_PWM_PWM)
     );
-    wire VOUT1_PWM_DIR; // fake direction output
     vout_pwm #(10000) vout_pwm1 (
         .clk (sysclk),
         .dty (setPoint1),
@@ -219,6 +224,8 @@ module rio (
     );
 
     // vin_sonar's
+
+    // vout_udpoti's
 
     // vin_frequency's
 

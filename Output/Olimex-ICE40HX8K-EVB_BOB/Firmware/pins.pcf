@@ -1,9 +1,6 @@
 ### main ###
 set_io  sysclk J3
 
-### blink ###
-set_io  BLINK_LED M12
-
 ### error ###
 set_io  ERROR_OUT R16
 
@@ -11,6 +8,8 @@ set_io  ERROR_OUT R16
 set_io  ENA F5
 
 ### vin_quadencoder ###
+set_io  -pullup yes VIN0_ENCODER_A E2
+set_io  -pullup yes VIN0_ENCODER_B G3
 
 ### dout_bit ###
 set_io  DOUT0 F4
@@ -24,10 +23,14 @@ set_io  INTERFACE_SPI_MISO P11
 set_io  INTERFACE_SPI_SCK R11
 set_io  INTERFACE_SPI_SSEL L11
 
+### vout_spipoti ###
+
 ### expansion_shiftreg ###
 
 ### vout_pwm ###
+set_io  VOUT0_PWM_DIR J14
 set_io  VOUT0_PWM_PWM J2
+set_io  VOUT1_PWM_DIR J12
 set_io  VOUT1_PWM_PWM H5
 
 ### vin_pulsecounter ###
@@ -58,6 +61,8 @@ set_io  -pullup yes DIN1 F2
 set_io  -pullup yes DIN2 H3
 set_io  -pullup yes DIN3 F3
 set_io  -pullup yes DIN4 B1
+
+### vout_udpoti ###
 
 ### vin_frequency ###
 

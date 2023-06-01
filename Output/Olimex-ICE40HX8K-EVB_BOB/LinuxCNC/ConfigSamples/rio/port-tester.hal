@@ -1,8 +1,7 @@
 loadrt rio
 loadusr -Wn ptest pyvcp -c ptest port-tester.xml
 loadrt threads name1=porttest period1=1000000
-addf rio.read porttest
-addf rio.write porttest
+addf rio.readwrite porttest
 
 net dout0 ptest.btn0 rio.output.0 ptest.led-out0
 net dout1 ptest.btn1 rio.output.1 ptest.led-out1

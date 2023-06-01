@@ -25,7 +25,6 @@ Generated Output of [configs/Olimex-ICE40HX8K-EVB_BOB/config.json](/configs/Olim
 ## Pins:
 | Name | Pin | Direction |
 | --- | --- | --- |
-| BLINK_LED | M12 | OUTPUT |
 | DIN0 | H6 | INPUT |
 | DIN1 | F2 | INPUT |
 | DIN2 | H3 | INPUT |
@@ -52,7 +51,11 @@ Generated Output of [configs/Olimex-ICE40HX8K-EVB_BOB/config.json](/configs/Olim
 | JOINT4_STEPPER_STP | C2 | OUTPUT |
 | JOINT4_STEPPER_DIR | C1 | OUTPUT |
 | sysclk | J3 | INPUT |
+| VIN0_ENCODER_A | E2 | INPUT |
+| VIN0_ENCODER_B | G3 | INPUT |
+| VOUT0_PWM_DIR | J14 | OUTPUT |
 | VOUT0_PWM_PWM | J2 | OUTPUT |
+| VOUT1_PWM_DIR | J12 | OUTPUT |
 | VOUT1_PWM_PWM | H5 | OUTPUT |
 
 ## RX-Data:
@@ -83,6 +86,7 @@ Generated Output of [configs/Olimex-ICE40HX8K-EVB_BOB/config.json](/configs/Olim
 | jointFeedback2 | 32bit |
 | jointFeedback3 | 32bit |
 | jointFeedback4 | 32bit |
+| processVariable0 | 32bit |
 | DIN0 | 1bit |
 | DIN1 | 1bit |
 | DIN2 | 1bit |
@@ -90,6 +94,17 @@ Generated Output of [configs/Olimex-ICE40HX8K-EVB_BOB/config.json](/configs/Olim
 | DIN4 | 1bit |
 
 ## Plugins:
+### Modul: vin_quadencoder:
+files: [vin_quadencoder.v](Firmware/vin_quadencoder.v) 
+
+#### vin_quadencoder0
+| Name | Direction |
+| --- | --- |
+| sysclk | from PINS |
+| VIN0_ENCODER_A | from PINS |
+| VIN0_ENCODER_B | from PINS |
+| processVariable0 | to TX_DATA |
+
 ### Modul: interface_spislave:
 files: [interface_spislave.v](Firmware/interface_spislave.v) 
 
@@ -114,7 +129,7 @@ files: [vout_pwm.v](Firmware/vout_pwm.v)
 | sysclk | from PINS |
 | setPoint0 | from RX_DATA |
 | ERROR | --- |
-| VOUT0_PWM_DIR | --- |
+| VOUT0_PWM_DIR | to PINS |
 | VOUT0_PWM_PWM | to PINS |
 
 #### vout_pwm1
@@ -123,7 +138,7 @@ files: [vout_pwm.v](Firmware/vout_pwm.v)
 | sysclk | from PINS |
 | setPoint1 | from RX_DATA |
 | ERROR | --- |
-| VOUT1_PWM_DIR | --- |
+| VOUT1_PWM_DIR | to PINS |
 | VOUT1_PWM_PWM | to PINS |
 
 ### Modul: joint_stepper:

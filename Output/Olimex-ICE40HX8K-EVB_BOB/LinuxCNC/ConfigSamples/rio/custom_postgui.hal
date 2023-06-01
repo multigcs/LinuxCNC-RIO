@@ -14,3 +14,4 @@ net din3 rio.input.3 pyvcp.led-in3
 net din4 rio.input.4 pyvcp.led-in4
 net vout0 pyvcp.vout0-f rio.SP.0
 net vout1 pyvcp.vout1-f rio.SP.1
+net vin0 rio.PV.0 pyvcp.vin0

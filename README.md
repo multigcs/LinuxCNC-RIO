@@ -12,6 +12,29 @@ RealtimeIO for LinuxCNC based on an FPGA
 
 !! work in progress !!
 
+## Plugins:
+
+| Type | Name | Description |
+| --- | --- | --- |
+| joint | pwmdir | PWM Joint Output with DIR-Pin |
+| joint | rcservo | RCSERVO Joint Output |
+| joint | stepper | Stepper Joint Output with STEP/DIR/ENABLE(optional) pins |
+| vin | frequency | Variable-Input for frequency measurement |
+| vin | pulsecounter | Variable-Input for pulse counting with up to 3 pins (all optional) |
+| vin | pwmcounter | Variable-Input for pulse width measurement |
+| vin | quadencoder | Variable-Input for Quad-Encoder (int32_t) |
+| vin | sonar | Variable-Input for distance measurement via ultrasonic sonar sensor (HC-SR04) |
+| vout | frequency | Variable-Output for frequencys |
+| vout | pwm | Variable-Output for PWM-Signals with optional DIR pin |
+| vout | sinepwm | Variable-Output for Sine-Waves via PWM-Signal |
+| vout | spipoti | Variable-Output using digital poti with SPI Interface (like MCP413X/415X/423X/425X) |
+| vout | udpoti | Variable-Output using digital poti with UpDown/Incr. Interface (like X9C104) |
+| din | bit | Digital Input Pin (1bit) |
+| dout | bit | Digital Output Pin (1bit) |
+| expansion | shiftreg | Expansion to add I/O's via shiftregister's |
+| interface | spislave | communication interface ( RPI(Master) <-SPI-> FPGA(Slave) ) |
+
+
 ## FPGA-Toolchain:
 
  https://github.com/YosysHQ/oss-cad-suite-build

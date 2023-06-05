@@ -146,10 +146,17 @@ def generate(project):
 
     rio_data.append("""
 enum {
-    OUTTYPE_JOINT_VEL,
+    OUTTYPE_JOINT,
     OUTTYPE_JOINT_ENABLE,
     OUTTYPE_VARIABLE,
     OUTTYPE_BIT,
+};
+
+enum {
+    OUTCALC_PWM,
+    OUTCALC_RCSERVO,
+    OUTCALC_FREQUENCY,
+    OUTCALC_LINEAR,
 };
 
 enum {
@@ -172,19 +179,23 @@ enum {
 
     output_types = []
     for outp in project["variables_out"].get(32, []):
-        output_types.append(f"{outp.get('dir')}TYPE_{outp.get('type')}")
+        output_types.append(f"OUTTYPE_{outp.get('type')}")
+
+    output_calcs = []
+    for outp in project["variables_out"].get(32, []):
+        output_calcs.append(f"OUTCALC_{outp.get('calc')}")
 
     input_types = []
     for inp in project["variables_in"].get(32, []):
         input_types.append(f"{inp.get('dir')}TYPE_{inp.get('type')}")
 
-    output_variable_joints = []
+    output_variable_nums = []
     for outp in project["variables_out"].get(32, []):
-        output_variable_joints.append(f"{outp.get('joint', -1)}")
+        output_variable_nums.append(f"{outp.get('joint', outp.get('vout', -1))}")
 
-    input_variable_joints = []
+    input_variable_nums = []
     for inp in project["variables_in"].get(32, []):
-        input_variable_joints.append(f"{inp.get('joint', -1)}")
+        input_variable_nums.append(f"{inp.get('joint', inp.get('vin', -1))}")
 
     output_bittypes = []
     for outp in project["variables_out"].get(1, []):
@@ -194,24 +205,25 @@ enum {
     for inp in project["variables_in"].get(1, []):
         input_bittypes.append(f"{inp.get('dir')}TYPE_{inp.get('type')}")
 
-    output_bit_joints = []
+    output_bit_nums = []
     for outp in project["variables_out"].get(1, []):
-        output_bit_joints.append(f"{outp.get('joint', -1)}")
+        output_bit_nums.append(f"{outp.get('joint', outp.get('dout', -1))}")
 
-    input_bit_joints = []
+    input_bit_nums = []
     for inp in project["variables_in"].get(1, []):
-        input_bit_joints.append(f"{inp.get('joint', -1)}")
+        input_bit_nums.append(f"{inp.get('joint', inp.get('din', -1))}")
 
     rio_data.append(f"uint8_t out_variable_types[] = {{{', '.join(output_types)}}};")
+    rio_data.append(f"uint8_t out_variable_calcs[] = {{{', '.join(output_calcs)}}};")
     rio_data.append(f"uint8_t in_variable_types[] = {{{', '.join(input_types)}}};")
     rio_data.append(f"uint8_t out_bit_types[] = {{{', '.join(output_bittypes)}}};")
     rio_data.append(f"uint8_t in_bit_types[] = {{{', '.join(input_bittypes)}}};")
     rio_data.append("")
 
-    rio_data.append(f"int8_t out_variable_joints[] = {{{', '.join(output_variable_joints)}}};")
-    rio_data.append(f"int8_t in_variable_joints[] = {{{', '.join(input_variable_joints)}}};")
-    rio_data.append(f"int8_t out_bit_joints[] = {{{', '.join(output_bit_joints)}}};")
-    rio_data.append(f"int8_t in_bit_joints[] = {{{', '.join(input_bit_joints)}}};")
+    rio_data.append(f"int8_t out_variable_nums[] = {{{', '.join(output_variable_nums)}}};")
+    rio_data.append(f"int8_t in_variable_nums[] = {{{', '.join(input_variable_nums)}}};")
+    rio_data.append(f"int8_t out_bit_nums[] = {{{', '.join(output_bit_nums)}}};")
+    rio_data.append(f"int8_t in_bit_joints[] = {{{', '.join(input_bit_nums)}}};")
     rio_data.append("")
 
 

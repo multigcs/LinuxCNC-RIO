@@ -66,7 +66,7 @@ class Plugin:
         variables = []
         for num, joint in enumerate(self.jdata["joints"]):
             if joint["type"] == "pwmdir":
-                variables.append({"dir": "OUT", "type": "JOINT_VEL", "calc": "pwm", "size": 32, "joint": num})
+                variables.append({"dir": "OUT", "type": "JOINT", "calc": "PWM", "size": 32, "joint": num})
                 if not joint.get("cl____"):
                     variables.append({"dir": "IN", "type": "JOINT_FB", "calc": "counter", "size": 32, "joint": num})
                 variables.append({"dir": "OUT", "type": "JOINT_ENABLE", "size": 1, "joint": num})

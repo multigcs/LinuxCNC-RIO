@@ -53,7 +53,7 @@ class Plugin:
         variables = []
         for num, vout in enumerate(self.jdata["vout"]):
             if vout["type"] == "udpoti":
-                variables.append({"dir": "OUT", "type": "VARIABLE", "calc": "linear", "size": 32, "vout": num})
+                variables.append({"dir": "OUT", "type": "VARIABLE", "calc": "LINEAR", "size": 32, "vout": num})
 
         return variables
 

@@ -860,116 +860,78 @@ void rio_readwrite()
             txData.header = PRU_WRITE;
 
 
-            // Joint frequency commands
-            for (i = 0; i < JOINTS; i++) {
-                if (joints_type[i] == JOINT_PWMDIR) {
-                    txData.jointFreqCmd[i] = data->freq[i];
-                } else {
-                    txData.jointFreqCmd[i] = PRU_OSC / data->freq[i];
+            for (i = 0; i < OUTPUTS_32BIT; i++) {
+                int32_t value = 0;
+
+                if (out_variable_types[i] == OUTTYPE_JOINT) {
+                    value = data->freq[out_variable_nums[i]];
+                } else if (out_variable_types[i] == OUTTYPE_VARIABLE) {
+                    value = *(data->setPoint[out_variable_nums[i]]);
                 }
+                if (out_variable_calcs[i] == OUTCALC_PWM) {
+                    value = value * (PRU_OSC / 255) / 100;
+                } else if (out_variable_calcs[i] == OUTCALC_RCSERVO) {
+                    value = (value + 200 + 100) * (PRU_OSC / 200000);
+                } else if (out_variable_calcs[i] == OUTCALC_FREQUENCY) {
+                    value = PRU_OSC / value / 2;
+                } else if (out_variable_calcs[i] == OUTCALC_SINE) {
+                    value = PRU_OSC / value / vout_freq[i];
+                }
+                txData.out_variables[i] = value;
             }
 
-
-            for (bi = 0; bi < JOINT_ENABLE_BYTES; bi++) {
-                txData.jointEnable[bi] = 0;
-                for (i = 0; i < JOINTS; i++) {
-                    if (*(data->stepperEnable[bi * 8 + i]) == 1) {
-                        txData.jointEnable[bi] |= (1 << i);
-                    }
+            txData.out_bitmasks[0] = 0;
+            for (i = 0; i < OUTPUTS_1BIT; i++) {
+                int8_t value = 0;
+                if (out_bit_types[i] == OUTTYPE_JOINT_ENABLE) {
+                    value = *(data->stepperEnable[out_bit_nums[i]]);
+                } else if (out_bit_types[i] == OUTTYPE_BIT) {
+                    value = *(data->outputs[out_bit_nums[i]];
                 }
-            }
-
-            // Set points
-            for (i = 0; i < VARIABLE_OUTPUTS; i++) {
-                if (vout_type[i] == VOUT_TYPE_SINE) {
-                    txData.setPoint[i] = PRU_OSC / *(data->setPoint[i]) / vout_freq[i];
-                } else if (vout_type[i] == VOUT_TYPE_PWM) {
-                    txData.setPoint[i] = *(data->setPoint[i]) * (PRU_OSC / vout_freq[i]) / 100;
-                } else if (vout_type[i] == VOUT_TYPE_RCSERVO) {
-                    txData.setPoint[i] = (*(data->setPoint[i]) + 200 + 100) * (PRU_OSC / 200000);
-                } else {
-                    txData.setPoint[i] = (*(data->setPoint[i]) - vout_min[i]) * (0xFFFFFFFF / 2) / (vout_max[i] - vout_min[i]);
-                }
-            }
-
-            // Outputs
-            for (bi = 0; bi < DIGITAL_OUTPUT_BYTES; bi++) {
-                txData.outputs[bi] = 0;
-                for (i = 0; i < 8; i++) {
-                    if (*(data->outputs[bi * 8 + i]) == 1) {
-                        txData.outputs[bi] |= (1 << i);		// output is high
-                    }
+                if (value == 1) {
+                    txData.out_bitmasks[0] |= (1 << i);
                 }
             }
 
             rio_transfer();
 
-            switch (rxData.header) {	// only process valid SPI payloads. This rejects bad payloads
-            case PRU_DATA:
-                // we have received a GOOD payload from the PRU
-                *(data->SPIstatus) = 1;
-
-                for (i = 0; i < JOINTS; i++) {
-                    if (data->fb_scale[i] == 0.0) {
-                        data->fb_scale[i] = data->pos_scale[i];
-                    }
-
-                    if (joints_fb_type[i] == JOINT_FB_ABS) {
-                        *(data->pos_fb[i]) = (float)(rxData.jointFeedback[i]) / data->fb_scale[i];
-                    }
-                    else {
-                        accum_diff = rxData.jointFeedback[i] - old_count[i];
-                        old_count[i] = rxData.jointFeedback[i];
-
-                        accum[i] += accum_diff;
-
-                        *(data->count[i]) = accum[i];
-
-                        data->scale_recip[i] = data->fb_scale[i];
-
-                        curr_pos = (double)(accum[i]);
-
-                        *(data->pos_fb[i]) = (float)((curr_pos+0.5) / data->fb_scale[i]);
-                    }
-
-                }
-
-                // printf("%f %i \n", *(data->pos_fb[0]), rxData.jointFeedback[0]);
-
-                // Feedback
-                for (i = 0; i < VARIABLE_INPUTS; i++) {
-                    *(data->processVariable[i]) = rxData.processVariable[i];
-                }
-
-                // Inputs
-                for (bi = 0; bi < DIGITAL_INPUT_BYTES; bi++) {
-                    for (i = 0; i < 8; i++) {
-                        if ((rxData.inputs[bi] & (1 << i)) != 0) {
-                            *(data->inputs[bi * 8 + i * 2]) = 1; 		// input is high
-                            *(data->inputs[bi * 8 + i * 2 + 1]) = 0;  // not
-                        }
-                        else {
-                            *(data->inputs[bi * 8 + i * 2]) = 0;			// input is low
-                            *(data->inputs[bi * 8 + i * 2 + 1]) = 1;  // not
+            switch (rxData.header) {
+                case PRU_DATA:
+                    *(data->SPIstatus) = 1;
+                    for (i = 0; i < INPUTS_32BIT; i++) {
+                        if (in_variable_types[i] == INTYPE_JOINT_FB) {
+                            accum_diff = rxData.in_variables[i] - old_count[in_variable_nums[i]];
+                            old_count[in_variable_nums[i]] = rxData.in_variables[i];
+                            accum[in_variable_nums[i]] += accum_diff;
+                            *(data->count[i]) = accum[in_variable_nums[i]];
+                            data->scale_recip[in_variable_nums[i]] = data->fb_scale[in_variable_nums[i]];
+                            curr_pos = (double)(accum[in_variable_nums[i]]);
+                            *(data->pos_fb[in_variable_nums[i]]) = (float)((curr_pos+0.5) / data->fb_scale[in_variable_nums[i]]);
+                        } else if (in_variable_types[i] == INTYPE_JOINT_FB_ABS) {
+                            *(data->pos_fb[in_variable_nums[i]]) = (float)(rxData.in_variables[in_variable_nums[i]]) / data->fb_scale[in_variable_nums[i]];
+                        } else if (in_variable_types[i] == INTYPE_VARIABLE) {
+                            *(data->processVariable[in_variable_nums[i]]) = rxData.in_variables[i];
                         }
                     }
-                }
-                break;
+                    for (i = 0; i < INPUTS_1BIT; i++) {
+                        if ((rxData.inputs[0] & (1 << i)) != 0) {
+                            *(data->inputs[i * 2]) = 1;
+                            *(data->inputs[i * 2 + 1]) = 0;
+                        } else {
+                            *(data->inputs[i * 2]) = 0;
+                            *(data->inputs[i * 2 + 1]) = 1;
+                        }
+                    }
+                    break;
 
-            case PRU_ESTOP:
-                // we have an eStop notification from the PRU
-                *(data->SPIstatus) = 0;
-                rtapi_print_msg(RTAPI_MSG_ERR, "An E-stop is active");
+                case PRU_ESTOP:
+                    *(data->SPIstatus) = 0;
+                    rtapi_print_msg(RTAPI_MSG_ERR, "An E-stop is active");
 
-            default:
-                // we have received a BAD payload from the PRU
-                *(data->SPIstatus) = 0;
-
-                rtapi_print("Bad SPI payload = %x\n", rxData.header);
-                //for (i = 0; i < SPIBUFSIZE; i++) {
-                //	rtapi_print("%d\n",rxData.rxBuffer[i]);
-                //}
-                break;
+                default:
+                    *(data->SPIstatus) = 0;
+                    rtapi_print("Bad SPI payload = %x\n", rxData.header);
+                    break;
             }
         }
     }

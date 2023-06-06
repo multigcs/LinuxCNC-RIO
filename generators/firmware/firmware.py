@@ -156,7 +156,7 @@ def generate(project):
                 f"    assign {vname} = {{rx_data[{pos-3*8-1}:{pos-3*8-8}], rx_data[{pos-2*8-1}:{pos-2*8-8}], rx_data[{pos-1*8-1}:{pos-1*8-8}], rx_data[{pos-1}:{pos-8}]}};"
             )
             pos -= 32
-        elif outp["type"] == "JOINT_VEL":
+        elif outp["type"] == "JOINT":
             joint = outp["joint"]
             vname = f"jointFreqCmd{joint}"
             top_data_new.append(

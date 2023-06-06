@@ -474,3 +474,80 @@ if __name__ == '__main__':
 
 
 
+
+    qtgui = []
+
+    # rx_data - new style interface
+    output_size = project["total_out"] + 32
+    input_size = project["total_in"] + 32
+    size_diff = output_size - input_size
+    total_size = project["total_inout"] + 32
+    pos = total_size
+    qtgui.append("")
+    qtgui.append(f"    // rx_data {output_size}/{total_size}")
+    qtgui.append(f"    assign header_rx = {{rx_data[{pos-3*8-1}:{pos-3*8-8}], rx_data[{pos-2*8-1}:{pos-2*8-8}], rx_data[{pos-1*8-1}:{pos-1*8-8}], rx_data[{pos-1}:{pos-8}]}};")
+    pos -= 32
+    for outp in project["variables_out"].get(32, []):
+        if outp["type"] == "VARIABLE":
+            vout = outp["vout"]
+            vname = f"setPoint{vout}"
+            qtgui.append(
+                f"    assign {vname} = {{rx_data[{pos-3*8-1}:{pos-3*8-8}], rx_data[{pos-2*8-1}:{pos-2*8-8}], rx_data[{pos-1*8-1}:{pos-1*8-8}], rx_data[{pos-1}:{pos-8}]}};"
+            )
+            pos -= 32
+        elif outp["type"] == "JOINT_VEL":
+            joint = outp["joint"]
+            vname = f"jointFreqCmd{joint}"
+            qtgui.append(
+                f"    assign {vname} = {{rx_data[{pos-3*8-1}:{pos-3*8-8}], rx_data[{pos-2*8-1}:{pos-2*8-8}], rx_data[{pos-1*8-1}:{pos-1*8-8}], rx_data[{pos-1}:{pos-8}]}};"
+            )
+            pos -= 32
+    out_bits = len(project["variables_out"].get(1, []))
+    out_bits_fill = project["onebit_out"] * 8 - out_bits
+    pos -= out_bits_fill
+    for outp in reversed(project["variables_out"].get(1, [])):
+        if outp["type"] == "JOINT_ENABLE":
+            joint = outp["joint"]
+            vname = f"jointEnable{joint}"
+            qtgui.append(f"    assign {vname} = rx_data[{pos-1}];")
+            pos -= 1
+        else:
+            print(outp)
+            dout = outp["dout"]
+            vname = f"DOUT{dout}"
+            qtgui.append(f"    assign {vname} = rx_data[{pos-1}];")
+            pos -= 1
+    qtgui.append("")
+
+    # tx_data - new style interface
+    qtgui.append(f"    // tx_data {input_size}/{total_size}")
+    qtgui.append("    assign tx_data = {")
+    qtgui.append("        header_tx[7:0], header_tx[15:8], header_tx[23:16], header_tx[31:24],")
+    for inp in project["variables_in"].get(32, []):
+        if inp["type"] == "VARIABLE":
+            vout = inp["vin"]
+            vname = f"processVariable{vout}"
+            qtgui.append(f"        {vname}[7:0], {vname}[15:8], {vname}[23:16], {vname}[31:24],")
+        elif inp["type"] == "JOINT_FB":
+            joint = inp["joint"]
+            vname = f"jointFeedback{joint}"
+            qtgui.append(f"        {vname}[7:0], {vname}[15:8], {vname}[23:16], {vname}[31:24],")
+    in_bits = len(project["variables_in"].get(1, []))
+    in_bits_fill = project["onebit_in"] * 8 - in_bits
+    if in_bits_fill > 0:
+        qtgui.append(f"        {in_bits_fill}'d0,")
+    for inp in reversed(project["variables_in"].get(1, [])):
+        din = inp['din']
+        qtgui.append(f"        DIN{din},")
+    if size_diff > 0:
+        qtgui.append(f"        {size_diff}'d0,")
+    qtgui[-1] = qtgui[-1].rstrip(",")
+    qtgui.append("    };")
+    qtgui.append("")
+    qtgui.append("")
+
+    open(f"{project['FIRMWARE_PATH']}/_new_qt_spitest.py", "w").write("\n".join(qtgui))
+
+
+
+

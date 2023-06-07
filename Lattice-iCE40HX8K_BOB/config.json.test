@@ -1,0 +1,117 @@
+{
+    "name": "Lattice-ICE40HX8K_BOB",
+    "description": "Lattice-ICE40HX8K_BOB with cheap 5axis-BOB",
+    "toolchain": "icestorm",
+    "family": "ice40",
+    "type": "hx8k",
+    "package": "ct256",
+    "clock": {
+        "osc": "12000000",
+        "speed": "50000000",
+        "pin": "J3"
+    },
+    "interface": [
+        {
+            "type": "spi",
+            "pins": {
+                "MOSI": "K1",
+                "MISO": "J1",
+                "SCK": "H1",
+                "SEL": "G2"
+            }
+        }
+    ],
+    "error": {
+        "pin": "R15"
+    },
+    "enable": {
+        "pin": "P15"
+    },
+    "dout": [
+        {
+            "pin": "B5"
+        },
+        {
+            "pin": "B4"
+        },
+        {
+            "pin": "A2"
+        },
+        {
+            "pin": "A1"
+        },
+        {
+            "pin": "C5"
+        },
+        {
+            "pin": "C4"
+        },
+        {
+            "pin": "B3"
+        },
+        {
+            "pin": "C3"
+        }
+    ],
+    "din": [
+        {
+            "pullup": true,
+            "pin": "K15"
+        },
+        {
+            "pullup": true,
+            "pin": "M16"
+        },
+        {
+            "pullup": true,
+            "pin": "L16"
+        },
+        {
+            "pullup": true,
+            "pin": "K16"
+        }
+    ],
+    "vout": [
+        {
+            "type": "pwm",
+            "min": "-10",
+            "max": "+10",
+            "pin": "E14",
+            "dir": "F16"
+        }
+    ],
+    "vin": [
+        {
+            "type": "quadencoder",
+            "pullup": true,
+            "pin_a": "N16",
+            "pin_b": "M15"
+        }
+    ],
+    "joints": [
+        {
+            "type": "stepper",
+            "cl": false,
+            "pins": {
+                "step": "D15",
+                "dir": "E16"
+            }
+        },
+        {
+            "type": "stepper",
+            "cl": false,
+            "pins": {
+                "step": "B16",
+                "dir": "C16"
+            }
+        },
+        {
+            "type": "stepper",
+            "cl": false,
+            "pins": {
+                "step": "B1",
+                "dir": "B2"
+            }
+        }
+    ]
+}

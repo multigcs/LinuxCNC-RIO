@@ -8,7 +8,7 @@ Custom BOB originally designed and used with BBB & machinekit
 12 Ouput 5 input
 https://github.com/ozzyrob/pp_bob_output
 
-4 Output 12 Inut
+4 Output 12 Input
 https://github.com/ozzyrob/pp_bob_input
 
 Descritions of the Inputs & Outputs for both bard relate to use with BeagleBone Black, please

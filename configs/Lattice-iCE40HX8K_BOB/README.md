@@ -1,7 +1,7 @@
 # Lattice  iCE40HX8K with custom bob
 
 https://www.latticesemi.com/Products/DevelopmentBoardsAndKits/iCE40HX8KBreakoutBoard.aspx
-![test](https://raw.githubusercontent.com/multigcs/LinuxCNC-RIO/main/configs/Olimex-ICE40HX8K-EVB_BOB/olimex-bob.jpg)
+
 
 Custom BOB originally designed and used with BBB & machinekit
 

@@ -94,53 +94,6 @@ Generated Output of [configs/Olimex-ICE40HX8K-EVB_BOB/config.json](/configs/Olim
 | DIN4 | 1bit |
 
 ## Plugins:
-### Modul: vin_quadencoder:
-files: [vin_quadencoder.v](Firmware/vin_quadencoder.v) 
-
-#### vin_quadencoder0
-| Name | Direction |
-| --- | --- |
-| sysclk | from PINS |
-| VIN0_ENCODER_A | from PINS |
-| VIN0_ENCODER_B | from PINS |
-| processVariable0 | to TX_DATA |
-
-### Modul: interface_spislave:
-files: [interface_spislave.v](Firmware/interface_spislave.v) 
-
-#### spi1
-| Name | Direction |
-| --- | --- |
-| sysclk | from PINS |
-| INTERFACE_SPI_SCK | from PINS |
-| INTERFACE_SPI_SSEL | from PINS |
-| INTERFACE_SPI_MOSI | from PINS |
-| INTERFACE_SPI_MISO | to PINS |
-| rx_data | from RX_DATA |
-| tx_data | to TX_DATA |
-| INTERFACE_TIMEOUT | --- |
-
-### Modul: vout_pwm:
-files: [vout_pwm.v](Firmware/vout_pwm.v) 
-
-#### vout_pwm0
-| Name | Direction |
-| --- | --- |
-| sysclk | from PINS |
-| setPoint0 | from RX_DATA |
-| ERROR | --- |
-| VOUT0_PWM_DIR | to PINS |
-| VOUT0_PWM_PWM | to PINS |
-
-#### vout_pwm1
-| Name | Direction |
-| --- | --- |
-| sysclk | from PINS |
-| setPoint1 | from RX_DATA |
-| ERROR | --- |
-| VOUT1_PWM_DIR | to PINS |
-| VOUT1_PWM_PWM | to PINS |
-
 ### Modul: joint_stepper:
 files: [quad_encoder.v](Firmware/quad_encoder.v) [joint_stepper.v](Firmware/joint_stepper.v) [joint_stepper_nf.v](Firmware/joint_stepper_nf.v) 
 
@@ -193,6 +146,53 @@ files: [quad_encoder.v](Firmware/quad_encoder.v) [joint_stepper.v](Firmware/join
 | jointFeedback4 | to TX_DATA |
 | JOINT4_STEPPER_DIR | to PINS |
 | JOINT4_STEPPER_STP | to PINS |
+
+### Modul: vout_pwm:
+files: [vout_pwm.v](Firmware/vout_pwm.v) 
+
+#### vout_pwm0
+| Name | Direction |
+| --- | --- |
+| sysclk | from PINS |
+| setPoint0 | from RX_DATA |
+| ERROR | --- |
+| VOUT0_PWM_DIR | to PINS |
+| VOUT0_PWM_PWM | to PINS |
+
+#### vout_pwm1
+| Name | Direction |
+| --- | --- |
+| sysclk | from PINS |
+| setPoint1 | from RX_DATA |
+| ERROR | --- |
+| VOUT1_PWM_DIR | to PINS |
+| VOUT1_PWM_PWM | to PINS |
+
+### Modul: vin_quadencoder:
+files: [vin_quadencoder.v](Firmware/vin_quadencoder.v) 
+
+#### vin_quadencoder0
+| Name | Direction |
+| --- | --- |
+| sysclk | from PINS |
+| VIN0_ENCODER_A | from PINS |
+| VIN0_ENCODER_B | from PINS |
+| processVariable0 | to TX_DATA |
+
+### Modul: interface_spislave:
+files: [interface_spislave.v](Firmware/interface_spislave.v) 
+
+#### spi1
+| Name | Direction |
+| --- | --- |
+| sysclk | from PINS |
+| INTERFACE_SPI_SCK | from PINS |
+| INTERFACE_SPI_SSEL | from PINS |
+| INTERFACE_SPI_MOSI | from PINS |
+| INTERFACE_SPI_MISO | to PINS |
+| rx_data | from RX_DATA |
+| tx_data | to TX_DATA |
+| INTERFACE_TIMEOUT | --- |
 
 
 ![Flowchart](doc/flowchart.png)

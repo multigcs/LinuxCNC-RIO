@@ -7,39 +7,18 @@ set_io  ERROR_OUT R16
 ### enable ###
 set_io  ENA F5
 
-### vin_quadencoder ###
-set_io  -pullup yes VIN0_ENCODER_A E2
-set_io  -pullup yes VIN0_ENCODER_B G3
-
-### dout_bit ###
-set_io  DOUT0 F4
-set_io  DOUT1 D2
-set_io  DOUT2 G5
-set_io  DOUT3 D1
-
-### interface_spislave ###
-set_io  INTERFACE_SPI_MOSI P12
-set_io  INTERFACE_SPI_MISO P11
-set_io  INTERFACE_SPI_SCK R11
-set_io  INTERFACE_SPI_SSEL L11
-
-### vout_spipoti ###
-
-### expansion_shiftreg ###
-
-### vout_pwm ###
-set_io  VOUT0_PWM_DIR J14
-set_io  VOUT0_PWM_PWM J2
-set_io  VOUT1_PWM_DIR J12
-set_io  VOUT1_PWM_PWM H5
+### vout_udpoti ###
 
 ### vin_pulsecounter ###
 
-### vout_frequency ###
-
 ### joint_pwmdir ###
 
-### vin_pwmcounter ###
+### din_bit ###
+set_io  -pullup yes DIN0 H6
+set_io  -pullup yes DIN1 F2
+set_io  -pullup yes DIN2 H3
+set_io  -pullup yes DIN3 F3
+set_io  -pullup yes DIN4 B1
 
 ### joint_stepper ###
 set_io  JOINT0_STEPPER_STP H1
@@ -53,19 +32,42 @@ set_io  JOINT3_STEPPER_DIR F1
 set_io  JOINT4_STEPPER_STP C2
 set_io  JOINT4_STEPPER_DIR C1
 
+### vout_pwm ###
+set_io  VOUT0_PWM_DIR J14
+set_io  VOUT0_PWM_PWM J2
+set_io  VOUT1_PWM_DIR J12
+set_io  VOUT1_PWM_PWM H5
+
+### vout_spipoti ###
+
+### vin_quadencoder ###
+set_io  -pullup yes VIN0_ENCODER_A E2
+set_io  -pullup yes VIN0_ENCODER_B G3
+
+### vin_mpgencoder ###
+
+### interface_spislave ###
+set_io  INTERFACE_SPI_MOSI P12
+set_io  INTERFACE_SPI_MISO P11
+set_io  INTERFACE_SPI_SCK R11
+set_io  INTERFACE_SPI_SSEL L11
+
+### dout_bit ###
+set_io  DOUT0 F4
+set_io  DOUT1 D2
+set_io  DOUT2 G5
+set_io  DOUT3 D1
+
 ### vin_sonar ###
 
-### din_bit ###
-set_io  -pullup yes DIN0 H6
-set_io  -pullup yes DIN1 F2
-set_io  -pullup yes DIN2 H3
-set_io  -pullup yes DIN3 F3
-set_io  -pullup yes DIN4 B1
+### vout_sinepwm ###
 
-### vout_udpoti ###
-
-### vin_frequency ###
+### expansion_shiftreg ###
 
 ### joint_rcservo ###
 
-### vout_sinepwm ###
+### vout_frequency ###
+
+### vin_pwmcounter ###
+
+### vin_frequency ###

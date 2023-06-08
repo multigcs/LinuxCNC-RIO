@@ -76,7 +76,7 @@ def generate(project):
         top_data.append("    );")
         top_data.append("")
         project['verilog_files'].append("blink.v")
-        os.system(f"cp -a generators/firmware/blink.v* {project['SOURCE_PATH']}/debouncer.v")
+        os.system(f"cp -a generators/firmware/blink.v* {project['SOURCE_PATH']}/blink.v")
 
 
     if "error" in project['jdata']:

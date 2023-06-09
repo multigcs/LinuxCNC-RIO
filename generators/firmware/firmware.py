@@ -295,7 +295,7 @@ def generate(project):
                     continue
 
                 lpf_data.append(f'IO_LOC "{pin[0]}" {pin[1]};')
-                lpf_data.append(f'IO_PORT "{pin[0]}" IO_TYPE=LVCMOS33;;')
+                #lpf_data.append(f'IO_PORT "{pin[0]}" IO_TYPE=LVCMOS33;')
                 if len(pin) > 3 and pin[3]:
                     lpf_data.append(f'IO_PORT "{pin[0]}" PULL_MODE=UP;')
 
@@ -323,7 +323,7 @@ def generate(project):
         makefile_data.append("	gowin_pack -d ${FAMILY} -o rio.fs rio_pnr.json")
         makefile_data.append("")
         makefile_data.append("load: rio.fs")
-        makefile_data.append("	openFPGALoader -b ${BOARD} rio.fs -f")
+        makefile_data.append("	sudo openFPGALoader -b tangnano9k rio.fs -f")
         makefile_data.append("")
         open(f"{project['FIRMWARE_PATH']}/Makefile", "w").write("\n".join(makefile_data))
 

@@ -7,46 +7,49 @@
     "toolchain": "icestorm",
     "package": "",
     "clock": {
-        "speed": "100000000",
+        "speed": "27000000",
         "pin": "52"
     },
     "interface": [
         {
             "type": "spi",
             "pins": {
-                "MOSI": "17",
-                "MISO": "18",
-                "SCK": "19",
-                "SEL": "20"
+                "MOSI": "81",
+                "MISO": "82",
+                "SCK": "83",
+                "SEL": "84"
             }
         }
     ],
+    "blink": {
+        "pin": "10"
+    },
     "error": {
-        "pin": "9"
+        "pin": "11"
     },
     "dout": [
         {
-            "pin": "10"
+            "pin": "13"
         }
     ],
     "din": [
         {
             "pullup": true,
-            "pin": "11"
+            "pin": "86"
         }
     ],
     "vout": [
         {
             "type": "pwm",
-            "pin": "8"
+            "pin": "14"
         }
     ],
     "vin": [
         {
             "type": "quadencoder",
             "pullup": true,
-            "pin_a": "13",
-            "pin_b": "14"
+            "pin_a": "3",
+            "pin_b": "4"
         }
     ],
     "joints": [

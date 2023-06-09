@@ -175,6 +175,8 @@ module rio (
 
     // vin_pulsecounter's
 
+    // vin_mpgencoder's
+
     // vout_frequency's
 
     // joint_pwmdir's

@@ -35,6 +35,8 @@ set_io  VOUT1_PWM_PWM H5
 
 ### vin_pulsecounter ###
 
+### vin_mpgencoder ###
+
 ### vout_frequency ###
 
 ### joint_pwmdir ###

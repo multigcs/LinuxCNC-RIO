@@ -1,7 +1,7 @@
 
 #export PATH=$PATH:/opt/oss-cad-suite/bin/
 
-CONFIG ?= configs/Olimex-ICE40HX8K-EVB_BOB/config.json
+CONFIG ?= configs/Lattice-iCE40HX8K_BOB/config.json
 TARGETNAME = $(shell jq -r '.name' < ${CONFIG})
 
 all: build firmware components
@@ -39,5 +39,5 @@ firmware:
 	(cd Output/${TARGETNAME}/Firmware/ ; make)
 
 components:
-	halcompile --install Output/${TARGETNAME}/LinuxCNC/Components/rio.c
+	sudo halcompile --install Output/${TARGETNAME}/LinuxCNC/Components/rio.c
 

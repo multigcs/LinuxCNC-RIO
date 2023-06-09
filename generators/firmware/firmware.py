@@ -353,7 +353,7 @@ endmodule
         makefile_data.append("	gowin_pack -d ${FAMILY} -o rio.fs rio_pnr.json")
         makefile_data.append("")
         makefile_data.append("load: rio.fs")
-        makefile_data.append("	sudo openFPGALoader -b tangnano9k rio.fs -f")
+        makefile_data.append("	openFPGALoader -b tangnano9k rio.fs -f")
         makefile_data.append("")
         open(f"{project['FIRMWARE_PATH']}/Makefile", "w").write("\n".join(makefile_data))
 

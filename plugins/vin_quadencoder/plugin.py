@@ -47,7 +47,6 @@ class Plugin:
                 variables.append({"dir": "IN", "type": "VARIABLE", "calc": "linear", "size": 32, "vin": num})
         return variables
 
-
     def vins(self):
         vins_out = 0
         for _num, vin in enumerate(self.jdata.get("vin", [])):

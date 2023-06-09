@@ -1,15 +1,14 @@
 {
     "name": "TangNano9K",
-    "description": "TangNano9K pre test",
+    "description": "TangNano9K with 5Axis BOB",
     "board": "TangNano9K",
     "type": "GW1NR-LV9QN88PC6/I5",
     "family": "GW1N-9C",
     "toolchain": "icestorm",
     "package": "",
     "clock": {
-        "_osc": "27000000",
-        "_speed": "108000000",
-        "speed": "27000000",
+        "osc": "27000000",
+        "speed": "54000000",
         "pin": "52"
     },
     "interface": [
@@ -34,6 +33,9 @@
     "error": {
         "pin": "11"
     },
+    "enable": {
+        "pin": "69"
+    },
     "dout": [
         {
             "pin": "13"
@@ -51,21 +53,37 @@
     "din": [
         {
             "pullup": true,
-            "pin": "86"
+            "pin": "33"
+        },
+        {
+            "pullup": true,
+            "pin": "30"
+        },
+        {
+            "pullup": true,
+            "pin": "29"
+        },
+        {
+            "pullup": true,
+            "pin": "28"
+        },
+        {
+            "pullup": true,
+            "pin": "68"
         }
     ],
     "vout": [
         {
             "type": "pwm",
-            "pin": "69"
+            "pin": "55"
         }
     ],
     "vin": [
         {
-            "type": "quadencoder",
+            "type": "counter",
             "pullup": true,
-            "pin_a": "3",
-            "pin_b": "4"
+            "pin_up": "3",
+            "pin_down": "4"
         }
     ],
     "joints": [
@@ -73,24 +91,40 @@
             "type": "stepper",
             "cl": false,
             "pins": {
-                "step": "68",
-                "dir": "57"
-            }
-        },
-        {
-            "type": "stepper",
-            "cl": false,
-            "pins": {
-                "step": "56",
-                "dir": "55"
-            }
-        },
-        {
-            "type": "stepper",
-            "cl": false,
-            "pins": {
                 "step": "54",
                 "dir": "53"
+            }
+        },
+        {
+            "type": "stepper",
+            "cl": false,
+            "pins": {
+                "step": "51",
+                "dir": "42"
+            }
+        },
+        {
+            "type": "stepper",
+            "cl": false,
+            "pins": {
+                "step": "41",
+                "dir": "35"
+            }
+        },
+        {
+            "type": "stepper",
+            "cl": false,
+            "pins": {
+                "step": "40",
+                "dir": "34"
+            }
+        },
+        {
+            "type": "stepper",
+            "cl": false,
+            "pins": {
+                "step": "57",
+                "dir": "56"
             }
         }
     ]

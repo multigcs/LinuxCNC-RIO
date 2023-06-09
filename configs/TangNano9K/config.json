@@ -7,18 +7,19 @@
     "toolchain": "icestorm",
     "package": "",
     "clock": {
-        "osc": "27000000",
-        "speed": "108000000",
+        "_osc": "27000000",
+        "_speed": "108000000",
+        "speed": "27000000",
         "pin": "52"
     },
     "interface": [
         {
             "type": "spi",
             "pins": {
-                "MOSI": "81",
-                "MISO": "82",
-                "SCK": "83",
-                "SEL": "84"
+                "MOSI": "48",
+                "MISO": "49",
+                "SCK": "31",
+                "SEL": "32"
             }
         }
     ],
@@ -28,14 +29,23 @@
         "baud": "115200"
     },
     "blink": {
-        "pin": "10"
+        "pin": "11"
     },
     "error": {
-        "pin": "11"
+        "pin": "10"
     },
     "dout": [
         {
             "pin": "13"
+        },
+        {
+            "pin": "14"
+        },
+        {
+            "pin": "15"
+        },
+        {
+            "pin": "16"
         }
     ],
     "din": [
@@ -47,7 +57,7 @@
     "vout": [
         {
             "type": "pwm",
-            "pin": "14"
+            "pin": "69"
         }
     ],
     "vin": [
@@ -63,8 +73,24 @@
             "type": "stepper",
             "cl": false,
             "pins": {
-                "step": "15",
-                "dir": "16"
+                "step": "68",
+                "dir": "57"
+            }
+        },
+        {
+            "type": "stepper",
+            "cl": false,
+            "pins": {
+                "step": "56",
+                "dir": "55"
+            }
+        },
+        {
+            "type": "stepper",
+            "cl": false,
+            "pins": {
+                "step": "54",
+                "dir": "53"
             }
         }
     ]

@@ -133,11 +133,55 @@ module rio (
 
     // expansion I/O's
 
-    // vout_udpoti's
+    // vin_quadencoder's
+    vin_quadencoder #(32) vin_quadencoder0 (
+        .clk (sysclk),
+        .quadA (VIN0_ENCODER_A),
+        .quadB (VIN0_ENCODER_B),
+        .pos (processVariable0)
+    );
+
+    // interface_spislave
+    interface_spislave #(BUFFER_SIZE, 32'h74697277, 100000000) spi1 (
+        .clk (sysclk),
+        .SPI_SCK (INTERFACE_SPI_SCK),
+        .SPI_SSEL (INTERFACE_SPI_SSEL),
+        .SPI_MOSI (INTERFACE_SPI_MOSI),
+        .SPI_MISO (INTERFACE_SPI_MISO),
+        .rx_data (rx_data),
+        .tx_data (tx_data),
+        .pkg_timeout (INTERFACE_TIMEOUT)
+    );
+
+    // vout_spipoti's
+
+    // expansion_shiftreg's
+
+    // vout_pwm's
+    vout_pwm #(10000) vout_pwm0 (
+        .clk (sysclk),
+        .dty (setPoint0),
+        .disabled (ERROR),
+        .dir (VOUT0_PWM_DIR),
+        .pwm (VOUT0_PWM_PWM)
+    );
+    vout_pwm #(10000) vout_pwm1 (
+        .clk (sysclk),
+        .dty (setPoint1),
+        .disabled (ERROR),
+        .dir (VOUT1_PWM_DIR),
+        .pwm (VOUT1_PWM_PWM)
+    );
 
     // vin_pulsecounter's
 
+    // vin_mpgencoder's
+
+    // vout_frequency's
+
     // joint_pwmdir's
+
+    // vin_pwmcounter's
 
     // joint_stepper's
     joint_stepper joint_stepper0 (
@@ -181,58 +225,14 @@ module rio (
         .STP (JOINT4_STEPPER_STP)
     );
 
-    // vout_pwm's
-    vout_pwm #(10000) vout_pwm0 (
-        .clk (sysclk),
-        .dty (setPoint0),
-        .disabled (ERROR),
-        .dir (VOUT0_PWM_DIR),
-        .pwm (VOUT0_PWM_PWM)
-    );
-    vout_pwm #(10000) vout_pwm1 (
-        .clk (sysclk),
-        .dty (setPoint1),
-        .disabled (ERROR),
-        .dir (VOUT1_PWM_DIR),
-        .pwm (VOUT1_PWM_PWM)
-    );
-
-    // vout_spipoti's
-
-    // vin_quadencoder's
-    vin_quadencoder #(32) vin_quadencoder0 (
-        .clk (sysclk),
-        .quadA (VIN0_ENCODER_A),
-        .quadB (VIN0_ENCODER_B),
-        .pos (processVariable0)
-    );
-
-    // vin_mpgencoder's
-
-    // interface_spislave
-    interface_spislave #(BUFFER_SIZE, 32'h74697277, 100000000) spi1 (
-        .clk (sysclk),
-        .SPI_SCK (INTERFACE_SPI_SCK),
-        .SPI_SSEL (INTERFACE_SPI_SSEL),
-        .SPI_MOSI (INTERFACE_SPI_MOSI),
-        .SPI_MISO (INTERFACE_SPI_MISO),
-        .rx_data (rx_data),
-        .tx_data (tx_data),
-        .pkg_timeout (INTERFACE_TIMEOUT)
-    );
-
     // vin_sonar's
 
-    // vout_sinepwm's
+    // vout_udpoti's
 
-    // expansion_shiftreg's
+    // vin_frequency's
 
     // joint_rcservo's
 
-    // vout_frequency's
-
-    // vin_pwmcounter's
-
-    // vin_frequency's
+    // vout_sinepwm's
 
 endmodule

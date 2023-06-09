@@ -44,7 +44,7 @@ def generate(project):
     spitest_data.append(f"VOUTS = {project['vouts']}")
     spitest_data.append(f"VINS = {project['vins']}")
     spitest_data.append(f"DOUTS = {project['douts']}")
-    spitest_data.append(f"DINS = {project['douts']}")
+    spitest_data.append(f"DINS = {project['dins']}")
     spitest_data.append("")
 
     spitest_data.append("joints = [")

@@ -35,32 +35,9 @@ def generate(project):
             )
 
         elif project['jdata']['family'] == "GW1N-9C":
-            if project['jdata']['clock']['speed'] != "108000000":
-                print("ERROR: only 108Mhz clock is supported at the moment")
-                sys.exit(1)
-            pll_v = """
-module pll(
-        input  clock_in,
-        output clock_out,
-        output locked
-	);
-
-    // https://juj.github.io/gowin_fpga_code_generators/pll_calculator.html
-    rPLL #( // For GW1NR-9C C6/I5 (Tang Nano 9K proto dev board)
-      .FCLKIN("27"),
-      .IDIV_SEL(0), // -> PFD = 27 MHz (range: 3-400 MHz)
-      .FBDIV_SEL(3), // -> CLKOUT = 108 MHz (range: 3.125-600 MHz)
-      .ODIV_SEL(4) // -> VCO = 432 MHz (range: 400-1200 MHz)
-    ) pll (.CLKOUTP(), .CLKOUTD(), .CLKOUTD3(), .RESET(1'b0), .RESET_P(1'b0), .CLKFB(1'b0), .FBDSEL(6'b0), .IDSEL(6'b0), .ODSEL(6'b0), .PSDA(4'b0), .DUTYDA(4'b0), .FDLY(4'b0),
-      .CLKIN(clock_in), // 27 MHz
-      .CLKOUT(clock_out), // 108 MHz
-      .LOCK(locked)
-    );
-
-endmodule
-
-"""
-            open(f"{project['SOURCE_PATH']}/pll.v", "w").write(pll_v)
+            os.system(
+                f"python3 files/gowin-pll.py -f '{project['SOURCE_PATH']}/pll.v' -i {float(project['osc_clock']) / 1000000} -o {float(project['jdata']['clock']['speed']) / 1000000}"
+            )
 
         else:
             os.system(

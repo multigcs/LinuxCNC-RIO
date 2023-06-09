@@ -62,17 +62,27 @@ for IDIV_SEL in range(64):
                 min_diff = diff
                 setup = {
                     "IDIV_SEL": IDIV_SEL,
-                    "FBDIV_SEL": IDIV_SEL,
-                    "ODIV_SEL": IDIV_SEL,
+                    "FBDIV_SEL": FBDIV_SEL,
+                    "ODIV_SEL": ODIV_SEL,
                     "PFD": PFD,
                     "CLKOUT": CLKOUT,
                     "VCO": VCO,
                     "ERROR": diff,
                 }
 
-
 if setup:
-    pll_v = f"""
+    pll_v = f"""/**
+ * PLL configuration
+ *
+ * This Verilog module was generated automatically
+ * using the gowin-pll tool.
+ * Use at your own risk.
+ *
+ * Given input frequency:        {args.input_freq_mhz:0.3f} MHz
+ * Requested output frequency:   {args.output_freq_mhz:0.3f} MHz
+ * Achieved output frequency:    {setup['CLKOUT']:0.3f} MHz
+ */
+
 module {args.module_name}(
         input  clock_in,
         output clock_out,

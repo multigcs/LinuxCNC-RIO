@@ -1,6 +1,6 @@
 
 module interface_spislave
-    #(parameter BUFFER_SIZE=64, parameter MSGID=32'h74697277, parameter TIMEOUT=4800000)
+    #(parameter BUFFER_SIZE=64, parameter MSGID=32'h74697277, parameter TIMEOUT=32'd4800000)
      (
          input clk,
          input SPI_SCK,
@@ -25,8 +25,8 @@ module interface_spislave
     reg[BUFFER_SIZE-1:0] byte_data_received;
     reg[BUFFER_SIZE-1:0] byte_data_receive;
     reg[BUFFER_SIZE-1:0] byte_data_sent;
-    reg timeout = 0;
-    assign pkg_timeout = 0;
+    reg timeout = 1;
+    assign pkg_timeout = timeout;
     assign rx_data = byte_data_received;
     always @(posedge clk) begin
         if(~SSEL_active) begin
@@ -44,8 +44,7 @@ module interface_spislave
                 byte_data_received <= byte_data_receive;
                 timeout_counter <= 0;
             end
-        end
-        if (timeout_counter < TIMEOUT) begin
+        end else if (timeout_counter < TIMEOUT) begin
             timeout_counter <= timeout_counter + 1;
             timeout <= 0;
         end else begin

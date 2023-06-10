@@ -62,7 +62,7 @@ class Plugin:
         func_out = ["    // interface_spislave"]
         for num, interface in enumerate(self.jdata.get("interface", [])):
             func_out.append(
-                f"    interface_spislave #(BUFFER_SIZE, 32'h74697277, {self.jdata['clock']['speed']}) spi1 ("
+                f"    interface_spislave #(BUFFER_SIZE, 32'h74697277, 32'd{int(self.jdata['clock']['speed'])}) spi1 ("
             )
             func_out.append("        .clk (sysclk),")
             func_out.append("        .SPI_SCK (INTERFACE_SPI_SCK),")

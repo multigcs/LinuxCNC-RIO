@@ -29,7 +29,8 @@ module testb;
         $dumpvars(6, setPoint0);
         $dumpvars(7, rx_data);
         $dumpvars(8, tx_data);
-        //$dumpvars(9, counter);
+        $dumpvars(9, pkg_timeout);
+        //$dumpvars(10, counter);
 
         #100
          SPI_MOSI = 0;

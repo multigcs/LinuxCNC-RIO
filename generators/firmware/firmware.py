@@ -33,12 +33,10 @@ def generate(project):
             os.system(
                 f"icepll -p -m -f '{project['SOURCE_PATH']}/pll.v' -i {float(project['osc_clock']) / 1000000} -o {float(project['jdata']['clock']['speed']) / 1000000}"
             )
-
         elif project['jdata']['family'] == "GW1N-9C":
             os.system(
-                f"python3 files/gowin-pll.py -f '{project['SOURCE_PATH']}/pll.v' -i {float(project['osc_clock']) / 1000000} -o {float(project['jdata']['clock']['speed']) / 1000000}"
+                f"python3 files/gowin-pll.py -d 'GW1NR-9 C6/I5' -f '{project['SOURCE_PATH']}/pll.v' -i {float(project['osc_clock']) / 1000000} -o {float(project['jdata']['clock']['speed']) / 1000000}"
             )
-
         else:
             os.system(
                 f"icepll -q -m -f '{project['SOURCE_PATH']}/pll.v' -i {float(project['osc_clock']) / 1000000} -o {float(project['jdata']['clock']['speed']) / 1000000}"
@@ -324,7 +322,7 @@ def generate(project):
         makefile_data.append(f"	yosys -q -l yosys.log -p 'synth_gowin -top rio -json rio.json' {verilogs}")
         makefile_data.append("")
         makefile_data.append("rio_pnr.json: rio.json")
-        makefile_data.append("	nextpnr-gowin --json rio.json --write rio_pnr.json --freq 27 --device ${DEVICE} --family ${FAMILY} --cst pins.cst")
+        makefile_data.append(f"	nextpnr-gowin --json rio.json --write rio_pnr.json --freq {float(project['jdata']['clock']['speed']) / 1000000} --device ${{DEVICE}} --family ${{FAMILY}} --cst pins.cst")
         makefile_data.append("")
         makefile_data.append("rio.fs: rio_pnr.json")
         makefile_data.append("	gowin_pack -d ${FAMILY} -o rio.fs rio_pnr.json")

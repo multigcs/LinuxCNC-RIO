@@ -312,8 +312,7 @@ def generate(project):
         verilogs = " ".join(project['verilog_files'])
         makefile_data = []
         makefile_data.append("")
-        makefile_data.append(f"BOARD={family}")
-        makefile_data.append(f"FAMILY=GW1N-9C")
+        makefile_data.append(f"FAMILY={family}")
         makefile_data.append(f"DEVICE={ftype}")
         makefile_data.append("")
         makefile_data.append("all: rio.fs")

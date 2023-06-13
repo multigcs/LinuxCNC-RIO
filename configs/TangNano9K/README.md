@@ -3,6 +3,8 @@
 https://wiki.sipeed.com/hardware/en/tang/Tang-Nano-9K/Nano-9K.html
 
 ![test](https://raw.githubusercontent.com/multigcs/LinuxCNC-RIO/main/configs/TangNano9K/bob9k.jpg)
+![layout1](https://raw.githubusercontent.com/multigcs/LinuxCNC-RIO/main/configs/TangNano9K/9k-bob.jpg)
+![layout2](https://raw.githubusercontent.com/multigcs/LinuxCNC-RIO/main/configs/TangNano9K/9k-bob2.jpg)
 
 ## Mapping: 5Axis-BOB to FPGA 
 

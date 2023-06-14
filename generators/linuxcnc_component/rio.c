@@ -394,12 +394,12 @@ int rtapi_app_main(void)
 
     for (bn = 0; bn < DIGITAL_INPUT_BYTES; bn++) {
         for (n = 0; n < 8; n++) {
-            retval = hal_pin_bit_newf(HAL_OUT, &(data->inputs[bn * 8 + n * 2]), comp_id, "%s.input.%01d", prefix, bn * 8 + n);
+            retval = hal_pin_bit_newf(HAL_OUT, &(data->inputs[(bn * 8 + n) * 2]), comp_id, "%s.input.%01d", prefix, bn * 8 + n);
             if (retval != 0) goto error;
-            *(data->inputs[bn * 8 + n * 2]) = 0;
-            retval = hal_pin_bit_newf(HAL_OUT, &(data->inputs[bn * 8 + n * 2 + 1]), comp_id, "%s.input.%01d-not", prefix, bn * 8 + n);
+            *(data->inputs[(bn * 8 + n) * 2]) = 0;
+            retval = hal_pin_bit_newf(HAL_OUT, &(data->inputs[(bn * 8 + n) * 2 + 1]), comp_id, "%s.input.%01d-not", prefix, bn * 8 + n);
             if (retval != 0) goto error;
-            *(data->inputs[bn * 8 + n * 2 + 1]) = 1;
+            *(data->inputs[(bn * 8 + n) * 2 + 1]) = 1;
         }
     }
 

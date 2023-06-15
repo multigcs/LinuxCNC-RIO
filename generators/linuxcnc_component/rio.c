@@ -618,8 +618,7 @@ int rt_bcm2835_init(void)
         bcm2835_spi1 = bcm2835_peripherals + BCM2835_SPI1_BASE/4;
 
         ok = 1;
-    }
-    else {
+    } else {
         /* Not root, try /dev/gpiomem */
         /* Open the master /dev/mem device */
         if ((memfd = open("/dev/gpiomem", O_RDWR | O_SYNC) ) < 0) {
@@ -692,16 +691,14 @@ void update_freq(void *arg, long period)
         if (data->maxvel[i] <= 0.0) {
             // set to zero if negative
             data->maxvel[i] = 0.0;
-        }
-        else {
+        } else {
             // parameter is non-zero, compare to max_freq
             desired_freq = data->maxvel[i] * fabs(data->pos_scale[i]);
 
             if (desired_freq > max_freq) {
                 // parameter is too high, limit it
                 data->maxvel[i] = max_freq / fabs(data->pos_scale[i]);
-            }
-            else {
+            } else {
                 // lower max_freq to match parameter
                 max_freq = data->maxvel[i] * fabs(data->pos_scale[i]);
             }
@@ -715,14 +712,12 @@ void update_freq(void *arg, long period)
         if (data->maxaccel[i] <= 0.0) {
             // set to zero if negative
             data->maxaccel[i] = 0.0;
-        }
-        else {
+        } else {
             // parameter is non-zero, compare to max_ac
             if ((data->maxaccel[i] * fabs(data->pos_scale[i])) > max_ac) {
                 // parameter is too high, lower it
                 data->maxaccel[i] = max_ac / fabs(data->pos_scale[i]);
-            }
-            else {
+            } else {
                 // lower limit to match parameter
                 max_ac = data->maxaccel[i] * fabs(data->pos_scale[i]);
             }
@@ -731,32 +726,24 @@ void update_freq(void *arg, long period)
         /* at this point, all scaling, limits, and other parameter
         changes have been handled - time for the main control */
 
-
-
         if (data->pos_mode[i]) {
-
             /* POSITION CONTROL MODE */
-
             // use Proportional control with feed forward (pgain, ff1gain and deadband)
-
             if (*(data->pgain[i]) != 0) {
                 pgain = *(data->pgain[i]);
-            }
-            else {
+            } else {
                 pgain = 1.0;
             }
 
             if (*(data->ff1gain[i]) != 0) {
                 ff1gain = *(data->ff1gain[i]);
-            }
-            else {
+            } else {
                 ff1gain = 1.0;
             }
 
             if (*(data->deadband[i]) != 0) {
                 deadband = *(data->deadband[i]);
-            }
-            else {
+            } else {
                 deadband = 1 / data->pos_scale[i];
             }
 
@@ -770,11 +757,9 @@ void update_freq(void *arg, long period)
             // apply the deadband
             if (error > deadband) {
                 error -= deadband;
-            }
-            else if (error < -deadband) {
+            } else if (error < -deadband) {
                 error += deadband;
-            }
-            else {
+            } else {
                 error = 0;
             }
 
@@ -787,8 +772,7 @@ void update_freq(void *arg, long period)
             // calculate the output value
             vel_cmd = pgain * error + data->cmd_d[i] * ff1gain;
 
-        }
-        else {
+        } else {
             /* VELOCITY CONTROL MODE */
             // calculate velocity command in counts/sec
             vel_cmd = *(data->vel_cmd[i]);
@@ -799,8 +783,7 @@ void update_freq(void *arg, long period)
         // apply frequency limit
         if (vel_cmd > max_freq) {
             vel_cmd = max_freq;
-        }
-        else if (vel_cmd < -max_freq) {
+        } else if (vel_cmd < -max_freq) {
             vel_cmd = -max_freq;
         }
 
@@ -810,11 +793,9 @@ void update_freq(void *arg, long period)
         // apply accel limit
         if ( vel_cmd > (data->freq[i] + dv) ) {
             new_vel = data->freq[i] + dv;
-        }
-        else if ( vel_cmd < (data->freq[i] - dv) ) {
+        } else if ( vel_cmd < (data->freq[i] - dv) ) {
             new_vel = data->freq[i] - dv;
-        }
-        else {
+        } else {
             new_vel = vel_cmd;
         }
 
@@ -851,13 +832,9 @@ void rio_readwrite()
     if (*(data->SPIenable)) {
         if( (*(data->SPIreset) && !(data->SPIresetOld)) || *(data->SPIstatus) ) {
             // reset rising edge detected, try SPI transfer and reset OR PRU running
-
-
             int i = 0;
-
             // Data header
             txData.header = PRU_WRITE;
-
 
             // Joint frequency commands
             for (i = 0; i < JOINTS; i++) {
@@ -867,7 +844,6 @@ void rio_readwrite()
                     txData.jointFreqCmd[i] = PRU_OSC / data->freq[i];
                 }
             }
-
 
             for (bi = 0; bi < JOINT_ENABLE_BYTES; bi++) {
                 txData.jointEnable[bi] = 0;
@@ -916,25 +892,16 @@ void rio_readwrite()
 
                     if (joints_fb_type[i] == JOINT_FB_ABS) {
                         *(data->pos_fb[i]) = (float)(rxData.jointFeedback[i]) / data->fb_scale[i];
-                    }
-                    else {
+                    } else {
                         accum_diff = rxData.jointFeedback[i] - old_count[i];
                         old_count[i] = rxData.jointFeedback[i];
-
                         accum[i] += accum_diff;
-
                         *(data->count[i]) = accum[i];
-
                         data->scale_recip[i] = data->fb_scale[i];
-
                         curr_pos = (double)(accum[i]);
-
                         *(data->pos_fb[i]) = (float)((curr_pos+0.5) / data->fb_scale[i]);
                     }
-
                 }
-
-                // printf("%f %i \n", *(data->pos_fb[0]), rxData.jointFeedback[0]);
 
                 // Feedback
                 for (i = 0; i < VARIABLE_INPUTS; i++) {
@@ -971,8 +938,7 @@ void rio_readwrite()
                 break;
             }
         }
-    }
-    else {
+    } else {
         *(data->SPIstatus) = 0;
     }
 
@@ -994,16 +960,18 @@ void rio_transfer()
     t1 = rtapi_get_time();
     do {
         ret = recv(udpSocket, rxData.rxBuffer, SPIBUFSIZE, 0);
-        if(ret < 0) rtapi_delay(READ_PCK_DELAY_NS);
+        if(ret < 0) {
+            rtapi_delay(READ_PCK_DELAY_NS);
+        }
         t2 = rtapi_get_time();
     }
-    while ((ret < 0) && ((t2 - t1) < 200*1000*1000));
+    while ((ret < 0) && ((t2 - t1) < 20*1000*1000));
 
     if (ret > 0) {
         errCount = 0;
-    }
-    else {
+    } else {
         errCount++;
+        rtapi_print("Ethernet ERROR: N = %d\n", errCount);
     }
 
     if (errCount > 2) {

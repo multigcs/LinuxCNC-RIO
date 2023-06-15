@@ -41,7 +41,7 @@ def generate(project):
     rio_data.append("#define STEPBIT             22")
     rio_data.append("#define STEP_MASK           (1L<<STEPBIT)")
     rio_data.append("#define STEP_OFFSET         (1L<<(STEPBIT-1))")
-    rio_data.append(f"#define PRU_BASEFREQ        20000000")
+    rio_data.append(f"#define PRU_BASEFREQ        100000000")
     rio_data.append(f"#define PRU_OSC             {project['jdata']['clock']['speed']}")
     rio_data.append("")
 

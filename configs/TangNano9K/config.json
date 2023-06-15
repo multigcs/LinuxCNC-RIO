@@ -11,6 +11,8 @@
         "speed": "54000000",
         "pin": "52"
     },
+    "transport": "UDP",
+    "ip": "192.168.10.132",
     "interface": [
         {
             "type": "spi",
@@ -48,6 +50,30 @@
         },
         {
             "pin": "16"
+        },
+        {
+            "pin": "EXPANSION0_OUTPUT[0]"
+        },
+        {
+            "pin": "EXPANSION0_OUTPUT[1]"
+        },
+        {
+            "pin": "EXPANSION0_OUTPUT[2]"
+        },
+        {
+            "pin": "EXPANSION0_OUTPUT[3]"
+        },
+        {
+            "pin": "EXPANSION0_OUTPUT[4]"
+        },
+        {
+            "pin": "EXPANSION0_OUTPUT[5]"
+        },
+        {
+            "pin": "EXPANSION0_OUTPUT[6]"
+        },
+        {
+            "pin": "EXPANSION0_OUTPUT[7]"
         }
     ],
     "din": [
@@ -70,6 +96,30 @@
         {
             "pullup": true,
             "pin": "68"
+        },
+        {
+            "pin": "EXPANSION0_INPUT[0]"
+        },
+        {
+            "pin": "EXPANSION0_INPUT[1]"
+        },
+        {
+            "pin": "EXPANSION0_INPUT[2]"
+        },
+        {
+            "pin": "EXPANSION0_INPUT[3]"
+        },
+        {
+            "pin": "EXPANSION0_INPUT[4]"
+        },
+        {
+            "pin": "EXPANSION0_INPUT[5]"
+        },
+        {
+            "pin": "EXPANSION0_INPUT[6]"
+        },
+        {
+            "pin": "EXPANSION0_INPUT[7]"
         }
     ],
     "vout": [
@@ -125,6 +175,18 @@
             "pins": {
                 "step": "57",
                 "dir": "56"
+            }
+        }
+    ],
+    "expansion": [
+        {
+            "type": "shiftreg",
+            "bits": 8,
+            "pins": {
+                "out": "75",
+                "in": "74",
+                "clock": "73",
+                "load": "72"
             }
         }
     ]

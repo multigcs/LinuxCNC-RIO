@@ -1405,6 +1405,12 @@ design rules under a new name.</description>
 <contactref element="EXT3" pad="10"/>
 <contactref element="U$3" pad="9"/>
 <contactref element="JP3" pad="13"/>
+<polygon width="0.1524" layer="1">
+<vertex x="1.905" y="69.85"/>
+<vertex x="91.44" y="69.85"/>
+<vertex x="91.44" y="-3.81"/>
+<vertex x="1.905" y="-3.81"/>
+</polygon>
 </signal>
 <signal name="POE_5V">
 <contactref element="EXT1" pad="1"/>

@@ -56,7 +56,7 @@
 #define MODNAME "rio"
 #define PREFIX "rio"
 
-MODULE_AUTHOR("Oliver Dippel (based on Scott Alford AKA scotta)");
+MODULE_AUTHOR("Oliver Dippel (based on code from Scott Alford AKA scotta)");
 MODULE_DESCRIPTION("Driver for RIO FPGA boards");
 MODULE_LICENSE("GPL v2");
 
@@ -854,7 +854,6 @@ void rio_readwrite()
 
 
             int i = 0;
-            int bi = 0;
 
             // Data header
             txData.header = PRU_WRITE;
@@ -893,11 +892,12 @@ void rio_readwrite()
             }
 
             // Outputs
-            for (bi = 0; bi < DIGITAL_OUTPUT_BYTES; bi++) {
-                txData.outputs[bi] = 0;
+            int byte_out = 0;
+            for (byte_out = 0; byte_out < DIGITAL_OUTPUT_BYTES; byte_out++) {
+                txData.outputs[byte_out] = 0;
                 for (i = 0; i < 8; i++) {
-                    if (*(data->outputs[bi * 8 + i]) == 1) {
-                        txData.outputs[bi] |= (1 << i);		// output is high
+                    if (*(data->outputs[byte_out * 8 + i]) == 1) {
+                        txData.outputs[byte_out] |= (1 << (7-i));		// output is high
                     }
                 }
             }
@@ -944,13 +944,12 @@ void rio_readwrite()
                 // Inputs
                 for (bi = 0; bi < DIGITAL_INPUT_BYTES; bi++) {
                     for (i = 0; i < 8; i++) {
-                        if ((rxData.inputs[bi] & (1 << i)) != 0) {
-                            *(data->inputs[bi * 8 + i * 2]) = 1; 		// input is high
-                            *(data->inputs[bi * 8 + i * 2 + 1]) = 0;  // not
-                        }
-                        else {
-                            *(data->inputs[bi * 8 + i * 2]) = 0;			// input is low
-                            *(data->inputs[bi * 8 + i * 2 + 1]) = 1;  // not
+                        if ((rxData.inputs[bi] & (1 << (7-i))) != 0) {
+                            *(data->inputs[(bi * 8 + i) * 2]) = 1; 		// input is high
+                            *(data->inputs[(bi * 8 + i) * 2 + 1]) = 0;  // not
+                        } else {
+                            *(data->inputs[(bi * 8 + i) * 2]) = 0;			// input is low
+                            *(data->inputs[(bi * 8 + i) * 2 + 1]) = 1;  // not
                         }
                     }
                 }

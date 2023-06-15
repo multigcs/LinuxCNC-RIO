@@ -118,13 +118,6 @@ def generate(project):
         top_data.append("")
 
 
-    if project['dins_total'] > project['dins']:
-        top_data.append("    // fake din's to fit byte")
-        for num in range(project['dins_total'] - project['dins']):
-            top_data.append(f"    reg DIN{project['dins'] + num} = 0;")
-        top_data.append("")
-
-
     top_data.append(f"    // vouts {project['vouts']}")
     for num in range(project['vouts']):
         top_data.append(f"    wire signed [31:0] setPoint{num};")
@@ -175,7 +168,7 @@ def generate(project):
 
     for dbyte in range(project['douts_total'] // 8):
         for num in range(8):
-            bitnum = dbyte * 8 + (7 - num)
+            bitnum = num + (dbyte * 8)
             if bitnum < project['douts']:
                 if project['jdata']["dout"][bitnum].get("invert", False):
                     top_data.append(f"    assign DOUT{bitnum} = ~rx_data[{pos-1}];")
@@ -208,12 +201,14 @@ def generate(project):
 
     for dbyte in range(project['dins_total'] // 8):
         for num in range(8):
-            bitnum = (8 - 1 - num) + (project['dins_total'] // 8 - 1 - dbyte) * 8
-            if bitnum < project['dins'] and project['jdata']["din"][bitnum].get("invert", False):
-                tdins.append(f"~DIN{bitnum}")
+            bitnum = num + (dbyte * 8)
+            if bitnum < project['dins']:
+                if project['jdata']["din"][bitnum].get("invert", False):
+                    tdins.append(f"~DIN{bitnum}")
+                else:
+                    tdins.append(f"DIN{bitnum}")
             else:
-                tdins.append(f"DIN{bitnum}")
-
+                tdins.append(f"1'd0")
 
     fill = project['data_size'] - project['tx_data_size']
 

@@ -16,7 +16,7 @@ def generate(project):
     spitest_data.append("if len(sys.argv) > 1 and sys.argv[1].startswith('/dev/tty'):")
     spitest_data.append("    import serial")
     spitest_data.append("    SERIAL = '/dev/ttyUSB0'")
-    spitest_data.append("    ser = serial.Serial(SERIAL, 2000000, timeout=1)")
+    spitest_data.append("    ser = serial.Serial(SERIAL, 115200, timeout=1)")
     spitest_data.append("elif len(sys.argv) > 1 and sys.argv[1] != '':")
     spitest_data.append("    NET_IP = sys.argv[1]")
     spitest_data.append("    NET_PORT = 2390")

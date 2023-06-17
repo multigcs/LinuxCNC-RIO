@@ -9,6 +9,8 @@ Helpfull: https://github.com/ldijkman/WT32-ETH01-LAN-8720-RJ45-
 | Signal | Pin |
 | --- | --- |
 | MOSI | 15 |
-| MISO | 2 |
+| MISO | 35 |
 | SCLK | 14 |
-| CS | 12 |
+| CS | 4 |
+
+Please use this pinout for the SPI, all other combinations have problems if the FPGA is connected at boottime or while flashing

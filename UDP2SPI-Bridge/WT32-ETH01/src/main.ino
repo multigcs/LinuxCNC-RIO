@@ -7,15 +7,15 @@
 #include <Update.h>
 #include <SPI.h>
 
-IPAddress myIP(192, 168, 10, 232);
+IPAddress myIP(192, 168, 10, 132);
 IPAddress myGW(192, 168, 10, 1);
 IPAddress mySN(255, 255, 255, 0);
 
 
 #define HSPI_MOSI 15
-#define HSPI_MISO 2
+#define HSPI_MISO 35
 #define HSPI_CLK 14
-#define HSPI_SS 12
+#define HSPI_SS 4
 #define BUFFER_SIZE 4096
 static const int spiClk = 2000000;
 char packetBuffer[BUFFER_SIZE];
@@ -26,7 +26,7 @@ WiFiUDP Udp;
 
 
 void setup(){
-    Serial.begin(2000000);
+    Serial.begin(115200);
     while (!Serial);
 
     ETH.begin();

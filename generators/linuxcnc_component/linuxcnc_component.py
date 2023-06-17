@@ -18,7 +18,8 @@ def generate(project):
         rio_data.append("#define SERIAL_SPEED B2000000")
     elif transport == 'SPI':
         rio_data.append("#define TRANSPORT_SPI")
-        rio_data.append("#define SPI_SPEED BCM2835_SPI_CLOCK_DIVIDER_128")
+        #rio_data.append("#define SPI_SPEED BCM2835_SPI_CLOCK_DIVIDER_128")
+        rio_data.append("#define SPI_SPEED BCM2835_SPI_CLOCK_DIVIDER_256")
     else:
         print("ERROR: UNKNOWN transport protocol:", transport)
         sys.exit(1)

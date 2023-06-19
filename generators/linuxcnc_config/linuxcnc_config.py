@@ -315,10 +315,10 @@ net j{num}enable 		<= joint.{num}.amp-enable-out 	=> rio.joint.{num}.enable
     cfghal_data.append("addf rio.readwrite porttest")
     cfghal_data.append("")
 
-    for num in range(project['douts_total']):
-        cfghal_data.append(f"net dout{num} ptest.btn{num} rio.output.{num} ptest.led-out{num}")
+    #for num in range(project['douts']):
+    #    cfghal_data.append(f"net dout{num} ptest.btn{num} rio.output.{num} ptest.led-out{num}")
 
-    for num in range(project['dins_total']):
+    for num in range(project['dins']):
         cfghal_data.append(f"net din{num} rio.input.{num} ptest.led-in{num}")
 
     for num in range(project['vouts']):
@@ -332,8 +332,9 @@ net j{num}enable 		<= joint.{num}.amp-enable-out 	=> rio.joint.{num}.enable
     cfghal_data = []
     cfghal_data.append("")
 
-    for num in range(project['douts_total']):
-        cfghal_data.append(f"net dout{num} pyvcp.btn{num} rio.output.{num} pyvcp.led-out{num}")
+    for num in range(project['douts']):
+        #cfghal_data.append(f"net dout{num} pyvcp.btn{num} rio.output.{num} pyvcp.led-out{num}")
+        cfghal_data.append(f"net dout{num} pyvcp.btn{num} rio.output.{num}")
 
     for num, din in enumerate(project['jdata']["din"]):
         din_type = din.get("type")
@@ -358,19 +359,7 @@ net j{num}enable 		<= joint.{num}.amp-enable-out 	=> rio.joint.{num}.enable
 
     cfgxml_data = []
     cfgxml_data.append("<pyvcp>")
-    cfgxml_data.append("  <hbox>")
-    cfgxml_data.append("    <relief>RIDGE</relief>")
-    cfgxml_data.append("    <bd>2</bd>")
-    cfgxml_data.append("    <label>")
-    cfgxml_data.append(f"      <text>\"DOUT\"</text>")
-    cfgxml_data.append("      <font>(\"Helvetica\",12)</font>")
-    cfgxml_data.append("    </label>")
-    for num in range(project['douts_total']):
-        cfgxml_data.append("    <button>")
-        cfgxml_data.append(f"      <halpin>\"btn{num}\"</halpin>")
-        cfgxml_data.append(f"      <text>\"{num}\"</text>")
-        cfgxml_data.append("    </button>")
-    cfgxml_data.append("  </hbox>")
+
 
     cfgxml_data.append("  <hbox>")
     cfgxml_data.append("    <relief>RIDGE</relief>")
@@ -379,15 +368,49 @@ net j{num}enable 		<= joint.{num}.amp-enable-out 	=> rio.joint.{num}.enable
     cfgxml_data.append(f"      <text>\"DOUT\"</text>")
     cfgxml_data.append("      <font>(\"Helvetica\",12)</font>")
     cfgxml_data.append("    </label>")
-    for num in range(project['douts_total']):
+
+    for num in range(project['douts']):
+        cfgxml_data.append("    <checkbutton>")
+        cfgxml_data.append(f"      <halpin>\"btn{num}\"</halpin>")
+        cfgxml_data.append(f"      <text>\"{num}\"</text>")
+        cfgxml_data.append("    </checkbutton>")
+        if (num+1) % 8 == 0 and num+1 < project['douts']:
+            cfgxml_data.append("  </hbox>")
+            cfgxml_data.append("  <hbox>")
+            cfgxml_data.append("    <relief>RIDGE</relief>")
+            cfgxml_data.append("    <bd>2</bd>")
+            cfgxml_data.append("    <label>")
+            cfgxml_data.append(f"      <text>\"DOUT\"</text>")
+            cfgxml_data.append("      <font>(\"Helvetica\",12)</font>")
+            cfgxml_data.append("    </label>")
+    cfgxml_data.append("  </hbox>")
+    """
+    cfgxml_data.append("  <hbox>")
+    cfgxml_data.append("    <relief>RIDGE</relief>")
+    cfgxml_data.append("    <bd>2</bd>")
+    cfgxml_data.append("    <label>")
+    cfgxml_data.append(f"      <text>\"DOUT\"</text>")
+    cfgxml_data.append("      <font>(\"Helvetica\",12)</font>")
+    cfgxml_data.append("    </label>")
+    for num in range(project['douts']):
         cfgxml_data.append("    <led>")
         cfgxml_data.append(f"      <halpin>\"led-out{num}\"</halpin>")
         cfgxml_data.append("      <size>25</size>")
         cfgxml_data.append("      <on_color>\"green\"</on_color>")
         cfgxml_data.append("      <off_color>\"red\"</off_color>")
         cfgxml_data.append("    </led>")
-    cfgxml_data.append("  </hbox>")
 
+        if (num+1) % 8 == 0 and num+1 < project['douts']:
+            cfgxml_data.append("  </hbox>")
+            cfgxml_data.append("  <hbox>")
+            cfgxml_data.append("    <relief>RIDGE</relief>")
+            cfgxml_data.append("    <bd>2</bd>")
+            cfgxml_data.append("    <label>")
+            cfgxml_data.append(f"      <text>\"DOUT\"</text>")
+            cfgxml_data.append("      <font>(\"Helvetica\",12)</font>")
+            cfgxml_data.append("    </label>")
+    cfgxml_data.append("  </hbox>")
+    """
 
     cfgxml_data.append("  <hbox>")
     cfgxml_data.append("    <relief>RIDGE</relief>")
@@ -410,6 +433,19 @@ net j{num}enable 		<= joint.{num}.amp-enable-out 	=> rio.joint.{num}.enable
             cfgxml_data.append("      <on_color>\"green\"</on_color>")
             cfgxml_data.append("      <off_color>\"red\"</off_color>")
             cfgxml_data.append("    </led>")
+
+            if (num+1) % 8 == 0 and num+1 < project['dins']:
+                cfgxml_data.append("  </hbox>")
+                cfgxml_data.append("  <hbox>")
+                cfgxml_data.append("    <relief>RIDGE</relief>")
+                cfgxml_data.append("    <bd>2</bd>")
+                cfgxml_data.append("    <label>")
+                cfgxml_data.append(f"      <text>\"DIN\"</text>")
+                cfgxml_data.append("      <font>(\"Helvetica\",12)</font>")
+                cfgxml_data.append("    </label>")
+
+
+
     cfgxml_data.append("  </hbox>")
 
     for num, vout in enumerate(project['jdata']["vout"]):

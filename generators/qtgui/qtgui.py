@@ -291,7 +291,7 @@ class WinForm(QWidget):
                         if dbyte * 8 + dn == DOUTS - 1:
                             break
 
-                if self.doutcounter > 10:
+                if self.doutcounter > 3:
                     self.doutcounter = 0
                     if self.animation >= DOUTS:
                         self.animation = 0

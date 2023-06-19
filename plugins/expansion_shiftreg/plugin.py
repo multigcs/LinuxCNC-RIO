@@ -53,12 +53,13 @@ class Plugin:
         pinlist_out = []
         for num, expansion in enumerate(self.jdata.get("expansion", [])):
             if expansion["type"] in ["shiftreg"]:
+                pullup = expansion.get("pullup", True)
                 pinlist_out.append((f"EXPANSION{num}_SHIFTREG_CLOCK", expansion["pins"]["clock"], "OUTPUT"))
                 pinlist_out.append((f"EXPANSION{num}_SHIFTREG_LOAD", expansion["pins"]["load"], "OUTPUT"))
                 if "out" in expansion["pins"]:
                     pinlist_out.append((f"EXPANSION{num}_SHIFTREG_OUT", expansion["pins"]["out"], "OUTPUT"))
                 if "in" in expansion["pins"]:
-                    pinlist_out.append((f"EXPANSION{num}_SHIFTREG_IN", expansion["pins"]["in"], "INPUT"))
+                    pinlist_out.append((f"EXPANSION{num}_SHIFTREG_IN", expansion["pins"]["in"], "INPUT", pullup))
         return pinlist_out
 
     def expansions(self):
@@ -83,7 +84,7 @@ class Plugin:
                     func_out.append(f"    wire EXPANSION{num}_SHIFTREG_OUT; // fake output pin")
                 if "in" not in expansion["pins"]:
                     func_out.append(f"    reg EXPANSION{num}_SHIFTREG_IN = 0; // fake input pin")
-                func_out.append(f"    expansion_shiftreg #({bits}, ({divider})) expansion_shiftreg{num} (")
+                func_out.append(f"    expansion_shiftreg #({bits}, {divider}) expansion_shiftreg{num} (")
                 func_out.append("       .clk (sysclk),")
                 func_out.append(f"       .SHIFT_OUT (EXPANSION{num}_SHIFTREG_OUT),")
                 func_out.append(f"       .SHIFT_IN (EXPANSION{num}_SHIFTREG_IN),")

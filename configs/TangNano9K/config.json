@@ -14,7 +14,7 @@
     },
     "transport": "UDP",
     "_transport": "SPI",
-    "ip": "192.168.10.79",
+    "ip": "192.168.10.71",
     "interface": [
         {
             "type": "spi",
@@ -35,6 +35,7 @@
         "pin": "10"
     },
     "error": {
+        "invert": true,
         "pin": "11"
     },
     "enable": {
@@ -42,15 +43,19 @@
     },
     "dout": [
         {
+            "invert": true,
             "pin": "13"
         },
         {
+            "invert": true,
             "pin": "14"
         },
         {
+            "invert": true,
             "pin": "15"
         },
         {
+            "invert": true,
             "pin": "16"
         },
         {
@@ -98,6 +103,38 @@
         {
             "pullup": true,
             "pin": "68"
+        },
+        {
+            "pullup": true,
+            "pin": "79"
+        },
+        {
+            "pullup": true,
+            "pin": "80"
+        },
+        {
+            "pullup": true,
+            "pin": "81"
+        },
+        {
+            "pullup": true,
+            "pin": "82"
+        },
+        {
+            "pullup": true,
+            "pin": "83"
+        },
+        {
+            "pullup": true,
+            "pin": "84"
+        },
+        {
+            "pullup": true,
+            "pin": "85"
+        },
+        {
+            "pullup": true,
+            "pin": "86"
         },
         {
             "pin": "EXPANSION0_INPUT[0]"
@@ -188,10 +225,10 @@
             "type": "shiftreg",
             "bits": 8,
             "pins": {
-                "out": "75",
-                "in": "74",
-                "clock": "73",
-                "load": "72"
+                "out": "73",
+                "in": "72",
+                "clock": "71",
+                "load": "70"
             }
         }
     ]

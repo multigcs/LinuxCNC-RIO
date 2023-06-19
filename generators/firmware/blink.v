@@ -1,7 +1,7 @@
 module blink
+    #(parameter SPEED = 100000)
     (
         input clk,
-        input [31:0] speed,
         output led
     );
     reg rled;
@@ -9,7 +9,7 @@ module blink
     assign led = rled;
     always @(posedge clk) begin
         if (counter == 0) begin
-            counter <= speed;
+            counter <= SPEED;
             rled <= ~rled;
         end else begin
             counter <= counter - 1;

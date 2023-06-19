@@ -74,18 +74,19 @@ def generate(project):
 
 
     if "blink" in project['jdata']:
-        top_data.append("    blink blink1 (")
+        top_data.append(f"    blink #({int(project['jdata']['clock']['speed']) // 1 // 2}) blink1 (")
         top_data.append("        .clk (sysclk),")
-        top_data.append(f"        .speed ({int(project['jdata']['clock']['speed']) // 1 // 2}),")
         top_data.append("        .led (BLINK_LED)")
         top_data.append("    );")
         top_data.append("")
         project['verilog_files'].append("blink.v")
         os.system(f"cp -a generators/firmware/blink.v* {project['SOURCE_PATH']}/blink.v")
 
-
     if "error" in project['jdata']:
-        top_data.append("    assign ERROR_OUT = ERROR;")
+        if project['jdata']["error"].get("invert"):
+            top_data.append("    assign ERROR_OUT = ~ERROR;")
+        else:
+            top_data.append("    assign ERROR_OUT = ERROR;")
         top_data.append("")
 
 
@@ -316,7 +317,8 @@ def generate(project):
         makefile_data.append(f"	yosys -q -l yosys.log -p 'synth_gowin -top rio -json rio.json' {verilogs}")
         makefile_data.append("")
         makefile_data.append("rio_pnr.json: rio.json")
-        makefile_data.append(f"	nextpnr-gowin --json rio.json --write rio_pnr.json --freq {float(project['jdata']['clock']['speed']) / 1000000} --device ${{DEVICE}} --family ${{FAMILY}} --cst pins.cst")
+        makefile_data.append(f"	nextpnr-gowin --seed 0 --json rio.json --write rio_pnr.json --freq {float(project['jdata']['clock']['speed']) / 1000000} --device ${{DEVICE}} --family ${{FAMILY}} --cst pins.cst")
+        #makefile_data.append(f"	nextpnr-gowin --seed 0 --ignore-loops --ignore-rel-clk --no-tmdriv --json rio.json --write rio_pnr.json --freq {float(project['jdata']['clock']['speed']) / 1000000} --device ${{DEVICE}} --family ${{FAMILY}} --cst pins.cst")
         makefile_data.append("")
         makefile_data.append("rio.fs: rio_pnr.json")
         makefile_data.append("	gowin_pack -d ${FAMILY} -o rio.fs rio_pnr.json")

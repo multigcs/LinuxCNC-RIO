@@ -17,7 +17,7 @@ IPAddress mySN(255, 255, 255, 0);
 #define HSPI_CLK 14
 #define HSPI_SS 15
 #define BUFFER_SIZE 4096
-static const int spiClk = 115200;
+static const int spiClk = 2000000;
 char packetBuffer[BUFFER_SIZE];
 unsigned int localPort = 2390;
 SPIClass * hspi = NULL;
@@ -26,7 +26,7 @@ WiFiUDP Udp;
 
 
 void setup(){
-    Serial.begin(2000000);
+    Serial.begin(115200);
     while (!Serial);
 
     ETH.begin();

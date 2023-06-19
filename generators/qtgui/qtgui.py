@@ -197,7 +197,7 @@ class WinForm(QWidget):
         layout.addWidget(QLabel(f'OUT'), gpy, 1)
         self.widgets["dout_auto"] = QCheckBox()
         layout.addWidget(self.widgets["dout_auto"], gpy, 2)
-        for dbyte in range(DIGITAL_INPUT_BYTES):
+        for dbyte in range(DIGITAL_OUTPUT_BYTES):
             for dn in range(8):
                 key = f'doc{dbyte}{dn}'
                 self.widgets[key] = QCheckBox()

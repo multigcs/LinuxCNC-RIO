@@ -72,15 +72,10 @@ class Plugin:
                 vouts_out += 1
         return vouts_out
 
-    def funcs(self):
+    def defs(self):
         func_out = ["    // vout_pwm's"]
         for num, vout in enumerate(self.jdata["vout"]):
             if vout["type"] in ["pwm", "rcservo"]:
-                if vout["type"] == "rcservo":
-                    freq = int(vout.get("frequency", 100))
-                else:
-                    freq = int(vout.get("frequency", 10000))
-                divider = int(self.jdata["clock"]["speed"]) // freq
                 if "dir" not in vout:
                     func_out.append(
                         f"    wire VOUT{num}_PWM_DIR; // fake direction output"
@@ -90,6 +85,20 @@ class Plugin:
                     func_out.append(
                         f"    wire VOUT{num}_PWM_PWM_INVERTED; // inverted pwm wire"
                     )
+        return func_out
+
+
+    def funcs(self):
+        func_out = ["    // vout_pwm's"]
+        for num, vout in enumerate(self.jdata["vout"]):
+            if vout["type"] in ["pwm", "rcservo"]:
+                if vout["type"] == "rcservo":
+                    freq = int(vout.get("frequency", 100))
+                else:
+                    freq = int(vout.get("frequency", 10000))
+                divider = int(self.jdata["clock"]["speed"]) // freq
+                invert_pwm = vout.get("invert_pwm", False)
+                if invert_pwm:
                     func_out.append(
                         f"    assign VOUT{num}_PWM_PWM = !VOUT{num}_PWM_PWM_INVERTED; // invert pwm output"
                     )
@@ -103,7 +112,6 @@ class Plugin:
                 else:
                     func_out.append(f"        .pwm (VOUT{num}_PWM_PWM)")
                 func_out.append("    );")
-
         return func_out
 
     def ips(self):

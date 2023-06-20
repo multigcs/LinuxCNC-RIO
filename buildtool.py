@@ -35,13 +35,16 @@ project["expansions"] = {}
 project["osc_clock"] = False
 if project["jdata"]["toolchain"] == "icestorm":
     project["osc_clock"] = project["jdata"]["clock"].get("osc")
-    if project["osc_clock"]:
+    project["internal_clock"] = project["jdata"]["clock"].get("internal")
+    if project["internal_clock"]:
+        pass
+    elif project["osc_clock"]:
         project["pinlists"]["main"] = (
-            ("sysclk_in", project["jdata"]["clock"]["pin"], "INPUT"),
+            ("sysclk_in", project["jdata"]["clock"]["pin"], "INPUT", True),
         )
     else:
         project["pinlists"]["main"] = (
-            ("sysclk", project["jdata"]["clock"]["pin"], "INPUT"),
+            ("sysclk", project["jdata"]["clock"]["pin"], "INPUT", True),
         )
 
 if "blink" in project["jdata"]:

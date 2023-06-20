@@ -10,7 +10,9 @@
         "_osc": "27000000",
         "_speed": "54000000",
         "speed": "27000000",
-        "pin": "52"
+        "pin": "52",
+        "_internal": true,
+        "_speed": "25000000"
     },
     "transport": "UDP",
     "_transport": "SPI",

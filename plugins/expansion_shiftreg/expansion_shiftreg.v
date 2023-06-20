@@ -27,13 +27,13 @@ module expansion_shiftreg
         if (data_pos < 8) begin
             data_in[WIDTH - 1 - data_pos] = SHIFT_IN;
             SHIFT_OUT = data_out[WIDTH - 1 - data_pos];
-            data_pos = data_pos + 1;
+            data_pos = data_pos + 8'd1;
         end else if (data_pos == 8) begin
-            SHIFT_LOAD = 0;
-            data_pos = data_pos + 1;
+            SHIFT_LOAD = 1'd0;
+            data_pos = data_pos + 8'd1;
         end else begin
-            SHIFT_LOAD = 1;
-            data_pos = 0;
+            SHIFT_LOAD = 1'd1;
+            data_pos = 8'd0;
         end
     end
 endmodule

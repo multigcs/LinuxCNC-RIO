@@ -71,6 +71,19 @@ class Plugin:
                 expansions[f"EXPANSION{num}_INPUT"] = bits
         return expansions
 
+    def defs(self):
+        func_out = ["    // expansion_shiftreg's"]
+        for num, expansion in enumerate(self.jdata.get("expansion", [])):
+            if expansion["type"] == "shiftreg":
+                bits = int(expansion.get("bits", 8))
+                func_out.append(f"    wire [{bits - 1}:0] EXPANSION{num}_INPUT;")
+                func_out.append(f"    wire [{bits - 1}:0] EXPANSION{num}_OUTPUT;")
+                if "out" not in expansion["pins"]:
+                    func_out.append(f"    wire EXPANSION{num}_SHIFTREG_OUT; // fake output pin")
+                if "in" not in expansion["pins"]:
+                    func_out.append(f"    reg EXPANSION{num}_SHIFTREG_IN = 0; // fake input pin")
+        return func_out
+
     def funcs(self):
         func_out = ["    // expansion_shiftreg's"]
         for num, expansion in enumerate(self.jdata.get("expansion", [])):
@@ -78,12 +91,6 @@ class Plugin:
                 bits = int(expansion.get("bits", 8))
                 speed = int(expansion.get("speed", 100000))
                 divider = int(self.jdata["clock"]["speed"]) // speed // 2
-                func_out.append(f"    wire [{bits - 1}:0] EXPANSION{num}_INPUT;")
-                func_out.append(f"    wire [{bits - 1}:0] EXPANSION{num}_OUTPUT;")
-                if "out" not in expansion["pins"]:
-                    func_out.append(f"    wire EXPANSION{num}_SHIFTREG_OUT; // fake output pin")
-                if "in" not in expansion["pins"]:
-                    func_out.append(f"    reg EXPANSION{num}_SHIFTREG_IN = 0; // fake input pin")
                 func_out.append(f"    expansion_shiftreg #({bits}, {divider}) expansion_shiftreg{num} (")
                 func_out.append("       .clk (sysclk),")
                 func_out.append(f"       .SHIFT_OUT (EXPANSION{num}_SHIFTREG_OUT),")

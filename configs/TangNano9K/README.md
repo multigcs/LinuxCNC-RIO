@@ -47,7 +47,7 @@ https://wiki.sipeed.com/hardware/en/tang/Tang-Nano-9K/Nano-9K.html
 
 ## Mapping: 5Axis-BOB to FPGA 
 
-| BOB5X | FUNC | FPGA |
+| BOB5X | FUNC | FPGA-Pin |
 | --- | --- | --- |
 | P1 | PWM | 55 |
 | P2 | STP_X | 54 |

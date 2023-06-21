@@ -100,7 +100,7 @@ git clone https://github.com/multigcs/LinuxCNC-RIO
 cd LinuxCNC-RIO
 ```
 
-### Generate the Project-Files
+### generate the Project-Files
 
 to generate/update all needed files in Output/TangNano9K/:
 ```
@@ -142,14 +142,13 @@ linuxcnc Output/TangNano9K/LinuxCNC/ConfigSamples/rio/rio.ini
 ```
 
 
-
-### Connection to the Raspberry-PI
+### connection to the Raspberry-PI
 
 you can use a Raspberry-PI 4 with direct SPI connection to the FPGA-Board,
 you can find the pinout above (BOB-Adapter SPI-Pins)
 
 
-### Build and Flash the optional Ethernet-Board
+### build and flash the optional Ethernet-Board
 
 https://www.olimex.com/Products/IoT/ESP32/ESP32-POE-ISO/open-source-hardware
 

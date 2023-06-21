@@ -9,14 +9,14 @@ https://wiki.sipeed.com/hardware/en/tang/Tang-Nano-9K/Nano-9K.html
 
 ## BOB-Adapter SPI-Pins:
 
-| FPGA-Pin | BOB-Adapter | FUNC | Raspberry |
-| --- | --- | --- | --- |
-|  | 1 | 5V |  |
-| 48 | 2 | MOSI |  |
-| 49 | 3 | MISO |  |
-| 31 | 4 | SCK |  |
-| 32 | 5 | CS |  |
-| - | 6 | GND |  |
+| FPGA-Pin | BOB-Adapter | FUNC | Raspberry-GPIO | Raspberry-Pin |
+| --- | --- | --- | --- | --- |
+|  | 1 | 5V |  | 2 |
+| 48 | 2 | MOSI | GPIO10 (MOSI) | 19 |
+| 49 | 3 | MISO | GPIO9 (MISO) | 21 |
+| 31 | 4 | SCK | GPIO11 (SCLK) | 23 |
+| 32 | 5 | CS | GPIO7 (CE1) | 26 |
+| - | 6 | GND |  | 6 |
 
 
 ## BOB-Adapter Expansion-Pins:

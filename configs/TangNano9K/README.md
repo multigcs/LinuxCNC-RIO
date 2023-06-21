@@ -119,9 +119,11 @@ first you have to install the PlatformIO Core: https://platformio.org/install
 
 then go into Folder: UDP2SPI-Bridge/ESP32-PoE-ISO and run the build process:
 
-`cd UDP2SPI-Bridge/ESP32-PoE-ISO`
+`
+cd UDP2SPI-Bridge/ESP32-PoE-ISO
 
-`make build`
+make build
+`
 
 then connect the Ethernet-Board to your USB and flash the Firmware:
 

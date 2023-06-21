@@ -9,40 +9,40 @@ https://wiki.sipeed.com/hardware/en/tang/Tang-Nano-9K/Nano-9K.html
 
 ## BOB-Adapter SPI-Pins:
 
-| FPGA-Pin | BOB-Adapter | FUNC | Raspberry-GPIO | Raspberry-Pin |
+| BOB-Adapter | FUNC | FPGA-Pin |Raspberry-GPIO | Raspberry-Pin |
 | --- | --- | --- | --- | --- |
-|  | 1 | 5V |  | 2 |
-| 48 | 2 | MOSI | GPIO10 (MOSI) | 19 |
-| 49 | 3 | MISO | GPIO9 (MISO) | 21 |
-| 31 | 4 | SCK | GPIO11 (SCLK) | 23 |
-| 32 | 5 | CS | GPIO7 (CE1) | 26 |
-| | 6 | GND |  | 6 |
+| 1 | 5V |  |  | 2 |
+| 2 | MOSI | 48 | GPIO10 (MOSI) | 19 |
+| 3 | MISO |  49 |GPIO9 (MISO) | 21 |
+| 4 | SCK |  31 |GPIO11 (SCLK) | 23 |
+| 5 | CS |  32 |GPIO7 (CE1) | 26 |
+| 6 | GND | | | 6 |
 
 
 ## BOB-Adapter Expansion-Pins:
-| FPGA-Pin | BOB-Adapter | FUNC |
+| BOB-Adapter | FUNC | FPGA-Pin | 
 | --- | --- | --- |
-| 73 | 1 | OUT |
-| 72 | 2 | IN |
-| 71 | 3 | CLK |
-| 70 | 4 | LOAD |
-| | 5 | 5V |
-| | 6 | GND |
+| 1 | OUT | 73 |
+| 2 | IN | 72 |
+| 3 | CLK | 71 |
+| 4 | LOAD | 70 |
+| 5 | 5V | |
+| 6 | GND | |
 
 
 ## BOB-Adapter extra Input-Pins:
-| FPGA-Pin | BOB-Adapter | FUNC |
+| BOB-Adapter | FUNC | FPGA-Pin |
 | --- | --- | --- |
-| | 1 | 5V |
-| 79 | 2 | DIN6 |
-| 80 | 3 | DIN7 |
-| 81 | 4 | DIN8 |
-| 82 | 5 | DIN9 |
-| 83 | 6 | DIN10 |
-| 84 | 7 | DIN11 |
-| 85 | 8 | DIN12 |
-| 86 | 9 | DIN13 |
-| | 10 | GND |
+| 1 | 5V | |
+| 2 | DIN6 | 79 |
+| 3 | DIN7 | 80 |
+| 4 | DIN8 | 81 |
+| 5 | DIN9 | 82 |
+| 6 | DIN10 | 83 |
+| 7 | DIN11 | 84 |
+| 8 | DIN12 | 85 |
+| 9 | DIN13 | 86 |
+| 10 | GND | |
 
 
 ## Mapping: 5Axis-BOB to FPGA 

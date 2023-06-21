@@ -83,7 +83,18 @@ https://wiki.sipeed.com/hardware/en/tang/Tang-Nano-9K/Nano-9K.html
 
 ## HowTo:
 
-get the Sources:
+### prepare
+
+you need the following software to build and run this project:
+
+* git: https://git-scm.com/book/de/v2/Erste-Schritte-Git-installieren
+* python3: https://www.python.org/downloads/ (allready installed on most systems)
+* make: https://learn.microsoft.com/en-us/windows/package-manager/winget/ (allready installed on most systems)
+* oss-cad-suite-build: https://github.com/YosysHQ/oss-cad-suite-build
+* PlatformIO Core: https://platformio.org/install (optional for the Ethernet-Board)
+
+
+### get the Sources
 ```
 git clone https://github.com/multigcs/LinuxCNC-RIO
 cd LinuxCNC-RIO
@@ -91,21 +102,16 @@ cd LinuxCNC-RIO
 
 ### Generate the Project-Files
 
-first you need to install the oss-cad-suite: https://github.com/YosysHQ/oss-cad-suite-build
-
-then you can generate all needed files:
+to generate/update all needed files in Output/TangNano9K/:
 ```
-make CONFIG=configs/TangNano9K/config.json build
+python3 buildtool.py configs/TangNano9K/config.json
 ```
 or if you want to use the optional Ethernet-Board:
 ```
-make CONFIG=configs/TangNano9K/config-udp.json build
+python3 buildtool.py configs/TangNano9K/config-udp.json
 ```
 in this case, please first flash the ethernet-board, check the IP and edit the json-file
 
-
-
-after that, you have a new folder named Output/TangNano9K/ with all needed sources and sample configs
 
 #### build and load the FPGA-Bitstream
 

@@ -1,22 +1,16 @@
 {
     "name": "TangNano9K",
-    "description": "TangNano9K with 5Axis BOB",
+    "description": "TangNano9K with 5Axis BOB over SPI",
     "board": "TangNano9K",
     "type": "GW1NR-LV9QN88PC6/I5",
     "family": "GW1N-9C",
     "toolchain": "icestorm",
     "package": "",
     "clock": {
-        "_osc": "27000000",
-        "_speed": "54000000",
         "speed": "27000000",
         "pin": "52",
-        "_internal": true,
-        "_speed": "25000000"
     },
-    "transport": "UDP",
-    "_transport": "SPI",
-    "ip": "192.168.10.71",
+    "transport": "SPI",
     "interface": [
         {
             "type": "spi",

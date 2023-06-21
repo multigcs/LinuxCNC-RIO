@@ -97,6 +97,13 @@ then you can generate all needed files:
 ```
 make CONFIG=configs/TangNano9K/config.json build
 ```
+or if you want to use the optional Ethernet-Board:
+```
+make CONFIG=configs/TangNano9K/config-udp.json build
+```
+in this case, please first flash the ethernet-board, check the IP and edit the json-file
+
+
 
 after that, you have a new folder named Output/TangNano9K/ with all needed sources and sample configs
 

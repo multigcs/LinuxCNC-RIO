@@ -61,27 +61,35 @@
             "pin": "16"
         },
         {
+            "invert": true,
             "pin": "EXPANSION0_OUTPUT[0]"
         },
         {
+            "invert": true,
             "pin": "EXPANSION0_OUTPUT[1]"
         },
         {
+            "invert": true,
             "pin": "EXPANSION0_OUTPUT[2]"
         },
         {
+            "invert": true,
             "pin": "EXPANSION0_OUTPUT[3]"
         },
         {
+            "invert": true,
             "pin": "EXPANSION0_OUTPUT[4]"
         },
         {
+            "invert": true,
             "pin": "EXPANSION0_OUTPUT[5]"
         },
         {
+            "invert": true,
             "pin": "EXPANSION0_OUTPUT[6]"
         },
         {
+            "invert": true,
             "pin": "EXPANSION0_OUTPUT[7]"
         }
     ],
@@ -226,6 +234,7 @@
         {
             "type": "shiftreg",
             "bits": 8,
+            "invert": true,
             "pins": {
                 "out": "73",
                 "in": "72",

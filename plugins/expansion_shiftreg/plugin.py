@@ -76,12 +76,35 @@ class Plugin:
         for num, expansion in enumerate(self.jdata.get("expansion", [])):
             if expansion["type"] == "shiftreg":
                 bits = int(expansion.get("bits", 8))
+                invert = expansion.get("invert", False)
                 func_out.append(f"    wire [{bits - 1}:0] EXPANSION{num}_INPUT;")
                 func_out.append(f"    wire [{bits - 1}:0] EXPANSION{num}_OUTPUT;")
                 if "out" not in expansion["pins"]:
-                    func_out.append(f"    wire EXPANSION{num}_SHIFTREG_OUT; // fake output pin")
+                    if invert:
+                        func_out.append(f"    wire EXPANSION{num}_SHIFTREG_OUT_INV; // fake output pin")
+                    else:
+                        func_out.append(f"    wire EXPANSION{num}_SHIFTREG_OUT; // fake output pin")
+                elif invert:
+                    func_out.append(f"    wire EXPANSION{num}_SHIFTREG_OUT_INV;")
+                    func_out.append(f"    assign EXPANSION{num}_SHIFTREG_OUT = ~EXPANSION{num}_SHIFTREG_OUT_INV;")
+
                 if "in" not in expansion["pins"]:
-                    func_out.append(f"    reg EXPANSION{num}_SHIFTREG_IN = 0; // fake input pin")
+                    if invert:
+                        func_out.append(f"    reg EXPANSION{num}_SHIFTREG_IN_INV = 0; // fake input pin")
+                    else:
+                        func_out.append(f"    reg EXPANSION{num}_SHIFTREG_IN = 0; // fake input pin")
+                elif invert:
+                    func_out.append(f"    wire EXPANSION{num}_SHIFTREG_IN_INV;")
+                    func_out.append(f"    assign EXPANSION{num}_SHIFTREG_IN_INV = ~EXPANSION{num}_SHIFTREG_IN;")
+
+
+                if invert:
+                    func_out.append(f"    wire EXPANSION{num}_SHIFTREG_CLOCK_INV;")
+                    func_out.append(f"    assign EXPANSION{num}_SHIFTREG_CLOCK = ~EXPANSION{num}_SHIFTREG_CLOCK_INV;")
+                    func_out.append(f"    wire EXPANSION{num}_SHIFTREG_LOAD_INV;")
+                    func_out.append(f"    assign EXPANSION{num}_SHIFTREG_LOAD = ~EXPANSION{num}_SHIFTREG_LOAD_INV;")
+
+
         return func_out
 
     def funcs(self):
@@ -89,14 +112,23 @@ class Plugin:
         for num, expansion in enumerate(self.jdata.get("expansion", [])):
             if expansion["type"] == "shiftreg":
                 bits = int(expansion.get("bits", 8))
-                speed = int(expansion.get("speed", 100000))
+                invert = expansion.get("invert", False)
+                speed = int(expansion.get("speed", 50000))
                 divider = int(self.jdata["clock"]["speed"]) // speed // 2
                 func_out.append(f"    expansion_shiftreg #({bits}, {divider}) expansion_shiftreg{num} (")
                 func_out.append("       .clk (sysclk),")
-                func_out.append(f"       .SHIFT_OUT (EXPANSION{num}_SHIFTREG_OUT),")
-                func_out.append(f"       .SHIFT_IN (EXPANSION{num}_SHIFTREG_IN),")
-                func_out.append(f"       .SHIFT_CLK (EXPANSION{num}_SHIFTREG_CLOCK),")
-                func_out.append(f"       .SHIFT_LOAD (EXPANSION{num}_SHIFTREG_LOAD),")
+
+                if invert:
+                    func_out.append(f"       .SHIFT_OUT (EXPANSION{num}_SHIFTREG_OUT_INV),")
+                    func_out.append(f"       .SHIFT_IN (EXPANSION{num}_SHIFTREG_IN_INV),")
+                    func_out.append(f"       .SHIFT_CLK (EXPANSION{num}_SHIFTREG_CLOCK_INV),")
+                    func_out.append(f"       .SHIFT_LOAD (EXPANSION{num}_SHIFTREG_LOAD_INV),")
+                else:
+                    func_out.append(f"       .SHIFT_OUT (EXPANSION{num}_SHIFTREG_OUT),")
+                    func_out.append(f"       .SHIFT_IN (EXPANSION{num}_SHIFTREG_IN),")
+                    func_out.append(f"       .SHIFT_CLK (EXPANSION{num}_SHIFTREG_CLOCK),")
+                    func_out.append(f"       .SHIFT_LOAD (EXPANSION{num}_SHIFTREG_LOAD),")
+
                 func_out.append(f"       .data_in (EXPANSION{num}_INPUT),")
                 func_out.append(f"       .data_out (EXPANSION{num}_OUTPUT)")
                 func_out.append("    );")

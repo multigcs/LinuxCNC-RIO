@@ -66,12 +66,18 @@ https://wiki.sipeed.com/hardware/en/tang/Tang-Nano-9K/Nano-9K.html
 | P15 | DIN5 | 68 |
 | P16 | STP_B | 57 |
 | P17 | DIR_B | 56 |
-|   | LED1 | 10 |
-|   | LED2 | 11 |
-|   | LED3 | 13 |
-|   | LED4 | 14 |
-|   | LED5 | 15 |
-|   | LED6 | 16 |
-|   | BTN_S1 | 4 |
-|   | BTN_S2 | 3 |
+
+
+## Mapping: FPGA Onboard Components
+
+| Component | FUNC | FPGA-Pin |
+| --- | --- | --- |
+| LED1 | BLINK | 10 |
+| LED2 | ERROR | 11 |
+| LED3 | DOUT1 | 13 |
+| LED4 | DOUT2 | 14 |
+| LED5 | DOUT3 | 15 |
+| LED6 | DOUT4 | 16 |
+| BTN_S1 | VIN1+ | 4 |
+| BTN_S2 | VIN1- | 3 |
 

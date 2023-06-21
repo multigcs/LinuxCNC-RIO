@@ -130,8 +130,13 @@ linuxcnc Output/TangNano9K/LinuxCNC/ConfigSamples/rio/rio.ini
 
 
 
+### Connection to the Raspberry-PI
 
-### Build and Flash the optional Ethernet-Board:
+you can use a Raspberry-PI 4 with direct SPI connection to the FPGA-Board,
+you can find the pinout above (BOB-Adapter SPI-Pins)
+
+
+### Build and Flash the optional Ethernet-Board
 
 https://www.olimex.com/Products/IoT/ESP32/ESP32-POE-ISO/open-source-hardware
 

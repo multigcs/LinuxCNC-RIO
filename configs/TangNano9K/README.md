@@ -84,28 +84,30 @@ https://wiki.sipeed.com/hardware/en/tang/Tang-Nano-9K/Nano-9K.html
 ## HowTo:
 
 get the Sources:
-`
- git clone https://github.com/multigcs/LinuxCNC-RIO
- cd LinuxCNC-RIO
-`
+
+`git clone https://github.com/multigcs/LinuxCNC-RIO`
+
+`cd LinuxCNC-RIO`
+
 
 ### Generate the Project-Files
 
 first you need to install the oss-cad-suite: https://github.com/YosysHQ/oss-cad-suite-build
 
 then generate all needed files:
-`
- make CONFIG=configs/TangNano9K/config.json build
-`
+
+`make CONFIG=configs/TangNano9K/config.json build`
+
 after that, you have a new folder named Output/TangNano9K/ with all needed sources and sample configs
 
 #### build and load the FPGA-Bitstream
 
 connect the TangNano9K board to your USB-Port and run:
-`
- cd Output/TangNano9K/Firmware
- make all load
-`
+
+`cd Output/TangNano9K/Firmware`
+
+`make all load`
+
 this will need some time
 
 
@@ -116,14 +118,14 @@ https://www.olimex.com/Products/IoT/ESP32/ESP32-POE-ISO/open-source-hardware
 first you have to install the PlatformIO Core: https://platformio.org/install
 
 then go into Folder: UDP2SPI-Bridge/ESP32-PoE-ISO and run the build process:
-`
- cd UDP2SPI-Bridge/ESP32-PoE-ISO
- make build
-`
+
+`cd UDP2SPI-Bridge/ESP32-PoE-ISO`
+
+`make build`
+
 then connect the Ethernet-Board to your USB and flash the Firmware:
-`
- make upload
-`
+
+`make upload`
 
 
 

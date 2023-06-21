@@ -109,6 +109,27 @@ make all load
 ```
 this will need some time
 
+#### compile and install the hal-component
+
+please copy the folder Output/TangNano9K/LinuxCNC/Components to your target system where LinuxCNC is running,
+then you can compile and install the component:
+
+```
+halcompile --install  Output/TangNano9K/LinuxCNC/Components/rio.c
+```
+
+#### sample config for LinuxCNC
+
+there are also a sample configuration in Output/TangNano9K/LinuxCNC/ConfigSamples/rio/
+
+you can copy the to your LinuxCNC machine and start it:
+
+```
+linuxcnc Output/TangNano9K/LinuxCNC/ConfigSamples/rio/rio.ini
+```
+
+
+
 
 ### Build and Flash the optional Ethernet-Board:
 

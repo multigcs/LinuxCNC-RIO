@@ -2,11 +2,6 @@
 
 https://wiki.sipeed.com/hardware/en/tang/Tang-Nano-9K/Nano-9K.html
 
-![test](https://raw.githubusercontent.com/multigcs/LinuxCNC-RIO/main/configs/TangNano9K/bob9k.jpg)
-![adapter-top](https://raw.githubusercontent.com/multigcs/LinuxCNC-RIO/main/configs/TangNano9K/tangnano9k-bob-adapter2-top.png)
-
-
-
 ## BOB-Adapter SPI-Pins:
 
 | BOB-Adapter | FUNC | FPGA-Pin |Raspberry-GPIO | Raspberry-Pin |
@@ -80,4 +75,8 @@ https://wiki.sipeed.com/hardware/en/tang/Tang-Nano-9K/Nano-9K.html
 | LED6 | DOUT4 | 16 |
 | BTN_S1 | VIN1+ | 4 |
 | BTN_S2 | VIN1- | 3 |
+
+
+![adapter-top](https://raw.githubusercontent.com/multigcs/LinuxCNC-RIO/main/configs/TangNano9K/tangnano9k-bob-adapter2-top.png)
+![test](https://raw.githubusercontent.com/multigcs/LinuxCNC-RIO/main/configs/TangNano9K/bob9k.jpg)
 

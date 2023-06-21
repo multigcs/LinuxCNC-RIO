@@ -93,7 +93,7 @@ cd LinuxCNC-RIO
 
 first you need to install the oss-cad-suite: https://github.com/YosysHQ/oss-cad-suite-build
 
-then generate all needed files:
+then you can generate all needed files:
 ```
 make CONFIG=configs/TangNano9K/config.json build
 ```

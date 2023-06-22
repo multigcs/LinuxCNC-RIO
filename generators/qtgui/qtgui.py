@@ -441,7 +441,7 @@ class WinForm(QWidget):
                     key = f"dic{dbyte}{dn}"
 
                     value = "0"
-                    if inputs[dbyte] & (1<<(dn)) != 0:
+                    if inputs[dbyte] & (1<<(7-dn)) != 0:
                         value = "1"
 
                     self.widgets[key].setText(value)

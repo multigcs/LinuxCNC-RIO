@@ -422,7 +422,7 @@ def generate(project):
         prj_data.append("<Project>")
         prj_data.append("    <Template>FPGA</Template>")
         prj_data.append("    <Version>5</Version>")
-        prj_data.append("    <Device name=\"GW1N-9C\" pn=\"GW1N-LV9QN48C6/I5\">gw1n9c-000</Device>")
+        prj_data.append("    <Device name=\"GW1NR-9C\" pn=\"GW1NR-LV9QN88PC6/I5\">gw1nr9c-000</Device>")
         prj_data.append("    <FileList>")
         for verilog in verilogs.split():
             prj_data.append(f"        <File path=\"{verilog}\" type=\"file.verilog\" enable=\"1\"/>")
@@ -432,10 +432,12 @@ def generate(project):
         open(f"{project['FIRMWARE_PATH']}/rio.gprj", "w").write("\n".join(prj_data))
 
         tcl_data = []
-        tcl_data.append("set_device -name GW1N-9C GW1N-LV9QN48C6/I5")
+        tcl_data.append("set_device -name GW1NR-9C GW1NR-LV9QN88PC6/I5")
         for verilog in verilogs.split():
             tcl_data.append(f"add_file {verilog}")
         tcl_data.append("add_file pins.cst")
+        tcl_data.append("")
+        tcl_data.append("set_option -use_sspi_as_gpio 1")
         tcl_data.append("")
         tcl_data.append("run all")
         open(f"{project['FIRMWARE_PATH']}/rio.tcl", "w").write("\n".join(tcl_data))

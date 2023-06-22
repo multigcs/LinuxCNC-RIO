@@ -7,11 +7,6 @@
 #include <WiFiUdp.h>
 #include <SPI.h>
 
-IPAddress myIP(192, 168, 10, 232);
-IPAddress myGW(192, 168, 10, 1);
-IPAddress mySN(255, 255, 255, 0);
-
-
 #define HSPI_MOSI 13
 #define HSPI_MISO 16
 #define HSPI_CLK 14
@@ -31,8 +26,13 @@ void setup(){
 
     ETH.begin();
 
+    /*
     // setup static ip
-    //ETH.config(myIP, myGW, mySN);
+    IPAddress myIP(192, 168, 10, 132);
+    IPAddress myGW(192, 168, 10, 1);
+    IPAddress mySN(255, 255, 255, 0);
+    ETH.config(myIP, myGW, mySN);
+    */
 
     Udp.begin(localPort);
     hspi = new SPIClass(HSPI);

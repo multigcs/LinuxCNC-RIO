@@ -31,6 +31,9 @@ void setup(){
 
     ETH.begin();
 
+    // setup static ip
+    //ETH.config(myIP, myGW, mySN);
+
     Udp.begin(localPort);
     hspi = new SPIClass(HSPI);
     hspi->begin(HSPI_CLK, HSPI_MISO, HSPI_MOSI, HSPI_SS);

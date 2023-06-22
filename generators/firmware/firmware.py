@@ -414,8 +414,16 @@ def generate(project):
         makefile_data.append("	vvp testb.out")
         makefile_data.append("	gtkwave testb.vcd")
         makefile_data.append("")
+        makefile_data.append("gowin_build: impl/pnr/project.fs")
+        makefile_data.append("impl/pnr/project.fs: rio.tcl")
+        makefile_data.append("	gw_sh rio.tcl")
+        makefile_data.append("")
+        makefile_data.append("gowin_load: impl/pnr/project.fs")
+        makefile_data.append("	openFPGALoader -b tangnano9k impl/pnr/project.fs -f")
+        makefile_data.append("")
         open(f"{project['FIRMWARE_PATH']}/Makefile", "w").write("\n".join(makefile_data))
 
+        # generating project file for the gowin toolchain
         prj_data = []
         prj_data.append("<?xml version=\"1\" encoding=\"UTF-8\"?>")
         prj_data.append("<!DOCTYPE gowin-fpga-project>")
@@ -431,6 +439,7 @@ def generate(project):
         prj_data.append("</Project>")
         open(f"{project['FIRMWARE_PATH']}/rio.gprj", "w").write("\n".join(prj_data))
 
+        # generating tcl script for the gowin toolchain
         tcl_data = []
         tcl_data.append("set_device -name GW1NR-9C GW1NR-LV9QN88PC6/I5")
         for verilog in verilogs.split():

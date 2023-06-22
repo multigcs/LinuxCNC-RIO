@@ -1,4 +1,5 @@
 /* verilator lint_off MULTITOP */
+/* verilator lint_off DECLFILENAME */
 
 module joint_pwmdir
     #(parameter pwm_freq = 100000)

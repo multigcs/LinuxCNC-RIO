@@ -1,0 +1,166 @@
+{
+    "name": "ICEBreakerV1.0e-BOB",
+    "description": "Small and low cost FPGA educational and development board",
+    "toolchain": "icestorm",
+    "family": "ice40",
+    "type": "up5k",
+    "package": "sg48",
+    "flashcmd": "openFPGALoader -b ice40_generic rio.bin -f",
+    "clock": {
+        "osc": "12000000",
+        "speed": "50250000",
+        "pin": "35"
+    },
+    "interface": [
+    	{
+	        "type": "spi",
+	        "pins": {
+	            "MOSI": "27",
+	            "MISO": "25",
+	            "SCK": "21",
+	            "SEL": "19"
+	        }
+    	}
+   ],
+    "blink": {
+        "pin": "37"
+    },
+    "error": {
+        "invert": true,
+        "pin": "11"
+    },
+    "din": [
+        {
+            "pullup": true,
+            "pin": "38"
+        },
+        {
+            "pullup": true,
+            "pin": "34"
+        },
+        {
+            "pullup": true,
+            "pin": "31"
+        },
+        {
+            "pullup": true,
+            "pin": "48"
+        },
+        {
+            "pin": "EXPANSION0_INPUT[0]"
+        },
+        {
+            "pin": "EXPANSION0_INPUT[1]"
+        },
+        {
+            "pin": "EXPANSION0_INPUT[2]"
+        },
+        {
+            "pin": "EXPANSION0_INPUT[3]"
+        },
+        {
+            "pin": "EXPANSION0_INPUT[4]"
+        },
+        {
+            "pin": "EXPANSION0_INPUT[5]"
+        },
+        {
+            "pin": "EXPANSION0_INPUT[6]"
+        },
+        {
+            "pin": "EXPANSION0_INPUT[7]"
+        }
+    ],
+    "dout": [
+        {
+            "pin": "EXPANSION0_OUTPUT[0]"
+        },
+        {
+            "pin": "EXPANSION0_OUTPUT[1]"
+        },
+        {
+            "pin": "EXPANSION0_OUTPUT[2]"
+        },
+        {
+            "pin": "EXPANSION0_OUTPUT[3]"
+        },
+        {
+            "pin": "EXPANSION0_OUTPUT[4]"
+        },
+        {
+            "pin": "EXPANSION0_OUTPUT[5]"
+        },
+        {
+            "pin": "EXPANSION0_OUTPUT[6]"
+        },
+        {
+            "pin": "EXPANSION0_OUTPUT[7]"
+        }
+    ],
+    "vin": [
+        {
+            "type": "frequency",
+            "pin": "10"
+        }
+    ],
+    "vout": [
+        {
+            "type": "pwm",
+            "pin": "4"
+        }
+    ],
+    "joints": [
+        {
+            "type": "stepper",
+            "cl": false,
+            "pins": {
+                "step": "2",
+                "dir": "47"
+            }
+        },
+        {
+            "type": "stepper",
+            "cl": false,
+            "pins": {
+                "step": "45",
+                "dir": "28"
+            }
+        },
+        {
+            "type": "stepper",
+            "cl": false,
+            "pins": {
+                "step": "32",
+                "dir": "36"
+            }
+        },
+        {
+            "type": "stepper",
+            "cl": false,
+            "pins": {
+                "step": "42",
+                "dir": "43"
+            }
+        },
+        {
+            "type": "stepper",
+            "cl": false,
+            "pins": {
+                "step": "46",
+                "dir": "44"
+            }
+        }
+    ],
+    "expansion": [
+        {
+            "type": "shiftreg",
+            "bits": 8,
+            "pins": {
+                "out": "26",
+                "in": "23",
+                "clock": "20",
+                "load": "18"
+            }
+        }
+    ]
+}

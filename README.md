@@ -6,7 +6,7 @@ RealtimeIO for LinuxCNC based on an FPGA
 * logic only
 * no jitter
 * fast and small
-* communication via SPI (with Raspberry PI 4)
+* communication via SPI (with Raspberry PI 4 or Ethernet-Bridge)
 * generated verilog-code / setup via json files (free pin-selection)
 * using free FPGA-Toolchain
 * tested on ICE40UP5K, ICE40LP8K, ICE40HX8K, ECP5 and TangNano9K boards
@@ -39,6 +39,8 @@ RealtimeIO for LinuxCNC based on an FPGA
 ## FPGA-Toolchain:
 
  https://github.com/YosysHQ/oss-cad-suite-build
+
+for the TangNano9K, you can also using the Gowin-IDE or Gowin-Shell (it's faster)
 
 
 ## interfacing with the raspberry

@@ -309,8 +309,61 @@ def generate(project):
     top_data.append("")
     open(f"{project['SOURCE_PATH']}/rio.v", "w").write("\n".join(top_data))
     project['verilog_files'].append("rio.v")
-    board = project['jdata'].get("board")
 
+    # testbench
+    testb_data = []
+    testb_data.append("`timescale 1ns/100ps")
+    testb_data.append("")
+    testb_data.append("module testb;")
+    testb_data.append("")
+
+    for arg in top_arguments:
+        arg_dir = arg.split()[0]
+        arg_name = arg.split()[1]
+        if arg_dir == "input":
+            testb_data.append(f"    reg {arg_name} = 0;")
+
+    testb_data.append("")
+    for arg in top_arguments:
+        arg_dir = arg.split()[0]
+        arg_name = arg.split()[1]
+        if arg_dir == "output":
+            testb_data.append(f"    wire {arg_name};")
+
+    testb_data.append("")
+    testb_data.append("    always #2 sysclk = !sysclk;")
+    testb_data.append("")
+    testb_data.append("    initial begin")
+    testb_data.append("        $dumpfile(\"testb.vcd\");")
+
+    for anum, arg in enumerate(top_arguments):
+        arg_dir = arg.split()[0]
+        arg_name = arg.split()[1]
+
+        testb_data.append(f"        $dumpvars({anum}, {arg_name});")
+
+    testb_data.append("")
+    testb_data.append("        # 100000 $finish;")
+    testb_data.append("    end")
+    testb_data.append("")
+    testb_data.append("    rio rio1 (")
+
+    alen = len(top_arguments)
+    for anum, arg in enumerate(top_arguments):
+        arg_dir = arg.split()[0]
+        arg_name = arg.split()[1]
+        if anum == alen-1:
+            testb_data.append(f"        .{arg_name} ({arg_name})")
+        else:
+            testb_data.append(f"        .{arg_name} ({arg_name}),")
+    testb_data.append("    );")
+    testb_data.append("")
+    testb_data.append("endmodule")
+    testb_data.append("")
+
+    open(f"{project['SOURCE_PATH']}/testb.v", "w").write("\n".join(testb_data))
+
+    board = project['jdata'].get("board")
     if board == "TangNano9K":
         family = project['jdata']["family"]
         ftype = project['jdata']["type"]
@@ -355,6 +408,11 @@ def generate(project):
         makefile_data.append("")
         makefile_data.append("load: rio.fs")
         makefile_data.append("	openFPGALoader -b tangnano9k rio.fs -f")
+        makefile_data.append("")
+        makefile_data.append("testb:")
+        makefile_data.append(f"	iverilog -Wall -o testb.out testb.v {verilogs}")
+        makefile_data.append("	vvp testb.out")
+        makefile_data.append("	gtkwave testb.vcd")
         makefile_data.append("")
         open(f"{project['FIRMWARE_PATH']}/Makefile", "w").write("\n".join(makefile_data))
 

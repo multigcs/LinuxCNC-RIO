@@ -431,8 +431,14 @@ def generate(project):
         prj_data.append("</Project>")
         open(f"{project['FIRMWARE_PATH']}/rio.gprj", "w").write("\n".join(prj_data))
 
-
-
+        tcl_data = []
+        tcl_data.append("set_device -name GW1N-9C GW1N-LV9QN48C6/I5")
+        for verilog in verilogs.split():
+            tcl_data.append(f"add_file {verilog}")
+        tcl_data.append("add_file pins.cst")
+        tcl_data.append("")
+        tcl_data.append("run all")
+        open(f"{project['FIRMWARE_PATH']}/rio.tcl", "w").write("\n".join(tcl_data))
 
     elif project['jdata']["toolchain"] == "icestorm" and project['jdata']["family"] == "ecp5":
 

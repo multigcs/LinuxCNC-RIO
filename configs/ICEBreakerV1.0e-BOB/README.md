@@ -1,4 +1,4 @@
-# ICEBreakerV1.0e tests
+# ICEBreakerV1.0e with 5axis-BOB
 
 https://github.com/icebreaker-fpga/icebreaker
 

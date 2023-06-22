@@ -1,4 +1,4 @@
-# Tang Nano 9K
+# Tang Nano 9K with 5axis-BOB
 
 https://wiki.sipeed.com/hardware/en/tang/Tang-Nano-9K/Nano-9K.html
 

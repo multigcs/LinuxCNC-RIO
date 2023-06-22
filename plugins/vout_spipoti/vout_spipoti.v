@@ -11,7 +11,6 @@ module vout_spipoti
     parameter cmd = 8'd0;
     reg [7:0] state = 0;
     reg [7:0] data_pos = 0;
-    reg rclock = 0;
     reg [31:0] counter = 0;
     reg mclk = 0;
     reg next_clk = 0;

@@ -11,7 +11,6 @@ module expansion_shiftreg
        input [WIDTH-1:0] data_out
     );
     reg [7:0] data_pos = 0;
-    reg rclock;
     reg [31:0] counter;
 
     always @(posedge clk) begin

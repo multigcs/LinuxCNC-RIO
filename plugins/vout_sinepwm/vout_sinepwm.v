@@ -93,7 +93,6 @@ module vout_sine_pwm
          output dir,
          output pwm
      );
-    reg [31:0] jointCounter = 32'd0;
     reg [31:0] dtyAbs = 32'd0;
 
     reg pulse = 0;

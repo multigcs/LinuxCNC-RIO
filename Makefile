@@ -44,3 +44,8 @@ components:
 jsonlint: configs/*/*.json
 	@for file in $^ ; do jq < $${file} > /dev/null || echo "JSON ERROR: $${file}"; done
 
+verilator: plugins/*/*_*.v
+	@for file in $^ ; do verilator --lint-only $${file}; done
+
+verilatorWall: plugins/*/*_*.v
+	@for file in $^ ; do verilator --lint-only -Wall $${file}; done

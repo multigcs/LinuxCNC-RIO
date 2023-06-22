@@ -10,10 +10,8 @@ module joint_pwmdir
          output DIR,
          output PWM
      );
-    reg [31:0] jointCounter = 32'd0;
     reg [31:0] jointFreqCmdAbs = 32'd0;
     reg signed [31:0] jointFeedbackMem = 32'd0;
-    reg step = 0;
     assign jointFeedback = jointFeedbackMem;
     assign DIR = (jointFreqCmd > 0);
     reg pulse = 0;

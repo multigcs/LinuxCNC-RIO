@@ -5,6 +5,7 @@
     "family": "ice40",
     "type": "up5k",
     "package": "sg48",
+    "flashcmd": "openFPGALoader -b ice40_generic rio.bin -f",
     "clock": {
         "osc": "12000000",
         "speed": "50250000",

@@ -599,6 +599,14 @@ def generate(project):
         makefile_data.append("tinyprog: rio.bin")
         makefile_data.append("	tinyprog -p rio.bin")
         makefile_data.append("")
+
+        flashcmd = project['jdata'].get("flashcmd")
+        if flashcmd:
+            makefile_data.append("load: rio.bin")
+            makefile_data.append(f"	{flashcmd}")
+            makefile_data.append("")
+        makefile_data.append("")
+
         open(f"{project['FIRMWARE_PATH']}/Makefile", "w").write("\n".join(makefile_data))
 
 
@@ -659,6 +667,14 @@ def generate(project):
         makefile_data.append("tinyprog: rio.bin")
         makefile_data.append("	tinyprog -p rio.bin")
         makefile_data.append("")
+
+        flashcmd = project['jdata'].get("flashcmd")
+        if flashcmd:
+            makefile_data.append("load: rio.bin")
+            makefile_data.append(f"	{flashcmd}")
+            makefile_data.append("")
+        makefile_data.append("")
+
         open(f"{project['FIRMWARE_PATH']}/Makefile", "w").write("\n".join(makefile_data))
 
 

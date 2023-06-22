@@ -11,17 +11,16 @@ RealtimeIO for LinuxCNC based on an FPGA
 * using free FPGA-Toolchain
 * tested on ICE40UP5K, ICE40LP8K, ICE40HX8K, ECP5 and TangNano9K boards
 
-!! work in progress !!
 
 ## Sample-Configs:
 | Name | Description |
 | --- | --- |
-| [Colorlight5A-75E](configs/Colorlight5A-75E) | # Colorlight5A-75E tests |
-| [ICEBreakerV1.0e](configs/ICEBreakerV1.0e) | # ICEBreakerV1.0e tests |
-| [Lattice-iCE40HX8K_BOB](configs/Lattice-iCE40HX8K_BOB) | # Lattice  iCE40HX8K with custom bob |
-| [Olimex-ICE40HX8K-EVB_BOB](configs/Olimex-ICE40HX8K-EVB_BOB) | # Olimex ICE40HX8K-EVB with 5axis-BOB |
-| [TangNano9K](configs/TangNano9K) | # Tang Nano 9K with 5axis-BOB |
-| [TinyFPGA-BX_BOB](configs/TinyFPGA-BX_BOB) | # TinyFPGA-BX with 5axis-BOB |
+| [Colorlight5A-75E](configs/Colorlight5A-75E) | Colorlight5A-75E tests |
+| [ICEBreakerV1.0e](configs/ICEBreakerV1.0e) | ICEBreakerV1.0e tests |
+| [Lattice-iCE40HX8K_BOB](configs/Lattice-iCE40HX8K_BOB) | Lattice  iCE40HX8K with custom bob |
+| [Olimex-ICE40HX8K-EVB_BOB](configs/Olimex-ICE40HX8K-EVB_BOB) | Olimex ICE40HX8K-EVB with 5axis-BOB |
+| [TangNano9K](configs/TangNano9K) | Tang Nano 9K with 5axis-BOB |
+| [TinyFPGA-BX_BOB](configs/TinyFPGA-BX_BOB) | TinyFPGA-BX with 5axis-BOB |
 
 
 

@@ -8,7 +8,7 @@
     "package": "",
     "clock": {
         "speed": "27000000",
-        "pin": "52",
+        "pin": "52"
     },
     "transport": "SPI",
     "interface": [

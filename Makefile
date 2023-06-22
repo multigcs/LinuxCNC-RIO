@@ -41,3 +41,6 @@ firmware:
 components:
 	sudo halcompile --install Output/${TARGETNAME}/LinuxCNC/Components/rio.c
 
+jsonlint: configs/*/*.json
+	@for file in $^ ; do jq < $${file} > /dev/null || echo "JSON ERROR: $${file}"; done
+

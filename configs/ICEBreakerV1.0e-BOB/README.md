@@ -5,6 +5,7 @@ https://github.com/icebreaker-fpga/icebreaker
 ## flash command
 sudo openFPGALoader -b ice40_generic rio.bin -f
 
+## ICEBreaker SPI-Pins:
 
 | PMOD2 | FUNC | FPGA-Pin |Raspberry-GPIO | Raspberry-Pin |
 | --- | --- | --- | --- | --- |
@@ -39,7 +40,7 @@ sudo openFPGALoader -b ice40_generic rio.bin -f
 | P17 | DIR_B | 44 |
 
 
-## BOB-Adapter Expansion-Pins:
+## ICEBreaker Expansion-Pins:
 | PMOD2 | FUNC | FPGA-Pin | 
 | --- | --- | --- |
 | 7 | OUT | 26 |

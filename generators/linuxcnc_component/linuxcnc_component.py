@@ -138,6 +138,22 @@ def generate(project):
     rio_data.append("")
     rio_data.append("#endif")
     rio_data.append("")
+
+    rio_data.append("const char *din_names[] = {")
+    for num in range(project['dins']):
+        dname = project['dinnames'][num]
+        rio_data.append(f"    \"{dname.lower()}\"")
+    rio_data.append("};")
+    rio_data.append("")
+
+    rio_data.append("const char *dout_names[] = {")
+    for num in range(project['douts']):
+        dname = project['doutnames'][num]
+        rio_data.append(f"    \"{dname.lower()}\"")
+    rio_data.append("};")
+    rio_data.append("")
+
+
     open(f"{project['LINUXCNC_PATH']}/Components/rio.h", "w").write("\n".join(rio_data))
 
     os.system(f"cp -a generators/linuxcnc_component/*.c {project['LINUXCNC_PATH']}/Components/")

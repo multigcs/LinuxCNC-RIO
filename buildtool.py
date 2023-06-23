@@ -88,14 +88,34 @@ if double_pins:
     
 
 project["dins"] = 0
+project["dinnames"] = []
 for plugin in project["plugins"]:
-    if hasattr(project["plugins"][plugin], "dins"):
-        project["dins"] += project["plugins"][plugin].dins()
+    if plugin.startswith("din_"):
+        if hasattr(project["plugins"][plugin], "dins"):
+            project["dins"] += project["plugins"][plugin].dins()
+        if hasattr(project["plugins"][plugin], "dinnames"):
+            project["dinnames"] += project["plugins"][plugin].dinnames()
+for plugin in project["plugins"]:
+    if not plugin.startswith("din_"):
+        if hasattr(project["plugins"][plugin], "dins"):
+            project["dins"] += project["plugins"][plugin].dins()
+        if hasattr(project["plugins"][plugin], "dinnames"):
+            project["dinnames"] += project["plugins"][plugin].dinnames()
 
 project["douts"] = 0
+project["doutnames"] = []
 for plugin in project["plugins"]:
-    if hasattr(project["plugins"][plugin], "douts"):
-        project["douts"] += project["plugins"][plugin].douts()
+    if plugin.startswith("dout_"):
+        if hasattr(project["plugins"][plugin], "douts"):
+            project["douts"] += project["plugins"][plugin].douts()
+        if hasattr(project["plugins"][plugin], "doutnames"):
+            project["doutnames"] += project["plugins"][plugin].doutnames()
+for plugin in project["plugins"]:
+    if not plugin.startswith("dout_"):
+        if hasattr(project["plugins"][plugin], "douts"):
+            project["douts"] += project["plugins"][plugin].douts()
+        if hasattr(project["plugins"][plugin], "doutnames"):
+            project["doutnames"] += project["plugins"][plugin].doutnames()
 
 project["vouts"] = 0
 for plugin in project["plugins"]:

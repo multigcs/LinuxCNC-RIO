@@ -315,11 +315,9 @@ net j{num}enable 		<= joint.{num}.amp-enable-out 	=> rio.joint.{num}.enable
     cfghal_data.append("addf rio.readwrite porttest")
     cfghal_data.append("")
 
-    #for num in range(project['douts']):
-    #    cfghal_data.append(f"net dout{num} ptest.btn{num} rio.output.{num} ptest.led-out{num}")
-
     for num in range(project['dins']):
-        cfghal_data.append(f"net din{num} rio.input.{num} ptest.led-in{num}")
+        dname = project['dinnames'][num]
+        cfghal_data.append(f"net {dname.lower()} rio.input.{num} ptest.led-in{num}")
 
     for num in range(project['vouts']):
         cfghal_data.append(f"net vout{num} ptest.vout{num}-f rio.SP.{num}")
@@ -333,18 +331,23 @@ net j{num}enable 		<= joint.{num}.amp-enable-out 	=> rio.joint.{num}.enable
     cfghal_data.append("")
 
     for num in range(project['douts']):
-        #cfghal_data.append(f"net dout{num} pyvcp.btn{num} rio.output.{num} pyvcp.led-out{num}")
-        cfghal_data.append(f"net dout{num} pyvcp.btn{num} rio.output.{num}")
+        dname = project['doutnames'][num]
+        cfghal_data.append(f"net {dname.lower()} pyvcp.btn{num} rio.{dname.lower()}")
 
-    for num, din in enumerate(project['jdata']["din"]):
-        din_type = din.get("type")
-        din_joint = din.get("joint")
-        if din_type == "alarm" and din_joint:
-            pass
-        elif din_type == "home" and din_joint:
-            pass
+    for num in range(project['dins']):
+        dname = project['dinnames'][num]
+        if dname.startswith("DIN"):
+            din = project['jdata']["din"][num]
+            din_type = din.get("type")
+            din_joint = din.get("joint")
+            if din_type == "alarm" and din_joint:
+                pass
+            elif din_type == "home" and din_joint:
+                pass
+            else:
+                cfghal_data.append(f"net {dname.lower()} rio.{dname.lower()} pyvcp.led-in{num}")
         else:
-            cfghal_data.append(f"net din{num} rio.input.{num} pyvcp.led-in{num}")
+            cfghal_data.append(f"net {dname.lower()} rio.{dname.lower()} pyvcp.led-in{num}")
 
     for num in range(project['vouts']):
         cfghal_data.append(f"net vout{num} pyvcp.vout{num}-f rio.SP.{num}")
@@ -384,33 +387,6 @@ net j{num}enable 		<= joint.{num}.amp-enable-out 	=> rio.joint.{num}.enable
             cfgxml_data.append("      <font>(\"Helvetica\",12)</font>")
             cfgxml_data.append("    </label>")
     cfgxml_data.append("  </hbox>")
-    """
-    cfgxml_data.append("  <hbox>")
-    cfgxml_data.append("    <relief>RIDGE</relief>")
-    cfgxml_data.append("    <bd>2</bd>")
-    cfgxml_data.append("    <label>")
-    cfgxml_data.append(f"      <text>\"DOUT\"</text>")
-    cfgxml_data.append("      <font>(\"Helvetica\",12)</font>")
-    cfgxml_data.append("    </label>")
-    for num in range(project['douts']):
-        cfgxml_data.append("    <led>")
-        cfgxml_data.append(f"      <halpin>\"led-out{num}\"</halpin>")
-        cfgxml_data.append("      <size>25</size>")
-        cfgxml_data.append("      <on_color>\"green\"</on_color>")
-        cfgxml_data.append("      <off_color>\"red\"</off_color>")
-        cfgxml_data.append("    </led>")
-
-        if (num+1) % 8 == 0 and num+1 < project['douts']:
-            cfgxml_data.append("  </hbox>")
-            cfgxml_data.append("  <hbox>")
-            cfgxml_data.append("    <relief>RIDGE</relief>")
-            cfgxml_data.append("    <bd>2</bd>")
-            cfgxml_data.append("    <label>")
-            cfgxml_data.append(f"      <text>\"DOUT\"</text>")
-            cfgxml_data.append("      <font>(\"Helvetica\",12)</font>")
-            cfgxml_data.append("    </label>")
-    cfgxml_data.append("  </hbox>")
-    """
 
     cfgxml_data.append("  <hbox>")
     cfgxml_data.append("    <relief>RIDGE</relief>")

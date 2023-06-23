@@ -64,10 +64,11 @@ def generate(project):
         innerhtml += "</TR>"
         rxdata.append(f"jointEnable{num}")
     for num in range(project['douts']):
+        dname = project['doutnames'][num]
         innerhtml += "<TR>"
-        innerhtml += f"<TD PORT=\"DOUT{num}\">DOUT{num}</TD>"
+        innerhtml += f"<TD PORT=\"{dname}\">{dname}</TD>"
         innerhtml += "</TR>"
-        wire = f"DOUT{num}"
+        wire = f"{dname}"
         rxdata.append(wire)
         if wire in expansion_output:
             s.edge(f'rx_data:{wire}', f'expansion_shiftreg0:EXPANSION0_OUTPUT', color="red")
@@ -92,10 +93,11 @@ def generate(project):
         innerhtml += "</TR>"
         txdata.append(f"processVariable{num}")
     for num in range(project['dins']):
+        dname = project['dinnames'][num]
         innerhtml += "<TR>"
-        innerhtml += f"<TD PORT=\"DIN{num}\">DIN{num}</TD>"
+        innerhtml += f"<TD PORT=\"{dname}\">{dname}</TD>"
         innerhtml += "</TR>"
-        wire = f"DIN{num}"
+        wire = f"{dname}"
         txdata.append(wire)
         if wire in expansion_input:
             s.edge(f'expansion_shiftreg0:EXPANSION0_INPUT', f'tx_data:{wire}', color="red")
@@ -263,8 +265,9 @@ def generate(project):
         innerhtml += f"| jointEnable{num} | 1bit |\n"
         rxdata.append(f"jointEnable{num}")
     for num in range(project['douts']):
-        innerhtml += f"| DOUT{num} | 1bit |\n"
-        rxdata.append(f"DOUT{num}")
+        dname = project['doutnames'][num]
+        innerhtml += f"| {dname} | 1bit |\n"
+        rxdata.append(f"{dname}")
     innerhtml += "\n"
 
     innerhtml += f"## TX-Data:\n"
@@ -278,8 +281,9 @@ def generate(project):
         innerhtml += f"| processVariable{num} | 32bit |\n"
         txdata.append(f"processVariable{num}")
     for num in range(project['dins']):
-        innerhtml += f"| DIN{num} | 1bit |\n"
-        txdata.append(f"DIN{num}")
+        dname = project['dinnames'][num]
+        innerhtml += f"| {dname} | 1bit |\n"
+        txdata.append(f"{dname}")
     innerhtml += "\n"
 
 

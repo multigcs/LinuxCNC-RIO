@@ -231,13 +231,14 @@ def generate(project):
         for num in range(8):
             bitnum = num + (dbyte * 8)
             if bitnum < project['douts']:
+                dname = project['doutnames'][bitnum]
                 if bitnum in project['jdata']["dout"] and project['jdata']["dout"][bitnum].get("invert", False):
-                    top_data.append(f"    assign DOUT{bitnum} = ~rx_data[{pos-1}];")
+                    top_data.append(f"    assign {dname} = ~rx_data[{pos-1}];")
                 else:
-                    top_data.append(f"    assign DOUT{bitnum} = rx_data[{pos-1}];")
+                    top_data.append(f"    assign {dname} = rx_data[{pos-1}];")
             else:
                 top_data.append(
-                    f"    // assign DOUT{bitnum} = rx_data[{pos-1}];"
+                    f"    // assign DOUTx = rx_data[{pos-1}];"
                 )
             pos -= 1
 
@@ -264,10 +265,11 @@ def generate(project):
         for num in range(8):
             bitnum = num + (dbyte * 8)
             if bitnum < project['dins']:
+                dname = project['dinnames'][bitnum]
                 if bitnum in project['jdata']["din"] and project['jdata']["din"][bitnum].get("invert", False):
-                    tdins.append(f"~DIN{bitnum}")
+                    tdins.append(f"~{dname}")
                 else:
-                    tdins.append(f"DIN{bitnum}")
+                    tdins.append(f"{dname}")
             else:
                 tdins.append(f"1'd0")
 

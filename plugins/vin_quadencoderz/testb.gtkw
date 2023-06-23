@@ -1,0 +1,29 @@
+[*]
+[*] GTKWave Analyzer v3.4.0 (w)1999-2022 BSI
+[*] Fri Jun 23 10:15:00 2023
+[*]
+[dumpfile] "/usr/src/LinuxCNC-RIO/plugins/vin_quadencoderz/testb.vcd"
+[dumpfile_mtime] "Fri Jun 23 10:14:57 2023"
+[dumpfile_size] 1878
+[savefile] "/usr/src/LinuxCNC-RIO/plugins/vin_quadencoderz/testb.gtkw"
+[timestart] 0
+[size] 1920 1033
+[pos] -1 -1
+*-14.939075 71700 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1
+[sst_width] 267
+[signals_width] 169
+[sst_expanded] 1
+[sst_vpaned_height] 310
+@28
+testb.clk
+@22
+testb.pos[31:0]
+@28
+testb.quadA
+testb.quadB
+testb.quadZ
+testb.reset_in
+@29
+testb.reset_out
+[pattern_trace] 1
+[pattern_trace] 0

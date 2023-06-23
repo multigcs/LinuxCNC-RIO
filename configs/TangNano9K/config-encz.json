@@ -1,0 +1,241 @@
+{
+    "name": "TangNano9K",
+    "description": "TangNano9K with 5Axis BOB over SPI",
+    "board": "TangNano9K",
+    "type": "GW1NR-LV9QN88PC6/I5",
+    "family": "GW1N-9C",
+    "toolchain": "icestorm",
+    "package": "",
+    "clock": {
+        "speed": "27000000",
+        "pin": "52"
+    },
+    "transport": "SPI",
+    "interface": [
+        {
+            "type": "spi",
+            "pins": {
+                "MOSI": "48",
+                "MISO": "49",
+                "SCK": "31",
+                "SEL": "32"
+            }
+        }
+    ],
+    "uart": {
+        "pin_rx": "6",
+        "pin_tx": "9",
+        "baud": "115200"
+    },
+    "blink": {
+        "pin": "10"
+    },
+    "error": {
+        "invert": true,
+        "pin": "11"
+    },
+    "enable": {
+        "pin": "69"
+    },
+    "dout": [
+        {
+            "invert": true,
+            "pin": "13"
+        },
+        {
+            "invert": true,
+            "pin": "14"
+        },
+        {
+            "invert": true,
+            "pin": "15"
+        },
+        {
+            "invert": true,
+            "pin": "16"
+        },
+        {
+            "invert": true,
+            "pin": "EXPANSION0_OUTPUT[0]"
+        },
+        {
+            "invert": true,
+            "pin": "EXPANSION0_OUTPUT[1]"
+        },
+        {
+            "invert": true,
+            "pin": "EXPANSION0_OUTPUT[2]"
+        },
+        {
+            "invert": true,
+            "pin": "EXPANSION0_OUTPUT[3]"
+        },
+        {
+            "invert": true,
+            "pin": "EXPANSION0_OUTPUT[4]"
+        },
+        {
+            "invert": true,
+            "pin": "EXPANSION0_OUTPUT[5]"
+        },
+        {
+            "invert": true,
+            "pin": "EXPANSION0_OUTPUT[6]"
+        },
+        {
+            "invert": true,
+            "pin": "EXPANSION0_OUTPUT[7]"
+        }
+    ],
+    "din": [
+        {
+            "pullup": true,
+            "pin": "33"
+        },
+        {
+            "pullup": true,
+            "pin": "30"
+        },
+        {
+            "pullup": true,
+            "pin": "29"
+        },
+        {
+            "pullup": true,
+            "pin": "28"
+        },
+        {
+            "pullup": true,
+            "pin": "68"
+        },
+        {
+            "pullup": true,
+            "pin": "79"
+        },
+        {
+            "pullup": true,
+            "pin": "80"
+        },
+        {
+            "pullup": true,
+            "pin": "81"
+        },
+        {
+            "pullup": true,
+            "pin": "82"
+        },
+        {
+            "pullup": true,
+            "pin": "83"
+        },
+        {
+            "pullup": true,
+            "pin": "84"
+        },
+        {
+            "pullup": true,
+            "pin": "85"
+        },
+        {
+            "pullup": true,
+            "pin": "86"
+        },
+        {
+            "pin": "EXPANSION0_INPUT[0]"
+        },
+        {
+            "pin": "EXPANSION0_INPUT[1]"
+        },
+        {
+            "pin": "EXPANSION0_INPUT[2]"
+        },
+        {
+            "pin": "EXPANSION0_INPUT[3]"
+        },
+        {
+            "pin": "EXPANSION0_INPUT[4]"
+        },
+        {
+            "pin": "EXPANSION0_INPUT[5]"
+        },
+        {
+            "pin": "EXPANSION0_INPUT[6]"
+        },
+        {
+            "pin": "EXPANSION0_INPUT[7]"
+        }
+    ],
+    "vout": [
+        {
+            "type": "pwm",
+            "pin": "55"
+        }
+    ],
+    "vin": [
+        {
+            "type": "quadencoderz",
+            "debounce": false,
+            "pin_a": "3",
+            "pin_b": "4",
+            "pin_z": "17"
+        }
+    ],
+    "joints": [
+        {
+            "type": "stepper",
+            "cl": false,
+            "scale": 800,
+            "pins": {
+                "step": "54",
+                "dir": "53"
+            }
+        },
+        {
+            "type": "stepper",
+            "cl": false,
+            "scale": 800,
+            "pins": {
+                "step": "51",
+                "dir": "42"
+            }
+        },
+        {
+            "type": "stepper",
+            "cl": false,
+            "scale": 800,
+            "pins": {
+                "step": "41",
+                "dir": "35"
+            }
+        },
+        {
+            "type": "stepper",
+            "cl": false,
+            "pins": {
+                "step": "40",
+                "dir": "34"
+            }
+        },
+        {
+            "type": "stepper",
+            "cl": false,
+            "pins": {
+                "step": "57",
+                "dir": "56"
+            }
+        }
+    ],
+    "expansion": [
+        {
+            "type": "shiftreg",
+            "bits": 8,
+            "invert": true,
+            "pins": {
+                "out": "73",
+                "in": "72",
+                "clock": "71",
+                "load": "70"
+            }
+        }
+    ]
+}

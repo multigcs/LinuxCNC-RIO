@@ -69,3 +69,9 @@ class Plugin:
         for _num, _din in enumerate(self.jdata["din"]):
             dins_out += 1
         return dins_out
+
+    def dinnames(self):
+        dins_out = []
+        for num, _din in enumerate(self.jdata["din"]):
+            dins_out.append(f"DIN{num}")
+        return dins_out

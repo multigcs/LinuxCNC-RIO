@@ -113,7 +113,7 @@ class Plugin:
             if expansion["type"] == "shiftreg":
                 bits = int(expansion.get("bits", 8))
                 invert = expansion.get("invert", False)
-                speed = int(expansion.get("speed", 50000))
+                speed = int(expansion.get("speed", 100000))
                 divider = int(self.jdata["clock"]["speed"]) // speed // 2
                 func_out.append(f"    expansion_shiftreg #({bits}, {divider}) expansion_shiftreg{num} (")
                 func_out.append("       .clk (sysclk),")

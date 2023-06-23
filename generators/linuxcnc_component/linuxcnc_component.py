@@ -29,11 +29,17 @@ def generate(project):
     rio_data.append(f"#define VARIABLE_OUTPUTS     {project['vouts']}")
     rio_data.append(f"#define VARIABLE_INPUTS      {project['vins']}")
     rio_data.append(f"#define VARIABLES            {max(project['vins'], project['vouts'])}")
-    rio_data.append(f"#define DIGITAL_OUTPUTS      {project['douts_total']}")
+    rio_data.append(f"#define DIGITAL_OUTPUTS      {project['douts']}")
     rio_data.append(f"#define DIGITAL_OUTPUT_BYTES {project['douts_total'] // 8}")
-    rio_data.append(f"#define DIGITAL_INPUTS       {project['dins_total']}")
+    rio_data.append(f"#define DIGITAL_INPUTS       {project['dins']}")
     rio_data.append(f"#define DIGITAL_INPUT_BYTES  {project['dins_total'] // 8}")
     rio_data.append(f"#define SPIBUFSIZE           {project['data_size'] // 8}")
+    index_num = 0
+    for num in range(project['dins']):
+        dname = project['dinnames'][num]
+        if dname.endswith("INDEX_OUT"):
+            index_num += 1
+    rio_data.append(f"#define INDEX_MAX            {index_num}")
     rio_data.append("")
     rio_data.append("#define PRU_DATA            0x64617461")
     rio_data.append("#define PRU_READ            0x72656164")
@@ -58,6 +64,9 @@ def generate(project):
     rio_data.append("#define JOINT_STEPPER 0")
     rio_data.append("#define JOINT_RCSERVO 1")
     rio_data.append("#define JOINT_PWMDIR  2")
+
+    rio_data.append("#define DTYPE_IO 0")
+    rio_data.append("#define DTYPE_INDEX 1")
 
     vouts_min = []
     vouts_max = []
@@ -139,17 +148,38 @@ def generate(project):
     rio_data.append("#endif")
     rio_data.append("")
 
-    rio_data.append("const char *din_names[] = {")
+    rio_data.append("const char din_names[][32] = {")
     for num in range(project['dins']):
         dname = project['dinnames'][num]
-        rio_data.append(f"    \"{dname.lower()}\"")
+        rio_data.append(f"    \"{dname.lower()}\",")
     rio_data.append("};")
     rio_data.append("")
 
-    rio_data.append("const char *dout_names[] = {")
+    rio_data.append("const char dout_names[][32] = {")
     for num in range(project['douts']):
         dname = project['doutnames'][num]
-        rio_data.append(f"    \"{dname.lower()}\"")
+        rio_data.append(f"    \"{dname.lower()}\",")
+    rio_data.append("};")
+    rio_data.append("")
+
+    rio_data.append("const char din_types[] = {")
+    for num in range(project['dins']):
+        dname = project['dinnames'][num]
+        if dname.endswith("INDEX_OUT"):
+            rio_data.append(f"    DTYPE_INDEX,")
+        else:
+            rio_data.append(f"    DTYPE_IO,")
+
+    rio_data.append("};")
+    rio_data.append("")
+
+    rio_data.append("const char dout_types[] = {")
+    for num in range(project['douts']):
+        dname = project['doutnames'][num]
+        if dname.endswith("INDEX_ENABLE"):
+            rio_data.append(f"    DTYPE_INDEX,")
+        else:
+            rio_data.append(f"    DTYPE_IO,")
     rio_data.append("};")
     rio_data.append("")
 

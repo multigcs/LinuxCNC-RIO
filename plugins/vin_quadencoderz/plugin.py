@@ -72,22 +72,22 @@ class Plugin:
         dins_out = []
         for num, vin in enumerate(self.jdata.get("vin", [])):
             if vin.get("type") == "quadencoderz":
-                dins_out.append(f"VIN{num}_ENCODER_RESET_OUT")
+                dins_out.append(f"VIN{num}_ENCODER_INDEX_OUT")
         return dins_out
 
     def doutnames(self):
         douts_out = []
         for num, vin in enumerate(self.jdata.get("vin", [])):
             if vin.get("type") == "quadencoderz":
-                douts_out.append(f"VIN{num}_ENCODER_RESET_IN")
+                douts_out.append(f"VIN{num}_ENCODER_INDEX_ENABLE")
         return douts_out
 
     def defs(self):
         defs_out = ["    // vin_quadencoderz's"]
         for num, vin in enumerate(self.jdata.get("vin", [])):
             if vin.get("type") == "quadencoderz":
-                defs_out.append(f"    wire VIN{num}_ENCODER_RESET_OUT;")
-                defs_out.append(f"    wire VIN{num}_ENCODER_RESET_IN;")
+                defs_out.append(f"    wire VIN{num}_ENCODER_INDEX_OUT;")
+                defs_out.append(f"    wire VIN{num}_ENCODER_INDEX_ENABLE;")
         return defs_out
 
 
@@ -127,8 +127,8 @@ class Plugin:
                     func_out.append(f"        .quadA (VIN{num}_ENCODER_A),")
                     func_out.append(f"        .quadB (VIN{num}_ENCODER_B),")
                     func_out.append(f"        .quadZ (VIN{num}_ENCODER_Z),")
-                func_out.append(f"        .reset_in (VIN{num}_ENCODER_RESET_IN),")
-                func_out.append(f"        .reset_out (VIN{num}_ENCODER_RESET_OUT),")
+                func_out.append(f"        .index_enable (VIN{num}_ENCODER_INDEX_ENABLE),")
+                func_out.append(f"        .index_out (VIN{num}_ENCODER_INDEX_OUT),")
                 func_out.append(f"        .pos (processVariable{num})")
                 func_out.append("    );")
 

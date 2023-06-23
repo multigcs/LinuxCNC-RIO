@@ -332,7 +332,7 @@ net j{num}enable 		<= joint.{num}.amp-enable-out 	=> rio.joint.{num}.enable
 
     for num in range(project['douts']):
         dname = project['doutnames'][num]
-        cfghal_data.append(f"net {dname.lower()} pyvcp.btn{num} rio.output.{num}")
+        cfghal_data.append(f"net {dname.lower()} pyvcp.btn{num} rio.{dname.lower()}")
 
     for num in range(project['dins']):
         dname = project['dinnames'][num]
@@ -345,9 +345,9 @@ net j{num}enable 		<= joint.{num}.amp-enable-out 	=> rio.joint.{num}.enable
             elif din_type == "home" and din_joint:
                 pass
             else:
-                cfghal_data.append(f"net {dname.lower()} rio.input.{num} pyvcp.led-in{num}")
+                cfghal_data.append(f"net {dname.lower()} rio.{dname.lower()} pyvcp.led-in{num}")
         else:
-            cfghal_data.append(f"net {dname.lower()} rio.input.{num} pyvcp.led-in{num}")
+            cfghal_data.append(f"net {dname.lower()} rio.{dname.lower()} pyvcp.led-in{num}")
 
     for num in range(project['vouts']):
         cfghal_data.append(f"net vout{num} pyvcp.vout{num}-f rio.SP.{num}")

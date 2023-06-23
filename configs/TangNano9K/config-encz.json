@@ -11,7 +11,7 @@
         "pin": "52"
     },
     "transport": "UDP",
-    "ip": "192.168.10.111",
+    "ip": "192.168.10.71",
     "interface": [
         {
             "type": "spi",
@@ -130,18 +130,6 @@
             "pin": "83"
         },
         {
-            "pullup": true,
-            "pin": "84"
-        },
-        {
-            "pullup": true,
-            "pin": "85"
-        },
-        {
-            "pullup": true,
-            "pin": "86"
-        },
-        {
             "pin": "EXPANSION0_INPUT[0]"
         },
         {
@@ -176,9 +164,10 @@
         {
             "type": "quadencoderz",
             "debounce": false,
-            "pin_a": "3",
-            "pin_b": "4",
-            "pin_z": "17"
+            "pullup": true,
+            "pin_a": "86",
+            "pin_b": "85",
+            "pin_z": "84"
         }
     ],
     "joints": [
@@ -231,6 +220,7 @@
             "type": "shiftreg",
             "bits": 8,
             "invert": true,
+            "pullup": true,
             "pins": {
                 "out": "73",
                 "in": "72",

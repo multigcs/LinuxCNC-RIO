@@ -230,6 +230,7 @@
             "type": "shiftreg",
             "bits": 8,
             "invert": true,
+            "pullup": true,
             "pins": {
                 "out": "73",
                 "in": "72",

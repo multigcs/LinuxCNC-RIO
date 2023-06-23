@@ -237,25 +237,27 @@ addf rio.readwrite servo-thread
             cfghal_data.append(f"addf pid.{pidn}.do-pid-calcs        servo-thread")
 
     for num, din in enumerate(project['jdata']["din"]):
+        dname = project['dinnames'][num]
+
         din_type = din.get("type")
         din_joint = din.get("joint")
         invert = din.get("invert", False)
         if din_type == "alarm" and din_joint:
             if invert:
-                cfghal_data.append(f"net din{num} joint.{din_joint}.amp-fault-in <= rio.input.{num}-not")
+                cfghal_data.append(f"net din{num} joint.{din_joint}.amp-fault-in <= rio.{dname}-not")
             else:
-                cfghal_data.append(f"net din{num} joint.{din_joint}.amp-fault-in <= rio.input.{num}")
+                cfghal_data.append(f"net din{num} joint.{din_joint}.amp-fault-in <= rio.{dname}")
         elif din_type == "home" and din_joint:
             if invert:
-                cfghal_data.append(f"net home-{axis_names[int(din_joint)].lower()} <= rio.input.{num}-not")
+                cfghal_data.append(f"net home-{axis_names[int(din_joint)].lower()} <= rio.{dname}-not")
             else:
-                cfghal_data.append(f"net home-{axis_names[int(din_joint)].lower()} <= rio.input.{num}")
+                cfghal_data.append(f"net home-{axis_names[int(din_joint)].lower()} <= rio.{dname}")
             cfghal_data.append(f"net home-{axis_names[int(din_joint)].lower()} => joint.{din_joint}.home-sw-in")
         elif din_type == "probe":
             if invert:
-                cfghal_data.append(f"net toolprobe <= rio.input.{num}-not")
+                cfghal_data.append(f"net toolprobe <= rio.{dname}-not")
             else:
-                cfghal_data.append(f"net toolprobe <= rio.input.{num}")
+                cfghal_data.append(f"net toolprobe <= rio.input.{dname}")
             cfghal_data.append(f"net toolprobe => motion.probe-input")
         #neg-lim-sw-in
         #pos-lim-sw-in
@@ -317,7 +319,9 @@ net j{num}enable 		<= joint.{num}.amp-enable-out 	=> rio.joint.{num}.enable
 
     for num in range(project['dins']):
         dname = project['dinnames'][num]
-        cfghal_data.append(f"net {dname.lower()} rio.input.{num} ptest.led-in{num}")
+        if not dname.endswith("INDEX_OUT"):
+            cfghal_data.append(f"net {dname.lower()} rio.{dname} ptest.led-in{num}")
+
 
     for num in range(project['vouts']):
         cfghal_data.append(f"net vout{num} ptest.vout{num}-f rio.SP.{num}")
@@ -332,21 +336,21 @@ net j{num}enable 		<= joint.{num}.amp-enable-out 	=> rio.joint.{num}.enable
 
     for num in range(project['douts']):
         dname = project['doutnames'][num]
-        cfghal_data.append(f"net {dname.lower()} pyvcp.btn{num} rio.{dname.lower()}")
+        if not dname.endswith("INDEX_ENABLE"):
+            cfghal_data.append(f"net {dname.lower()} pyvcp.btn{num} rio.{dname.lower()}")
 
     for num in range(project['dins']):
         dname = project['dinnames'][num]
+        din = {}
         if dname.startswith("DIN"):
             din = project['jdata']["din"][num]
-            din_type = din.get("type")
-            din_joint = din.get("joint")
-            if din_type == "alarm" and din_joint:
-                pass
-            elif din_type == "home" and din_joint:
-                pass
-            else:
-                cfghal_data.append(f"net {dname.lower()} rio.{dname.lower()} pyvcp.led-in{num}")
-        else:
+        din_type = din.get("type")
+        din_joint = din.get("joint")
+        if din_type == "alarm" and din_joint:
+            pass
+        elif din_type == "home" and din_joint:
+            pass
+        elif not dname.endswith("INDEX_OUT"):
             cfghal_data.append(f"net {dname.lower()} rio.{dname.lower()} pyvcp.led-in{num}")
 
     for num in range(project['vouts']):
@@ -373,6 +377,9 @@ net j{num}enable 		<= joint.{num}.amp-enable-out 	=> rio.joint.{num}.enable
     cfgxml_data.append("    </label>")
 
     for num in range(project['douts']):
+        dname = project['doutnames'][num]
+        if dname.endswith("INDEX_ENABLE"):
+            continue
         cfgxml_data.append("    <checkbutton>")
         cfgxml_data.append(f"      <halpin>\"btn{num}\"</halpin>")
         cfgxml_data.append(f"      <text>\"{num}\"</text>")
@@ -395,7 +402,15 @@ net j{num}enable 		<= joint.{num}.amp-enable-out 	=> rio.joint.{num}.enable
     cfgxml_data.append(f"      <text>\"DIN\"</text>")
     cfgxml_data.append("      <font>(\"Helvetica\",12)</font>")
     cfgxml_data.append("    </label>")
-    for num, din in enumerate(project['jdata']["din"]):
+
+    for num in range(project['dins']):
+        dname = project['dinnames'][num]
+        if dname.endswith("INDEX_OUT"):
+            continue
+        din = {}
+        if dname.startswith("DIN"):
+            din = project['jdata']["din"][num]
+
         din_type = din.get("type")
         din_joint = din.get("joint")
         if din_type == "alarm" and din_joint:
@@ -419,8 +434,6 @@ net j{num}enable 		<= joint.{num}.amp-enable-out 	=> rio.joint.{num}.enable
                 cfgxml_data.append(f"      <text>\"DIN\"</text>")
                 cfgxml_data.append("      <font>(\"Helvetica\",12)</font>")
                 cfgxml_data.append("    </label>")
-
-
 
     cfgxml_data.append("  </hbox>")
 
@@ -454,7 +467,7 @@ net j{num}enable 		<= joint.{num}.amp-enable-out 	=> rio.joint.{num}.enable
 
     for num, vin in enumerate(project['jdata']["vin"]):
 
-        if True:
+        if False:
             cfgxml_data.append("<meter>")
             cfgxml_data.append(f"    <halpin>\"vin{num}\"</halpin>")
             cfgxml_data.append(f"    <text>\"VIN{num}\"</text>")
@@ -467,7 +480,7 @@ net j{num}enable 		<= joint.{num}.amp-enable-out 	=> rio.joint.{num}.enable
             cfgxml_data.append("    <region1>(-32800,0,\"red\")</region1>")
             cfgxml_data.append("    <region2>(0,32800,\"green\")</region2>")
             cfgxml_data.append("</meter>")
-        elif True:
+        elif False:
             cfgxml_data.append("<bar>")
             cfgxml_data.append(f"    <halpin>\"vin{num}\"</halpin>")
             cfgxml_data.append("    <min_>-32800</min_>")

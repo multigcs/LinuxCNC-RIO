@@ -98,6 +98,7 @@ typedef struct {
     hal_float_t 	*processVariable[VARIABLE_INPUTS];
     hal_bit_t   	*outputs[DIGITAL_OUTPUT_BYTES * 8];
     hal_bit_t   	*inputs[DIGITAL_INPUT_BYTES * 8 * 2]; // for not pins * 2
+    hal_bit_t   	*index_enable[INDEX_MAX];
 } data_t;
 
 static data_t *data;
@@ -107,6 +108,7 @@ static rxData_t rxData;
 
 
 /* other globals */
+float index_enable_in[INDEX_MAX] = {0.0};
 static int 			comp_id;				// component ID
 static const char 	*modname = MODNAME;
 static const char 	*prefix = PREFIX;
@@ -384,24 +386,39 @@ int rtapi_app_main(void)
         *(data->processVariable[n]) = 0.0;
     }
 
+    int index_num = 0;
     for (bn = 0; bn < DIGITAL_OUTPUT_BYTES; bn++) {
         for (n = 0; n < 8; n++) {
-            retval = hal_pin_bit_newf(HAL_IN, &(data->outputs[bn * 8 + n]), comp_id, "%s.%s", prefix, dout_names[bn * 8 + n]);
-            if (retval != 0) goto error;
-            *(data->outputs[bn * 8 + n]) = 0;
+            if (bn * 8 + n < DIGITAL_OUTPUTS) {
+                if (dout_types[bn * 8 + n] != DTYPE_INDEX) {
+                    retval = hal_pin_bit_newf(HAL_IN, &(data->outputs[bn * 8 + n]), comp_id, "%s.%s", prefix, dout_names[bn * 8 + n]);
+                    if (retval != 0) goto error;
+                    *(data->outputs[bn * 8 + n]) = 0;
+                } else {
+                    retval = hal_pin_bit_newf(HAL_IO, &(data->index_enable[index_num]), comp_id, "%s.%s", prefix, dout_names[bn * 8 + n]);
+                    if (retval != 0) goto error;
+                    index_num++;
+                }
+            }
         }
     }
 
     for (bn = 0; bn < DIGITAL_INPUT_BYTES; bn++) {
         for (n = 0; n < 8; n++) {
-            retval = hal_pin_bit_newf(HAL_OUT, &(data->inputs[(bn * 8 + n) * 2]), comp_id, "%s.%s", prefix, din_names[bn * 8 + n]);
-            if (retval != 0) goto error;
-            *(data->inputs[(bn * 8 + n) * 2]) = 0;
-            retval = hal_pin_bit_newf(HAL_OUT, &(data->inputs[(bn * 8 + n) * 2 + 1]), comp_id, "%s.%s-not", prefix, din_names[bn * 8 + n]);
-            if (retval != 0) goto error;
-            *(data->inputs[(bn * 8 + n) * 2 + 1]) = 1;
+            if (bn * 8 + n < DIGITAL_INPUTS) {
+                if (din_types[bn * 8 + n] != DTYPE_INDEX) {
+                    retval = hal_pin_bit_newf(HAL_OUT, &(data->inputs[(bn * 8 + n) * 2]), comp_id, "%s.%s", prefix, din_names[bn * 8 + n]);
+                    if (retval != 0) goto error;
+                    *(data->inputs[(bn * 8 + n) * 2]) = 0;
+                    retval = hal_pin_bit_newf(HAL_OUT, &(data->inputs[(bn * 8 + n) * 2 + 1]), comp_id, "%s.%s-not", prefix, din_names[bn * 8 + n]);
+                    if (retval != 0) goto error;
+                    *(data->inputs[(bn * 8 + n) * 2 + 1]) = 1;
+                }
+            }
         }
     }
+
+
 
 error:
     if (retval < 0) {
@@ -869,11 +886,21 @@ void rio_readwrite()
 
             // Outputs
             int byte_out = 0;
+            int index_num = 0;
             for (byte_out = 0; byte_out < DIGITAL_OUTPUT_BYTES; byte_out++) {
                 txData.outputs[byte_out] = 0;
                 for (i = 0; i < 8; i++) {
-                    if (*(data->outputs[byte_out * 8 + i]) == 1) {
-                        txData.outputs[byte_out] |= (1 << (7-i));		// output is high
+                    if (byte_out * 8 + i < DIGITAL_OUTPUTS) {
+                        if (dout_types[byte_out * 8 + i] != DTYPE_INDEX) {
+                            if (*(data->outputs[byte_out * 8 + i]) == 1) {
+                                txData.outputs[byte_out] |= (1 << (7-i));		// output is high
+                            }
+                        } else {
+                            if (*(data->index_enable[index_num]) == 1) {
+                                txData.outputs[byte_out] |= (1 << (7-i));
+                            }
+                            index_num++;
+                        }
                     }
                 }
             }
@@ -909,17 +936,36 @@ void rio_readwrite()
                 }
 
                 // Inputs
+                int index_num = 0;
                 for (bi = 0; bi < DIGITAL_INPUT_BYTES; bi++) {
                     for (i = 0; i < 8; i++) {
-                        if ((rxData.inputs[bi] & (1 << (7-i))) != 0) {
-                            *(data->inputs[(bi * 8 + i) * 2]) = 1; 		// input is high
-                            *(data->inputs[(bi * 8 + i) * 2 + 1]) = 0;  // not
-                        } else {
-                            *(data->inputs[(bi * 8 + i) * 2]) = 0;			// input is low
-                            *(data->inputs[(bi * 8 + i) * 2 + 1]) = 1;  // not
+                        if (bi * 8 + i < DIGITAL_INPUTS) {
+                            if (din_types[bi * 8 + i] != DTYPE_INDEX) {
+                                if ((rxData.inputs[bi] & (1 << (7-i))) != 0) {
+                                    *(data->inputs[(bi * 8 + i) * 2]) = 1; 		// input is high
+                                    *(data->inputs[(bi * 8 + i) * 2 + 1]) = 0;  // not
+                                } else {
+                                    *(data->inputs[(bi * 8 + i) * 2]) = 0;			// input is low
+                                    *(data->inputs[(bi * 8 + i) * 2 + 1]) = 1;  // not
+                                }
+                            } else {
+                                float ibit = 0;
+                                if ((rxData.inputs[bi] & (1 << (7-i))) != 0) {
+                                    ibit = 1;
+                                }
+                                if (ibit != index_enable_in[index_num]) {
+                                    index_enable_in[index_num] = ibit;
+                                    if (index_enable_in[index_num] == 0) {
+                                        *(data->index_enable[index_num]) = 0;
+                                    }
+                                }
+                                index_num++;
+                            }
                         }
                     }
                 }
+
+
                 break;
 
             case PRU_ESTOP:

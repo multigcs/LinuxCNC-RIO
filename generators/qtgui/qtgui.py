@@ -306,7 +306,7 @@ class WinForm(QWidget):
                 for dn in range(8):
                     key = f"doc{dbyte}{dn}"
                     if self.widgets[key].isChecked():
-                        douts[dbyte] |= (1<<(dn))
+                        douts[dbyte] |= (1<<(7-dn))
                     if dbyte * 8 + dn == DOUTS - 1:
                         break
 

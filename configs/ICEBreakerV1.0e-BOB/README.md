@@ -2,6 +2,7 @@
 
 https://github.com/icebreaker-fpga/icebreaker
 
+
 ## flash command
 sudo openFPGALoader -b ice40_generic rio.bin -f
 
@@ -50,3 +51,5 @@ sudo openFPGALoader -b ice40_generic rio.bin -f
 | 11 | 3.3V | |
 | 12 | GND | |
 
+
+![bob5x](https://raw.githubusercontent.com/multigcs/LinuxCNC-RIO/main/configs/ICEBreakerV1.0e-BOB/icebreaker-bob1.jpg)

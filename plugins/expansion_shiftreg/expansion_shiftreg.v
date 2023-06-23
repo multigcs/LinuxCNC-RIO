@@ -3,36 +3,47 @@ module expansion_shiftreg
     #(parameter WIDTH = 8, SPEED = 100000)
     (
        input clk,
-       output reg SHIFT_OUT,
+       output reg SHIFT_OUT = 0,
        input SHIFT_IN,
-       output reg SHIFT_CLK,
-       output reg SHIFT_LOAD,
-       output reg [WIDTH-1:0] data_in,
+       output reg SHIFT_CLK = 0,
+       output reg SHIFT_LOAD = 0,
+       output reg [WIDTH-1:0] data_in = 0,
        input [WIDTH-1:0] data_out
     );
     reg [7:0] data_pos = 0;
-    reg [31:0] counter;
+    reg [31:0] counter = 0;
+    reg [8:0] state = 0;
+    reg delay = 0;
 
     always @(posedge clk) begin
         if (counter == 0) begin
             counter <= SPEED;
-            SHIFT_CLK <= ~SHIFT_CLK;
+
+            if (state == 0) begin
+                if (delay == 1) begin
+                    delay <= 0;
+                    SHIFT_CLK <= 1;
+                end else if (SHIFT_CLK == 1) begin
+                    SHIFT_CLK <= 0;
+                    data_in[WIDTH - 1 - data_pos] = SHIFT_IN;
+                    data_pos <= data_pos + 1;
+                end else if (data_pos < WIDTH) begin
+                    SHIFT_OUT = data_out[WIDTH - 1 - data_pos];
+                    delay <= 1;
+                end else begin
+                    SHIFT_LOAD <= 1'd1;
+                    state <= 1;
+                end
+            end else if (state == 1) begin
+                // output
+                SHIFT_LOAD <= 1'd0;
+                SHIFT_CLK <= 1'd0;
+                data_pos <= 8'd0;
+                state <= 0;
+            end
+
         end else begin
             counter <= counter - 1;
-        end
-    end
-
-    always @(posedge SHIFT_CLK) begin
-        if (data_pos < 8) begin
-            data_in[WIDTH - 1 - data_pos] = SHIFT_IN;
-            SHIFT_OUT = data_out[WIDTH - 1 - data_pos];
-            data_pos = data_pos + 8'd1;
-        end else if (data_pos == 8) begin
-            SHIFT_LOAD = 1'd0;
-            data_pos = data_pos + 8'd1;
-        end else begin
-            SHIFT_LOAD = 1'd1;
-            data_pos = 8'd0;
         end
     end
 endmodule

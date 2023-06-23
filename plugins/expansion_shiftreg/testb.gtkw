@@ -1,0 +1,28 @@
+[*]
+[*] GTKWave Analyzer v3.4.0 (w)1999-2022 BSI
+[*] Fri Jun 23 08:52:35 2023
+[*]
+[dumpfile] "/usr/src/LinuxCNC-RIO/plugins/expansion_shiftreg/testb.vcd"
+[dumpfile_mtime] "Fri Jun 23 08:52:30 2023"
+[dumpfile_size] 3579
+[savefile] "/usr/src/LinuxCNC-RIO/plugins/expansion_shiftreg/testb.gtkw"
+[timestart] 0
+[size] 1920 1033
+[pos] -1 -1
+*-16.339901 46000 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1
+[sst_width] 267
+[signals_width] 161
+[sst_expanded] 1
+[sst_vpaned_height] 310
+@28
+testb.SHIFT_CLK
+testb.SHIFT_IN
+testb.SHIFT_LOAD
+testb.SHIFT_OUT
+testb.clk
+@22
+testb.data_in[7:0]
+@23
+testb.data_out[7:0]
+[pattern_trace] 1
+[pattern_trace] 0

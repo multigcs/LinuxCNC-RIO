@@ -16,16 +16,18 @@ project["jdata"] = json.loads(data)
 project["plugins"] = {}
 for path in glob.glob("plugins/*"):
     plugin = path.split("/")[1]
-    vplugin = importlib.import_module(".plugin", f"plugins.{plugin}")
-    project["plugins"][plugin] = vplugin.Plugin(project["jdata"])
+    if os.path.isfile(f"plugins/{plugin}/plugin.py"):
+        vplugin = importlib.import_module(".plugin", f"plugins.{plugin}")
+        project["plugins"][plugin] = vplugin.Plugin(project["jdata"])
 
 
 generators = {}
 for path in glob.glob("generators/*"):
     generator = path.split("/")[1]
-    generators[generator] = importlib.import_module(
-        f".{generator}", f"generators.{generator}"
-    )
+    if os.path.isfile(f"generators/{generator}/{generator}.py"):
+        generators[generator] = importlib.import_module(
+            f".{generator}", f"generators.{generator}"
+        )
 
 
 project["verilog_files"] = []

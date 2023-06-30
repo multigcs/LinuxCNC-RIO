@@ -17,6 +17,11 @@ git clone https://github.com/multigcs/LinuxCNC-RIO
 cd LinuxCNC-RIO
 ```
 
+### to update the source later, run in the LinuxCNC-RIO folder:
+```
+git pull
+```
+
 ## generate the Project-Files
 
 to generate/update all needed files in Output/TangNano9K/:

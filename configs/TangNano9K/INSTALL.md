@@ -61,7 +61,7 @@ sudo halcompile --install  Output/TangNano9K/LinuxCNC/Components/rio.c
 
 there are also a sample configuration in Output/TangNano9K/LinuxCNC/ConfigSamples/rio/
 
-you can copy this folder to your LinuxCNC machine and start it (or leave it there if you already on this maschine):
+you can copy this folder to your LinuxCNC machine and start it (or leave it there if you already on this machine):
 
 ```
 linuxcnc Output/TangNano9K/LinuxCNC/ConfigSamples/rio/rio.ini

@@ -17,7 +17,7 @@ git clone https://github.com/multigcs/LinuxCNC-RIO
 cd LinuxCNC-RIO
 ```
 
-### to update the source later, run in the LinuxCNC-RIO folder:
+### to update the source later, run the following command in your LinuxCNC-RIO folder:
 ```
 git pull
 ```

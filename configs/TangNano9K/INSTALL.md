@@ -7,7 +7,7 @@ you need the following software to build and run this project:
 * git: https://git-scm.com/book/de/v2/Erste-Schritte-Git-installieren
 * python3: https://www.python.org/downloads/ (allready installed on most systems)
 * make: https://learn.microsoft.com/en-us/windows/package-manager/winget/ (allready installed on most systems)
-* oss-cad-suite-build: https://github.com/YosysHQ/oss-cad-suite-build (NOTE: i tested version: 2023-06-11 / some newer version have a bug)
+* oss-cad-suite-build: https://github.com/YosysHQ/oss-cad-suite-build (NOTE: tested with version: 2023-06-11 / some newer version have a bug)
 * PlatformIO Core: https://platformio.org/install (optional for the Ethernet-Board)
 
 

@@ -7,7 +7,7 @@ you need the following software to build and run this project:
 * git: https://git-scm.com/book/de/v2/Erste-Schritte-Git-installieren
 * python3: https://www.python.org/downloads/ (allready installed on most systems)
 * make: https://learn.microsoft.com/en-us/windows/package-manager/winget/ (allready installed on most systems)
-* oss-cad-suite-build: https://github.com/YosysHQ/oss-cad-suite-build
+* oss-cad-suite-build: https://github.com/YosysHQ/oss-cad-suite-build (NOTE: i tested version: 2023-06-11 / some newer version have a bug)
 * PlatformIO Core: https://platformio.org/install (optional for the Ethernet-Board)
 
 
@@ -34,10 +34,19 @@ in this case, please first flash the ethernet-board, check the IP and edit the j
 
 connect the TangNano9K board to your USB-Port and run:
 ```
+(
 cd Output/TangNano9K/Firmware
-make all load
+make all
+sudo make load
+)
 ```
 this will need some time
+NOTE: the ..oss-cad-suite/bin/ must in you PATH enviroment variable:
+```
+export PATH=$PATH:~/Downloads/oss-cad-suite/bin/
+```
+
+
 
 ## compile and install the hal-component
 
@@ -45,14 +54,14 @@ please copy the folder Output/TangNano9K/LinuxCNC/Components to your target syst
 then you can compile and install the component:
 
 ```
-halcompile --install  Output/TangNano9K/LinuxCNC/Components/rio.c
+sudo halcompile --install  Output/TangNano9K/LinuxCNC/Components/rio.c
 ```
 
 ## sample config for LinuxCNC
 
 there are also a sample configuration in Output/TangNano9K/LinuxCNC/ConfigSamples/rio/
 
-you can copy this folder to your LinuxCNC machine and start it:
+you can copy this folder to your LinuxCNC machine and start it (or leave it there if you already on this maschine):
 
 ```
 linuxcnc Output/TangNano9K/LinuxCNC/ConfigSamples/rio/rio.ini

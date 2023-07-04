@@ -238,9 +238,8 @@ addf rio.readwrite servo-thread
 
     for num, din in enumerate(project['jdata']["din"]):
         dname = project['dinnames'][num]
-
         din_type = din.get("type")
-        din_joint = din.get("joint")
+        din_joint = din.get("joint", str(num))
         invert = din.get("invert", False)
         if din_type == "alarm" and din_joint:
             if invert:
@@ -345,7 +344,7 @@ net j{num}enable 		<= joint.{num}.amp-enable-out 	=> rio.joint.{num}.enable
         if dname.startswith("DIN"):
             din = project['jdata']["din"][num]
         din_type = din.get("type")
-        din_joint = din.get("joint")
+        din_joint = din.get("joint", str(num))
         if din_type == "alarm" and din_joint:
             pass
         elif din_type == "home" and din_joint:
@@ -412,7 +411,7 @@ net j{num}enable 		<= joint.{num}.amp-enable-out 	=> rio.joint.{num}.enable
             din = project['jdata']["din"][num]
 
         din_type = din.get("type")
-        din_joint = din.get("joint")
+        din_joint = din.get("joint", str(num))
         if din_type == "alarm" and din_joint:
             pass
         elif din_type == "home" and din_joint:

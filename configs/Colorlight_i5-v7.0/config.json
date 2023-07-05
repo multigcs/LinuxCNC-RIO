@@ -1,0 +1,68 @@
+{
+    "name": "Colorlight_i5-v7.0",
+    "description": "only for testing",
+    "toolchain": "icestorm",
+    "family": "ecp5",
+    "type": "25k",
+    "package": "CABGA381",
+    "transport": "SPI",
+    "clock": {
+        "osc": "25000000",
+        "speed": "100000000",
+        "pin": "P3"
+    },
+    "interface": [
+        {
+            "type": "spi",
+            "pins": {
+                "MOSI": "E18",
+                "MISO": "E17",
+                "SCK": "F16",
+                "SEL": "E16"
+            }
+        }
+    ],
+    "blink": {
+        "pin": "U16"
+    },
+    "din": [
+        {
+            "invert": true,
+            "pin": "R1"
+        }
+    ],
+    "vin": [
+        {
+            "type": "frequency",
+            "pin": "T1"
+        }
+    ],
+    "dout": [
+        {
+            "invert": true,
+            "pin": "U1"
+        }
+    ],
+    "vout": [
+        {
+            "type": "udpoti",
+            "resolution": "100",
+            "speed": "100000",
+            "pins": {
+                "updown": "Y2",
+                "incr": "W1"
+            }
+        }
+    ],
+    "joints": [
+        {
+            "comment": "J9.1",
+            "type": "stepper",
+            "scale": "800",
+            "pins": {
+                "dir": "M1",
+                "step": "N2"
+            }
+        }
+    ]
+}

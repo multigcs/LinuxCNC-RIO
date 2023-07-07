@@ -4,6 +4,9 @@ https://wiki.sipeed.com/hardware/en/tang/Tang-Nano-9K/Nano-9K.html
 
 Install: see INSTALL.md
 
+## Known-Issues:
+* openFPGAloader on the LinuxCNC Raspberry4 image will not work, you have to use another host to flash the FPGA at the moment
+
 
 ## BOB-Adapter SPI-Pins:
 

@@ -1,0 +1,313 @@
+{
+    "name": "Tangoboard",
+    "description": "Tangoboard with TangNano9K over SPI",
+    "board": "TangNano9K",
+    "type": "GW1NR-LV9QN88PC6/I5",
+    "family": "GW1N-9C",
+    "toolchain": "icestorm",
+    "package": "",
+    "clock": {
+        "speed": "27000000",
+        "pin": "52"
+    },
+    "transport": "SPI",
+    "interface": [
+        {
+            "type": "spi",
+            "pins": {
+                "MOSI": "48",
+                "MISO": "49",
+                "SCK": "31",
+                "SEL": "32"
+            }
+        }
+    ],
+    "uart": {
+        "pin_rx": "6",
+        "pin_tx": "9",
+        "baud": "115200"
+    },
+    "blink": {
+        "pin": "10"
+    },
+    "error": {
+        "invert": true,
+        "pin": "11"
+    },
+    "enable": {
+        "pin": "73"
+    },
+    "dout": [
+        {
+            "invert": true,
+            "pin": "38"
+        },
+        {
+            "invert": true,
+            "pin": "37"
+        },
+        {
+            "invert": true,
+            "pin": "36"
+        },
+        {
+            "invert": true,
+            "pin": "39"
+        },
+        {
+            "invert": true,
+            "pin": "25"
+        },
+        {
+            "invert": true,
+            "pin": "EXPANSION0_OUTPUT[0]"
+        },
+        {
+            "invert": true,
+            "pin": "EXPANSION0_OUTPUT[1]"
+        },
+        {
+            "invert": true,
+            "pin": "EXPANSION0_OUTPUT[2]"
+        },
+        {
+            "invert": true,
+            "pin": "EXPANSION0_OUTPUT[3]"
+        },
+        {
+            "invert": true,
+            "pin": "EXPANSION0_OUTPUT[4]"
+        },
+        {
+            "invert": true,
+            "pin": "EXPANSION0_OUTPUT[5]"
+        },
+        {
+            "invert": true,
+            "pin": "EXPANSION0_OUTPUT[6]"
+        },
+        {
+            "invert": true,
+            "pin": "EXPANSION0_OUTPUT[7]"
+        },
+        {
+            "invert": true,
+            "pin": "EXPANSION0_OUTPUT[8]"
+        },
+        {
+            "invert": true,
+            "pin": "EXPANSION0_OUTPUT[9]"
+        },
+        {
+            "invert": true,
+            "pin": "EXPANSION0_OUTPUT[10]"
+        },
+        {
+            "invert": true,
+            "pin": "EXPANSION0_OUTPUT[11]"
+        },
+        {
+            "invert": true,
+            "pin": "EXPANSION0_OUTPUT[12]"
+        },
+        {
+            "invert": true,
+            "pin": "EXPANSION0_OUTPUT[13]"
+        },
+        {
+            "invert": true,
+            "pin": "EXPANSION0_OUTPUT[14]"
+        },
+        {
+            "invert": true,
+            "pin": "EXPANSION0_OUTPUT[15]"
+        }
+    ],
+    "din": [
+        {
+            "pullup": true,
+            "pin": "26"
+        },
+        {
+            "pullup": true,
+            "pin": "27"
+        },
+        {
+            "pullup": true,
+            "pin": "28"
+        },
+        {
+            "pullup": true,
+            "pin": "29"
+        },
+        {
+            "pullup": true,
+            "pin": "53"
+        },
+        {
+            "pullup": true,
+            "pin": "54"
+        },
+        {
+            "pullup": true,
+            "pin": "55"
+        },
+        {
+            "pullup": true,
+            "pin": "56"
+        },
+        {
+            "pullup": true,
+            "pin": "EXPANSION0_INPUT[0]"
+        },
+        {
+            "pullup": true,
+            "pin": "EXPANSION0_INPUT[1]"
+        },
+        {
+            "pullup": true,
+            "pin": "EXPANSION0_INPUT[2]"
+        },
+        {
+            "pullup": true,
+            "pin": "EXPANSION0_INPUT[3]"
+        },
+        {
+            "pullup": true,
+            "pin": "EXPANSION0_INPUT[4]"
+        },
+        {
+            "pullup": true,
+            "pin": "EXPANSION0_INPUT[5]"
+        },
+        {
+            "pullup": true,
+            "pin": "EXPANSION0_INPUT[6]"
+        },
+        {
+            "pullup": true,
+            "pin": "EXPANSION0_INPUT[7]"
+        },
+        {
+            "pullup": true,
+            "pin": "EXPANSION0_INPUT[8]"
+        },
+        {
+            "pullup": true,
+            "pin": "EXPANSION0_INPUT[9]"
+        },
+        {
+            "pullup": true,
+            "pin": "EXPANSION0_INPUT[10]"
+        },
+        {
+            "pullup": true,
+            "pin": "EXPANSION0_INPUT[11]"
+        },
+        {
+            "pullup": true,
+            "pin": "EXPANSION0_INPUT[12]"
+        },
+        {
+            "pullup": true,
+            "pin": "EXPANSION0_INPUT[13]"
+        },
+        {
+            "pullup": true,
+            "pin": "EXPANSION0_INPUT[14]"
+        },
+        {
+            "pullup": true,
+            "pin": "EXPANSION0_INPUT[15]"
+        }
+    ],
+    "vout": [
+        {
+            "type": "pwm",
+            "pin": "76"
+        },
+        {
+            "type": "pwm",
+            "pin": "75"
+        },
+        {
+            "type": "pwm",
+            "pin": "74"
+        }
+    ],
+    "vin": [
+        {
+            "type": "quadencoder",
+            "pullup": true,
+            "pin_a": "68",
+            "pin_b": "69"
+        }
+    ],
+    "joints": [
+        {
+            "type": "stepper",
+            "cl": false,
+            "scale": 800,
+            "pins": {
+                "step": "63",
+                "dir": "86"
+            }
+        },
+        {
+            "type": "stepper",
+            "cl": false,
+            "scale": 800,
+            "pins": {
+                "step": "85",
+                "dir": "84"
+            }
+        },
+        {
+            "type": "stepper",
+            "cl": false,
+            "scale": 800,
+            "pins": {
+                "step": "83",
+                "dir": "82"
+            }
+        },
+        {
+            "type": "stepper",
+            "cl": false,
+            "pins": {
+                "step": "81",
+                "dir": "80"
+            }
+        },
+        {
+            "type": "stepper",
+            "cl": false,
+            "pins": {
+                "step": "79",
+                "dir": "77"
+            }
+        }
+    ],
+    "expansion": [
+        {
+            "type": "shiftreg",
+            "bits": 16,
+            "pullup": true,
+            "_pins": {
+                "out": "72",
+                "in": "71",
+                "clock": "70",
+                "load": "57"
+            },
+            "mapping": {
+                "inputs": [11, 10, 12, 13, 14, 15, 9, 8, 3, 2, 4, 5, 6, 7, 1, 0]
+            },
+            "pins": {
+                "out": "42",
+                "in": "35",
+                "clock": "34",
+                "load": "30"
+            }
+        }
+    ]
+}

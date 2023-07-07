@@ -411,7 +411,7 @@ def generate(project):
         makefile_data.append("	openFPGALoader -b tangnano9k rio.fs -f")
         makefile_data.append("")
         makefile_data.append("")
-        makefile_data.append("clean")
+        makefile_data.append("clean:")
         makefile_data.append("	rm -rf rio.fs rio.json rio_pnr.json")
         makefile_data.append("")
         makefile_data.append("testb:")

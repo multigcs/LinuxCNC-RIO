@@ -115,9 +115,22 @@ class Plugin:
                 invert = expansion.get("invert", False)
                 speed = int(expansion.get("speed", 100000))
                 divider = int(self.jdata["clock"]["speed"]) // speed // 2
+
+                func_out.append(f"    wire [{bits-1}:0] EXPANSION{num}_INPUT_RAW;")
+                mapping_inputs = expansion.get("mapping", {}).get("inputs")
+                if mapping_inputs:
+                    mappings = []
+                    for index in reversed(mapping_inputs):
+                        mappings.append(f"EXPANSION{num}_INPUT_RAW[{index}]")
+                    func_out.append(f"    assign EXPANSION{num}_INPUT = {{{', '.join(mappings)}}};")
+                else:
+                    func_out.append(f"    assign EXPANSION{num}_INPUT = EXPANSION{num}_INPUT_RAW;")
+
+                func_out.append(f"    wire [{bits-1}:0] EXPANSION{num}_OUTPUT_RAW;")
+                func_out.append(f"    assign EXPANSION{num}_OUTPUT_RAW = EXPANSION{num}_OUTPUT;")
+
                 func_out.append(f"    expansion_shiftreg #({bits}, {divider}) expansion_shiftreg{num} (")
                 func_out.append("       .clk (sysclk),")
-
                 if invert:
                     func_out.append(f"       .SHIFT_OUT (EXPANSION{num}_SHIFTREG_OUT_INV),")
                     func_out.append(f"       .SHIFT_IN (EXPANSION{num}_SHIFTREG_IN_INV),")
@@ -129,8 +142,8 @@ class Plugin:
                     func_out.append(f"       .SHIFT_CLK (EXPANSION{num}_SHIFTREG_CLOCK),")
                     func_out.append(f"       .SHIFT_LOAD (EXPANSION{num}_SHIFTREG_LOAD),")
 
-                func_out.append(f"       .data_in (EXPANSION{num}_INPUT),")
-                func_out.append(f"       .data_out (EXPANSION{num}_OUTPUT)")
+                func_out.append(f"       .data_in (EXPANSION{num}_INPUT_RAW),")
+                func_out.append(f"       .data_out (EXPANSION{num}_OUTPUT_RAW)")
                 func_out.append("    );")
         return func_out
 

@@ -175,7 +175,12 @@ def generate(project):
 
     if "enable" in project['jdata']:
         jointEnablesStr = " || ".join(jointEnables)
-        top_data.append(f"    assign ENA = ({jointEnablesStr}) && ~ERROR;")
+        if project['jdata']["enable"].get("invert", False):
+            top_data.append(f"    wire ENA_INV;")
+            top_data.append(f"    assign ENA = ~ENA_INV;")
+            top_data.append(f"    assign ENA_INV = ({jointEnablesStr}) && ~ERROR;")
+        else:
+            top_data.append(f"    assign ENA = ({jointEnablesStr}) && ~ERROR;")
         top_data.append("")
 
 

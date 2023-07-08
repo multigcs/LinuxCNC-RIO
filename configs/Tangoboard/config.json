@@ -245,10 +245,8 @@
     ],
     "vin": [
         {
-            "_type": "quadencoder",
-            "type": "frequency",
+            "type": "quadencoder",
             "pullup": true,
-            "pin": "68",
             "pin_a": "68",
             "pin_b": "69"
         }

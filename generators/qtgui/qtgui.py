@@ -46,6 +46,10 @@ def generate(project):
     spitest_data.append(f"DOUTS = {project['douts']}")
     spitest_data.append(f"DINS = {project['dins']}")
     spitest_data.append("")
+    spitest_data.append(f"DIN_NAMES = {project['dinnames']}")
+    spitest_data.append(f"DOUT_NAMES = {project['doutnames']}")
+    spitest_data.append(f"JOINT_TYPES = {project['jointtypes']}")
+    spitest_data.append("")
 
     spitest_data.append("joints = [")
     for _num in range(project['joints']):
@@ -138,17 +142,17 @@ class WinForm(QWidget):
         self.doutcounter = 0
         self.error_counter_spi = 0
         self.error_counter_net = 0
-
-        COLS = max(JOINTS, DOUTS, VOUTS, DINS, VINS)
+        self.time_trx = 0
 
         gpy = 0
-        for jn in range(COLS):
-            label = QLabel(f'       {jn}     ')
-            layout.addWidget(label, gpy, jn + 3)
-        gpy += 1
 
         layout.addWidget(QLabel(f'JOINTS:'), gpy, 0)
-        layout.addWidget(QLabel(f'OUT'), gpy, 1)
+        for jn in range(JOINTS):
+            layout.addWidget(QLabel(f'JOINT{jn}'), gpy, jn + 3)
+        gpy += 1
+        for jn in range(JOINTS):
+            layout.addWidget(QLabel(JOINT_TYPES[jn]), gpy, jn + 3)
+        gpy += 1
         for jn in range(JOINTS):
             key = f'jcs{jn}'
             self.widgets[key] = QSlider(Qt.Horizontal)
@@ -157,26 +161,34 @@ class WinForm(QWidget):
             self.widgets[key].setValue(0)
             layout.addWidget(self.widgets[key], gpy, jn + 3)
         gpy += 1
+        layout.addWidget(QLabel(f'SET'), gpy, 1)
         for jn in range(JOINTS):
             key = f'jcraw{jn}'
             self.widgets[key] = QLabel(f'cmd: {jn}')
             layout.addWidget(self.widgets[key], gpy, jn + 3)
         gpy += 1
+        layout.addWidget(QLabel(f'OUT'), gpy, 1)
         for jn in range(JOINTS):
             key = f'jc{jn}'
             self.widgets[key] = QLabel(f'cmd: {jn}')
             layout.addWidget(self.widgets[key], gpy, jn + 3)
         gpy += 1
+        layout.addWidget(QLabel(f'FB'), gpy, 1)
+        for jn in range(JOINTS):
+            key = f'jf{jn}'
+            self.widgets[key] = QLabel(f'joint: {jn}')
+            layout.addWidget(self.widgets[key], gpy, jn + 3)
+        gpy += 1
+        layout.addWidget(QLabel(''), gpy, 1)
+        gpy += 1
 
-        layout.addWidget(QLabel(f'VARIABLE:'), gpy, 0)
-        layout.addWidget(QLabel(f'OUT'), gpy, 1)
+        layout.addWidget(QLabel(f'VOUT:'), gpy, 0)
+        for vn in range(VOUTS):
+            layout.addWidget(QLabel(f'VOUT{vn}'), gpy, vn + 3)
+        gpy += 1
         for vn in range(VOUTS):
             layout.addWidget(QLabel(vout_types[vn]), gpy, vn + 3)
         gpy += 1
-
-
-        #layout.addWidget(QLabel(f'VARIABLE:'), gpy, 0)
-        layout.addWidget(QLabel(f'OUT'), gpy, 1)
         for vn in range(VOUTS):
             key = f'vos{vn}'
             self.widgets[key] = QSlider(Qt.Horizontal)
@@ -185,60 +197,64 @@ class WinForm(QWidget):
             self.widgets[key].setValue(0)
             layout.addWidget(self.widgets[key], gpy, vn + 3)
         gpy += 1
-
-
+        layout.addWidget(QLabel(f'SET'), gpy, 1)
         for vn in range(VOUTS):
             key = f'vo{vn}'
             self.widgets[key] = QLabel(f'vo: {vn}')
             layout.addWidget(self.widgets[key], gpy, vn + 3)
         gpy += 1
-
-        layout.addWidget(QLabel(f'DIGITAL:'), gpy, 0)
-        layout.addWidget(QLabel(f'OUT'), gpy, 1)
-        self.widgets["dout_auto"] = QCheckBox()
-        layout.addWidget(self.widgets["dout_auto"], gpy, 2)
-        for dbyte in range(DIGITAL_OUTPUT_BYTES):
-            for dn in range(8):
-                key = f'doc{dbyte}{dn}'
-                self.widgets[key] = QCheckBox()
-                self.widgets[key].setChecked(False)
-                layout.addWidget(self.widgets[key], gpy, dbyte * 8 + dn + 3)
-                if dbyte * 8 + dn == DOUTS - 1:
-                    break
+        layout.addWidget(QLabel(''), gpy, 1)
         gpy += 1
 
-        layout.addWidget(QLabel(f'JOINTS:'), gpy, 0)
-        layout.addWidget(QLabel(f'IN'), gpy, 1)
-        for jn in range(JOINTS):
-            key = f'jf{jn}'
-            self.widgets[key] = QLabel(f'joint: {jn}')
-            layout.addWidget(self.widgets[key], gpy, jn + 3)
+        layout.addWidget(QLabel(f'VIN:'), gpy, 0)
+        for vn in range(VINS):
+            layout.addWidget(QLabel(f'VIN{vn}'), gpy, vn + 3)
         gpy += 1
-
-        layout.addWidget(QLabel(f'VARIABLE:'), gpy, 0)
-        layout.addWidget(QLabel(f'IN'), gpy, 1)
         for vn in range(VINS):
             layout.addWidget(QLabel(vin_types[vn]), gpy, vn + 3)
         gpy += 1
-
-        #layout.addWidget(QLabel(f'VARIABLE:'), gpy, 0)
         layout.addWidget(QLabel(f'IN'), gpy, 1)
         for vn in range(VINS):
             key = f'vi{vn}'
             self.widgets[key] = QLabel(f'vin: {vn}')
             layout.addWidget(self.widgets[key], gpy, vn + 3)
         gpy += 1
+        layout.addWidget(QLabel(''), gpy, 1)
+        gpy += 1
 
-        layout.addWidget(QLabel(f'DIGITAL:'), gpy, 0)
-        layout.addWidget(QLabel(f'IN'), gpy, 1)
+
+        for dbyte in range(DIGITAL_OUTPUT_BYTES):
+            if dbyte == 0:
+                layout.addWidget(QLabel(f'DOUT:'), gpy, 0)
+                self.widgets["dout_auto"] = QCheckBox()
+                layout.addWidget(self.widgets["dout_auto"], gpy, 2)
+            for dn in range(8):
+                key = f'doc{dbyte}{dn}'
+                self.widgets[key] = QCheckBox(DOUT_NAMES[dbyte * 8 + dn])
+                self.widgets[key].setChecked(False)
+                layout.addWidget(self.widgets[key], gpy, dn + 3)
+                if dbyte * 8 + dn == DOUTS - 1:
+                    break
+            gpy += 1
+        layout.addWidget(QLabel(''), gpy, 1)
+        gpy += 1
+
+
         for dbyte in range(DIGITAL_INPUT_BYTES):
+            if dbyte == 0:
+                layout.addWidget(QLabel(f'DIN:'), gpy, 0)
+            for dn in range(8):
+                layout.addWidget(QLabel(DIN_NAMES[dbyte * 8 + dn]), gpy, dn + 3)
+                if dbyte * 8 + dn == DINS - 1:
+                    break
+            gpy += 1
             for dn in range(8):
                 key = f'dic{dbyte}{dn}'
                 self.widgets[key] = QLabel("0")
-                layout.addWidget(self.widgets[key], gpy, dbyte * 8 + dn + 3)
+                layout.addWidget(self.widgets[key], gpy, dn + 3)
                 if dbyte * 8 + dn == DINS - 1:
                     break
-        gpy += 1
+            gpy += 1
 
         layout.addWidget(QLabel(''), gpy, 0)
         gpy += 1
@@ -251,6 +267,10 @@ class WinForm(QWidget):
         layout.addWidget(QLabel(f'NET:'), gpy, 3)
         self.widgets["errors_net"] = QLabel("0")
         layout.addWidget(self.widgets["errors_net"], gpy, 4)
+
+        layout.addWidget(QLabel(f'TIME:'), gpy, 5)
+        self.widgets["time_trx"] = QLabel("0")
+        layout.addWidget(self.widgets["time_trx"], gpy, 6)
         gpy += 1
 
         self.setLayout(layout)
@@ -347,8 +367,6 @@ class WinForm(QWidget):
                     else:
                         value = 0
 
-                print(vn, value)
-
                 vout = list(pack('<i', (value)))
                 for byte in range(4):
                     data[bn + byte] = vout[byte]
@@ -365,6 +383,7 @@ class WinForm(QWidget):
                 data[bn] = douts[dbyte]
                 bn += 1
 
+            print("")
             print("tx:", data)
             start = time.time()
             if NET_IP:
@@ -380,7 +399,8 @@ class WinForm(QWidget):
             else:
                 rec = spi.xfer2(data)
 
-            print(f"Duration: {(time.time() - start):0.5f}")
+            self.time_trx = (time.time() - start)
+            print(f"Duration: {self.time_trx * 1000:02.02f}ms")
             print("rx:", rec)
 
             jointFeedback = [0] * JOINTS
@@ -405,10 +425,10 @@ class WinForm(QWidget):
 
             if header == 0x64617461:
                 print(f'PRU_DATA: 0x{header:x}')
-                for num in range(JOINTS):
-                    print(f' Joint({num}): {jointFeedback[num]} // 1')
-                for num in range(VINS):
-                    print(f' Var({num}): {processVariable[num]}')
+                #for num in range(JOINTS):
+                #    print(f' Joint({num}): {jointFeedback[num]} // 1')
+                #for num in range(VINS):
+                #    print(f' Var({num}): {processVariable[num]}')
                 #print(f'inputs {inputs:08b}')
             else:
                 print(f'ERROR: Unknown Header: 0x{header:x}')
@@ -459,6 +479,7 @@ class WinForm(QWidget):
 
         self.widgets["errors_spi"].setText(str(self.error_counter_spi))
         self.widgets["errors_net"].setText(str(self.error_counter_net))
+        self.widgets["time_trx"].setText(f"{self.time_trx * 1000:02.02f}ms")
 
 
 if __name__ == '__main__':

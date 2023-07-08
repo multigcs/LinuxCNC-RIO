@@ -119,6 +119,12 @@ for plugin in project["plugins"]:
         if hasattr(project["plugins"][plugin], "doutnames"):
             project["doutnames"] += project["plugins"][plugin].doutnames()
 
+
+project["jointtypes"] = []
+for joint in project['jdata']['joints']:
+    project["jointtypes"].append(joint['type'])
+
+
 project["vouts"] = 0
 for plugin in project["plugins"]:
     if hasattr(project["plugins"][plugin], "vouts"):

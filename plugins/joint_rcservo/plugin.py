@@ -57,6 +57,11 @@ class Plugin:
         for num, joint in enumerate(self.jdata["joints"]):
             if joint["type"] == "rcservo":
                 scale = joint.get("scale", 64)
+
+                if joint.get("invert", False):
+                    func_out.append(f"    wire JOINT{num}_RCSERVO_INV;")
+                    func_out.append(f"    assign JOINT{num}_RCSERVO = ~JOINT{num}_RCSERVO_INV;")
+
                 if "enable" in joint["pins"]:
                     func_out.append(
                         f"    assign JOINT{num}_EN = jointEnable{num} && ~ERROR;"
@@ -68,7 +73,10 @@ class Plugin:
                 func_out.append("        .clk (sysclk),")
                 func_out.append(f"        .jointFreqCmd (jointFreqCmd{num}),")
                 func_out.append(f"        .jointFeedback (jointFeedback{num}),")
-                func_out.append(f"        .PWM (JOINT{num}_RCSERVO)")
+                if joint.get("invert", False):
+                    func_out.append(f"        .PWM (JOINT{num}_RCSERVO_INV)")
+                else:
+                    func_out.append(f"        .PWM (JOINT{num}_RCSERVO)")
                 func_out.append("    );")
 
         return func_out

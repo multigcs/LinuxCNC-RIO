@@ -125,99 +125,107 @@
     ],
     "din": [
         {
+            "invert": true,
             "pullup": true,
             "pin": "26"
         },
         {
+            "invert": true,
             "pullup": true,
             "pin": "27"
         },
         {
+            "invert": true,
             "pullup": true,
             "pin": "28"
         },
         {
+            "invert": true,
             "pullup": true,
             "pin": "29"
         },
         {
+            "invert": true,
             "pullup": true,
             "pin": "53"
         },
         {
+            "invert": true,
             "pullup": true,
             "pin": "54"
         },
         {
+            "invert": true,
             "pullup": true,
             "pin": "55"
         },
         {
+            "invert": true,
             "pullup": true,
             "pin": "56"
         },
         {
-            "pullup": true,
+            "invert": true,
             "pin": "EXPANSION0_INPUT[0]"
         },
         {
-            "pullup": true,
+            "invert": true,
             "pin": "EXPANSION0_INPUT[1]"
         },
         {
-            "pullup": true,
+            "invert": true,
             "pin": "EXPANSION0_INPUT[2]"
         },
         {
-            "pullup": true,
+            "invert": true,
             "pin": "EXPANSION0_INPUT[3]"
         },
         {
-            "pullup": true,
+            "invert": true,
             "pin": "EXPANSION0_INPUT[4]"
         },
         {
-            "pullup": true,
+            "invert": true,
             "pin": "EXPANSION0_INPUT[5]"
         },
         {
-            "pullup": true,
+            "invert": true,
             "pin": "EXPANSION0_INPUT[6]"
         },
         {
-            "pullup": true,
+            "invert": true,
             "pin": "EXPANSION0_INPUT[7]"
         },
         {
-            "pullup": true,
+            "invert": true,
             "pin": "EXPANSION0_INPUT[8]"
         },
         {
-            "pullup": true,
+            "invert": true,
             "pin": "EXPANSION0_INPUT[9]"
         },
         {
-            "pullup": true,
+            "invert": true,
             "pin": "EXPANSION0_INPUT[10]"
         },
         {
-            "pullup": true,
+            "invert": true,
             "pin": "EXPANSION0_INPUT[11]"
         },
         {
-            "pullup": true,
+            "invert": true,
             "pin": "EXPANSION0_INPUT[12]"
         },
         {
-            "pullup": true,
+            "invert": true,
             "pin": "EXPANSION0_INPUT[13]"
         },
         {
-            "pullup": true,
+            "invert": true,
             "pin": "EXPANSION0_INPUT[14]"
         },
         {
-            "pullup": true,
+            "invert": true,
             "pin": "EXPANSION0_INPUT[15]"
         }
     ],
@@ -237,8 +245,10 @@
     ],
     "vin": [
         {
-            "type": "quadencoder",
+            "_type": "quadencoder",
+            "type": "frequency",
             "pullup": true,
+            "pin": "68",
             "pin_a": "68",
             "pin_b": "69"
         }
@@ -293,20 +303,14 @@
             "type": "shiftreg",
             "bits": 16,
             "pullup": true,
-            "_pins": {
-                "out": "72",
-                "in": "71",
-                "clock": "70",
-                "load": "57"
-            },
             "mapping": {
-                "inputs": [11, 10, 12, 13, 14, 15, 9, 8, 3, 2, 4, 5, 6, 7, 1, 0]
+                "inputs": [4, 4, 1, -1, -3, -5, 0, 0,  4, 4, 1, -1, -3, -5, 0, 0]
             },
             "pins": {
-                "out": "42",
-                "in": "35",
-                "clock": "34",
-                "load": "30"
+                "out": "51",
+                "in": "41",
+                "clock": "40",
+                "load": "33"
             }
         }
     ]

@@ -100,7 +100,7 @@ class Plugin:
                 invert_pwm = vout.get("invert_pwm", False)
                 if invert_pwm:
                     func_out.append(
-                        f"    assign VOUT{num}_PWM_PWM = !VOUT{num}_PWM_PWM_INVERTED; // invert pwm output"
+                        f"    assign VOUT{num}_PWM_PWM = ~VOUT{num}_PWM_PWM_INVERTED; // invert pwm output"
                     )
                 func_out.append(f"    vout_pwm #({divider}) vout_pwm{num} (")
                 func_out.append("        .clk (sysclk),")

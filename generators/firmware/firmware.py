@@ -260,13 +260,13 @@ def generate(project):
 
     tdins = []
 
-
+    ldin = len(project['jdata']["din"])
     for dbyte in range(project['dins_total'] // 8):
         for num in range(8):
             bitnum = num + (dbyte * 8)
             if bitnum < project['dins']:
                 dname = project['dinnames'][bitnum]
-                if bitnum in project['jdata']["din"] and project['jdata']["din"][bitnum].get("invert", False):
+                if bitnum < ldin and project['jdata']["din"][bitnum].get("invert", False):
                     tdins.append(f"~{dname}")
                 else:
                     tdins.append(f"{dname}")

@@ -1,4 +1,4 @@
-
+/* verilator lint_off WIDTHTRUNC */
 module expansion_shiftreg
     #(parameter WIDTH = 8, SPEED = 100000)
     (
@@ -27,7 +27,7 @@ module expansion_shiftreg
                     SHIFT_CLK <= 0;
                     data_pos <= data_pos + 1;
                 end else if (data_pos < WIDTH) begin
-                    data_in[WIDTH - 1 - data_pos] = SHIFT_IN;
+                    data_in[data_pos] = SHIFT_IN;
                     SHIFT_OUT = data_out[WIDTH - 1 - data_pos];
                     delay <= 1;
                 end else begin

@@ -120,9 +120,9 @@ class Plugin:
                 mapping_inputs = expansion.get("mapping", {}).get("inputs")
                 if mapping_inputs:
                     mappings = []
-                    for index in reversed(mapping_inputs):
-                        mappings.append(f"EXPANSION{num}_INPUT_RAW[{index}]")
-                    func_out.append(f"    assign EXPANSION{num}_INPUT = {{{', '.join(mappings)}}};")
+                    for index, offset in enumerate(mapping_inputs):
+                        mappings.append(f"EXPANSION{num}_INPUT_RAW[{index + offset}]")
+                    func_out.append(f"    assign EXPANSION{num}_INPUT = {{{', '.join(reversed(mappings))}}};")
                 else:
                     func_out.append(f"    assign EXPANSION{num}_INPUT = EXPANSION{num}_INPUT_RAW;")
 

@@ -39,7 +39,10 @@ def generate(project):
         dname = project['dinnames'][num]
         if dname.endswith("INDEX_OUT"):
             index_num += 1
-    rio_data.append(f"#define INDEX_MAX            {index_num}")
+    if index_num > 0:
+        rio_data.append(f"#define INDEX_MAX            {index_num}")
+        rio_data.append(f"#define INDEX_INIT           {{{','.join(['0.0'] * index_num)}}}")
+
     rio_data.append("")
     rio_data.append("#define PRU_DATA            0x64617461")
     rio_data.append("#define PRU_READ            0x72656164")

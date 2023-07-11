@@ -22,11 +22,6 @@
             }
         }
     ],
-    "uart": {
-        "pin_rx": "6",
-        "pin_tx": "9",
-        "baud": "115200"
-    },
     "blink": {
         "pin": "10"
     },
@@ -57,70 +52,6 @@
         {
             "invert": true,
             "pin": "25"
-        },
-        {
-            "invert": true,
-            "pin": "EXPANSION0_OUTPUT[0]"
-        },
-        {
-            "invert": true,
-            "pin": "EXPANSION0_OUTPUT[1]"
-        },
-        {
-            "invert": true,
-            "pin": "EXPANSION0_OUTPUT[2]"
-        },
-        {
-            "invert": true,
-            "pin": "EXPANSION0_OUTPUT[3]"
-        },
-        {
-            "invert": true,
-            "pin": "EXPANSION0_OUTPUT[4]"
-        },
-        {
-            "invert": true,
-            "pin": "EXPANSION0_OUTPUT[5]"
-        },
-        {
-            "invert": true,
-            "pin": "EXPANSION0_OUTPUT[6]"
-        },
-        {
-            "invert": true,
-            "pin": "EXPANSION0_OUTPUT[7]"
-        },
-        {
-            "invert": true,
-            "pin": "EXPANSION0_OUTPUT[8]"
-        },
-        {
-            "invert": true,
-            "pin": "EXPANSION0_OUTPUT[9]"
-        },
-        {
-            "invert": true,
-            "pin": "EXPANSION0_OUTPUT[10]"
-        },
-        {
-            "invert": true,
-            "pin": "EXPANSION0_OUTPUT[11]"
-        },
-        {
-            "invert": true,
-            "pin": "EXPANSION0_OUTPUT[12]"
-        },
-        {
-            "invert": true,
-            "pin": "EXPANSION0_OUTPUT[13]"
-        },
-        {
-            "invert": true,
-            "pin": "EXPANSION0_OUTPUT[14]"
-        },
-        {
-            "invert": true,
-            "pin": "EXPANSION0_OUTPUT[15]"
         }
     ],
     "din": [
@@ -163,70 +94,6 @@
             "invert": true,
             "pullup": true,
             "pin": "56"
-        },
-        {
-            "invert": true,
-            "pin": "EXPANSION0_INPUT[0]"
-        },
-        {
-            "invert": true,
-            "pin": "EXPANSION0_INPUT[1]"
-        },
-        {
-            "invert": true,
-            "pin": "EXPANSION0_INPUT[2]"
-        },
-        {
-            "invert": true,
-            "pin": "EXPANSION0_INPUT[3]"
-        },
-        {
-            "invert": true,
-            "pin": "EXPANSION0_INPUT[4]"
-        },
-        {
-            "invert": true,
-            "pin": "EXPANSION0_INPUT[5]"
-        },
-        {
-            "invert": true,
-            "pin": "EXPANSION0_INPUT[6]"
-        },
-        {
-            "invert": true,
-            "pin": "EXPANSION0_INPUT[7]"
-        },
-        {
-            "invert": true,
-            "pin": "EXPANSION0_INPUT[8]"
-        },
-        {
-            "invert": true,
-            "pin": "EXPANSION0_INPUT[9]"
-        },
-        {
-            "invert": true,
-            "pin": "EXPANSION0_INPUT[10]"
-        },
-        {
-            "invert": true,
-            "pin": "EXPANSION0_INPUT[11]"
-        },
-        {
-            "invert": true,
-            "pin": "EXPANSION0_INPUT[12]"
-        },
-        {
-            "invert": true,
-            "pin": "EXPANSION0_INPUT[13]"
-        },
-        {
-            "invert": true,
-            "pin": "EXPANSION0_INPUT[14]"
-        },
-        {
-            "invert": true,
-            "pin": "EXPANSION0_INPUT[15]"
         }
     ],
     "vout": [
@@ -293,22 +160,6 @@
             "pins": {
                 "step": "79",
                 "dir": "77"
-            }
-        }
-    ],
-    "expansion": [
-        {
-            "type": "shiftreg",
-            "bits": 16,
-            "pullup": true,
-            "mapping": {
-                "inputs": [4, 4, 1, -1, -3, -5, 0, 0,  4, 4, 1, -1, -3, -5, 0, 0]
-            },
-            "pins": {
-                "out": "51",
-                "in": "41",
-                "clock": "40",
-                "load": "33"
             }
         }
     ]

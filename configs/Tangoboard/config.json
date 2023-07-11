@@ -10,7 +10,8 @@
         "speed": "27000000",
         "pin": "52"
     },
-    "transport": "SPI",
+    "transport": "UDP",
+    "ip": "192.168.10.13",
     "interface": [
         {
             "type": "spi",
@@ -30,6 +31,7 @@
         "pin": "11"
     },
     "enable": {
+        "invert": true,
         "pin": "73"
     },
     "dout": [

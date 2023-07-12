@@ -46,9 +46,9 @@ Please use this pinout for the SPI, all other combinations have problems if the 
 
 a small case for the board
 
-[case-stl](wt32eth0-case.stl)
+[wt32eth0-case.stl](wt32eth0-case.stl)
 
-[case-scad](wt32eth0-case.scad)
+[wt32eth0-case.scad](wt32eth0-case.scad)
 
 ![CAse](wt32eth0-case.jpg?raw=true "Case")
 

@@ -13,13 +13,6 @@ pio run
 pio run --target upload
 ```
 
-
-## Case:
-
-[case-stl](wt32eth0-case.stl)
-[case-scad](wt32eth0-case.scad)
-![CAse](wt32eth0-case.jpg?raw=true "Case")
-
 ## Pinout:
 
 ### FTDI-Programmer:
@@ -47,4 +40,15 @@ Please use this pinout for the SPI, all other combinations have problems if the 
 ![Pinout](pinout.jpg?raw=true "Pinout")
 
 ![jumperwires](wt32-eth01-jumperwires.jpg?raw=true "jumperwires")
+
+
+## Case:
+
+a small case for the board
+
+[case-stl](wt32eth0-case.stl)
+
+[case-scad](wt32eth0-case.scad)
+
+![CAse](wt32eth0-case.jpg?raw=true "Case")
 

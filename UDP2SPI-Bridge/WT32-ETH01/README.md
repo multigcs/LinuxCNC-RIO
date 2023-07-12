@@ -2,7 +2,10 @@
 
 based on WT32-ETH01
 
-Helpfull: https://github.com/ldijkman/WT32-ETH01-LAN-8720-RJ45-
+![CAse](wt32eth0-case.jpg?raw=true "Case")
+
+![Pinout](pinout.jpg?raw=true "Pinout")
+
 
 ## Pinout:
 

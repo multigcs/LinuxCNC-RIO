@@ -2,10 +2,11 @@
 
 based on WT32-ETH01
 
+## Case:
+
+[case-stl](wt32eth0-case.stl)
+[case-scad](wt32eth0-case.scad)
 ![CAse](wt32eth0-case.jpg?raw=true "Case")
-
-![Pinout](pinout.jpg?raw=true "Pinout")
-
 
 ## Pinout:
 
@@ -17,6 +18,8 @@ based on WT32-ETH01
 | CS | 4 |
 
 Please use this pinout for the SPI, all other combinations have problems if the FPGA is connected at boottime or while flashing
+
+![Pinout](pinout.jpg?raw=true "Pinout")
 
 ## FTDI-Programmer:
 

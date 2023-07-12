@@ -2,6 +2,16 @@
 
 based on WT32-ETH01
 
+## Install Firmware:
+
+please install platformio on you system and run:
+
+```
+pio run
+pio run --target upload
+```
+
+
 ## Case:
 
 [case-stl](wt32eth0-case.stl)

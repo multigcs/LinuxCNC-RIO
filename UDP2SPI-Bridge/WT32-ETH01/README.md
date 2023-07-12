@@ -4,6 +4,8 @@ based on WT32-ETH01
 
 ## Install Firmware:
 
+Needed: FTDI or other USB2Serial adapter
+
 please install platformio on you system and run:
 
 ```
@@ -42,4 +44,5 @@ to enter programming mode, connect IO0 to GND before switching on the power supp
 | GND | GND |
 | VCC | 5V |
 
+![jumperwires](wt32-eth01-jumperwires.jpg?raw=true "jumperwires")
 

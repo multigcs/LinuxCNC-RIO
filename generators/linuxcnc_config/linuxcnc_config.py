@@ -242,21 +242,12 @@ addf rio.readwrite servo-thread
         din_joint = din.get("joint", str(num))
         invert = din.get("invert", False)
         if din_type == "alarm" and din_joint:
-            if invert:
-                cfghal_data.append(f"net din{num} joint.{din_joint}.amp-fault-in <= rio.{dname}-not")
-            else:
-                cfghal_data.append(f"net din{num} joint.{din_joint}.amp-fault-in <= rio.{dname}")
+            cfghal_data.append(f"net din{num} joint.{din_joint}.amp-fault-in <= rio.{dname.lower()}")
         elif din_type == "home" and din_joint:
-            if invert:
-                cfghal_data.append(f"net home-{axis_names[int(din_joint)].lower()} <= rio.{dname}-not")
-            else:
-                cfghal_data.append(f"net home-{axis_names[int(din_joint)].lower()} <= rio.{dname}")
+            cfghal_data.append(f"net home-{axis_names[int(din_joint)].lower()} <= rio.{dname.lower()}")
             cfghal_data.append(f"net home-{axis_names[int(din_joint)].lower()} => joint.{din_joint}.home-sw-in")
         elif din_type == "probe":
-            if invert:
-                cfghal_data.append(f"net toolprobe <= rio.{dname}-not")
-            else:
-                cfghal_data.append(f"net toolprobe <= rio.input.{dname}")
+            cfghal_data.append(f"net toolprobe <= rio.input.{dname.lower()}")
             cfghal_data.append(f"net toolprobe => motion.probe-input")
         #neg-lim-sw-in
         #pos-lim-sw-in

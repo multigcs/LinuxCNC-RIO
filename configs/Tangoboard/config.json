@@ -58,16 +58,19 @@
     ],
     "din": [
         {
+            "type": "home",
             "invert": true,
             "pullup": true,
             "pin": "26"
         },
         {
+            "type": "home",
             "invert": true,
             "pullup": true,
             "pin": "27"
         },
         {
+            "type": "home",
             "invert": true,
             "pullup": true,
             "pin": "28"

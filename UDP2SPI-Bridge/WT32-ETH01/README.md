@@ -13,6 +13,17 @@ pio run
 pio run --target upload
 ```
 
+if you want a static IP, please edit src/main.ino
+```
+    // setup static ip
+    IPAddress myIP(192, 168, 10, 132);
+    IPAddress myGW(192, 168, 10, 1);
+    IPAddress mySN(255, 255, 255, 0);
+    ETH.config(myIP, myGW, mySN);
+```
+
+
+
 ## Pinout:
 
 ### FTDI-Programmer:

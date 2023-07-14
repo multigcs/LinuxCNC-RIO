@@ -17,6 +17,11 @@ git clone https://github.com/multigcs/LinuxCNC-RIO
 cd LinuxCNC-RIO
 ```
 
+### copy default config to avoid errors during update
+```
+cp configs/TangNano9K/config.json configs/TangNano9K/config-mycnc.json
+```
+
 ### to update the source later, run the following command in your LinuxCNC-RIO folder:
 ```
 git pull
@@ -26,7 +31,7 @@ git pull
 
 to generate/update all needed files in Output/TangNano9K/:
 ```
-python3 buildtool.py configs/TangNano9K/config.json
+python3 buildtool.py configs/TangNano9K/config-mycnc.json
 ```
 or if you want to use the optional Ethernet-Board:
 ```

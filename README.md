@@ -127,5 +127,5 @@ https://www.youtube.com/watch?v=urRHtw4bcsI
 https://www.youtube.com/shorts/m4zXuHERiFU
 
 
-
+---
 Thanks to the https://github.com/scottalford75/Remora Project, i'm using a modified version of it's Linux-Component

@@ -18,6 +18,7 @@ RealtimeIO for LinuxCNC based on an FPGA
 | Name | Description |
 | --- | --- |
 | [TangNano9K](configs/TangNano9K) | Tang Nano 9K with 5axis-BOB |
+| [Tango-Board](configs/Tangoboard) | Tango-Board with Tang Nano 9K |
 | [Olimex-ICE40HX8K-EVB_BOB](configs/Olimex-ICE40HX8K-EVB_BOB) | Olimex ICE40HX8K-EVB with 5axis-BOB |
 | [TinyFPGA-BX_BOB](configs/TinyFPGA-BX_BOB) | TinyFPGA-BX with 5axis-BOB |
 | [ICEBreakerV1.0e](configs/ICEBreakerV1.0e) | ICEBreakerV1.0e tests |
@@ -25,9 +26,7 @@ RealtimeIO for LinuxCNC based on an FPGA
 | [Colorlight5A-75E](configs/Colorlight5A-75E) | Colorlight5A-75E tests |
 
 
-
 ## Plugins:
-
 | Type | Name | Description |
 | --- | --- | --- |
 | joint | [pwmdir](plugins/joint_pwmdir) | PWM Joint Output with DIR-Pin |
@@ -64,10 +63,22 @@ for the TangNano9K, you can also using the Gowin-IDE or Gowin-Shell (it's faster
 
 * do not reuse the chipselect pin of your SPI-Flash !!!
 
+## interfacing via Ethernet
+
+you can also use UDP2SPI bridge to communicate via Ethernet (UDP)
+
+* [WT32-ETH01](UDP2SPI-Bridge/WT32-ETH01)
+
+* [ESP32-PoE-ISO](UDP2SPI-Bridge/ESP32-PoE-ISO)
+
 
 ## test-tool
+if you want to test the connection without LinuxCNC, you can use
+the python test-tool:
 
-python3 Output/BOARD_NAME/Firmware/qt_spitest.py
+```
+python3 Output/BOARD_NAME/Firmware/qt_spitest.py [IP]
+```
 
 
 ## some hints
@@ -83,27 +94,38 @@ you can select a config via make argument:
 make CONFIG=configs/TinyFPGA-BX_BOB/config.json build
 ```
 
-
 ## Structure:
 
-buildtool.py plugins:  this are python scripts to generates the verilog files from a configuration
+* buildtool.py plugins:  python scripts to generates the verilog files from a configuration
 
-configs: here are the config files for a specific setup (Target-FPGA / Pins)
+* configs: here are the config files for a specific setup (Target-FPGA / Pins)
 
-Output: the generated files per config
-
-
-## Demo-Video on TinyFPGA-BX board:
-
-https://youtube.com/shorts/G5V5OM_ORsk
-
-https://youtube.com/shorts/0nTmo4afwWs
+* Output: the generated files per config
 
 
-## TinyFPGA-BX board with 5axis BOB:
+## some demo videos
 
-![test](https://raw.githubusercontent.com/multigcs/LinuxCNC-RIO/main/files/4x.jpg)
-![test](https://raw.githubusercontent.com/multigcs/LinuxCNC-RIO/main/files/schema.svg)
+### LinuxCNC-RIO with TinyFPGA-BX and 5Axis BOB - ATC-Test
+https://www.youtube.com/shorts/G5V5OM_ORsk
+
+### linuxcnc with tinyfpga-bx
+https://www.youtube.com/shorts/0nTmo4afwWs
+
+### Mini Closed-Loop DC-Servo on LinuxCNC-RIO
+https://www.youtube.com/shorts/0cOvUS33U_s
+
+### Linuxcnc RIO with ICEBreaker FPGA
+https://www.youtube.com/watch?v=58RNJSGD0qs
+
+### LinuxCNC-RIO mixed joint types (on TangNano9K - FPGA)
+https://www.youtube.com/shorts/ZfTr1BNUK_0
+
+### LinuxCNC-RIO with TinyFPGA-BX and 5Axis BOB
+https://www.youtube.com/watch?v=urRHtw4bcsI
+
+### LinuxCNC with ICE40 for stepgen
+https://www.youtube.com/shorts/m4zXuHERiFU
+
 
 
 Thanks to the https://github.com/scottalford75/Remora Project, i'm using a modified version of it's Linux-Component

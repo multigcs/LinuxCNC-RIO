@@ -81,6 +81,8 @@
             "pin": "28"
         },
         {
+            "name": "tool-probe",
+            "net": "motion.probe-input",
             "invert": true,
             "pullup": true,
             "pin": "29"
@@ -135,7 +137,7 @@
         {
             "type": "stepper",
             "cl": false,
-            "scale": 800,
+            "scale": -800,
             "pins": {
                 "step": "63",
                 "dir": "86"
@@ -144,7 +146,7 @@
         {
             "type": "stepper",
             "cl": false,
-            "scale": 800,
+            "scale": -800,
             "pins": {
                 "step": "85",
                 "dir": "84"
@@ -153,7 +155,7 @@
         {
             "type": "stepper",
             "cl": false,
-            "scale": 1600,
+            "scale": -1600,
             "pins": {
                 "step": "83",
                 "dir": "82"

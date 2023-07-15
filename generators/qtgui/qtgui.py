@@ -106,7 +106,7 @@ def generate(project):
         if vout.get('type') == "sine":
             spitest_data.append(f"    ({vout.get('min', -100)}, {vout.get('max', 100)}, 'sine', 30),")
         elif vout.get('type') == "pwm":
-            freq = vout.get('freq', 3000)
+            freq = vout.get('freq', 10000)
             if "dir" in vout:
                 spitest_data.append(f"    (0, {vout.get('max', 100)}, 'pwmdir', {freq}),")
             else:

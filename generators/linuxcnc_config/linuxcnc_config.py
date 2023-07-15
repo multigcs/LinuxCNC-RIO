@@ -235,6 +235,16 @@ addf rio.readwrite servo-thread
         cfghal_data.append(f"loadrt pid num_chan={num_pids}")
         for pidn in range(num_pids):
             cfghal_data.append(f"addf pid.{pidn}.do-pid-calcs        servo-thread")
+    cfghal_data.append("")
+
+    for num, vout in enumerate(project['jdata']["vout"]):
+        vname = f"SP.{num}"
+        vout_name = vout.get("name", vname)
+        vout_net = vout.get("net")
+        if vout_net:
+            cfghal_data.append(f"net {vout_name} <= {vout_net}")
+            cfghal_data.append(f"net {vout_name} => rio.{vname}")
+    cfghal_data.append("")
 
     for num, din in enumerate(project['jdata']["din"]):
         dname = project['dinnames'][num].lower()
@@ -325,7 +335,11 @@ net j{num}enable 		<= joint.{num}.amp-enable-out 	=> rio.joint.{num}.enable
             cfghal_data.append(f"net {dname.lower()} rio.{dname} ptest.led-in{num}")
 
 
-    for num in range(project['vouts']):
+    for num, vout in enumerate(project['jdata']["vout"]):
+        vout_name = vout.get("name", f"vout{num}")
+        vout_net = vout.get("net")
+        if vout_net:
+            continue
         cfghal_data.append(f"net vout{num} ptest.vout{num}-f rio.SP.{num}")
 
     cfghal_data.append("start")
@@ -366,7 +380,11 @@ net j{num}enable 		<= joint.{num}.amp-enable-out 	=> rio.joint.{num}.enable
         elif not dname.endswith("INDEX_OUT"):
             cfghal_data.append(f"net {dname.lower()} rio.{dname.lower()} pyvcp.led-in{num}")
 
-    for num in range(project['vouts']):
+    for num, vout in enumerate(project['jdata']["vout"]):
+        vout_name = vout.get("name", f"vout{num}")
+        vout_net = vout.get("net")
+        if vout_net:
+            continue
         cfghal_data.append(f"net vout{num} pyvcp.vout{num}-f rio.SP.{num}")
 
     for num in range(project['vins']):
@@ -462,6 +480,11 @@ net j{num}enable 		<= joint.{num}.amp-enable-out 	=> rio.joint.{num}.enable
     cfgxml_data.append("  </hbox>")
 
     for num, vout in enumerate(project['jdata']["vout"]):
+        vout_name = vout.get("name", f"vout{num}")
+        vout_net = vout.get("net")
+        if vout_net:
+            continue
+
         cfgxml_data.append("  <scale>")
         cfgxml_data.append("    <font>(\"Helvetica\",12)</font>")
         cfgxml_data.append("    <width>\"25\"</width>")

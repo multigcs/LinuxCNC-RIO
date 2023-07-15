@@ -109,7 +109,7 @@
     "vout": [
         {
             "name": "spindle-speed",
-            "pin": "motion.spindle-speed-out",
+            "net": "spindle.0.speed-out",
             "min": "0",
             "max": "10000",
             "invert": true,

@@ -119,12 +119,8 @@
         {
             "type": "pwm",
             "invert": true,
-            "pin": "75"
-        },
-        {
-            "type": "pwm",
-            "invert": true,
-            "pin": "74"
+            "pin": "75",
+            "dir": "74"
         }
     ],
     "vin": [

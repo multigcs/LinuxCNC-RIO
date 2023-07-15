@@ -36,6 +36,8 @@
     },
     "dout": [
         {
+            "name": "spindle-enable",
+            "net": "spindle.0.on",
             "invert": true,
             "pin": "38"
         },
@@ -58,19 +60,22 @@
     ],
     "din": [
         {
-            "type": "home",
+            "name": "home-x",
+            "net": "joint.0.home-sw-in",
             "invert": true,
             "pullup": true,
             "pin": "26"
         },
         {
-            "type": "home",
+            "name": "home-y",
+            "net": "joint.1.home-sw-in",
             "invert": true,
             "pullup": true,
             "pin": "27"
         },
         {
-            "type": "home",
+            "name": "home-z",
+            "net": "joint.2.home-sw-in",
             "invert": true,
             "pullup": true,
             "pin": "28"
@@ -145,7 +150,7 @@
         {
             "type": "stepper",
             "cl": false,
-            "scale": 800,
+            "scale": 1600,
             "pins": {
                 "step": "83",
                 "dir": "82"

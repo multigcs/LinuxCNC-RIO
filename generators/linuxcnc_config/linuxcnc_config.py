@@ -237,20 +237,32 @@ addf rio.readwrite servo-thread
             cfghal_data.append(f"addf pid.{pidn}.do-pid-calcs        servo-thread")
 
     for num, din in enumerate(project['jdata']["din"]):
-        dname = project['dinnames'][num]
+        dname = project['dinnames'][num].lower()
+        invert = din.get("invert", False)
         din_type = din.get("type")
         din_joint = din.get("joint", str(num))
-        invert = din.get("invert", False)
-        if din_type == "alarm" and din_joint:
-            cfghal_data.append(f"net din{num} joint.{din_joint}.amp-fault-in <= rio.{dname.lower()}")
+        din_name = din.get("name", dname)
+        din_net = din.get("net")
+        if din_net:
+            cfghal_data.append(f"net {din_name} <= rio.{dname}")
+            cfghal_data.append(f"net {din_name} => {din_net}")
+        elif din_type == "alarm" and din_joint:
+            cfghal_data.append(f"net din{num} joint.{din_joint}.amp-fault-in <= rio.{dname}")
         elif din_type == "home" and din_joint:
-            cfghal_data.append(f"net home-{axis_names[int(din_joint)].lower()} <= rio.{dname.lower()}")
+            cfghal_data.append(f"net home-{axis_names[int(din_joint)].lower()} <= rio.{dname}")
             cfghal_data.append(f"net home-{axis_names[int(din_joint)].lower()} => joint.{din_joint}.home-sw-in")
         elif din_type == "probe":
-            cfghal_data.append(f"net toolprobe <= rio.input.{dname.lower()}")
+            cfghal_data.append(f"net toolprobe <= rio.input.{dname}")
             cfghal_data.append(f"net toolprobe => motion.probe-input")
-        #neg-lim-sw-in
-        #pos-lim-sw-in
+    cfghal_data.append("")
+
+    for num, dout in enumerate(project['jdata']["dout"]):
+        dname = project['doutnames'][num].lower()
+        dout_name = dout.get("name", dname)
+        dout_net = dout.get("net")
+        if dout_net:
+            cfghal_data.append(f"net {dout_name} <= {dout_net}")
+            cfghal_data.append(f"net {dout_name} => rio.{dname}")
     cfghal_data.append("")
 
     pidn = 0
@@ -325,9 +337,16 @@ net j{num}enable 		<= joint.{num}.amp-enable-out 	=> rio.joint.{num}.enable
     cfghal_data.append("")
 
     for num in range(project['douts']):
-        dname = project['doutnames'][num]
-        if not dname.endswith("INDEX_ENABLE"):
-            cfghal_data.append(f"net {dname.lower()} pyvcp.btn{num} rio.{dname.lower()}")
+        dname = project['doutnames'][num].lower()
+        dout = {}
+        if dname.startswith("dout"):
+            dout = project['jdata']["dout"][num]
+        dout_name = dout.get("name", dname)
+        dout_net = dout.get("net")
+        if dout_net:
+            pass
+        elif not dname.endswith("INDEX_ENABLE"):
+            cfghal_data.append(f"net {dname.lower()} pyvcp.btn{num} rio.{dname}")
 
     for num in range(project['dins']):
         dname = project['dinnames'][num]
@@ -336,7 +355,11 @@ net j{num}enable 		<= joint.{num}.amp-enable-out 	=> rio.joint.{num}.enable
             din = project['jdata']["din"][num]
         din_type = din.get("type")
         din_joint = din.get("joint", str(num))
-        if din_type == "alarm" and din_joint:
+        din_name = din.get("name", dname)
+        din_net = din.get("net")
+        if din_net:
+            pass
+        elif din_type == "alarm" and din_joint:
             pass
         elif din_type == "home" and din_joint:
             pass
@@ -368,7 +391,14 @@ net j{num}enable 		<= joint.{num}.amp-enable-out 	=> rio.joint.{num}.enable
 
     for num in range(project['douts']):
         dname = project['doutnames'][num]
-        if dname.endswith("INDEX_ENABLE"):
+        dout = {}
+        if dname.startswith("DOUT"):
+            dout = project['jdata']["dout"][num]
+        dout_name = dout.get("name", dname)
+        dout_net = dout.get("net")
+        if dout_net:
+            continue
+        elif dname.endswith("INDEX_ENABLE"):
             continue
         cfgxml_data.append("    <checkbutton>")
         cfgxml_data.append(f"      <halpin>\"btn{num}\"</halpin>")
@@ -403,7 +433,11 @@ net j{num}enable 		<= joint.{num}.amp-enable-out 	=> rio.joint.{num}.enable
 
         din_type = din.get("type")
         din_joint = din.get("joint", str(num))
-        if din_type == "alarm" and din_joint:
+        din_name = din.get("name", dname)
+        din_net = din.get("net")
+        if din_net:
+            pass
+        elif din_type == "alarm" and din_joint:
             pass
         elif din_type == "home" and din_joint:
             pass

@@ -56,10 +56,11 @@ def generate(project):
     rio_data.append("")
 
     rio_data.append("#define VOUT_TYPE_PWM  0")
-    rio_data.append("#define VOUT_TYPE_RCSERVO 1")
-    rio_data.append("#define VOUT_TYPE_SINE 2")
-    rio_data.append("#define VOUT_TYPE_FREQ 3")
-    rio_data.append("#define VOUT_TYPE_UDPOTI 4")
+    rio_data.append("#define VOUT_TYPE_PWMDIR  1")
+    rio_data.append("#define VOUT_TYPE_RCSERVO 2")
+    rio_data.append("#define VOUT_TYPE_SINE 3")
+    rio_data.append("#define VOUT_TYPE_FREQ 4")
+    rio_data.append("#define VOUT_TYPE_UDPOTI 5")
 
     rio_data.append("#define JOINT_FB_REL 0")
     rio_data.append("#define JOINT_FB_ABS 1")
@@ -82,7 +83,10 @@ def generate(project):
             vouts_max.append(str(vout.get("max", 100.0)))
             vouts_freq.append("30")
         elif vout.get('type') == "pwm":
-            vouts_min.append(str(vout.get("min", -100)))
+            if vout.get('dir'):
+                vouts_min.append("0")
+            else:
+                vouts_min.append(str(vout.get("min", 0)))
             vouts_max.append(str(vout.get("max", 100.0)))
             vouts_freq.append(str(vout.get("freq", freq)))
         elif vout.get('type') == "rcservo":
@@ -94,7 +98,11 @@ def generate(project):
             vouts_min.append(str(vout.get("min", 0)))
             vouts_max.append(str(vout.get("max", 10.0)))
             vouts_freq.append(str(vout.get("freq", freq)))
-        vouts_type.append(f"VOUT_TYPE_{vout.get('type', 'freq').upper()}")
+
+        if vout.get('type') == "pwm" and vout.get('dir'):
+            vouts_type.append(f"VOUT_TYPE_{vout.get('type', 'freq').upper()}DIR")
+        else:
+            vouts_type.append(f"VOUT_TYPE_{vout.get('type', 'freq').upper()}")
 
     rio_data.append(f"float vout_min[VARIABLE_OUTPUTS] = {{{', '.join(vouts_min)}}};")
     rio_data.append(f"float vout_max[VARIABLE_OUTPUTS] = {{{', '.join(vouts_max)}}};")

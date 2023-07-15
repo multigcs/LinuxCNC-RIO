@@ -498,7 +498,7 @@ net j{num}enable 		<= joint.{num}.amp-enable-out 	=> rio.joint.{num}.enable
             cfgxml_data.append(f"    <max_>{str(vout.get('max', 100))}</max_>")
         elif vout.get('type') == "pwm":
             if "dir" in vout:
-                cfgxml_data.append(f"    <min_>{str(vout.get('min', -100))}</min_>")
+                cfgxml_data.append(f"    <min_>{str(int(vout.get('max', 100)) * -1)}</min_>")
             else:
                 cfgxml_data.append(f"    <min_>{str(vout.get('min', 0))}</min_>")
             cfgxml_data.append(f"    <max_>{str(vout.get('max', 100))}</max_>")

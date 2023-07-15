@@ -108,7 +108,7 @@ def generate(project):
         elif vout.get('type') == "pwm":
             freq = vout.get('freq', 3000)
             if "dir" in vout:
-                spitest_data.append(f"    ({vout.get('min', -100)}, {vout.get('max', 100)}, 'pwm', {freq}),")
+                spitest_data.append(f"    (0, {vout.get('max', 100)}, 'pwmdir', {freq}),")
             else:
                 spitest_data.append(f"    ({vout.get('min', 0)}, {vout.get('max', 100)}, 'pwm', {freq}),")
         elif vout.get('type') == "rcservo":
@@ -192,7 +192,10 @@ class WinForm(QWidget):
         for vn in range(VOUTS):
             key = f'vos{vn}'
             self.widgets[key] = QSlider(Qt.Horizontal)
-            self.widgets[key].setMinimum(voutminmax[vn][0])
+            if voutminmax[vn][2] == "pwmdir":
+                self.widgets[key].setMinimum(-voutminmax[vn][1])
+            else:
+                self.widgets[key].setMinimum(voutminmax[vn][0])
             self.widgets[key].setMaximum(voutminmax[vn][1])
             self.widgets[key].setValue(0)
             layout.addWidget(self.widgets[key], gpy, vn + 3)
@@ -353,6 +356,8 @@ class WinForm(QWidget):
                         value = int(PRU_OSC / value / voutminmax[vn][3])
                     else:
                         value = 0
+                elif voutminmax[vn][2] == 'pwmdir':
+                    value = int((value) * (PRU_OSC / voutminmax[vn][3]) / (voutminmax[vn][1]))
                 elif voutminmax[vn][2] == 'pwm':
                     value = int((value - voutminmax[vn][0]) * (PRU_OSC / voutminmax[vn][3]) / (voutminmax[vn][1] - voutminmax[vn][0]))
                 elif voutminmax[vn][2] == 'rcservo':

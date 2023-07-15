@@ -12,6 +12,7 @@ Install: see INSTALL.md
 
 [Reichelt](https://www.reichelt.de/my/2063538)
 
+## Pinout:
 
 ![tangoboard](https://raw.githubusercontent.com/multigcs/LinuxCNC-RIO/main/configs/Tangoboard/tangnano9k-board-pinout.png)
 

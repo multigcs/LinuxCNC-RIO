@@ -11,7 +11,7 @@
         "pin": "52"
     },
     "transport": "UDP",
-    "ip": "192.168.10.13",
+    "ip": "192.168.10.14",
     "interface": [
         {
             "type": "spi",
@@ -108,15 +108,22 @@
     ],
     "vout": [
         {
+            "name": "spindle-speed",
+            "pin": "motion.spindle-speed-out",
+            "min": "0",
+            "max": "10000",
+            "invert": true,
             "type": "pwm",
             "pin": "76"
         },
         {
             "type": "pwm",
+            "invert": true,
             "pin": "75"
         },
         {
             "type": "pwm",
+            "invert": true,
             "pin": "74"
         }
     ],

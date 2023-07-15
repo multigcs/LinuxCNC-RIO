@@ -76,7 +76,7 @@ def generate(project):
     vouts_type = []
     vouts_freq = []
     for vout in project['jdata']["vout"]:
-        freq = vout.get('freq', 10000)
+        freq = vout.get('freq', 3000)
         if vout.get('type') == "sine":
             vouts_min.append(str(vout.get("min", -100)))
             vouts_max.append(str(vout.get("max", 100.0)))

@@ -106,7 +106,7 @@ def generate(project):
         if vout.get('type') == "sine":
             spitest_data.append(f"    ({vout.get('min', -100)}, {vout.get('max', 100)}, 'sine', 30),")
         elif vout.get('type') == "pwm":
-            freq = vout.get('freq', 10000)
+            freq = vout.get('freq', 3000)
             if "dir" in vout:
                 spitest_data.append(f"    ({vout.get('min', -100)}, {vout.get('max', 100)}, 'pwm', {freq}),")
             else:
@@ -354,7 +354,7 @@ class WinForm(QWidget):
                     else:
                         value = 0
                 elif voutminmax[vn][2] == 'pwm':
-                    value = int(value * (PRU_OSC / voutminmax[vn][3]) / 100)
+                    value = int((value - voutminmax[vn][0]) * (PRU_OSC / voutminmax[vn][3]) / (voutminmax[vn][1] - voutminmax[vn][0]))
                 elif voutminmax[vn][2] == 'rcservo':
                     value = int(((value + 300)) * (PRU_OSC / 200000))
                 elif voutminmax[vn][2] == 'udpoti':

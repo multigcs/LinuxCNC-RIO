@@ -882,7 +882,7 @@ void rio_readwrite()
                 if (vout_type[i] == VOUT_TYPE_SINE) {
                     txData.setPoint[i] = PRU_OSC / *(data->setPoint[i]) / vout_freq[i];
                 } else if (vout_type[i] == VOUT_TYPE_PWM) {
-                    txData.setPoint[i] = *(data->setPoint[i]) * (PRU_OSC / vout_freq[i]) / 100;
+                    txData.setPoint[i] = (*(data->setPoint[i]) - vout_min[i]) * vout_freq[i] / (vout_max[i] - vout_min[i]);
                 } else if (vout_type[i] == VOUT_TYPE_RCSERVO) {
                     txData.setPoint[i] = (*(data->setPoint[i]) + 200 + 100) * (PRU_OSC / 200000);
                 } else {

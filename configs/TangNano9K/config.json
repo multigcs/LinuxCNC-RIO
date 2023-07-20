@@ -11,6 +11,7 @@
         "pin": "52"
     },
     "transport": "SPI",
+    "axis": 9,
     "interface": [
         {
             "type": "spi",

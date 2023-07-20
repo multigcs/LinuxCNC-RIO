@@ -12,6 +12,7 @@
     },
     "transport": "UDP",
     "ip": "192.168.10.14",
+    "axis": 5,
     "interface": [
         {
             "type": "spi",

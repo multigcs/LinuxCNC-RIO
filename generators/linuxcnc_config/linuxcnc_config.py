@@ -6,10 +6,16 @@ def generate(project):
 
     netlist = []
 
+    limit_joints = int(project["jdata"].get("axis", 9))
+    num_joints = min(project['joints'], limit_joints)
+
     axis_names = ["X", "Y", "Z", "A", "C", "B", "U", "V", "W"]
     axis_str = ""
     axis_str2 = ""
     for num in range(min(project["joints"], len(axis_names))):
+        # limit axis configurations
+        if num >= num_joints:
+            continue
         axis_str += axis_names[num]
         axis_str2 += " " + axis_names[num]
 
@@ -29,6 +35,7 @@ def generate(project):
 loadrt [KINS]KINEMATICS
 loadrt [EMCMOT]EMCMOT base_period_nsec=[EMCMOT]BASE_PERIOD servo_period_nsec=[EMCMOT]SERVO_PERIOD num_joints=[KINS]JOINTS
 
+# set joint modes (p=postion, v=velocity)
 loadrt rio ctrl_type={','.join(ctrl_types)}
 
 # estop loopback, SPI comms enable and feedback
@@ -41,15 +48,14 @@ addf motion-command-handler servo-thread
 addf motion-controller servo-thread
 addf rio.update-freq servo-thread
 addf rio.readwrite servo-thread
-
-    """
+"""
     )
 
     if num_pids > 0:
         cfghal_data.append(f"loadrt pid num_chan={num_pids}")
         for pidn in range(num_pids):
             cfghal_data.append(f"addf pid.{pidn}.do-pid-calcs        servo-thread")
-    cfghal_data.append("")
+            cfghal_data.append("")
 
     for num, vout in enumerate(project["jdata"]["vout"]):
         vname = f"SP.{num}"
@@ -59,7 +65,7 @@ addf rio.readwrite servo-thread
             netlist.append(vout_net)
             cfghal_data.append(f"net {vout_name} <= {vout_net}")
             cfghal_data.append(f"net {vout_name} => rio.{vname}")
-    cfghal_data.append("")
+            cfghal_data.append("")
 
     for num, din in enumerate(project["jdata"]["din"]):
         dname = project["dinnames"][num].lower()
@@ -72,10 +78,12 @@ addf rio.readwrite servo-thread
             netlist.append(din_net)
             cfghal_data.append(f"net {din_name} <= rio.{dname}")
             cfghal_data.append(f"net {din_name} => {din_net}")
+            cfghal_data.append("")
         elif din_type == "alarm" and din_joint:
             cfghal_data.append(
                 f"net din{num} joint.{din_joint}.amp-fault-in <= rio.{dname}"
             )
+            cfghal_data.append("")
         elif din_type == "home" and din_joint:
             netlist.append(f"joint.{din_joint}.home-sw-in")
             cfghal_data.append(
@@ -84,10 +92,11 @@ addf rio.readwrite servo-thread
             cfghal_data.append(
                 f"net home-{axis_names[int(din_joint)].lower()} => joint.{din_joint}.home-sw-in"
             )
+            cfghal_data.append("")
         elif din_type == "probe":
             cfghal_data.append(f"net toolprobe <= rio.input.{dname}")
             cfghal_data.append(f"net toolprobe => motion.probe-input")
-    cfghal_data.append("")
+            cfghal_data.append("")
 
     for num, dout in enumerate(project["jdata"]["dout"]):
         dname = project["doutnames"][num].lower()
@@ -97,10 +106,13 @@ addf rio.readwrite servo-thread
             netlist.append(dout_net)
             cfghal_data.append(f"net {dout_name} <= {dout_net}")
             cfghal_data.append(f"net {dout_name} => rio.{dname}")
-    cfghal_data.append("")
+            cfghal_data.append("")
 
     pidn = 0
     for num, joint in enumerate(project["jdata"]["joints"]):
+        # limit axis configurations
+        if num >= num_joints:
+            continue
         if joint.get("cl", False):
             cfghal_data.append(
                 f"""# Joint {num} setup
@@ -152,42 +164,44 @@ net j{num}enable 		<= joint.{num}.amp-enable-out 	=> rio.joint.{num}.enable
     cfgini_data = []
     cfgini_data.append(
         f"""
-# Basic LinuxCNC config for testing of RIO firmware
+# Basic LinuxCNC config for testing RIO firmware
 
 [EMC]
-MACHINE = Rio-XYZAC
+MACHINE = Rio
 DEBUG = 0
 VERSION = 1.1
 
 [DISPLAY]
-PYVCP = port-tester.xml
+PYVCP = rio-gui.xml
 DISPLAY = axis
 EDITOR = gedit
 POSITION_OFFSET = RELATIVE
 POSITION_FEEDBACK = ACTUAL
 ARCDIVISION = 64
 GRIDS = 10mm 20mm 50mm 100mm
-MAX_FEED_OVERRIDE = 5.0
-MIN_SPINDLE_OVERRIDE = 0.5
-MAX_SPINDLE_OVERRIDE = 1.2
 INTRO_GRAPHIC = linuxcnc.gif
-INTRO_TIME = 5
+INTRO_TIME = 2
 PROGRAM_PREFIX = ~/linuxcnc/nc_files
 INCREMENTS = 50mm 10mm 5mm 1mm .5mm .1mm .05mm .01mm
 
-MIN_LINEAR_VELOCITY = 0
+MAX_FEED_OVERRIDE = 5.0
+
+MIN_SPINDLE_OVERRIDE = 0.5
+MAX_SPINDLE_OVERRIDE = 1.2
+
+MIN_LINEAR_VELOCITY = 0.0
 DEFAULT_LINEAR_VELOCITY = 10.0
 MAX_LINEAR_VELOCITY = 40.0
 
-DEFAULT_ANGULAR_VELOCITY = 5.0
-MIN_ANGULAR_VELOCITY = 0
-MAX_ANGULAR_VELOCITY = 5
+MIN_ANGULAR_VELOCITY = 0.0
+DEFAULT_ANGULAR_VELOCITY = 2.5
+MAX_ANGULAR_VELOCITY = 5.0
 
 
 [KINS]
-JOINTS = {project['joints']}
-#KINEMATICS =trivkins coordinates={axis_str} kinstype=BOTH
-KINEMATICS =trivkins coordinates={axis_str}
+JOINTS = {num_joints}
+#KINEMATICS = trivkins coordinates={axis_str} kinstype=BOTH
+KINEMATICS = trivkins coordinates={axis_str}
 
 [FILTER]
 PROGRAM_EXTENSION = .py Python Script
@@ -237,6 +251,10 @@ TOOL_TABLE = tool.tbl
     )
 
     for num, joint in enumerate(project["jdata"]["joints"]):
+        # limit axis configurations
+        if num >= num_joints:
+            continue
+
         if joint.get("type") == "rcservo":
             SCALE = 80.0
             MIN_LIMIT = -110
@@ -675,7 +693,7 @@ MIN_FERROR = 0.5
 
     for num, vin in enumerate(project["jdata"]["vin"]):
         if False:
-            cfgxml_data.append("<meter>")
+            cfgxml_data.append("  <meter>")
             cfgxml_data.append(f'    <halpin>"vin{num}"</halpin>')
             cfgxml_data.append(f'    <text>"VIN{num}"</text>')
             cfgxml_data.append(f"    <subtext>\"{vin.get('type', '-')}\"</subtext>")
@@ -686,9 +704,9 @@ MIN_FERROR = 0.5
             cfgxml_data.append("    <minorscale>1000</minorscale>")
             cfgxml_data.append('    <region1>(-32800,0,"red")</region1>')
             cfgxml_data.append('    <region2>(0,32800,"green")</region2>')
-            cfgxml_data.append("</meter>")
+            cfgxml_data.append("  </meter>")
         elif False:
-            cfgxml_data.append("<bar>")
+            cfgxml_data.append("  <bar>")
             cfgxml_data.append(f'    <halpin>"vin{num}"</halpin>')
             cfgxml_data.append("    <min_>-32800</min_>")
             cfgxml_data.append("    <max_>32800</max_>")
@@ -702,16 +720,16 @@ MIN_FERROR = 0.5
             cfgxml_data.append("    <canvas_height>50</canvas_height>")
             cfgxml_data.append("    <bar_height>30</bar_height>")
             cfgxml_data.append("    <bar_width>150</bar_width>")
-            cfgxml_data.append("</bar>")
+            cfgxml_data.append("  </bar>")
         else:
-            cfgxml_data.append("<number>")
+            cfgxml_data.append("  <number>")
             cfgxml_data.append(f'    <halpin>"vin{num}"</halpin>')
             cfgxml_data.append('    <font>("Helvetica",24)</font>')
             cfgxml_data.append('    <format>"05d"</format>')
-            cfgxml_data.append("</number>")
+            cfgxml_data.append("  </number>")
 
     cfgxml_data.append("</pyvcp>")
-    open(f"{project['LINUXCNC_PATH']}/ConfigSamples/rio/port-tester.xml", "w").write(
+    open(f"{project['LINUXCNC_PATH']}/ConfigSamples/rio/rio-gui.xml", "w").write(
         "\n".join(cfgxml_data)
     )
 

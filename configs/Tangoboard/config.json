@@ -12,7 +12,7 @@
     },
     "transport": "UDP",
     "ip": "192.168.10.14",
-    "axis": 5,
+    "axis": 3,
     "interface": [
         {
             "type": "spi",
@@ -130,6 +130,7 @@
         {
             "type": "quadencoder",
             "quadType": 2,
+            "function": "jogwheel",
             "pullup": true,
             "pin_a": "68",
             "pin_b": "69"

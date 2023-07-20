@@ -177,6 +177,10 @@ os.system(f"mkdir -p {project['PINS_PATH']}")
 os.system(f"mkdir -p {project['LINUXCNC_PATH']}")
 os.system(f"mkdir -p {project['LINUXCNC_PATH']}/Components/")
 os.system(f"mkdir -p {project['LINUXCNC_PATH']}/ConfigSamples/rio")
+os.system(f"mkdir -p {project['LINUXCNC_PATH']}/ConfigSamples/rio/subroutines")
+os.system(f"mkdir -p {project['LINUXCNC_PATH']}/ConfigSamples/rio/m_codes")
+os.system(f"cp -a files/subroutines/* {project['LINUXCNC_PATH']}/ConfigSamples/rio/subroutines")
+
 
 if project["jdata"]["toolchain"] == "diamond":
     project["SOURCE_PATH"] = f"{project['FIRMWARE_PATH']}/impl1/source"

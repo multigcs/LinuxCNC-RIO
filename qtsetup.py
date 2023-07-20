@@ -69,8 +69,9 @@ if os.path.isfile(f"chipdata/{jdata['family']}.json"):
 plugins = {}
 for path in glob.glob("plugins/*"):
     plugin = path.split("/")[1]
-    vplugin = importlib.import_module(".plugin", f"plugins.{plugin}")
-    plugins[plugin] = vplugin.Plugin(jdata)
+    if os.path.isfile(f"plugins/{plugin}/plugin.py"):
+        vplugin = importlib.import_module(".plugin", f"plugins.{plugin}")
+        plugins[plugin] = vplugin.Plugin(jdata)
 
 
 setup_data = {}

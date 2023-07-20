@@ -48,7 +48,7 @@ you can also add a scale parameter to get a better sample config
 
 this will set the right SCALE parameter in you .ini
 
-negative values are to reverse the direction
+use negative values to reverse the direction
 
 ```
 [AXIS_X]

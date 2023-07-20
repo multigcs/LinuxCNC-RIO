@@ -96,6 +96,7 @@ typedef struct {
     float			cmd_d[JOINTS];					// command derivative
     hal_float_t 	*setPoint[VARIABLE_OUTPUTS];
     hal_float_t 	*processVariable[VARIABLE_INPUTS];
+    hal_s32_t 	    *processVariableS32[VARIABLE_INPUTS];
     hal_bit_t   	*outputs[DIGITAL_OUTPUT_BYTES * 8];
     hal_bit_t   	*inputs[DIGITAL_INPUT_BYTES * 8 * 2]; // for not pins * 2
 #ifdef INDEX_MAX
@@ -384,10 +385,17 @@ int rtapi_app_main(void)
     }
 
     for (n = 0; n < VARIABLE_INPUTS; n++) {
-        retval = hal_pin_float_newf(HAL_OUT, &(data->processVariable[n]),
-                                    comp_id, "%s.PV.%01d", prefix, n);
+		retval = hal_pin_float_newf(HAL_OUT, &(data->processVariable[n]),
+									comp_id, "%s.PV.%01d", prefix, n);
         if (retval < 0) goto error;
         *(data->processVariable[n]) = 0.0;
+
+		retval = hal_pin_s32_newf(HAL_OUT, &(data->processVariableS32[n]),
+									comp_id, "%s.PV.%01d-s32", prefix, n);
+        if (retval < 0) goto error;
+        *(data->processVariableS32[n]) = 0;
+
+
     }
 
     int index_num = 0;
@@ -955,6 +963,7 @@ void rio_readwrite()
                 // Feedback
                 for (i = 0; i < VARIABLE_INPUTS; i++) {
                     *(data->processVariable[i]) = rxData.processVariable[i];
+                    *(data->processVariableS32[i]) = (int)rxData.processVariable[i];
                 }
 
                 // Inputs

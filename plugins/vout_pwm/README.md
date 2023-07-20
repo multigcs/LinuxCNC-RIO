@@ -47,3 +47,6 @@ this will add the pin in the sample .hal to spindle.0.speed-out (Spindle-Speed-C
 net spindle-speed <= spindle.0.speed-out
 net spindle-speed => rio.SP.0
 ```
+
+use min/max values to scale the speed (RPM in linuxcnc 0-10000RPM) to the right pwm value (0-100%).
+

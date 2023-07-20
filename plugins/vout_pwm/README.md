@@ -2,7 +2,7 @@
 
 Variable-Output for PWM-Signals with optional DIR pin
 
-100kHz PWM with DIR-Pin
+## 100kHz PWM with DIR-Pin
 
 ```
 {
@@ -13,7 +13,7 @@ Variable-Output for PWM-Signals with optional DIR pin
 },
 ```
 
-setup for rcservo's (1-2ms @ 50Hz)
+## setup for rcservo's (1-2ms @ 50Hz)
 
 ```
 {
@@ -23,3 +23,27 @@ setup for rcservo's (1-2ms @ 50Hz)
 },
 ```
 
+##  extended setup:
+
+for better generated sample config's
+
+you can also connect the pin to a hal-net
+
+```
+{
+    "name": "spindle-speed",
+    "net": "spindle.0.speed-out",
+    "min": "0",
+    "max": "10000",
+    "invert": true,
+    "type": "pwm",
+    "pin": "76"
+},
+```
+
+this will add the pin in the sample .hal to spindle.0.speed-out (Spindle-Speed-Control):
+
+```
+net spindle-speed <= spindle.0.speed-out
+net spindle-speed => rio.SP.0
+```

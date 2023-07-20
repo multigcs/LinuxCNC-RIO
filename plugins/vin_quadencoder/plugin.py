@@ -15,6 +15,10 @@ class Plugin:
                         "default": False,
                         "comment": "this option adds an debouncer to the input-pins",
                     },
+                    "quadType": {
+                        "type": "int",
+                        "name": "type of encoder (0, 2)",
+                    },
                     "pin_a": {
                         "type": "input",
                         "name": "input pin A",
@@ -50,8 +54,13 @@ class Plugin:
     def funcs(self):
         func_out = ["    // vin_quadencoder's"]
         for num, vin in enumerate(self.jdata.get("vin", [])):
-            if vin.get("type") == "quadencoder":
+            if vin.get("type") == "quadencoder" or vin.get("type") == "mpgencoder":
                 debounce = vin.get("debounce", False)
+                if vin.get("type") == "mpgencoder":
+                    quadType = vin.get("quadType", 2)
+                else:
+                    quadType = vin.get("quadType", 0)
+
                 if debounce:
                     func_out.append(f"    wire VIN{num}_ENCODER_A_DEBOUNCED;")
                     func_out.append(f"    wire VIN{num}_ENCODER_B_DEBOUNCED;")
@@ -66,7 +75,7 @@ class Plugin:
                     func_out.append(f"        .SIGNAL_state (VIN{num}_ENCODER_B_DEBOUNCED)")
                     func_out.append("    );")
 
-                func_out.append(f"    vin_quadencoder #(32) vin_quadencoder{num} (")
+                func_out.append(f"    vin_quadencoder #(32, {quadType}) vin_quadencoder{num} (")
                 func_out.append("        .clk (sysclk),")
                 if debounce:
                     func_out.append(f"        .quadA (VIN{num}_ENCODER_A_DEBOUNCED),")

@@ -129,6 +129,7 @@
     "vin": [
         {
             "type": "quadencoder",
+            "quadType": 2,
             "pullup": true,
             "pin_a": "68",
             "pin_b": "69"

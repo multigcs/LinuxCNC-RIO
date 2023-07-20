@@ -1,6 +1,9 @@
 
 module vin_quadencoderz
-    #(parameter BITS = 32)
+    #(
+      parameter BITS = 32,
+      parameter QUAD_TYPE = 0
+     )
      (
          input clk,
          input quadA,
@@ -8,7 +11,7 @@ module vin_quadencoderz
          input quadZ,
          input index_enable,
          output reg index_out = 0,
-         output [BITS-1:0] pos
+         output signed [BITS-1:0] pos
      );
     reg [2:0] quadA_delayed;
     reg [2:0] quadB_delayed;
@@ -18,9 +21,9 @@ module vin_quadencoderz
     always @(posedge clk) quadZ_delayed <= {quadZ_delayed[1:0], quadZ};
     wire count_enable = quadA_delayed[1] ^ quadA_delayed[2] ^ quadB_delayed[1] ^ quadB_delayed[2];
     wire count_direction = quadA_delayed[1] ^ quadB_delayed[2];
-    reg [BITS-1:0] count = 0;
+    reg signed [BITS-1:0] count = 0;
     reg index_wait = 0;
-    assign pos = count;
+    assign pos = $signed(count>>>QUAD_TYPE);
     always @(posedge clk) begin
         if (index_enable == 1 && index_out == 1 && quadZ_delayed == 1) begin
             index_out <= 0;

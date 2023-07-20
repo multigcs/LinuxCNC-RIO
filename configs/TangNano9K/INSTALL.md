@@ -7,14 +7,24 @@ you need the following software to build and run this project:
 * git: https://git-scm.com/book/de/v2/Erste-Schritte-Git-installieren
 * python3: https://www.python.org/downloads/ (allready installed on most systems)
 * make: https://learn.microsoft.com/en-us/windows/package-manager/winget/ (allready installed on most systems)
-* oss-cad-suite-build: https://github.com/YosysHQ/oss-cad-suite-build (NOTE: tested with version: 2023-06-11 / some newer version have a bug)
 * PlatformIO Core: https://platformio.org/install (optional for the Ethernet-Board)
-
+* oss-cad-suite-build: https://github.com/YosysHQ/oss-cad-suite-build (NOTE: there are some bugs in this software, please use: 2023-07-20)
 
 ## get the Sources
 ```
 git clone https://github.com/multigcs/LinuxCNC-RIO
 cd LinuxCNC-RIO
+```
+
+## patching the oss-cad-suite
+to fix a bug in oss-cad-suite, please run this patch command:
+```
+bash patching-oss-cad-suite.sh PATH_TO_OSS_CAD_SUITE
+```
+
+in my case:
+```
+bash patching-oss-cad-suite.sh /opt/oss-cad-suite
 ```
 
 ### copy default config to avoid errors during update

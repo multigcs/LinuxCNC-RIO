@@ -48,5 +48,5 @@ net spindle-speed <= spindle.0.speed-out
 net spindle-speed => rio.SP.0
 ```
 
-use min/max values to scale the speed (RPM in linuxcnc 0-10000RPM) to the right pwm value (0-100%).
+use min/max values to scale the speed (Spindle-RPM in linuxcnc 0-10000RPM) to the right pwm value (0-100%).
 

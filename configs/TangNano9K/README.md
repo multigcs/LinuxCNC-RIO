@@ -66,7 +66,7 @@ Install: see INSTALL.md
 | P14 | EN | 69 |
 | P15 | DIN4 | 68 |
 | P16 | STP_B | 57 |
-| P17 | DIR_B | 56 |
+| P17 | DIR_B / Relais | 56 |
 
 
 ## Mapping: FPGA Onboard Components

@@ -6,7 +6,7 @@ def generate(project):
     print("generating linux-cnc config")
 
     netlist = []
-
+    gui = project["jdata"].get("gui", "axis")
     limit_joints = int(project["jdata"].get("axis", 9))
     num_joints = min(project['joints'], limit_joints)
 
@@ -162,94 +162,118 @@ net j{num}enable 		<= joint.{num}.amp-enable-out 	=> rio.joint.{num}.enable
         "\n".join(cfghal_data)
     )
 
+
+
+
+#MDI_COMMAND = G0 Z25;X0 Y0;Z0, Goto\nUser\nZero
+#MDI_COMMAND = G53 G0 Z0;G53 G0 X0 Y0,Goto\nMachn\nZero
+
+    basic_setup = {
+        "EMC": {
+            "MACHINE": "Rio",
+            "DEBUG": 0,
+            "VERSION": 1.1,
+        },
+        "DISPLAY": {
+            "DISPLAY": None,
+            "EDITOR": None,
+            "PYVCP": None,
+            "PREFERENCE_FILE_PATH": None,
+            "POSITION_OFFSET": "RELATIVE",
+            "POSITION_FEEDBACK": "ACTUAL",
+            "ARCDIVISION": 64,
+            "GRIDS": "10mm 20mm 50mm 100mm",
+            "INTRO_GRAPHIC": "linuxcnc.gif",
+            "INTRO_TIME": 2,
+            "PROGRAM_PREFIX": "~/linuxcnc/nc_files",
+            "INCREMENTS": "50mm 10mm 5mm 1mm .5mm .1mm .05mm .01mm",
+            "MAX_FEED_OVERRIDE": 5.0,
+            "MIN_SPINDLE_0_OVERRIDE": 0.5,
+            "MAX_SPINDLE_0_OVERRIDE": 1.2,
+            "MIN_SPINDLE_0_SPEED": 1000,
+            "DEFAULT_SPINDLE_0_SPEED": 5000,
+            "MAX_SPINDLE_0_SPEED": 20000,
+            "MIN_LINEAR_VELOCITY": 0.0,
+            "DEFAULT_LINEAR_VELOCITY": 10.0,
+            "MAX_LINEAR_VELOCITY": 40.0,
+            "MIN_ANGULAR_VELOCITY": 0.0,
+            "DEFAULT_ANGULAR_VELOCITY": 2.5,
+            "MAX_ANGULAR_VELOCITY": 5.0,
+        },
+        "KINS": {
+            "JOINTS": num_joints,
+            "KINEMATICS": f"trivkins coordinates={axis_str}",
+        },
+        "FILTER": {
+            "PROGRAM_EXTENSION": ".py Python Script",
+            "py": "python",
+        },
+        "TASK": {
+            "TASK": "milltask",
+            "CYCLE_TIME": 0.010,
+        },
+        "RS274NGC": {
+            "PARAMETER_FILE": "linuxcnc.var",
+            "SUBROUTINE_PATH": "./subroutines/",
+            "USER_M_PATH": "./mcodes/",
+        },
+        "EMCMOT": {
+            "EMCMOT": "motmod",
+            "COMM_TIMEOUT": 1.0,
+            "COMM_WAIT": 0.010,
+            "BASE_PERIOD": 0,
+            "SERVO_PERIOD": 1000000,
+        },
+        "HAL": {
+            "HALFILE": "rio.hal",
+            "POSTGUI_HALFILE": "postgui_call_list.hal",
+            "HALUI": "halui",
+        },
+        "HALUI": {
+            "MDI_COMMAND": [
+                "G92 X0 Y0",
+                "G92 Z0",
+                "o<z_touch> call",
+            ],
+        },
+        "TRAJ": {
+            "COORDINATES": axis_str2,
+            "LINEAR_UNITS": "mm",
+            "ANGULAR_UNITS": "degree",
+            "CYCLE_TIME": 0.010,
+            "DEFAULT_LINEAR_VELOCITY": 50.00,
+            "MAX_LINEAR_VELOCITY": 50.00,
+            "NO_FORCE_HOMING": 1,
+        },
+        "EMCIO": {
+            "EMCIO": "io",
+            "CYCLE_TIME": 0.100,
+            "TOOL_TABLE": "tool.tbl",
+        },
+    }
+
+    if gui == "qtdragon":
+        basic_setup["DISPLAY"]["DISPLAY"] = "qtvcp qtdragon"
+        basic_setup["DISPLAY"]["PREFERENCE_FILE_PATH"] = "WORKINGFOLDER/qtdragon.pref"
+    else:
+        basic_setup["DISPLAY"]["DISPLAY"] = "axis"
+        basic_setup["DISPLAY"]["EDITOR"] = "gedit"
+        basic_setup["DISPLAY"]["PYVCP"] = "rio-gui.xml"
+
+
     cfgini_data = []
-    cfgini_data.append(
-        f"""
-# Basic LinuxCNC config for testing RIO firmware
+    cfgini_data.append("# Basic LinuxCNC config for testing RIO firmware")
+    cfgini_data.append("")
+    for section, setup in basic_setup.items():
+        cfgini_data.append(f"[{section}]")
+        for key, value in setup.items():
+            if isinstance(value, list):
+                for entry in value:
+                    cfgini_data.append(f"{key} = {entry}")
+            elif value != None:
+                cfgini_data.append(f"{key} = {value}")
+        cfgini_data.append("")
 
-[EMC]
-MACHINE = Rio
-DEBUG = 0
-VERSION = 1.1
-
-[DISPLAY]
-PYVCP = rio-gui.xml
-DISPLAY = axis
-EDITOR = gedit
-POSITION_OFFSET = RELATIVE
-POSITION_FEEDBACK = ACTUAL
-ARCDIVISION = 64
-GRIDS = 10mm 20mm 50mm 100mm
-INTRO_GRAPHIC = linuxcnc.gif
-INTRO_TIME = 2
-PROGRAM_PREFIX = ~/linuxcnc/nc_files
-INCREMENTS = 50mm 10mm 5mm 1mm .5mm .1mm .05mm .01mm
-
-MAX_FEED_OVERRIDE = 5.0
-
-MIN_SPINDLE_OVERRIDE = 0.5
-MAX_SPINDLE_OVERRIDE = 1.2
-
-MIN_LINEAR_VELOCITY = 0.0
-DEFAULT_LINEAR_VELOCITY = 10.0
-MAX_LINEAR_VELOCITY = 40.0
-
-MIN_ANGULAR_VELOCITY = 0.0
-DEFAULT_ANGULAR_VELOCITY = 2.5
-MAX_ANGULAR_VELOCITY = 5.0
-
-
-[KINS]
-JOINTS = {num_joints}
-#KINEMATICS = trivkins coordinates={axis_str} kinstype=BOTH
-KINEMATICS = trivkins coordinates={axis_str}
-
-[FILTER]
-PROGRAM_EXTENSION = .py Python Script
-py = python
-
-[TASK]
-TASK = milltask
-CYCLE_TIME = 0.010
-
-[RS274NGC]
-PARAMETER_FILE = linuxcnc.var
-SUBROUTINE_PATH = ./subroutines/
-USER_M_PATH = ./mcodes/
-
-[EMCMOT]
-EMCMOT = motmod
-COMM_TIMEOUT = 1.0
-COMM_WAIT = 0.010
-BASE_PERIOD = 0
-SERVO_PERIOD = 1000000
-
-[HAL]
-HALFILE = rio.hal
-POSTGUI_HALFILE = postgui_call_list.hal
-HALUI = halui
-
-[HALUI]
-MDI_COMMAND = G92 X0 Y0
-MDI_COMMAND = G92 Z0
-MDI_COMMAND = o<z_touch> call
-
-[TRAJ]
-COORDINATES =  {axis_str2}
-LINEAR_UNITS = mm
-ANGULAR_UNITS = degree
-CYCLE_TIME = 0.010
-DEFAULT_LINEAR_VELOCITY = 50.00
-MAX_LINEAR_VELOCITY = 50.00
-NO_FORCE_HOMING = 1 
-
-[EMCIO]
-EMCIO = io
-CYCLE_TIME = 0.100
-TOOL_TABLE = tool.tbl
-
-    """
-    )
 
     for num, joint in enumerate(project["jdata"]["joints"]):
         # limit axis configurations
@@ -284,7 +308,6 @@ TOOL_TABLE = tool.tbl
 MAX_ACCELERATION = {MAX_ACCELERATION}
 MIN_LIMIT = {MIN_LIMIT}
 MAX_LIMIT = {MAX_LIMIT}
-
 """
             )
         else:
@@ -293,7 +316,6 @@ MAX_LIMIT = {MAX_LIMIT}
 MAX_ACCELERATION = {MAX_ACCELERATION}
 MIN_LIMIT = {MIN_LIMIT}
 MAX_LIMIT = {MAX_LIMIT}
-
 """
             )
 
@@ -319,8 +341,7 @@ MAX_LIMIT = {MAX_LIMIT}
         if num > 2:
             # rotary axis
             cfgini_data.append(
-                f"""
-TYPE = ANGULAR
+                f"""TYPE = ANGULAR
 MIN_LIMIT = {MIN_LIMIT}
 MAX_LIMIT = {MAX_LIMIT}
 MAX_VELOCITY = {MAX_VELOCITY}
@@ -348,8 +369,7 @@ HOME_SEQUENCE = 0
             )
         else:
             cfgini_data.append(
-                f"""
-TYPE = LINEAR
+                f"""TYPE = LINEAR
 MIN_LIMIT = {MIN_LIMIT}
 MAX_LIMIT = {MAX_LIMIT}
 MAX_VELOCITY = {MAX_VELOCITY}
@@ -358,7 +378,6 @@ STEPGEN_MAXACCEL = 4000.0
 {scales}
 FERROR = 1.0
 MIN_FERROR = 0.5
-
 """
             )
 
@@ -483,7 +502,6 @@ MIN_FERROR = 0.5
                 cfghal_data.append(f"net jog-counts => joint.{jnum}.jog-counts axis.{axis_str}.jog-counts")
                 #cfghal_data.append(f"net jog-enable-{axis_str} axisui.jog.{axis_str} => joint.{jnum}.jog-enable axis.{axis_str}.jog-enable")
                 cfghal_data.append(f"net jog-enable-{axis_str} pyvcp.jog-axis.{axis_str} => joint.{jnum}.jog-enable axis.{axis_str}.jog-enable")
-            #cfghal_data.append("sets jog-vel-mode 1")
             cfghal_data.append(f"net jog-counts <= rio.PV.{num}-s32")
             cfghal_data.append("")
         else:
@@ -810,12 +828,22 @@ MIN_FERROR = 0.5
         "\n".join(cfgxml_data)
     )
 
+    postgui_list = []
+    if gui == "axis":
+        postgui_list.append("source custom_postgui.hal")
+    open(f"{project['LINUXCNC_PATH']}/ConfigSamples/rio/postgui_call_list.hal", "w").write(
+        "\n".join(postgui_list)
+    )
+
+    tool_tbl = []
+    tool_tbl.append("T1 P1 D0.125000 Z+0.511000 ;1/8 end mill")
+    tool_tbl.append("T2 P2 D0.062500 Z+0.100000 ;1/16 end mill")
+    tool_tbl.append("T3 P3 D0.201000 Z+1.273000 ;#7 tap drill")
+    tool_tbl.append("T99999 P99999 Z+0.100000 ;big tool number")
+    open(f"{project['LINUXCNC_PATH']}/ConfigSamples/rio/tool.tbl", "w").write(
+        "\n".join(tool_tbl)
+    )
+
     os.system(
         f"cp -a generators/linuxcnc_config/linuxcnc.var {project['LINUXCNC_PATH']}/ConfigSamples/rio"
-    )
-    os.system(
-        f"cp -a generators/linuxcnc_config/postgui_call_list.hal {project['LINUXCNC_PATH']}/ConfigSamples/rio"
-    )
-    os.system(
-        f"cp -a generators/linuxcnc_config/tool.tbl {project['LINUXCNC_PATH']}/ConfigSamples/rio"
     )

@@ -13,6 +13,7 @@
     "transport": "UDP",
     "ip": "192.168.10.14",
     "axis": 3,
+    "_gui": "qtdragon",
     "interface": [
         {
             "type": "spi",

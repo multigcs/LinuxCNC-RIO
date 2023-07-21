@@ -176,6 +176,8 @@ net j{num}enable 		<= joint.{num}.amp-enable-out 	=> rio.joint.{num}.enable
         },
         "DISPLAY": {
             "DISPLAY": None,
+            "TITLE": "LinuxCNC - RIO",
+            "ICON": None,
             "EDITOR": None,
             "PYVCP": None,
             "PREFERENCE_FILE_PATH": None,
@@ -254,7 +256,14 @@ net j{num}enable 		<= joint.{num}.amp-enable-out 	=> rio.joint.{num}.enable
 
     if gui == "qtdragon":
         basic_setup["DISPLAY"]["DISPLAY"] = "qtvcp qtdragon"
+        basic_setup["DISPLAY"]["ICON"] = "silver_dragon.png"
         basic_setup["DISPLAY"]["PREFERENCE_FILE_PATH"] = "WORKINGFOLDER/qtdragon.pref"
+
+        basic_setup["PROBE"] = {
+            "#USE_PROBE": "versaprobe",
+            "USE_PROBE": "basicprobe",
+        }
+
     else:
         basic_setup["DISPLAY"]["DISPLAY"] = "axis"
         basic_setup["DISPLAY"]["EDITOR"] = "gedit"

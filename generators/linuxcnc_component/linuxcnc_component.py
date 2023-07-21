@@ -55,12 +55,18 @@ def generate(project):
     rio_data.append(f"#define PRU_OSC             {project['jdata']['clock']['speed']}")
     rio_data.append("")
 
-    rio_data.append("#define VOUT_TYPE_PWM  0")
-    rio_data.append("#define VOUT_TYPE_PWMDIR  1")
-    rio_data.append("#define VOUT_TYPE_RCSERVO 2")
-    rio_data.append("#define VOUT_TYPE_SINE 3")
-    rio_data.append("#define VOUT_TYPE_FREQ 4")
-    rio_data.append("#define VOUT_TYPE_UDPOTI 5")
+    rio_data.append("#define VOUT_TYPE_RAW  0")
+    rio_data.append("#define VOUT_TYPE_PWM  1")
+    rio_data.append("#define VOUT_TYPE_PWMDIR  2")
+    rio_data.append("#define VOUT_TYPE_RCSERVO 3")
+    rio_data.append("#define VOUT_TYPE_SINE 4")
+    rio_data.append("#define VOUT_TYPE_FREQ 5")
+    rio_data.append("#define VOUT_TYPE_UDPOTI 6")
+
+    rio_data.append("#define VIN_TYPE_RAW  0")
+    rio_data.append("#define VIN_TYPE_FREQ 1")
+    rio_data.append("#define VIN_TYPE_TIME 2")
+    rio_data.append("#define VIN_TYPE_SONAR 3")
 
     rio_data.append("#define JOINT_FB_REL 0")
     rio_data.append("#define JOINT_FB_ABS 1")
@@ -101,13 +107,31 @@ def generate(project):
 
         if vout.get('type') == "pwm" and vout.get('dir'):
             vouts_type.append(f"VOUT_TYPE_{vout.get('type', 'freq').upper()}DIR")
+        elif vout.get('type') == "frequency":
+            vouts_type.append(f"VOUT_TYPE_FREQ")
+        elif vout.get('type') == "pwm":
+            vouts_type.append(f"VOUT_TYPE_PWM")
+        elif vout.get('type') == "SINE":
+            vouts_type.append(f"VOUT_TYPE_SINE")
+        elif vout.get('type') == "udpoti":
+            vouts_type.append(f"VOUT_TYPE_UDPOTI")
         else:
-            vouts_type.append(f"VOUT_TYPE_{vout.get('type', 'freq').upper()}")
+            vouts_type.append(f"VOUT_TYPE_RAW")
+
+    vins_type = []
+    for vin in project['jdata']["vin"]:
+        if vin.get('type') == "frequency":
+            vins_type.append(f"VIN_TYPE_FREQ")
+        elif vin.get('type') == "pwmcounter":
+            vins_type.append(f"VIN_TYPE_TIME")
+        else:
+            vins_type.append(f"VIN_TYPE_RAW")
 
     rio_data.append(f"float vout_min[VARIABLE_OUTPUTS] = {{{', '.join(vouts_min)}}};")
     rio_data.append(f"float vout_max[VARIABLE_OUTPUTS] = {{{', '.join(vouts_max)}}};")
     rio_data.append(f"float vout_freq[VARIABLE_OUTPUTS] = {{{', '.join(vouts_freq)}}};")
     rio_data.append(f"uint8_t vout_type[VARIABLE_OUTPUTS] = {{{', '.join(vouts_type)}}};")
+    rio_data.append(f"uint8_t vin_type[VARIABLE_INPUTS] = {{{', '.join(vins_type)}}};")
     rio_data.append("")
 
     joints_fb_type = []

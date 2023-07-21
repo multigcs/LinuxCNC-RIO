@@ -791,11 +791,14 @@ MIN_FERROR = 0.5
 
     jogwheel = False
     for num, vin in enumerate(project["jdata"]["vin"]):
-        vout_name = vout.get("name", f"Variable-In{num}")
+        vin_name = vin.get("name", f"Variable-In{num}")
         function = vin.get("function")
         if function == "jogwheel" and not jogwheel:
             jogwheel = True
         else:
+            cfgxml_data.append(f"  <labelframe text=\"{vin_name}\">")
+            cfgxml_data.append("    <relief>RIDGE</relief>")
+            cfgxml_data.append("    <font>(\"Helvetica\", 12)</font>")
             if False:
                 cfgxml_data.append("  <meter>")
                 cfgxml_data.append(f'    <halpin>"vin{num}"</halpin>')
@@ -829,8 +832,9 @@ MIN_FERROR = 0.5
                 cfgxml_data.append("  <number>")
                 cfgxml_data.append(f'    <halpin>"vin{num}"</halpin>')
                 cfgxml_data.append('    <font>("Helvetica",24)</font>')
-                cfgxml_data.append('    <format>"05d"</format>')
+                cfgxml_data.append('    <format>"0.2f"</format>')
                 cfgxml_data.append("  </number>")
+            cfgxml_data.append("  </labelframe>")
 
     cfgxml_data.append("</pyvcp>")
     open(f"{project['LINUXCNC_PATH']}/ConfigSamples/rio/rio-gui.xml", "w").write(

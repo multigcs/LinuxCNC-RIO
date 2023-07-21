@@ -962,8 +962,22 @@ void rio_readwrite()
 
                 // Feedback
                 for (i = 0; i < VARIABLE_INPUTS; i++) {
-                    *(data->processVariable[i]) = rxData.processVariable[i];
-                    *(data->processVariableS32[i]) = (int)rxData.processVariable[i];
+                    float value = rxData.processVariable[i];
+                    if (vin_type[i] == VIN_TYPE_FREQ) {
+                        if (value != 0) {
+                            value = (float)PRU_OSC / value;
+                        }
+                    } else if (vin_type[i] == VIN_TYPE_TIME) {
+                        if (value != 0) {
+                            value = 1000.0 / ((float)PRU_OSC / value);
+                        }
+                    } else if (vin_type[i] == VIN_TYPE_SONAR) {
+                        if (value != 0) {
+                            value = 1000.0 / (float)PRU_OSC / 20.0 * value * 343.2;
+                        }
+                    }
+                    *(data->processVariable[i]) = value;
+                    *(data->processVariableS32[i]) = (int)value;
                 }
 
                 // Inputs

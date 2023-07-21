@@ -63,38 +63,6 @@
             "comment": "LED6",
             "invert": true,
             "pin": "16"
-        },
-        {
-            "invert": true,
-            "pin": "EXPANSION0_OUTPUT[0]"
-        },
-        {
-            "invert": true,
-            "pin": "EXPANSION0_OUTPUT[1]"
-        },
-        {
-            "invert": true,
-            "pin": "EXPANSION0_OUTPUT[2]"
-        },
-        {
-            "invert": true,
-            "pin": "EXPANSION0_OUTPUT[3]"
-        },
-        {
-            "invert": true,
-            "pin": "EXPANSION0_OUTPUT[4]"
-        },
-        {
-            "invert": true,
-            "pin": "EXPANSION0_OUTPUT[5]"
-        },
-        {
-            "invert": true,
-            "pin": "EXPANSION0_OUTPUT[6]"
-        },
-        {
-            "invert": true,
-            "pin": "EXPANSION0_OUTPUT[7]"
         }
     ],
     "din": [
@@ -162,30 +130,6 @@
             "comment": "ADPATER DIN7",
             "pullup": true,
             "pin": "86"
-        },
-        {
-            "pin": "EXPANSION0_INPUT[0]"
-        },
-        {
-            "pin": "EXPANSION0_INPUT[1]"
-        },
-        {
-            "pin": "EXPANSION0_INPUT[2]"
-        },
-        {
-            "pin": "EXPANSION0_INPUT[3]"
-        },
-        {
-            "pin": "EXPANSION0_INPUT[4]"
-        },
-        {
-            "pin": "EXPANSION0_INPUT[5]"
-        },
-        {
-            "pin": "EXPANSION0_INPUT[6]"
-        },
-        {
-            "pin": "EXPANSION0_INPUT[7]"
         }
     ],
     "vout": [

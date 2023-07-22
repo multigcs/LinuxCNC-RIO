@@ -236,7 +236,7 @@ def generate(project):
         for num in range(8):
             bitnum = num + (dbyte * 8)
             if bitnum < project['douts']:
-                dname = project['doutnames'][bitnum]
+                dname = project['doutnames'][bitnum][0]
                 if bitnum in project['jdata']["dout"] and project['jdata']["dout"][bitnum].get("invert", False):
                     top_data.append(f"    assign {dname} = ~rx_data[{pos-1}];")
                 else:
@@ -270,7 +270,7 @@ def generate(project):
         for num in range(8):
             bitnum = num + (dbyte * 8)
             if bitnum < project['dins']:
-                dname = project['dinnames'][bitnum]
+                dname = project['dinnames'][bitnum][0]
                 if bitnum < ldin and project['jdata']["din"][bitnum].get("invert", False):
                     tdins.append(f"~{dname}")
                 else:
@@ -406,7 +406,7 @@ def generate(project):
         makefile_data.append(f"rio.json: {verilogs}")
         makefile_data.append(f"	yosys -q -l yosys.log -p 'synth_gowin -noalu -nowidelut -top rio -json rio.json' {verilogs}")
         makefile_data.append("")
-        makefile_data.append("rio_pnr.json: rio.json")
+        makefile_data.append("rio_pnr.json: rio.json pins.cst")
         makefile_data.append(f"	nextpnr-gowin --seed 0 --json rio.json --write rio_pnr.json --freq {float(project['jdata']['clock']['speed']) / 1000000} --enable-globals --enable-auto-longwires --device ${{DEVICE}} --family ${{FAMILY}} --cst pins.cst")
         makefile_data.append("")
         makefile_data.append("rio.fs: rio_pnr.json")
@@ -425,7 +425,8 @@ def generate(project):
         makefile_data.append("	gtkwave testb.vcd")
         makefile_data.append("")
         makefile_data.append("gowin_build: impl/pnr/project.fs")
-        makefile_data.append("impl/pnr/project.fs: rio.tcl")
+        makefile_data.append("")
+        makefile_data.append(f"impl/pnr/project.fs: rio.tcl pins.cst {verilogs}")
         makefile_data.append("	gw_sh rio.tcl")
         makefile_data.append("")
         makefile_data.append("gowin_load: impl/pnr/project.fs")

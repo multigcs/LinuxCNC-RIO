@@ -51,15 +51,20 @@ class Plugin:
                 vins_out += 1
         return vins_out
 
+    def vdata(self):
+        vdata = []
+        for _num, vin in enumerate(self.jdata.get("vin", [])):
+            if vin.get("type") == "quadencoder":
+                vdata.append(vin)
+        return vdata
+
     def funcs(self):
         func_out = ["    // vin_quadencoder's"]
+        vin_num = 0
         for num, vin in enumerate(self.jdata.get("vin", [])):
             if vin.get("type") == "quadencoder" or vin.get("type") == "mpgencoder":
                 debounce = vin.get("debounce", False)
-                if vin.get("type") == "mpgencoder":
-                    quadType = vin.get("quadType", 2)
-                else:
-                    quadType = vin.get("quadType", 0)
+                quadType = vin.get("quadType", 2)
 
                 if debounce:
                     func_out.append(f"    wire VIN{num}_ENCODER_A_DEBOUNCED;")
@@ -83,9 +88,9 @@ class Plugin:
                 else:
                     func_out.append(f"        .quadA (VIN{num}_ENCODER_A),")
                     func_out.append(f"        .quadB (VIN{num}_ENCODER_B),")
-                func_out.append(f"        .pos (processVariable{num})")
+                func_out.append(f"        .pos (processVariable{vin_num})")
                 func_out.append("    );")
-
+            vin_num += vin.get("vars", 1)
         return func_out
 
     def ips(self):

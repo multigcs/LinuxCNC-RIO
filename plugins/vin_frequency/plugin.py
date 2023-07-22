@@ -54,8 +54,16 @@ class Plugin:
                 vins_out += 1
         return vins_out
 
+    def vdata(self):
+        vdata = []
+        for _num, vin in enumerate(self.jdata.get("vin", [])):
+            if vin.get("type") == "frequency":
+                vdata.append(vin)
+        return vdata
+
     def funcs(self):
         func_out = ["    // vin_frequency's"]
+        vin_num = 0
         for num, vin in enumerate(self.jdata.get("vin", [])):
             if vin.get("type") == "frequency":
                 freq_min = int(vin.get("freq_min", 10))
@@ -63,9 +71,10 @@ class Plugin:
                     f"    vin_frequency #({int(self.jdata['clock']['speed']) // freq_min}) vin_frequency{num} ("
                 )
                 func_out.append("        .clk (sysclk),")
-                func_out.append(f"        .frequency (processVariable{num}),")
+                func_out.append(f"        .frequency (processVariable{vin_num}),")
                 func_out.append(f"        .SIGNAL (VIN{num}_FREQUENCY)")
                 func_out.append("    );")
+            vin_num += vin.get("vars", 1)
 
         return func_out
 

@@ -6,6 +6,8 @@ Install: see INSTALL.md
 
 ## Known-Issues:
 * openFPGAloader will not work on Raspberry Pi, you have to use another host to flash the FPGA !
+* sometimes i have problems with the opensource toolchain and extended configurations, like encoder value will not change
+* you can also using the gowin toolchain if you have problems with the opensource one, all required files are generated
 
 
 ## BOM:

@@ -24,6 +24,7 @@ RealtimeIO for LinuxCNC based on an FPGA
 | [ICEBreakerV1.0e](configs/ICEBreakerV1.0e) | ICEBreakerV1.0e tests |
 | [Lattice-iCE40HX8K_BOB](configs/Lattice-iCE40HX8K_BOB) | Lattice  iCE40HX8K with custom bob |
 | [Colorlight5A-75E](configs/Colorlight5A-75E) | Colorlight5A-75E tests |
+| [Alhambra-II](configs/Alhambra-II) | Alhambra II FPGA board with 3 Axis SPI |
 
 
 ## Plugins:

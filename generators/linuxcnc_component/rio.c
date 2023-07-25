@@ -889,6 +889,8 @@ void rio_readwrite()
             for (i = 0; i < JOINTS; i++) {
                 if (joints_type[i] == JOINT_PWMDIR) {
                     txData.jointFreqCmd[i] = data->freq[i];
+                } else if (joints_type[i] == JOINT_STEPPER) {
+                    txData.jointFreqCmd[i] = PRU_OSC / data->freq[i] / 2;
                 } else {
                     txData.jointFreqCmd[i] = PRU_OSC / data->freq[i];
                 }

@@ -40,54 +40,56 @@
     },
     "dout": [
         {
-            "comment": "relais",
+            "name": "flood-enable",
+            "net": "iocontrol.0.coolant-flood",
+            "comment": "P16",
+            "invert": true,
+            "pin": "57"
+        },
+        {
+            "name": "spindle-enable",
+            "net": "spindle.0.on",
+            "comment": "P17",
             "invert": true,
             "pin": "56"
-        },
-        {
-            "comment": "LED3",
-            "invert": true,
-            "pin": "13"
-        },
-        {
-            "comment": "LED4",
-            "invert": true,
-            "pin": "14"
-        },
-        {
-            "comment": "LED5",
-            "invert": true,
-            "pin": "15"
-        },
-        {
-            "comment": "LED6",
-            "invert": true,
-            "pin": "16"
         }
     ],
     "din": [
         {
+            "name": "home-x",
+            "net": "joint.0.home-sw-in",
             "comment": "BOB DIN0",
+            "_invert": true,
             "pullup": true,
             "pin": "33"
         },
         {
+            "name": "home-y",
+            "net": "joint.1.home-sw-in",
             "comment": "BOB DIN1",
+            "_invert": true,
             "pullup": true,
             "pin": "30"
         },
         {
+            "name": "home-z",
+            "net": "joint.2.home-sw-in",
             "comment": "BOB DIN2",
+            "_invert": true,
             "pullup": true,
             "pin": "29"
         },
         {
+            "name": "tool-probe",
+            "net": "motion.probe-input",
             "comment": "BOB DIN3",
+            "_invert": true,
             "pullup": true,
             "pin": "28"
         },
         {
             "comment": "BOB DIN4",
+            "_invert": true,
             "pullup": true,
             "pin": "68"
         },
@@ -134,6 +136,11 @@
     ],
     "vout": [
         {
+            "name": "spindle-speed",
+            "net": "spindle.0.speed-out",
+            "min": "0",
+            "max": "20000",
+            "_invert": true,
             "type": "pwm",
             "pin": "55"
         }

@@ -1,0 +1,104 @@
+{
+    "name": "Alhambra-II",
+    "description": "Alhambra II FPGA board with 3 Axis SPI",
+    "board": "Alhambra-II",
+    "toolchain": "icestorm",
+    "family": "ice40",
+    "type": "hx4k",
+    "package": "tq144",
+    "clock": {
+        "speed": "12000000",
+        "pin": "49"
+    },
+    "transport": "UDP",
+    "ip": "192.168.10.28",
+    "axis": 3,
+    "interface": [
+        {
+            "type": "spi",
+            "pins": {
+                "MOSI": "20",
+                "MISO": "19",
+                "SCK": "22",
+                "SEL": "21"
+            }
+        }
+    ],
+    "blink": {
+        "pin": "37"
+    },
+    "error": {
+        "invert": true,
+        "pin": "38"
+    },
+    "enable": {
+        "pin": "39"
+    },
+    "dout": [
+        {
+            "pin": "41"
+        },
+        {
+            "pin": "42"
+        },
+        {
+            "pin": "43"
+        },
+        {
+            "pin": "44"
+        }
+    ],
+    "din": [
+        {
+            "pullup": true,
+            "pin": "63"
+        },
+        {
+            "pullup": true,
+            "pin": "64"
+        }
+    ],
+    "vout": [
+        {
+            "type": "pwm",
+            "pin": "45"
+        }
+    ],
+    "vin": [
+        {
+            "type": "counter",
+            "pullup": true,
+            "pin_up": "34",
+            "pin_down": "33"
+        }
+    ],
+    "joints": [
+        {
+            "type": "stepper",
+            "cl": false,
+            "scale": 800,
+            "pins": {
+                "step": "1",
+                "dir": "2"
+            }
+        },
+        {
+            "type": "stepper",
+            "cl": false,
+            "scale": 800,
+            "pins": {
+                "step": "3",
+                "dir": "4"
+            }
+        },
+        {
+            "type": "stepper",
+            "cl": false,
+            "scale": 800,
+            "pins": {
+                "step": "7",
+                "dir": "8"
+            }
+        }
+    ]
+}

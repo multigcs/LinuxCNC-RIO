@@ -3,26 +3,63 @@
 #
 
 #
+# wget -O files/digitaljs.js https://tilk.github.io/digitaljs/main.js
+#
 # cd /usr/src/
 # git clone https://github.com/tilk/yosys2digitaljs.git
 # cd yosys2digitaljs
 # npm install
 #
-# wget -O files/digitaljs.js https://tilk.github.io/digitaljs/main.js
-#
+
+if test "$1" = "all"
+then
+
+    mkdir -p HTML-SIMULATION
+    rm -rf HTML-SIMULATION/*
+
+    cat <<EOF > HTML-SIMULATION/index.html
+<html>
+  <frameset cols="300, *">
+    <frame src="menu.html" name="nav">
+    <frame src="vout_pwm.html" name="main">
+  </frameset>
+</html>
+EOF
+
+    echo "<h3>RIO-Plugins</h3>" > HTML-SIMULATION/menu.html
+
+    for P in `ls plugins/*/*_*.v`
+    do
+        P_DIR=`dirname $P`
+        P_NAME=`basename $P | sed "s|\.v$||g"`
+        echo "<a target='main' href='$P_NAME.html'>$P_NAME</a><br/>" >> HTML-SIMULATION/menu.html
+        sh $0 $P HTML-SIMULATION
+    done
+    echo "" >> HTML-SIMULATION/menu.html
+
+
+
+    cat HTML-SIMULATION/index.html
+
+    exit 0
+fi
 
 VERILOG_FILE=$1
 VERILOG_DIR=`dirname $1`
 VERILOG_NAME=`basename $1 | sed "s|\.v$||g"`
-
 SCRIPT_DIR=`dirname $0`
+OUTPUT=$VERILOG_DIR
 
-echo "## $VERILOG_DIR $VERILOG_NAME"
+if test "$2" != ""
+then
+    OUTPUT="$2"
+fi
 
+echo "generating: $OUTPUT/$VERILOG_NAME.html"
 
-/usr/src/yosys2digitaljs/process.js "$VERILOG_FILE" > "$VERILOG_DIR/$VERILOG_NAME.json"
+/usr/src/yosys2digitaljs/process.js "$VERILOG_FILE" > "$OUTPUT/$VERILOG_NAME.json"
 
-cat <<EOF > "$VERILOG_DIR/$VERILOG_NAME.html"
+cat <<EOF > "$OUTPUT/$VERILOG_NAME.html"
 <!DOCTYPE html>
 <html>
   <head>
@@ -105,13 +142,13 @@ cat <<EOF > "$VERILOG_DIR/$VERILOG_NAME.html"
       \$('button[name=live]').on('click', (e) => { monitorview.live = true; });
       \$(window).ready(function () { loadCircuit(
 EOF
-cat "$VERILOG_DIR/$VERILOG_NAME.json" >> "$VERILOG_DIR/$VERILOG_NAME.html"
-cat <<EOF >> "$VERILOG_DIR/$VERILOG_NAME.html"
+cat "$OUTPUT/$VERILOG_NAME.json" >> "$OUTPUT/$VERILOG_NAME.html"
+cat <<EOF >> "$OUTPUT/$VERILOG_NAME.html"
           ) });
     </script>
   </body>
 </html>
 EOF
 
-cp "$SCRIPT_DIR/digitaljs.js" "$VERILOG_DIR"
+cp "$SCRIPT_DIR/digitaljs.js" "$OUTPUT"
 

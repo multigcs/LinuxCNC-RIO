@@ -371,9 +371,13 @@ def generate(project):
     open(f"{project['SOURCE_PATH']}/testb.v", "w").write("\n".join(testb_data))
 
     board = project['jdata'].get("board")
-    if board == "TangNano9K":
+    if board == "TangNano9K" or board == "TangNano20K":
         family = project['jdata']["family"]
         ftype = project['jdata']["type"]
+        if family == "GW1N-9C":
+            family_gowin = "GW1NR-9C"
+        else:
+            family_gowin = project['jdata']["family"]
 
         lpf_data = []
         lpf_data.append("")
@@ -440,7 +444,12 @@ def generate(project):
         prj_data.append("<Project>")
         prj_data.append("    <Template>FPGA</Template>")
         prj_data.append("    <Version>5</Version>")
-        prj_data.append("    <Device name=\"GW1NR-9C\" pn=\"GW1NR-LV9QN88PC6/I5\">gw1nr9c-004</Device>")
+        if family == "GW1N-9C":
+            prj_data.append(f"    <Device name=\"{family_gowin}\" pn=\"{ftype}\">gw1nr9c-004</Device>")
+        elif family == "GW2AR-18":
+            prj_data.append("    <Device name=\"\" pn=\"\">gw2ar18c-000</Device>")
+        else:
+            prj_data.append(f"    <Device name=\"{family_gowin}\" pn=\"{ftype}\">gw2ar-18-004</Device>")
         prj_data.append("    <FileList>")
         for verilog in verilogs.split():
             prj_data.append(f"        <File path=\"{verilog}\" type=\"file.verilog\" enable=\"1\"/>")
@@ -539,7 +548,7 @@ def generate(project):
 
         # generating tcl script for the gowin toolchain
         tcl_data = []
-        tcl_data.append("set_device -name GW1NR-9C GW1NR-LV9QN88PC6/I5")
+        tcl_data.append(f"set_device -name {family_gowin} {ftype}")
         for verilog in verilogs.split():
             tcl_data.append(f"add_file {verilog}")
         tcl_data.append("add_file pins.cst")

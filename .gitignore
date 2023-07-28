@@ -173,3 +173,7 @@ rio.asc
 
 Output/
 
+
+plugins/*/*.json
+plugins/*/*.html
+plugins/*/*.js

@@ -9,3 +9,6 @@ Variable-Input for Quad-Encoder (int32_t)
     "pin_b": "D1"
 },
 ```
+
+# Verilog-Flowchart
+![graphviz](./vin_quadencoder.svg)

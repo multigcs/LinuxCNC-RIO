@@ -11,6 +11,6 @@ Variable-Input for Quad-Encoder with Z-Pin (int32_t)
 },
 ```
 
-# Verilog-Flowchart
+# vin_quadencoderz.v
 ![graphviz](./vin_quadencoderz.svg)
 

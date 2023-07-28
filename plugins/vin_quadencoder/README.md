@@ -10,5 +10,6 @@ Variable-Input for Quad-Encoder (int32_t)
 },
 ```
 
-# Verilog-Flowchart
+# vin_quadencoder.v
 ![graphviz](./vin_quadencoder.svg)
+

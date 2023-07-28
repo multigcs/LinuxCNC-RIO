@@ -14,6 +14,6 @@ RCSERVO Joint Output
 },
 ```
 
-# Verilog-Flowchart
+# joint_rcservo.v
 ![graphviz](./joint_rcservo.svg)
 

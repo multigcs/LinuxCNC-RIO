@@ -71,15 +71,14 @@ FERROR = 1.0
 MIN_FERROR = 0.5
 ```
 
-
-# Verilog-Flowchart
+# joint_stepper_nf.v
 ![graphviz](./joint_stepper_nf.svg)
 
 
-# Verilog-Flowchart
+# joint_stepper.v
 ![graphviz](./joint_stepper.svg)
 
 
-# Verilog-Flowchart
+# quad_encoder.v
 ![graphviz](./quad_encoder.svg)
 

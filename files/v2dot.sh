@@ -29,9 +29,8 @@ dot -Tsvg $VERILOG_NAME.dot -o $VERILOG_NAME.svg
 if test -e README.md && ! grep -s -q $VERILOG_NAME.svg README.md
 then
     echo "" >> README.md
-    echo "# Verilog-Flowchart" >> README.md
+    echo "# $VERILOG_NAME.v" >> README.md
     echo "![graphviz](./$VERILOG_NAME.svg)" >> README.md
     echo "" >> README.md
 fi
-
 

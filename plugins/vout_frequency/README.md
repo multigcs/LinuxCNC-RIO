@@ -9,6 +9,6 @@ Variable-Output for frequencys
 },
 ```
 
-# Verilog-Flowchart
+# vout_frequency.v
 ![graphviz](./vout_frequency.svg)
 

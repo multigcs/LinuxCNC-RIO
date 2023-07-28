@@ -29,6 +29,6 @@ Up/Down-Counter:
 },
 ```
 
-# Verilog-Flowchart
+# vin_pulsecounter.v
 ![graphviz](./vin_pulsecounter.svg)
 

@@ -12,6 +12,6 @@ the freq_min is used to set the value to 0 if no signal detected
 },
 ```
 
-# Verilog-Flowchart
+# vin_frequency.v
 ![graphviz](./vin_frequency.svg)
 

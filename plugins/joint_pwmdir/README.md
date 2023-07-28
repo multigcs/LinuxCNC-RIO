@@ -14,6 +14,6 @@ PWM Joint Output with DIR-Pin
 }
 ```
 
-# Verilog-Flowchart
+# joint_pwmdir.v
 ![graphviz](./joint_pwmdir.svg)
 

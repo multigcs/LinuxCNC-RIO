@@ -14,6 +14,6 @@ communication interface ( RPI(Master) <-SPI-> FPGA(Slave) )
 }
 ```
 
-# Verilog-Flowchart
+# interface_spislave.v
 ![graphviz](./interface_spislave.svg)
 

@@ -10,6 +10,6 @@ Variable-Input for distance measurement via ultrasonic sonar sensor (HC-SR04)
 },
 ```
 
-# Verilog-Flowchart
+# vin_sonar.v
 ![graphviz](./vin_sonar.svg)
 

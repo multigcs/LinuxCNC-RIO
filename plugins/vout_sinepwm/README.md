@@ -20,6 +20,6 @@ single Sine-Wave
 }
 ```
 
-# Verilog-Flowchart
+# vout_sinepwm.v
 ![graphviz](./vout_sinepwm.svg)
 

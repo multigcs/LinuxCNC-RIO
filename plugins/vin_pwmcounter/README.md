@@ -9,6 +9,6 @@ Variable-Input for pulse width measurement
 },
 ```
 
-# Verilog-Flowchart
+# vin_pwmcounter.v
 ![graphviz](./vin_pwmcounter.svg)
 

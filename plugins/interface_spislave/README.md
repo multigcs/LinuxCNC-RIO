@@ -13,3 +13,7 @@ communication interface ( RPI(Master) <-SPI-> FPGA(Slave) )
     }
 }
 ```
+
+# Verilog-Flowchart
+![graphviz](./interface_spislave.svg)
+

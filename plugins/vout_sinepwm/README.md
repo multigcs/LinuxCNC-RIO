@@ -19,3 +19,7 @@ single Sine-Wave
     "pins": ["P5", "N6", "N7"]
 }
 ```
+
+# Verilog-Flowchart
+![graphviz](./vout_sinepwm.svg)
+

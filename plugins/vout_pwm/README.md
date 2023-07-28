@@ -50,3 +50,7 @@ net spindle-speed => rio.SP.0
 
 use min/max values to scale the speed (Spindle-RPM in linuxcnc 0-10000RPM) to the right pwm value (0-100%).
 
+
+# Verilog-Flowchart
+![graphviz](./vout_pwm.svg)
+

@@ -8,3 +8,7 @@ Variable-Input for pulse width measurement
     "pin": "H5"
 },
 ```
+
+# Verilog-Flowchart
+![graphviz](./vin_pwmcounter.svg)
+

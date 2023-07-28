@@ -39,3 +39,7 @@ Expansion to add I/O's via shiftregister's
 | load |  | SH/LD |
 
 
+
+# Verilog-Flowchart
+![graphviz](./expansion_shiftreg.svg)
+

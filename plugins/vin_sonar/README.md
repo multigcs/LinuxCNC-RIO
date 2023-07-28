@@ -9,3 +9,7 @@ Variable-Input for distance measurement via ultrasonic sonar sensor (HC-SR04)
     "pin_echo": "G6"
 },
 ```
+
+# Verilog-Flowchart
+![graphviz](./vin_sonar.svg)
+

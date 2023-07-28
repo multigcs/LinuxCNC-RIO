@@ -28,3 +28,7 @@ Up/Down-Counter:
     "pin_down": "H6",
 },
 ```
+
+# Verilog-Flowchart
+![graphviz](./vin_pulsecounter.svg)
+

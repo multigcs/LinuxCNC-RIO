@@ -8,3 +8,7 @@ Variable-Output for frequencys
     "pin": "T3",
 },
 ```
+
+# Verilog-Flowchart
+![graphviz](./vout_frequency.svg)
+

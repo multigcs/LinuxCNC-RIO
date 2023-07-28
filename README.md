@@ -11,7 +11,7 @@ RealtimeIO for LinuxCNC based on an FPGA
 * using free FPGA-Toolchain
 * tested on ICE40UP5K, ICE40LP8K, ICE40HX8K, ECP5 and TangNano9K boards
 
-![tango](https://raw.githubusercontent.com/multigcs/LinuxCNC-RIO/main/files/tango.jpg)
+![tango](./files/tango.jpg)
 
 
 ## Sample-Configs:

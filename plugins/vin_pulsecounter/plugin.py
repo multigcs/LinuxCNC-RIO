@@ -64,13 +64,21 @@ class Plugin:
                 vins_out += 1
         return vins_out
 
+    def vdata(self):
+        vdata = []
+        for _num, vin in enumerate(self.jdata.get("vin", [])):
+            if vin.get("type") == "counter":
+                vdata.append(vin)
+        return vdata
+
     def funcs(self):
         func_out = ["    // vin_pulsecounter's"]
+        vin_num = 0
         for num, vin in enumerate(self.jdata.get("vin", [])):
             if vin.get("type") in ("counter",):
                 func_out.append(f"    vin_pulsecounter vin_pulsecounter{num} (")
                 func_out.append("        .clk (sysclk),")
-                func_out.append(f"        .counter (processVariable{num}),")
+                func_out.append(f"        .counter (processVariable{vin_num}),")
                 if "pin_up" in vin:
                     func_out.append(f"        .UP (VIN{num}_PULSECOUNTER_UP),")
                 else:
@@ -84,6 +92,7 @@ class Plugin:
                 else:
                     func_out.append("        .RESET (1'd0)")
                 func_out.append("    );")
+            vin_num += vin.get("vars", 1)
         return func_out
 
     def ips(self):

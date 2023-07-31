@@ -38,8 +38,16 @@ class Plugin:
                 vins_out += 1
         return vins_out
 
+    def vdata(self):
+        vdata = []
+        for _num, vin in enumerate(self.jdata.get("vin", [])):
+            if vin.get("type") == "sonar":
+                vdata.append(vin)
+        return vdata
+
     def funcs(self):
         func_out = ["    // vin_sonar's"]
+        vin_num = 0
         for num, vin in enumerate(self.jdata.get("vin", [])):
             if vin.get("type") == "sonar":
                 osc = int(self.jdata['clock']['speed'])
@@ -49,9 +57,9 @@ class Plugin:
                 func_out.append("        .clk (sysclk),")
                 func_out.append(f"        .trigger (VIN{num}_SONAR_TRIGGER),")
                 func_out.append(f"        .echo (VIN{num}_SONAR_ECHO),")
-                func_out.append(f"        .distance (processVariable{num})")
+                func_out.append(f"        .distance (processVariable{vin_num})")
                 func_out.append("    );")
-
+            vin_num += vin.get("vars", 1)
         return func_out
 
     def ips(self):

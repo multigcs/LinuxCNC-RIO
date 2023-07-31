@@ -31,5 +31,5 @@ class Plugin:
     def doutnames(self):
         douts_out = []
         for num, _dout in enumerate(self.jdata["dout"]):
-            douts_out.append(f"DOUT{num}")
+            douts_out.append((f"DOUT{num}", f"DOUT.{num}"))
         return douts_out

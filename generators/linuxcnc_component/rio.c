@@ -95,10 +95,14 @@ typedef struct {
     float			prev_cmd[JOINTS];
     float			cmd_d[JOINTS];					// command derivative
     hal_float_t 	*setPoint[VARIABLE_OUTPUTS];
+    hal_float_t 	*setPointOffset[VARIABLE_OUTPUTS];
+    hal_float_t 	*setPointScale[VARIABLE_OUTPUTS];
     hal_float_t 	*processVariable[VARIABLE_INPUTS];
     hal_s32_t 	    *processVariableS32[VARIABLE_INPUTS];
     hal_bit_t   	*outputs[DIGITAL_OUTPUT_BYTES * 8];
     hal_bit_t   	*inputs[DIGITAL_INPUT_BYTES * 8 * 2]; // for not pins * 2
+    hal_float_t 	*processVariableScale[VARIABLE_INPUTS];
+    hal_float_t 	*processVariableOffset[VARIABLE_INPUTS];
 #ifdef INDEX_MAX
     hal_bit_t   	*index_enable[INDEX_MAX];
 #endif
@@ -385,20 +389,34 @@ int rtapi_app_main(void)
                                     comp_id, "%s.SP.%01d", prefix, n);
         if (retval < 0) goto error;
         *(data->setPoint[n]) = 0.0;
+
+		retval = hal_pin_float_newf(HAL_IN, &(data->setPointScale[n]),
+									comp_id, "%s.SP.%01d-scale", prefix, n);
+        if (retval < 0) goto error;
+        *(data->setPointScale[n]) = 1.0;
+
+		retval = hal_pin_float_newf(HAL_IN, &(data->setPointOffset[n]),
+									comp_id, "%s.SP.%01d-offset", prefix, n);
+        if (retval < 0) goto error;
+        *(data->setPointOffset[n]) = 0.0;
     }
 
     for (n = 0; n < VARIABLE_INPUTS; n++) {
-		retval = hal_pin_float_newf(HAL_OUT, &(data->processVariable[n]),
-									comp_id, "%s.PV.%01d", prefix, n);
+		retval = hal_pin_float_newf(HAL_OUT, &(data->processVariable[n]), comp_id, "%s.PV.%01d", prefix, n);
         if (retval < 0) goto error;
         *(data->processVariable[n]) = 0.0;
 
-		retval = hal_pin_s32_newf(HAL_OUT, &(data->processVariableS32[n]),
-									comp_id, "%s.PV.%01d-s32", prefix, n);
+		retval = hal_pin_s32_newf(HAL_OUT, &(data->processVariableS32[n]), comp_id, "%s.PV.%01d-s32", prefix, n);
         if (retval < 0) goto error;
         *(data->processVariableS32[n]) = 0;
 
+		retval = hal_pin_float_newf(HAL_IN, &(data->processVariableScale[n]), comp_id, "%s.PV.%01d-scale", prefix, n);
+        if (retval < 0) goto error;
+        *(data->processVariableScale[n]) = 1.0;
 
+		retval = hal_pin_float_newf(HAL_IN, &(data->processVariableOffset[n]), comp_id, "%s.PV.%01d-offset", prefix, n);
+        if (retval < 0) goto error;
+        *(data->processVariableOffset[n]) = 0.0;
     }
 
     int index_num = 0;
@@ -874,6 +892,8 @@ void rio_readwrite()
             for (i = 0; i < JOINTS; i++) {
                 if (joints_type[i] == JOINT_PWMDIR) {
                     txData.jointFreqCmd[i] = data->freq[i];
+                } else if (joints_type[i] == JOINT_STEPPER) {
+                    txData.jointFreqCmd[i] = PRU_OSC / data->freq[i] / 2;
                 } else {
                     txData.jointFreqCmd[i] = PRU_OSC / data->freq[i];
                 }
@@ -890,28 +910,33 @@ void rio_readwrite()
 
             // Set points
             for (i = 0; i < VARIABLE_OUTPUTS; i++) {
+
+                float value = *(data->setPoint[i]);
+                value *= *(data->setPointScale[i]);
+                value += *(data->setPointOffset[i]);
+
                 if (vout_type[i] == VOUT_TYPE_SINE) {
-                    txData.setPoint[i] = PRU_OSC / *(data->setPoint[i]) / vout_freq[i];
+                    txData.setPoint[i] = PRU_OSC / value / vout_freq[i];
                 } else if (vout_type[i] == VOUT_TYPE_PWMDIR) {
-                    if (*(data->setPoint[i]) > vout_max[i]) {
-                        *(data->setPoint[i]) = vout_max[i];
+                    if (value > vout_max[i]) {
+                        value = vout_max[i];
                     }
-                    if (*(data->setPoint[i]) < -vout_max[i]) {
-                        *(data->setPoint[i]) = -vout_max[i];
+                    if (value < -vout_max[i]) {
+                        value = -vout_max[i];
                     }
-                    txData.setPoint[i] = (*(data->setPoint[i])) * (PRU_OSC / vout_freq[i]) / (vout_max[i]);
+                    txData.setPoint[i] = (value) * (PRU_OSC / vout_freq[i]) / (vout_max[i]);
                 } else if (vout_type[i] == VOUT_TYPE_PWM) {
-                    if (*(data->setPoint[i]) > vout_max[i]) {
-                        *(data->setPoint[i]) = vout_max[i];
+                    if (value > vout_max[i]) {
+                        value = vout_max[i];
                     }
-                    if (*(data->setPoint[i]) < vout_min[i]) {
-                        *(data->setPoint[i]) = vout_min[i];
+                    if (value < vout_min[i]) {
+                        value = vout_min[i];
                     }
-                    txData.setPoint[i] = (*(data->setPoint[i]) - vout_min[i]) * (PRU_OSC / vout_freq[i]) / (vout_max[i] - vout_min[i]);
+                    txData.setPoint[i] = (value - vout_min[i]) * (PRU_OSC / vout_freq[i]) / (vout_max[i] - vout_min[i]);
                 } else if (vout_type[i] == VOUT_TYPE_RCSERVO) {
-                    txData.setPoint[i] = (*(data->setPoint[i]) + 200 + 100) * (PRU_OSC / 200000);
+                    txData.setPoint[i] = (value + 200 + 100) * (PRU_OSC / 200000);
                 } else {
-                    txData.setPoint[i] = (*(data->setPoint[i]) - vout_min[i]) * (0xFFFFFFFF / 2) / (vout_max[i] - vout_min[i]);
+                    txData.setPoint[i] = (value - vout_min[i]) * (0xFFFFFFFF / 2) / (vout_max[i] - vout_min[i]);
                 }
             }
 
@@ -970,17 +995,42 @@ void rio_readwrite()
                         if (value != 0) {
                             value = (float)PRU_OSC / value;
                         }
+                        value *= *(data->processVariableScale[i]);
+                        value += *(data->processVariableOffset[i]);
+                        *(data->processVariable[i]) = value;
+                        *(data->processVariableS32[i]) = (int)value;
                     } else if (vin_type[i] == VIN_TYPE_TIME) {
                         if (value != 0) {
                             value = 1000.0 / ((float)PRU_OSC / value);
                         }
+                        value *= *(data->processVariableScale[i]);
+                        value += *(data->processVariableOffset[i]);
+                        *(data->processVariable[i]) = value;
+                        *(data->processVariableS32[i]) = (int)value;
                     } else if (vin_type[i] == VIN_TYPE_SONAR) {
                         if (value != 0) {
                             value = 1000.0 / (float)PRU_OSC / 20.0 * value * 343.2;
                         }
+                        value *= *(data->processVariableScale[i]);
+                        value += *(data->processVariableOffset[i]);
+                        *(data->processVariable[i]) = value;
+                        *(data->processVariableS32[i]) = (int)value;
+                    } else if (vin_type[i] == VIN_TYPE_ADC) {
+                        value *= *(data->processVariableScale[i]);
+                        value += *(data->processVariableOffset[i]);
+                        *(data->processVariable[i]) = value / 1000.0;
+                        *(data->processVariableS32[i]) = (int)(value / 10);
+                    } else if (vin_type[i] == VIN_TYPE_ENCODER) {
+                        value /= *(data->processVariableScale[i]);
+                        value += *(data->processVariableOffset[i]);
+                        *(data->processVariable[i]) = value;
+                        *(data->processVariableS32[i]) = (int)value;
+                    } else {
+                        value *= *(data->processVariableScale[i]);
+                        value += *(data->processVariableOffset[i]);
+                        *(data->processVariable[i]) = value;
+                        *(data->processVariableS32[i]) = (int)value;
                     }
-                    *(data->processVariable[i]) = value;
-                    *(data->processVariableS32[i]) = (int)value;
                 }
 
                 // Inputs

@@ -88,6 +88,15 @@ if double_pins:
     print("")
     exit(1)
     
+project["vouts"] = 0
+for plugin in project["plugins"]:
+    if hasattr(project["plugins"][plugin], "vouts"):
+        project["vouts"] += project["plugins"][plugin].vouts()
+
+project["vins"] = 0
+for plugin in project["plugins"]:
+    if hasattr(project["plugins"][plugin], "vins"):
+        project["vins"] += project["plugins"][plugin].vins()
 
 project["dins"] = 0
 project["dinnames"] = []
@@ -124,16 +133,10 @@ project["jointtypes"] = []
 for joint in project['jdata']['joints']:
     project["jointtypes"].append(joint['type'])
 
-
-project["vouts"] = 0
+project["vins_data"] = []
 for plugin in project["plugins"]:
-    if hasattr(project["plugins"][plugin], "vouts"):
-        project["vouts"] += project["plugins"][plugin].vouts()
-
-project["vins"] = 0
-for plugin in project["plugins"]:
-    if hasattr(project["plugins"][plugin], "vins"):
-        project["vins"] += project["plugins"][plugin].vins()
+    if hasattr(project["plugins"][plugin], "vdata"):
+        project["vins_data"] += project["plugins"][plugin].vdata()
 
 project["joints"] = 0
 for plugin in project["plugins"]:

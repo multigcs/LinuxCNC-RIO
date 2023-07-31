@@ -13,9 +13,9 @@ module joint_stepper_nf
     assign STP = step;
     always @ (posedge clk) begin
         if (DIR) begin
-            jointFreqCmdAbs <= jointFreqCmd / 2;
+            jointFreqCmdAbs <= jointFreqCmd;
         end else begin
-            jointFreqCmdAbs <= -jointFreqCmd / 2;
+            jointFreqCmdAbs <= -jointFreqCmd;
         end
         jointCounter <= jointCounter + 1;
         if (jointFreqCmd != 0 && jointEnable == 1) begin

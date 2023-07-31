@@ -58,6 +58,13 @@ class Plugin:
                 vins_out += 1
         return vins_out
 
+    def vdata(self):
+        vdata = []
+        for _num, vin in enumerate(self.jdata.get("vin", [])):
+            if vin.get("type") == "quadencoderz":
+                vdata.append(vin)
+        return vdata
+
     def dins(self):
         dins_out = 0
         for num, vin in enumerate(self.jdata.get("vin", [])):
@@ -74,16 +81,20 @@ class Plugin:
 
     def dinnames(self):
         dins_out = []
+        vin_num = 0
         for num, vin in enumerate(self.jdata.get("vin", [])):
             if vin.get("type") == "quadencoderz":
-                dins_out.append(f"VIN{num}_ENCODER_INDEX_OUT")
+                dins_out.append((f"VIN{num}_ENCODER_INDEX_OUT", f"PV.{vin_num}-index-enable-out"))
+            vin_num += vin.get("vars", 1)
         return dins_out
 
     def doutnames(self):
         douts_out = []
+        vin_num = 0
         for num, vin in enumerate(self.jdata.get("vin", [])):
             if vin.get("type") == "quadencoderz":
-                douts_out.append(f"VIN{num}_ENCODER_INDEX_ENABLE")
+                douts_out.append((f"VIN{num}_ENCODER_INDEX_ENABLE", f"PV.{vin_num}-index-enable"))
+            vin_num += vin.get("vars", 1)
         return douts_out
 
     def defs(self):
@@ -97,11 +108,11 @@ class Plugin:
 
     def funcs(self):
         func_out = ["    // vin_quadencoderz's"]
+        vin_num = 0
         for num, vin in enumerate(self.jdata.get("vin", [])):
             if vin.get("type") == "quadencoderz":
                 debounce = vin.get("debounce", False)
-                quadType = vin.get("quadType", 0)
-
+                quadType = vin.get("quadType", 2)
                 if debounce:
                     func_out.append(f"    wire VIN{num}_ENCODER_A_DEBOUNCED;")
                     func_out.append(f"    wire VIN{num}_ENCODER_B_DEBOUNCED;")
@@ -134,9 +145,9 @@ class Plugin:
                     func_out.append(f"        .quadZ (VIN{num}_ENCODER_Z),")
                 func_out.append(f"        .index_enable (VIN{num}_ENCODER_INDEX_ENABLE),")
                 func_out.append(f"        .index_out (VIN{num}_ENCODER_INDEX_OUT),")
-                func_out.append(f"        .pos (processVariable{num})")
+                func_out.append(f"        .pos (processVariable{vin_num})")
                 func_out.append("    );")
-
+            vin_num += vin.get("vars", 1)
         return func_out
 
     def ips(self):

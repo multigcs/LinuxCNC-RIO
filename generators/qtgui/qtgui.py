@@ -76,7 +76,7 @@ def generate(project):
     spitest_data.append("")
 
     spitest_data.append("vinminmax = [")
-    for num, vin in enumerate(project['jdata']["vin"]):
+    for num, vin in enumerate(project["vins_data"]):
         if vin.get("type") == "frequency":
             spitest_data.append(f"    ({vin.get('min', -100)}, {vin.get('max', 100)}, 'frequency', 0),")
         elif vin.get("type") == "pwm":
@@ -96,7 +96,7 @@ def generate(project):
     spitest_data.append("")
 
     spitest_data.append("vin_types = [")
-    for num, vout in enumerate(project['jdata']["vin"]):
+    for num, vout in enumerate(project["vins_data"]):
         spitest_data.append(f"    '{vout['type']}',")
     spitest_data.append("]")
     spitest_data.append("")
@@ -233,7 +233,7 @@ class WinForm(QWidget):
                 layout.addWidget(self.widgets["dout_auto"], gpy, 2)
             for dn in range(8):
                 key = f'doc{dbyte}{dn}'
-                self.widgets[key] = QCheckBox(DOUT_NAMES[dbyte * 8 + dn])
+                self.widgets[key] = QCheckBox(DOUT_NAMES[dbyte * 8 + dn][1])
                 self.widgets[key].setChecked(False)
                 layout.addWidget(self.widgets[key], gpy, dn + 3)
                 if dbyte * 8 + dn == DOUTS - 1:
@@ -247,7 +247,7 @@ class WinForm(QWidget):
             if dbyte == 0:
                 layout.addWidget(QLabel(f'DIN:'), gpy, 0)
             for dn in range(8):
-                layout.addWidget(QLabel(DIN_NAMES[dbyte * 8 + dn]), gpy, dn + 3)
+                layout.addWidget(QLabel(DIN_NAMES[dbyte * 8 + dn][1]), gpy, dn + 3)
                 if dbyte * 8 + dn == DINS - 1:
                     break
             gpy += 1

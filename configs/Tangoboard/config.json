@@ -105,7 +105,8 @@
             "pin": "55"
         },
         {
-            "invert": true,
+            "_name": "estop",
+            "_net": "iocontrol.0.emc-enable-in",
             "pullup": true,
             "pin": "56"
         }
@@ -129,12 +130,20 @@
     ],
     "vin": [
         {
-            "type": "quadencoder",
-            "quadType": 2,
-            "function": "jogwheel",
-            "pullup": true,
-            "pin_a": "68",
-            "pin_b": "69"
+            "type": "ads1115",
+            "function": ["feed-override", "rapid-override", "spindle.0.override", ""],
+            "pins": {
+                "sda": "69",
+                "scl": "68"
+            }
+        },
+        {
+            "function": "spindle-index",
+            "scale": 600,
+            "type": "quadencoderz",
+            "pin_a": "34",
+            "pin_b": "35",
+            "pin_z": "30"
         }
     ],
     "joints": [

@@ -39,16 +39,15 @@ loadrt [EMCMOT]EMCMOT base_period_nsec=[EMCMOT]BASE_PERIOD servo_period_nsec=[EM
 # set joint modes (p=postion, v=velocity)
 loadrt rio ctrl_type={','.join(ctrl_types)}
 
-# estop loopback, SPI comms enable and feedback
-net user-enable-out 	<= iocontrol.0.user-enable-out		=> rio.SPI-enable
-net user-request-enable <= iocontrol.0.user-request-enable	=> rio.SPI-reset
-net rio-status 	<= rio.SPI-status 			=> iocontrol.0.emc-enable-in
-
 # add the rio and motion functions to threads
 addf motion-command-handler servo-thread
 addf motion-controller servo-thread
 addf rio.update-freq servo-thread
 addf rio.readwrite servo-thread
+
+# estop loopback, SPI comms enable and feedback
+net user-enable-out 	<= iocontrol.0.user-enable-out		=> rio.SPI-enable
+net user-request-enable <= iocontrol.0.user-request-enable	=> rio.SPI-reset
 """
     )
 
@@ -69,7 +68,7 @@ addf rio.readwrite servo-thread
             cfghal_data.append("")
 
     for num, din in enumerate(project["jdata"]["din"]):
-        dname = project["dinnames"][num].lower()
+        dname = project["dinnames"][num][1]
         invert = din.get("invert", False)
         din_type = din.get("type")
         din_joint = din.get("joint", str(num))
@@ -100,7 +99,7 @@ addf rio.readwrite servo-thread
             cfghal_data.append("")
 
     for num, dout in enumerate(project["jdata"]["dout"]):
-        dname = project["doutnames"][num].lower()
+        dname = project["doutnames"][num][1]
         dout_name = dout.get("name", dname)
         dout_net = dout.get("net")
         if dout_net:
@@ -108,6 +107,26 @@ addf rio.readwrite servo-thread
             cfghal_data.append(f"net {dout_name} <= {dout_net}")
             cfghal_data.append(f"net {dout_name} => rio.{dname}")
             cfghal_data.append("")
+
+    if f"iocontrol.0.emc-enable-in" not in netlist:
+        cfghal_data.append("net rio-status <= rio.SPI-status => iocontrol.0.emc-enable-in")
+        cfghal_data.append("")
+
+
+
+
+    for num, vin in enumerate(project["vins_data"]):
+        function = vin.get("function")
+        if function == "spindle-index":
+            scale = vin.get("scale", 1.0)
+            cfghal_data.append(f"setp rio.PV.{num}-scale {scale}")
+            cfghal_data.append(f"net spindle-position rio.PV.{num} => spindle.0.revs")
+            cfghal_data.append(f"net spindle-index-enable rio.PV.{num}-index-enable <=> spindle.0.index-enable")
+            cfghal_data.append("")
+        elif function:
+            pass
+
+    cfghal_data.append("")
 
     pidn = 0
     for num, joint in enumerate(project["jdata"]["joints"]):
@@ -132,8 +151,8 @@ setp rio.joint.{num}.scale 		[JOINT_{num}]OUTPUT_SCALE
 setp rio.joint.{num}.fb-scale 	[JOINT_{num}]INPUT_SCALE
 setp rio.joint.{num}.maxaccel 	[JOINT_{num}]STEPGEN_MAXACCEL
 
-net {axis_names[num].lower()}vel-cmd 		<= pid.{pidn}.output 	=> rio.joint.{num}.vel-cmd  
-net {axis_names[num].lower()}pos-cmd 		<= joint.{num}.motor-pos-cmd 	=> pid.{pidn}.command
+net {axis_names[num]}vel-cmd 		<= pid.{pidn}.output 	=> rio.joint.{num}.vel-cmd  
+net {axis_names[num]}pos-cmd 		<= joint.{num}.motor-pos-cmd 	=> pid.{pidn}.command
 net j{num}pos-fb 		<= rio.joint.{num}.pos-fb 	=> joint.{num}.motor-pos-fb
 net j{num}pos-fb 		=> pid.{pidn}.feedback
 
@@ -152,7 +171,7 @@ net j{num}enable 		=> pid.{pidn}.enable
 setp rio.joint.{num}.scale 		[JOINT_{num}]SCALE
 setp rio.joint.{num}.maxaccel 	[JOINT_{num}]STEPGEN_MAXACCEL
 
-net {axis_names[num].lower()}pos-cmd 		<= joint.{num}.motor-pos-cmd 	=> rio.joint.{num}.pos-cmd  
+net {axis_names[num]}pos-cmd 		<= joint.{num}.motor-pos-cmd 	=> rio.joint.{num}.pos-cmd  
 net j{num}pos-fb 		<= rio.joint.{num}.pos-fb 	=> joint.{num}.motor-pos-fb
 net j{num}enable 		<= joint.{num}.amp-enable-out 	=> rio.joint.{num}.enable
 
@@ -161,12 +180,6 @@ net j{num}enable 		<= joint.{num}.amp-enable-out 	=> rio.joint.{num}.enable
     open(f"{project['LINUXCNC_PATH']}/ConfigSamples/rio/rio.hal", "w").write(
         "\n".join(cfghal_data)
     )
-
-
-
-
-#MDI_COMMAND = G0 Z25;X0 Y0;Z0, Goto\nUser\nZero
-#MDI_COMMAND = G53 G0 Z0;G53 G0 X0 Y0,Goto\nMachn\nZero
 
     basic_setup = {
         "EMC": {
@@ -258,12 +271,10 @@ net j{num}enable 		<= joint.{num}.amp-enable-out 	=> rio.joint.{num}.enable
         basic_setup["DISPLAY"]["DISPLAY"] = "qtvcp qtdragon"
         basic_setup["DISPLAY"]["ICON"] = "silver_dragon.png"
         basic_setup["DISPLAY"]["PREFERENCE_FILE_PATH"] = "WORKINGFOLDER/qtdragon.pref"
-
         basic_setup["PROBE"] = {
             "#USE_PROBE": "versaprobe",
             "USE_PROBE": "basicprobe",
         }
-
     else:
         basic_setup["DISPLAY"]["DISPLAY"] = "axis"
         basic_setup["DISPLAY"]["EDITOR"] = "gedit"
@@ -441,9 +452,9 @@ MIN_FERROR = 0.5
     cfghal_data.append("")
 
     for num in range(project["douts"]):
-        dname = project["doutnames"][num].lower()
+        dname = project["doutnames"][num][1]
         dout = {}
-        if dname.startswith("dout"):
+        if dname.startswith("DOUT"):
             dout = project["jdata"]["dout"][num]
         dout_name = dout.get("name", dname)
         dout_net = dout.get("net")
@@ -451,11 +462,11 @@ MIN_FERROR = 0.5
             cfghal_data.append(
                 f"net {dout_name} => pyvcp.led-out{num}"
             )
-        elif not dname.endswith("INDEX_ENABLE"):
-            cfghal_data.append(f"net {dname.lower()} pyvcp.btn{num} rio.{dname}")
+        elif not dname.endswith("-index-enable"):
+            cfghal_data.append(f"net {dname} pyvcp.btn{num} rio.{dname}")
 
     for num in range(project["dins"]):
-        dname = project["dinnames"][num]
+        dname = project["dinnames"][num][1]
         din = {}
         if dname.startswith("DIN"):
             din = project["jdata"]["din"][num]
@@ -471,9 +482,9 @@ MIN_FERROR = 0.5
             pass
         elif din_type == "home" and din_joint:
             pass
-        elif not dname.endswith("INDEX_OUT"):
+        elif not dname.endswith("-index-enable-out"):
             cfghal_data.append(
-                f"net {dname.lower()} rio.{dname.lower()} pyvcp.led-in{num}"
+                f"net {dname} rio.{dname} pyvcp.led-in{num}"
             )
 
     for num, vout in enumerate(project["jdata"]["vout"]):
@@ -485,7 +496,7 @@ MIN_FERROR = 0.5
             cfghal_data.append(f"net vout{num} pyvcp.vout{num}-f rio.SP.{num}")
 
     jogwheel = False
-    for num, vin in enumerate(project["jdata"]["vin"]):
+    for num, vin in enumerate(project["vins_data"]):
         function = vin.get("function")
         if function == "jogwheel" and not jogwheel:
             jogwheel = True
@@ -513,9 +524,18 @@ MIN_FERROR = 0.5
                 cfghal_data.append(f"net jog-enable-{axis_str} pyvcp.jog-axis.{axis_str} => joint.{jnum}.jog-enable axis.{axis_str}.jog-enable")
             cfghal_data.append(f"net jog-counts <= rio.PV.{num}-s32")
             cfghal_data.append("")
+        elif function in ["feed-override", "rapid-override", "spindle.0.override", "spindle.1.override"]:
+            cfghal_data.append("")
+            cfghal_data.append(f"# {function}")
+            cfghal_data.append(f"setp rio.PV.{num}-scale 0.3025")
+            cfghal_data.append(f"setp halui.{function}.direct-value 1")
+            cfghal_data.append(f"setp halui.{function}.scale 0.01")
+            cfghal_data.append(f"net {function} rio.PV.{num}-s32 => halui.{function}.counts")
+            cfghal_data.append("")
+        elif function:
+            pass
         else:
             cfghal_data.append(f"net vin{num} rio.PV.{num} pyvcp.vin{num}")
-
 
     cfghal_data.append("net zeroxy halui.mdi-command-00 <= pyvcp.zeroxy")
     cfghal_data.append("net zeroz halui.mdi-command-01 <= pyvcp.zeroz")
@@ -531,8 +551,8 @@ MIN_FERROR = 0.5
 
     # defined IO's
     for num in range(project["dins"]):
-        dname = project["dinnames"][num]
-        if dname.endswith("INDEX_OUT"):
+        dname = project["dinnames"][num][1]
+        if dname.endswith("-index-enable-out"):
             continue
         din = {}
         if dname.startswith("DIN"):
@@ -560,7 +580,7 @@ MIN_FERROR = 0.5
             cfgxml_data.append("  </hbox>")
 
     for num in range(project["douts"]):
-        dname = project["doutnames"][num]
+        dname = project["doutnames"][num][1]
         dout = {}
         if dname.startswith("DOUT"):
             dout = project["jdata"]["dout"][num]
@@ -614,7 +634,7 @@ MIN_FERROR = 0.5
 
     # jogging
     jogwheel = False
-    for num, vin in enumerate(project["jdata"]["vin"]):
+    for num, vin in enumerate(project["vins_data"]):
         function = vin.get("function")
         if function == "jogwheel" and not jogwheel:
             jogwheel = True
@@ -646,6 +666,9 @@ MIN_FERROR = 0.5
             cfgxml_data.append("    </checkbutton>")
             cfgxml_data.append("  </hbox>")
             cfgxml_data.append("  </labelframe>")
+        elif function:
+            pass
+
 
     # mdi-command buttons
     cfgxml_data.append("  <labelframe text=\"MDI-Commands\">")
@@ -682,7 +705,7 @@ MIN_FERROR = 0.5
     cfgxml_data.append("    <font>(\"Helvetica\", 12)</font>")
     cfgxml_data.append("  <hbox>")
     for num in range(project["douts"]):
-        dname = project["doutnames"][num]
+        dname = project["doutnames"][num][1]
         dout = {}
         if dname.startswith("DOUT"):
             dout = project["jdata"]["dout"][num]
@@ -690,7 +713,7 @@ MIN_FERROR = 0.5
         dout_net = dout.get("net")
         if dout_net:
             continue
-        elif dname.endswith("INDEX_ENABLE"):
+        elif dname.endswith("-index-enable"):
             continue
         cfgxml_data.append("    <checkbutton>")
         cfgxml_data.append(f'      <halpin>"btn{num}"</halpin>')
@@ -714,8 +737,8 @@ MIN_FERROR = 0.5
     cfgxml_data.append("  <hbox>")
 
     for num in range(project["dins"]):
-        dname = project["dinnames"][num]
-        if dname.endswith("INDEX_OUT"):
+        dname = project["dinnames"][num][1]
+        if dname.endswith("-index-enable-out"):
             continue
         din = {}
         if dname.startswith("DIN"):
@@ -756,6 +779,9 @@ MIN_FERROR = 0.5
         vout_net = vout.get("net")
         if vout_net:
             continue
+        vtype = vout.get("type")
+        if vtype:
+            vout_name = f"{vout_name} ({vtype})"
         cfgxml_data.append(f"  <labelframe text=\"{vout_name}\">")
         cfgxml_data.append("    <relief>RIDGE</relief>")
         cfgxml_data.append("    <font>(\"Helvetica\", 12)</font>")
@@ -790,11 +816,17 @@ MIN_FERROR = 0.5
 
 
     jogwheel = False
-    for num, vin in enumerate(project["jdata"]["vin"]):
+    for num, vin in enumerate(project["vins_data"]):
         vin_name = vin.get("name", f"Variable-In{num}")
         function = vin.get("function")
+        vtype = vin.get("type")
+        if vtype:
+            vin_name = f"{vin_name} ({vtype})"
+
         if function == "jogwheel" and not jogwheel:
             jogwheel = True
+        elif function:
+            pass
         else:
             cfgxml_data.append(f"  <labelframe text=\"{vin_name}\">")
             cfgxml_data.append("    <relief>RIDGE</relief>")

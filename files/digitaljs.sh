@@ -25,9 +25,7 @@ then
   </frameset>
 </html>
 EOF
-
     echo "<h3>RIO-Plugins</h3>" > HTML-SIMULATION/menu.html
-
     for P in `ls plugins/*/*_*.v`
     do
         P_DIR=`dirname $P`

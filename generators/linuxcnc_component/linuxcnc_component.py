@@ -36,8 +36,8 @@ def generate(project):
     rio_data.append(f"#define SPIBUFSIZE           {project['data_size'] // 8}")
     index_num = 0
     for num in range(project['dins']):
-        dname = project['dinnames'][num]
-        if dname.endswith("INDEX_OUT"):
+        dname = project['dinnames'][num][1]
+        if dname.endswith("-index-enable-out"):
             index_num += 1
     if index_num > 0:
         rio_data.append(f"#define INDEX_MAX            {index_num}")
@@ -67,6 +67,8 @@ def generate(project):
     rio_data.append("#define VIN_TYPE_FREQ 1")
     rio_data.append("#define VIN_TYPE_TIME 2")
     rio_data.append("#define VIN_TYPE_SONAR 3")
+    rio_data.append("#define VIN_TYPE_ADC 4")
+    rio_data.append("#define VIN_TYPE_ENCODER 5")
 
     rio_data.append("#define JOINT_FB_REL 0")
     rio_data.append("#define JOINT_FB_ABS 1")
@@ -119,11 +121,15 @@ def generate(project):
             vouts_type.append(f"VOUT_TYPE_RAW")
 
     vins_type = []
-    for vin in project['jdata']["vin"]:
+    for vin in project["vins_data"]:
         if vin.get('type') == "frequency":
             vins_type.append(f"VIN_TYPE_FREQ")
         elif vin.get('type') == "pwmcounter":
             vins_type.append(f"VIN_TYPE_TIME")
+        elif vin.get('type') == "ads1115":
+            vins_type.append(f"VIN_TYPE_ADC")
+        elif vin.get('type') in ("quadencoder", "quadencoderz"):
+            vins_type.append(f"VIN_TYPE_ENCODER")
         else:
             vins_type.append(f"VIN_TYPE_RAW")
 
@@ -185,22 +191,22 @@ def generate(project):
 
     rio_data.append("const char din_names[][32] = {")
     for num in range(project['dins']):
-        dname = project['dinnames'][num]
-        rio_data.append(f"    \"{dname.lower()}\",")
+        dname = project['dinnames'][num][1]
+        rio_data.append(f"    \"{dname}\",")
     rio_data.append("};")
     rio_data.append("")
 
     rio_data.append("const char dout_names[][32] = {")
     for num in range(project['douts']):
-        dname = project['doutnames'][num]
-        rio_data.append(f"    \"{dname.lower()}\",")
+        dname = project['doutnames'][num][1]
+        rio_data.append(f"    \"{dname}\",")
     rio_data.append("};")
     rio_data.append("")
 
     rio_data.append("const char din_types[] = {")
     for num in range(project['dins']):
-        dname = project['dinnames'][num]
-        if dname.endswith("INDEX_OUT"):
+        dname = project['dinnames'][num][1]
+        if dname.endswith("-index-enable-out"):
             rio_data.append(f"    DTYPE_INDEX,")
         else:
             rio_data.append(f"    DTYPE_IO,")
@@ -210,8 +216,8 @@ def generate(project):
 
     rio_data.append("const char dout_types[] = {")
     for num in range(project['douts']):
-        dname = project['doutnames'][num]
-        if dname.endswith("INDEX_ENABLE"):
+        dname = project['doutnames'][num][1]
+        if dname.endswith("-index-enable"):
             rio_data.append(f"    DTYPE_INDEX,")
         else:
             rio_data.append(f"    DTYPE_IO,")

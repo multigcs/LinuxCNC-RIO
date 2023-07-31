@@ -254,6 +254,7 @@ int rtapi_app_main(void)
 
 #ifdef TRANSPORT_UDP
     // Initialize the UDP socket
+    rtapi_print_msg(RTAPI_MSG_ERR, "Info: Initialize the UDP socket\n");
     if (UDP_init() < 0) {
         rtapi_print_msg(RTAPI_MSG_ERR, "Error: The board is unreachable\n");
         return -1;
@@ -261,6 +262,7 @@ int rtapi_app_main(void)
 #endif
 
 #ifdef TRANSPORT_SERIAL
+    rtapi_print_msg(RTAPI_MSG_ERR, "Info: Initialize serial connection\n");
     serial_fd = open (SERIAL_PORT, O_RDWR | O_NOCTTY | O_SYNC);
     if (serial_fd < 0) {
         rtapi_print_msg(RTAPI_MSG_ERR,"usb setup error\n");
@@ -271,6 +273,7 @@ int rtapi_app_main(void)
 #endif
 
 #ifdef TRANSPORT_SPI
+    rtapi_print_msg(RTAPI_MSG_ERR, "Info: Initialize SPI connection\n");
     // Map the RPi BCM2835 peripherals - uses "rtapi_open_as_root" in place of "open"
     if (!rt_bcm2835_init()) {
         rtapi_print_msg(RTAPI_MSG_ERR,"rt_bcm2835_init failed. Are you running with root privlages??\n");

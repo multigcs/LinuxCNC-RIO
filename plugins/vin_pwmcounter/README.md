@@ -8,3 +8,7 @@ Variable-Input for pulse width measurement
     "pin": "H5"
 },
 ```
+
+# vin_pwmcounter.v
+![graphviz](./vin_pwmcounter.svg)
+

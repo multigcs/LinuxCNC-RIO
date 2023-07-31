@@ -39,3 +39,6 @@ Expansion to add I/O's via shiftregister's
 | load |  | SH/LD |
 
 
+# expansion_shiftreg.v
+![graphviz](./expansion_shiftreg.svg)
+

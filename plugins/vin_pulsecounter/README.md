@@ -28,3 +28,7 @@ Up/Down-Counter:
     "pin_down": "H6",
 },
 ```
+
+# vin_pulsecounter.v
+![graphviz](./vin_pulsecounter.svg)
+

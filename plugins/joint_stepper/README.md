@@ -71,3 +71,14 @@ FERROR = 1.0
 MIN_FERROR = 0.5
 ```
 
+# joint_stepper_nf.v
+![graphviz](./joint_stepper_nf.svg)
+
+
+# joint_stepper.v
+![graphviz](./joint_stepper.svg)
+
+
+# quad_encoder.v
+![graphviz](./quad_encoder.svg)
+

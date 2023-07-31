@@ -9,3 +9,7 @@ Variable-Input for Quad-Encoder (int32_t)
     "pin_b": "D1"
 },
 ```
+
+# vin_quadencoder.v
+![graphviz](./vin_quadencoder.svg)
+

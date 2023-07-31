@@ -19,3 +19,7 @@ single Sine-Wave
     "pins": ["P5", "N6", "N7"]
 }
 ```
+
+# vout_sinepwm.v
+![graphviz](./vout_sinepwm.svg)
+

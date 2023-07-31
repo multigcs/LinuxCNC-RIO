@@ -8,3 +8,7 @@ Variable-Output for frequencys
     "pin": "T3",
 },
 ```
+
+# vout_frequency.v
+![graphviz](./vout_frequency.svg)
+

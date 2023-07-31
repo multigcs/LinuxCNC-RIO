@@ -13,3 +13,7 @@ PWM Joint Output with DIR-Pin
     }
 }
 ```
+
+# joint_pwmdir.v
+![graphviz](./joint_pwmdir.svg)
+

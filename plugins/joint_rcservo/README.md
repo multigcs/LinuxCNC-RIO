@@ -13,3 +13,7 @@ RCSERVO Joint Output
     }
 },
 ```
+
+# joint_rcservo.v
+![graphviz](./joint_rcservo.svg)
+

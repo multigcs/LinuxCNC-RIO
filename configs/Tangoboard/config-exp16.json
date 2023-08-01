@@ -22,11 +22,6 @@
             }
         }
     ],
-    "uart": {
-        "pin_rx": "6",
-        "pin_tx": "9",
-        "baud": "115200"
-    },
     "blink": {
         "pin": "10"
     },
@@ -247,8 +242,10 @@
         {
             "type": "quadencoder",
             "pullup": true,
-            "pin_a": "68",
-            "pin_b": "69"
+            "pins": {
+                "a": "68",
+                "b": "69"
+            }
         }
     ],
     "joints": [

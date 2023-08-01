@@ -498,6 +498,10 @@ MIN_FERROR = 0.5
     jogwheel = False
     for num, vin in enumerate(project["vins_data"]):
         function = vin.get("function")
+        vin_name = vout.get("name", f"vin{num}")
+        vin_net = vout.get("net")
+        if vin_net in ["halui.feed-override", "halui.rapid-override", "halui.spindle.0.override", "halui.spindle.1.override"]:
+            function = vin_net.split(".")[-1]
         if function == "jogwheel" and not jogwheel:
             jogwheel = True
             cfghal_data.append("")
@@ -527,7 +531,10 @@ MIN_FERROR = 0.5
         elif function in ["feed-override", "rapid-override", "spindle.0.override", "spindle.1.override"]:
             cfghal_data.append("")
             cfghal_data.append(f"# {function}")
-            cfghal_data.append(f"setp rio.PV.{num}-scale 0.3025")
+            if vin['type'] == "ads1115":
+                cfghal_data.append(f"setp rio.PV.{num}-scale 0.3025")
+            else:
+                cfghal_data.append(f"setp rio.PV.{num}-scale 1.0")
             cfghal_data.append(f"setp halui.{function}.direct-value 1")
             cfghal_data.append(f"setp halui.{function}.scale 0.01")
             cfghal_data.append(f"net {function} rio.PV.{num}-s32 => halui.{function}.counts")
@@ -636,6 +643,10 @@ MIN_FERROR = 0.5
     jogwheel = False
     for num, vin in enumerate(project["vins_data"]):
         function = vin.get("function")
+        vin_name = vout.get("name", f"vin{num}")
+        vin_net = vout.get("net")
+        if vin_net in ["halui.feed-override", "halui.rapid-override", "halui.spindle.0.override", "halui.spindle.1.override"]:
+            function = vin_net.split(".")[-1]
         if function == "jogwheel" and not jogwheel:
             jogwheel = True
             cfgxml_data.append("  <labelframe text=\"Jog-Options\">")

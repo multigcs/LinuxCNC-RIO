@@ -18,14 +18,20 @@ class Plugin:
                     "quadType": {
                         "type": "int",
                         "name": "type of encoder (0, 2)",
+                        "default": "2",
                     },
-                    "pin_a": {
-                        "type": "input",
-                        "name": "input pin A",
-                    },
-                    "pin_b": {
-                        "type": "input",
-                        "name": "input pin B",
+                    "pins": {
+                        "type": "dict",
+                        "options": {
+                            "a": {
+                                "type": "input",
+                                "name": "input pin A",
+                            },
+                            "b": {
+                                "type": "input",
+                                "name": "input pin B",
+                            },
+                        },
                     },
                 },
             }
@@ -36,11 +42,14 @@ class Plugin:
         for num, vin in enumerate(self.jdata.get("vin", [])):
             if vin.get("type") == "quadencoder":
                 pullup = vin.get("pullup", False)
+                pins = vin.get("pins", {})
+                pin_a = pins.get("a", vin.get("pin_a"))
+                pin_b = pins.get("b", vin.get("pin_b"))
                 pinlist_out.append(
-                    (f"VIN{num}_ENCODER_A", vin["pin_a"], "INPUT", pullup)
+                    (f"VIN{num}_ENCODER_A", pin_a, "INPUT", pullup)
                 )
                 pinlist_out.append(
-                    (f"VIN{num}_ENCODER_B", vin["pin_b"], "INPUT", pullup)
+                    (f"VIN{num}_ENCODER_B", pin_b, "INPUT", pullup)
                 )
         return pinlist_out
 

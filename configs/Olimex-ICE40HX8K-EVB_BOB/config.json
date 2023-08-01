@@ -80,8 +80,10 @@
         {
             "type": "quadencoder",
             "pullup": true,
-            "pin_a": "E2",
-            "pin_b": "G3"
+            "pins": {
+                "a": "E2",
+                "b": "G3"
+            }
         }
     ],
     "joints": [

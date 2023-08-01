@@ -68,8 +68,10 @@
         {
             "type": "counter",
             "pullup": true,
-            "pin_up": "34",
-            "pin_down": "33"
+            "pins": {
+                "up": "34",
+                "down": "33"
+            }
         }
     ],
     "joints": [

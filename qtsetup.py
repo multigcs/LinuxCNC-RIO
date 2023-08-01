@@ -13,6 +13,7 @@ from PyQt5.QtCore import QDateTime, Qt, QTimer
 from PyQt5.QtGui import QFont
 from PyQt5.QtWidgets import (
     QApplication,
+    QTabWidget,
     QCheckBox,
     QComboBox,
     QGridLayout,
@@ -41,6 +42,31 @@ print("type:", jdata["type"])
 print("package", jdata["package"])
 
 pinlist = {"": "IO"}
+dsourcelist = [
+    "spindle.0.on",
+    "spindle.1.on",
+]
+dtargetlist = [
+    "joint.0.home-sw-in",
+    "joint.1.home-sw-in",
+    "joint.2.home-sw-in",
+    "joint.3.home-sw-in",
+    "joint.4.home-sw-in",
+    "joint.5.home-sw-in",
+    "motion.probe-input",
+]
+vsourcelist = [
+    "spindle.0.speed-out",
+    "spindle.1.speed-out",
+]
+vtargetlist = [
+    "halui.feed-override",
+    "halui.rapid-override",
+    "halui.spindle.0.override",
+    "halui.spindle.1.override",
+]
+
+
 
 if os.path.isfile(f"chipdata/{jdata['family']}.json"):
     chiptype_mapping = {
@@ -117,43 +143,43 @@ class WinForm(QWidget):
     def __init__(self, parent=None):
         super(WinForm, self).__init__(parent)
         self.setWindowTitle("RIO-Setup")
-        self.layout = QGridLayout()
-        self.setLayout(self.layout)
+        self.layoutMain = QGridLayout()
+        self.setLayout(self.layoutMain)
 
         self.load()
 
     def load(self):
-        for i in reversed(range(self.layout.count())):
-            self.layout.itemAt(i).widget().setParent(None)
-
-        self.layout_row = 0
-        self.layout_col = 0
+        for i in reversed(range(self.layoutMain.count())):
+            self.layoutMain.itemAt(i).widget().setParent(None)
 
         label = QLabel("!!! work in progress !!!")
         label.setStyleSheet("border: 1px solid red;")
-        self.layout.addWidget(label, self.layout_row, self.layout_col + 1)
-        self.layout_row += 1
+        self.layoutMain.addWidget(label, 0, 0)
         label = QLabel("!!! please edit your config by hand !!!")
         label.setStyleSheet("border: 1px solid red;")
-        self.layout.addWidget(label, self.layout_row, self.layout_col + 1)
-        self.layout_row += 1
+        self.layoutMain.addWidget(label, 1, 0)
+
+        tabwidget = QTabWidget()
+        self.layoutMain.addWidget(tabwidget, 2, 0)
 
         for section in [
-            "interface",
-            "expansion",
             "joints",
             "vout",
             "vin",
             "dout",
             "din",
+            "expansion",
+            "interface",
         ]:
-            # print(section)
-            label = QLabel(section.title())
-            # label.setStyleSheet("border: 1px solid black;")
-            label.setStyleSheet("font-weight: bold")
-            self.layout.addWidget(label, self.layout_row, self.layout_col)
-            self.layout_row += 1
-            self.layout_col += 1
+
+            sectionWidgets = QWidget()
+            tabwidget.addTab(sectionWidgets, section.title())
+
+            self.layout = QGridLayout()
+            sectionWidgets.setLayout(self.layout)
+
+            self.layout_row = 0
+            self.layout_col = 0
 
             if section in jdata:
                 for num, entry in enumerate(jdata[section]):
@@ -244,8 +270,23 @@ class WinForm(QWidget):
             elif option["type"] == "output":
                 default = option.get("default", "")
                 data[name] = default
+            elif option["type"] == "inout":
+                default = option.get("default", "")
+                data[name] = default
             elif option["type"] == "int":
                 default = int(option.get("default", 0))
+                data[name] = default
+            elif option["type"] == "dtarget":
+                default = option.get("default", "")
+                data[name] = default
+            elif option["type"] == "dsource":
+                default = option.get("default", "")
+                data[name] = default
+            elif option["type"] == "vtarget":
+                default = option.get("default", "")
+                data[name] = default
+            elif option["type"] == "vsource":
+                default = option.get("default", "")
                 data[name] = default
             else:
                 default = option.get("default", "")
@@ -327,10 +368,40 @@ class EditAdd(QWidget):
                     data[name] = value
                 elif name in data:
                     del data[name]
+            elif option["type"] == "inout":
+                value = self.widgets[f"{dpath}/{name}"].currentText()
+                if value:
+                    data[name] = value
+                elif name in data:
+                    del data[name]
             elif option["type"] == "int":
                 data[name] = self.widgets[f"{dpath}/{name}"].value()
+            elif option["type"] == "dtarget":
+                value = self.widgets[f"{dpath}/{name}"].currentText()
+                if value:
+                    data[name] = value
+                elif name in data:
+                    del data[name]
+            elif option["type"] == "dsource":
+                value = self.widgets[f"{dpath}/{name}"].currentText()
+                if value:
+                    data[name] = value
+                elif name in data:
+                    del data[name]
+            elif option["type"] == "vtarget":
+                value = self.widgets[f"{dpath}/{name}"].currentText()
+                if value:
+                    data[name] = value
+                elif name in data:
+                    del data[name]
+            elif option["type"] == "vsource":
+                value = self.widgets[f"{dpath}/{name}"].currentText()
+                if value:
+                    data[name] = value
+                elif name in data:
+                    del data[name]
             else:
-                data[name] = self.widgets[f"{dpath}/{name}"].getText()
+                data[name] = self.widgets[f"{dpath}/{name}"].text()
 
     def cancel_callback(self):
         self.close()
@@ -400,6 +471,20 @@ class EditAdd(QWidget):
                 self.layout.addWidget(combo, self.layout_row, self.layout_col + 1)
                 self.layout_row += 1
 
+            elif option["type"] == "inout":
+                value = str(data.get(name, ""))
+                self.layout.addWidget(QLabel(label), self.layout_row, self.layout_col)
+                combo = QComboBox()
+                for pin, pdir in pinlist.items():
+                    if pdir in ["IO"]:
+                        combo.addItem(pin)
+                combo.setEditable(True)
+                combo.setCurrentText(value)
+                self.widgets[f"{dpath}/{name}"] = combo
+                self.widgets[f"{dpath}/{name}"].setToolTip(tooltip)
+                self.layout.addWidget(combo, self.layout_row, self.layout_col + 1)
+                self.layout_row += 1
+
             elif option["type"] == "int":
                 value = int(data.get(name, 0))
                 self.layout.addWidget(QLabel(label), self.layout_row, self.layout_col)
@@ -411,6 +496,58 @@ class EditAdd(QWidget):
                 self.widgets[f"{dpath}/{name}"] = spinbox
                 self.widgets[f"{dpath}/{name}"].setToolTip(tooltip)
                 self.layout.addWidget(spinbox, self.layout_row, self.layout_col + 1)
+                self.layout_row += 1
+
+            elif option["type"] == "dtarget":
+                value = str(data.get(name, ""))
+                self.layout.addWidget(QLabel(label), self.layout_row, self.layout_col)
+                combo = QComboBox()
+                for option in dtargetlist:
+                    combo.addItem(option)
+                combo.setEditable(True)
+                combo.setCurrentText(value)
+                self.widgets[f"{dpath}/{name}"] = combo
+                self.widgets[f"{dpath}/{name}"].setToolTip(tooltip)
+                self.layout.addWidget(combo, self.layout_row, self.layout_col + 1)
+                self.layout_row += 1
+
+            elif option["type"] == "dsource":
+                value = str(data.get(name, ""))
+                self.layout.addWidget(QLabel(label), self.layout_row, self.layout_col)
+                combo = QComboBox()
+                for option in dsourcelist:
+                    combo.addItem(option)
+                combo.setEditable(True)
+                combo.setCurrentText(value)
+                self.widgets[f"{dpath}/{name}"] = combo
+                self.widgets[f"{dpath}/{name}"].setToolTip(tooltip)
+                self.layout.addWidget(combo, self.layout_row, self.layout_col + 1)
+                self.layout_row += 1
+
+            elif option["type"] == "vtarget":
+                value = str(data.get(name, ""))
+                self.layout.addWidget(QLabel(label), self.layout_row, self.layout_col)
+                combo = QComboBox()
+                for option in vtargetlist:
+                    combo.addItem(option)
+                combo.setEditable(True)
+                combo.setCurrentText(value)
+                self.widgets[f"{dpath}/{name}"] = combo
+                self.widgets[f"{dpath}/{name}"].setToolTip(tooltip)
+                self.layout.addWidget(combo, self.layout_row, self.layout_col + 1)
+                self.layout_row += 1
+
+            elif option["type"] == "vsource":
+                value = str(data.get(name, ""))
+                self.layout.addWidget(QLabel(label), self.layout_row, self.layout_col)
+                combo = QComboBox()
+                for option in vsourcelist:
+                    combo.addItem(option)
+                combo.setEditable(True)
+                combo.setCurrentText(value)
+                self.widgets[f"{dpath}/{name}"] = combo
+                self.widgets[f"{dpath}/{name}"].setToolTip(tooltip)
+                self.layout.addWidget(combo, self.layout_row, self.layout_col + 1)
                 self.layout_row += 1
 
             else:

@@ -9,13 +9,18 @@ class Plugin:
                 "subtype": "sonar",
                 "comment": "to messure distance via ultrasonic modules with trigger/echo pins",
                 "options": {
-                    "pin_trigger": {
-                        "type": "input",
-                        "name": "echo pin",
-                    },
-                    "pin_echo": {
-                        "type": "output",
-                        "name": "trigger pin",
+                    "pins": {
+                        "type": "dict",
+                        "options": {
+                            "trigger": {
+                                "type": "input",
+                                "name": "echo pin",
+                            },
+                            "echo": {
+                                "type": "output",
+                                "name": "trigger pin",
+                            },
+                        },
                     },
                 },
             }
@@ -27,8 +32,8 @@ class Plugin:
         for num, vin in enumerate(self.jdata.get("vin", [])):
             if vin.get("type") == "sonar":
                 pullup = vin.get("pullup", False)
-                pinlist_out.append((f"VIN{num}_SONAR_TRIGGER", vin["pin_trigger"], "OUTPUT", False))
-                pinlist_out.append((f"VIN{num}_SONAR_ECHO", vin["pin_echo"], "INPUT", pullup))
+                pinlist_out.append((f"VIN{num}_SONAR_TRIGGER", vin["pins"]["trigger"], "OUTPUT", False))
+                pinlist_out.append((f"VIN{num}_SONAR_ECHO", vin["pins"]["echo"], "INPUT", pullup))
         return pinlist_out
 
     def vins(self):

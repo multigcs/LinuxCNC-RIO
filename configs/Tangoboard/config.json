@@ -133,8 +133,10 @@
             "quadType": 2,
             "function": "jogwheel",
             "pullup": true,
-            "pin_a": "68",
-            "pin_b": "69"
+            "pins": {
+                "a": "68",
+                "b": "69"
+            }
         }
     ],
     "joints": [

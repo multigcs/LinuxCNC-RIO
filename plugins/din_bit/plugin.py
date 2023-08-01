@@ -9,6 +9,18 @@ class Plugin:
                 "subtype": "",
                 "comment": "normal binary input pin",
                 "options": {
+                    "name": {
+                        "type": "str",
+                        "name": "pin name",
+                        "comment": "the name of the pin",
+                        "default": '',
+                    },
+                    "net": {
+                        "type": "dtarget",
+                        "name": "net target",
+                        "comment": "the target net of the pin in the hal",
+                        "default": '',
+                    },
                     "pin": {
                         "type": "input",
                         "name": "input pin",
@@ -19,38 +31,10 @@ class Plugin:
                         "comment": "activates the internal pullup resistor for this pin",
                         "default": False,
                     },
-                },
-            },
-            {
-                "basetype": "din",
-                "subtype": "home",
-                "comment": "input pin used for home-switches",
-                "options": {
-                    "pin": {
-                        "type": "input",
-                        "name": "input pin",
-                    },
-                    "pullup": {
+                    "invert": {
                         "type": "bool",
-                        "name": "input pin",
-                        "comment": "activates the internal pullup resistor for this pin",
-                        "default": False,
-                    },
-                },
-            },
-            {
-                "basetype": "din",
-                "subtype": "probe",
-                "comment": "input pin used for the probe-switche",
-                "options": {
-                    "pin": {
-                        "type": "input",
-                        "name": "input pin",
-                    },
-                    "pullup": {
-                        "type": "bool",
-                        "name": "input pin",
-                        "comment": "activates the internal pullup resistor for this pin",
+                        "name": "invert pin",
+                        "comment": "invert this pin",
                         "default": False,
                     },
                 },

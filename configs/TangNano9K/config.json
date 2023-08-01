@@ -23,11 +23,6 @@
             }
         }
     ],
-    "uart": {
-        "pin_rx": "6",
-        "pin_tx": "9",
-        "baud": "115200"
-    },
     "blink": {
         "pin": "10"
     },
@@ -176,8 +171,10 @@
         {
             "type": "counter",
             "pullup": true,
-            "pin_up": "3",
-            "pin_down": "4"
+            "pins": {
+                "up": "3",
+                "down": "4"
+            }
         }
     ],
     "joints": [

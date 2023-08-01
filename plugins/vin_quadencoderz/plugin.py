@@ -9,6 +9,18 @@ class Plugin:
                 "subtype": "quadencoderz",
                 "comment": "quad-encoder input with z-pin",
                 "options": {
+                    "name": {
+                        "type": "str",
+                        "name": "pin name",
+                        "comment": "the name of the pin",
+                        "default": '',
+                    },
+                    "net": {
+                        "type": "vtarget",
+                        "name": "net target",
+                        "comment": "the target net of the pin in the hal",
+                        "default": '',
+                    },
                     "debounce": {
                         "type": "bool",
                         "name": "debounce",
@@ -18,18 +30,24 @@ class Plugin:
                     "quadType": {
                         "type": "int",
                         "name": "type of encoder (0, 2)",
+                        "default": "2",
                     },
-                    "pin_a": {
-                        "type": "input",
-                        "name": "input pin A",
-                    },
-                    "pin_b": {
-                        "type": "input",
-                        "name": "input pin B",
-                    },
-                    "pin_z": {
-                        "type": "input",
-                        "name": "input pin Z",
+                    "pins": {
+                        "type": "dict",
+                        "options": {
+                            "a": {
+                                "type": "input",
+                                "name": "input pin A",
+                            },
+                            "b": {
+                                "type": "input",
+                                "name": "input pin B",
+                            },
+                            "z": {
+                                "type": "input",
+                                "name": "input pin Z",
+                            },
+                        },
                     },
                 },
             }
@@ -40,14 +58,18 @@ class Plugin:
         for num, vin in enumerate(self.jdata.get("vin", [])):
             if vin.get("type") == "quadencoderz":
                 pullup = vin.get("pullup", False)
+                pins = vin.get("pins", {})
+                pin_a = pins.get("a", vin.get("pin_a"))
+                pin_b = pins.get("b", vin.get("pin_b"))
+                pin_z = pins.get("z", vin.get("pin_z"))
                 pinlist_out.append(
-                    (f"VIN{num}_ENCODER_A", vin["pin_a"], "INPUT", pullup)
+                    (f"VIN{num}_ENCODER_A", pin_a, "INPUT", pullup)
                 )
                 pinlist_out.append(
-                    (f"VIN{num}_ENCODER_B", vin["pin_b"], "INPUT", pullup)
+                    (f"VIN{num}_ENCODER_B", pin_b, "INPUT", pullup)
                 )
                 pinlist_out.append(
-                    (f"VIN{num}_ENCODER_Z", vin["pin_z"], "INPUT", pullup)
+                    (f"VIN{num}_ENCODER_Z", pin_z, "INPUT", pullup)
                 )
         return pinlist_out
 

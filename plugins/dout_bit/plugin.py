@@ -7,7 +7,20 @@ class Plugin:
             {
                 "basetype": "dout",
                 "subtype": "",
+                "comment": "Digital Output",
                 "options": {
+                    "name": {
+                        "type": "str",
+                        "name": "pin name",
+                        "comment": "the name of the pin",
+                        "default": '',
+                    },
+                    "net": {
+                        "type": "dsource",
+                        "name": "net source",
+                        "comment": "the source net of the pin in the hal",
+                        "default": '',
+                    },
                     "pin": {
                         "type": "output",
                         "name": "output pin",

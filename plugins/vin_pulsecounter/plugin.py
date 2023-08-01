@@ -9,20 +9,25 @@ class Plugin:
                 "subtype": "counter",
                 "comment": "counting signals on the input pins (up/down), can be reset by the reset-pin",
                 "options": {
-                    "pin_up": {
-                        "type": "input",
-                        "name": "up pin",
-                        "comment": "to count up",
-                    },
-                    "pin_down": {
-                        "type": "input",
-                        "name": "down pin",
-                        "comment": "to count down",
-                    },
-                    "pin_reset": {
-                        "type": "input",
-                        "name": "reset pin",
-                        "comment": "reset the counter to zero",
+                    "pins": {
+                        "type": "dict",
+                        "options": {
+                            "up": {
+                                "type": "input",
+                                "name": "up pin",
+                                "comment": "to count up",
+                            },
+                            "down": {
+                                "type": "input",
+                                "name": "down pin",
+                                "comment": "to count down",
+                            },
+                            "reset": {
+                                "type": "input",
+                                "name": "reset pin",
+                                "comment": "reset the counter to zero",
+                            },
+                        },
                     },
                 },
             }
@@ -33,24 +38,24 @@ class Plugin:
         for num, vin in enumerate(self.jdata.get("vin", [])):
             if vin.get("type") in ("counter",):
                 pullup = vin.get("pullup", False)
-                if "pin_up" in vin:
+                if "up" in vin["pins"]:
                     pinlist_out.append(
-                        (f"VIN{num}_PULSECOUNTER_UP", vin["pin_up"], "INPUT", pullup)
+                        (f"VIN{num}_PULSECOUNTER_UP", vin["pins"]["up"], "INPUT", pullup)
                     )
-                if "pin_down" in vin:
+                if "down" in vin["pins"]:
                     pinlist_out.append(
                         (
                             f"VIN{num}_PULSECOUNTER_DOWN",
-                            vin["pin_down"],
+                            vin["pins"]["down"],
                             "INPUT",
                             pullup,
                         )
                     )
-                if "pin_reset" in vin:
+                if "reset" in vin["pins"]:
                     pinlist_out.append(
                         (
                             f"VIN{num}_PULSECOUNTER_RESET",
-                            vin["pin_reset"],
+                            vin["pins"]["reset"],
                             "INPUT",
                             pullup,
                         )
@@ -79,15 +84,15 @@ class Plugin:
                 func_out.append(f"    vin_pulsecounter vin_pulsecounter{num} (")
                 func_out.append("        .clk (sysclk),")
                 func_out.append(f"        .counter (processVariable{vin_num}),")
-                if "pin_up" in vin:
+                if "up" in vin["pins"]:
                     func_out.append(f"        .UP (VIN{num}_PULSECOUNTER_UP),")
                 else:
                     func_out.append("        .UP (1'd0),")
-                if "pin_down" in vin:
+                if "down" in vin["pins"]:
                     func_out.append(f"        .DOWN (VIN{num}_PULSECOUNTER_DOWN),")
                 else:
                     func_out.append("        .DOWN (1'd0),")
-                if "pin_reset" in vin:
+                if "reset" in vin["pins"]:
                     func_out.append(f"        .RESET (VIN{num}_PULSECOUNTER_RESET)")
                 else:
                     func_out.append("        .RESET (1'd0)")

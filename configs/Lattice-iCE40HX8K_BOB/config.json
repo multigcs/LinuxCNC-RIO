@@ -102,8 +102,10 @@
             "comment": "MPG DB-13 DB-15",
             "type": "mpgencoder",
             "pullup": true,
-            "pin_a": "G14",
-            "pin_b": "K14"
+            "pins": {
+                "a": "G14",
+                "b": "K14"
+            }
         }
     ],
     "joints": [

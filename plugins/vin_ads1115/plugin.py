@@ -9,15 +9,29 @@ class Plugin:
                 "subtype": "ads1115",
                 "comment": "4Channel ADC",
                 "options": {
+                    "name": {
+                        "type": "str",
+                        "name": "pin name",
+                        "comment": "the name of the pin",
+                        "default": '',
+                    },
+                    "net": {
+                        "type": "vtarget",
+                        "name": "net target",
+                        "comment": "the target net of the pin in the hal",
+                        "default": '',
+                    },
                     "pins": {
                         "type": "dict",
-                        "sda": {
-                            "type": "inout",
-                            "name": "inout pin SDA",
-                        },
-                        "scl": {
-                            "type": "output",
-                            "name": "output pin SCL",
+                        "options": {
+                            "sda": {
+                                "type": "inout",
+                                "name": "inout pin SDA",
+                            },
+                            "scl": {
+                                "type": "output",
+                                "name": "output pin SCL",
+                            },
                         },
                     },
                 },

@@ -1,0 +1,91 @@
+{
+    "name": "TangNano20K",
+    "description": "TangNano20K with 3 stepper Axis SPI",
+    "board": "TangNano20K",
+    "type": "GW2AR-LV18QN88C8/I7",
+    "family": "GW2AR-18C",
+    "toolchain": "icestorm",
+    "package": "QN88",
+    "clock": {
+        "speed": "27000000",
+        "pin": "4"
+    },
+    "transport": "SPI",
+    "axis": 3,
+    "interface": [
+        {
+            "type": "spi",
+            "pins": {
+                "MOSI": "52",
+                "MISO": "53",
+                "SCK": "71",
+                "SEL": "72"
+            }
+        }
+    ],
+    "blink": {
+        "pin": "15"
+    },
+    "error": {
+        "invert": true,
+        "pin": "16"
+    },
+    "enable": {
+        "pin": "17"
+    },
+    "dout": [
+        {
+            "invert": true,
+            "pin": "73"
+        }
+    ],
+    "din": [
+        {
+            "pullup": true,
+            "pin": "74"
+        }
+    ],
+    "vout": [
+        {
+            "type": "pwm",
+            "pin": "75"
+        }
+    ],
+    "vin": [
+        {
+            "type": "counter",
+            "pullup": true,
+            "pin_up": "85",
+            "pin_down": "77"
+        }
+    ],
+    "joints": [
+        {
+            "type": "stepper",
+            "cl": false,
+            "scale": 800,
+            "pins": {
+                "step": "27",
+                "dir": "28"
+            }
+        },
+        {
+            "type": "stepper",
+            "cl": false,
+            "scale": 800,
+            "pins": {
+                "step": "25",
+                "dir": "26"
+            }
+        },
+	    {
+            "type": "stepper",
+            "cl": false,
+            "scale": 800,
+            "pins": {
+                "step": "29",
+                "dir": "30"
+            }
+        }
+    ]
+}

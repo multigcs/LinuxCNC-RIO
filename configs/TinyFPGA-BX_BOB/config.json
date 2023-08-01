@@ -45,41 +45,35 @@
     "din": [
         {
             "joint": "0",
-            "type": "home",
             "pin": "C2",
             "pullup": true,
             "invert": true
         },
         {
             "joint": "1",
-            "type": "home",
             "pin": "B1",
             "pullup": true,
             "invert": true
         },
         {
             "joint": "2",
-            "type": "home",
             "pin": "A1",
             "pullup": true,
             "invert": true
         },
         {
             "joint": "3",
-            "type": "home",
             "pin": "A2",
             "pullup": true,
             "invert": true
         },
         {
             "joint": "4",
-            "type": "home",
             "pin": "J4",
             "pullup": true,
             "invert": true
         },
         {
-            "type": "probe",
             "pin": "D9",
             "pullup": true
         },

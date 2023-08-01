@@ -73,7 +73,7 @@ def generate(project):
         top_data.append("")
 
 
-    if project['jdata']["toolchain"] == "diamond":
+    if project['jdata'].get("toolchain") == "diamond":
         top_data.append("    // Internal Oscillator")
         top_data.append('    defparam OSCH_inst.NOM_FREQ = "133.00";')
         top_data.append("    OSCH OSCH_inst ( ")
@@ -559,7 +559,7 @@ def generate(project):
         tcl_data.append("run all")
         open(f"{project['FIRMWARE_PATH']}/rio.tcl", "w").write("\n".join(tcl_data))
 
-    elif project['jdata']["toolchain"] == "icestorm" and project['jdata']["family"] == "ecp5":
+    elif project['jdata'].get("toolchain") == "icestorm" and project['jdata']["family"] == "ecp5":
 
         lpf_data = []
         lpf_data.append("")
@@ -630,7 +630,7 @@ def generate(project):
         open(f"{project['FIRMWARE_PATH']}/Makefile", "w").write("\n".join(makefile_data))
 
 
-    elif project['jdata']["toolchain"] == "icestorm":
+    elif project['jdata'].get("toolchain") == "icestorm":
         # pins.pcf (icestorm)
         pcf_data = []
         for pname, pins in project['pinlists'].items():
@@ -698,7 +698,7 @@ def generate(project):
         open(f"{project['FIRMWARE_PATH']}/Makefile", "w").write("\n".join(makefile_data))
 
 
-    elif project['jdata']["toolchain"] == "diamond":
+    elif project['jdata'].get("toolchain") == "diamond":
         os.system(f"cp files/pif21.sty {project['FIRMWARE_PATH']}/")
 
         ldf_data = []

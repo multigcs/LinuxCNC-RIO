@@ -33,9 +33,10 @@ for path in glob.glob("generators/*"):
 project["verilog_files"] = []
 project["pinlists"] = {}
 project["expansions"] = {}
+project["internal_clock"] = None
 
 project["osc_clock"] = False
-if project["jdata"]["toolchain"] == "icestorm":
+if project["jdata"].get("toolchain") == "icestorm":
     project["osc_clock"] = project["jdata"]["clock"].get("osc")
     project["internal_clock"] = project["jdata"]["clock"].get("internal")
     if project["internal_clock"]:
@@ -185,7 +186,7 @@ os.system(f"mkdir -p {project['LINUXCNC_PATH']}/ConfigSamples/rio/m_codes")
 os.system(f"cp -a files/subroutines/* {project['LINUXCNC_PATH']}/ConfigSamples/rio/subroutines")
 
 
-if project["jdata"]["toolchain"] == "diamond":
+if project["jdata"].get("toolchain") == "diamond":
     project["SOURCE_PATH"] = f"{project['FIRMWARE_PATH']}/impl1/source"
     project["PINS_PATH"] = f"{project['FIRMWARE_PATH']}/impl1/source"
     os.system(f"mkdir -p {project['SOURCE_PATH']}")

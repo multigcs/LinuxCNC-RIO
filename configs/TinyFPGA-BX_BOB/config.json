@@ -105,7 +105,7 @@
     "joints": [
         {
             "type": "stepper",
-            "scale": "1600",
+            "scale": 1600,
             "cl": false,
             "pins": {
                 "step": "J1",
@@ -114,7 +114,7 @@
         },
         {
             "type": "stepper",
-            "scale": "1600",
+            "scale": 1600,
             "cl": false,
             "invert_dir": true,
             "pins": {
@@ -124,7 +124,7 @@
         },
         {
             "type": "stepper",
-            "scale": "1600",
+            "scale": 1600,
             "cl": false,
             "pins": {
                 "step": "E2",
@@ -133,7 +133,7 @@
         },
         {
             "type": "stepper",
-            "scale": "360",
+            "scale": 360,
             "cl": false,
             "invert_dir": true,
             "pins": {
@@ -143,7 +143,7 @@
         },
         {
             "type": "stepper",
-            "scale": "360",
+            "scale": 360,
             "cl": false,
             "pins": {
                 "step": "J9",

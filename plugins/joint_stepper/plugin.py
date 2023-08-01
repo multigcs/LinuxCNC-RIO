@@ -13,6 +13,16 @@ class Plugin:
                         "name": "closed loop",
                         "comment": "using encoder for the feedback, this needs 2 extra pins (enc_a / enc_b)",
                     },
+                    "invert_dir": {
+                        "type": "bool",
+                        "name": "invert dir pin",
+                        "comment": "inverts the dir pin",
+                    },
+                    "scale": {
+                        "type": "int",
+                        "name": "axis scale",
+                        "default": "800",
+                    },
                     "pins": {
                         "type": "dict",
                         "name": "pin config",

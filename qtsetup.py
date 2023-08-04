@@ -1,8 +1,13 @@
+#!/usr/bin/env python3
+#
+#
+
 import argparse
 import glob
 import importlib
 import json
 import os
+import signal
 import sys
 import time
 from copy import deepcopy
@@ -145,7 +150,8 @@ class WinForm(QWidget):
         self.setWindowTitle("RIO-Setup")
         self.layoutMain = QGridLayout()
         self.setLayout(self.layoutMain)
-
+        self.resize(800, 600)
+        signal.signal(signal.SIGINT, signal.SIG_DFL)
         self.load()
 
     def load(self):

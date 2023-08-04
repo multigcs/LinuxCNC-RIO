@@ -178,7 +178,7 @@ class WinForm(QWidget):
                 pixmap = QPixmap(ifile)
                 pixmapResized = pixmap.scaledToHeight(600)
                 img.setPixmap(pixmapResized)
-                tabwidgetR.addTab(img, ifile.split("/")[-1].split(".")[0])
+                tabwidgetR.addTab(img, name)
 
         else:
             for ifile in glob.glob(f"{config_dir}/*.png") + glob.glob(f"{config_dir}/*.jpg"):

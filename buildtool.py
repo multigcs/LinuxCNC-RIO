@@ -1,3 +1,8 @@
+#!/usr/bin/env python3
+#
+#
+
+import argparse
 import glob
 import importlib
 import json
@@ -6,7 +11,18 @@ import sys
 
 project = {}
 
-project["config"] = sys.argv[1]
+parser = argparse.ArgumentParser()
+parser.add_argument(
+    "configfile", help="json config file", type=str, nargs="?", default=None
+)
+parser.add_argument(
+    "outputdir", help="output directory", type=str, nargs="?", default=None
+)
+args = parser.parse_args()
+
+
+project["config"] = args.configfile
+
 
 data = open(project["config"], "r").read()
 project["jdata"] = json.loads(data)
@@ -168,9 +184,13 @@ project["data_size"] = max(project["tx_data_size"], project["rx_data_size"])
 
 
 # file structure
-project[
-    "OUTPUT_PATH"
-] = f"Output/{project['jdata']['name'].replace(' ', '_').replace('/', '_')}"
+if args.outputdir:
+    project["OUTPUT_PATH"] = args.outputdir
+else:
+    project[
+        "OUTPUT_PATH"
+    ] = f"Output/{project['jdata']['name'].replace(' ', '_').replace('/', '_')}"
+
 project["FIRMWARE_PATH"] = f"{project['OUTPUT_PATH']}/Firmware"
 project["SOURCE_PATH"] = f"{project['FIRMWARE_PATH']}"
 project["PINS_PATH"] = f"{project['FIRMWARE_PATH']}"

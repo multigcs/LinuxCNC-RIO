@@ -17,6 +17,7 @@ from struct import *
 from PyQt5.QtCore import QDateTime, Qt, QTimer
 from PyQt5.QtGui import QFont, QPixmap
 from PyQt5.QtWidgets import (
+    QPlainTextEdit,
     QApplication,
     QTabWidget,
     QCheckBox,
@@ -72,7 +73,14 @@ vtargetlist = [
     "halui.spindle.1.override",
 ]
 
-
+outputfiles = {
+    "qtsetup-temp.json": "/tmp/qtsetup-temp.json",
+    "rio.ini": "/tmp/qtsetup-temp/LinuxCNC/ConfigSamples/rio/rio.ini",
+    "rio.hal": "/tmp/qtsetup-temp/LinuxCNC/ConfigSamples/rio/rio.hal",
+    "custom_postgui.hal": "/tmp/qtsetup-temp/LinuxCNC/ConfigSamples/rio/custom_postgui.hal",
+    "rio-gui.xml": "/tmp/qtsetup-temp/LinuxCNC/ConfigSamples/rio/rio-gui.xml",
+    "rio.h": "/tmp/qtsetup-temp/LinuxCNC/Components/rio.h",
+}
 
 if os.path.isfile(f"chipdata/{jdata['family']}.json"):
     chiptype_mapping = {
@@ -145,6 +153,11 @@ setup_data["clock"] = {
 }
 
 
+os.system("rm -rf /tmp/qtsetup-temp.json /tmp/qtsetup-temp")
+open("/tmp/qtsetup-temp.json", "w").write(json.dumps(jdata, indent=4))
+os.system("python3 buildtool.py /tmp/qtsetup-temp.json /tmp/qtsetup-temp")
+
+
 class WinForm(QWidget):
     def __init__(self, parent=None):
         super(WinForm, self).__init__(parent)
@@ -170,7 +183,6 @@ class WinForm(QWidget):
         tabwidgetR = QTabWidget()
         self.layoutMain.addWidget(tabwidgetR, 2, 1)
 
-
         if "images" in jdata:
             for name, image in jdata["images"].items():
                 ifile = f"{config_dir}/{image}"
@@ -187,6 +199,15 @@ class WinForm(QWidget):
                 pixmapResized = pixmap.scaledToHeight(600)
                 img.setPixmap(pixmapResized)
                 tabwidgetR.addTab(img, ifile.split("/")[-1].split(".")[0])
+
+
+        self.preview = {}
+        for filename, filepath in outputfiles.items():
+            self.preview[filename] = QPlainTextEdit(self)
+            self.preview[filename].setReadOnly(True)
+            tabwidgetR.addTab(self.preview[filename], filename)
+            fdata = open(filepath, "r").read()
+            self.preview[filename].setPlainText(fdata)
 
 
         tabwidget = QTabWidget()
@@ -444,8 +465,15 @@ class EditAdd(QWidget):
         print("############################################################")
         print(json.dumps(jdata, indent=4))
         print("############################################################")
+
+        # update prefiew files
+        os.system("rm -rf /tmp/qtsetup-temp.json /tmp/qtsetup-temp")
+        open("/tmp/qtsetup-temp.json", "w").write(json.dumps(jdata, indent=4))
+        os.system("python3 buildtool.py /tmp/qtsetup-temp.json /tmp/qtsetup-temp")
+
         self.close()
         self.gui.load()
+
 
     def gen_setup_options(self, options, data, dpath=""):
         for name, option in options.items():

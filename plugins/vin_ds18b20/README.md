@@ -1,6 +1,8 @@
 # Plugin: vin_ds18b20
 
-Variable-Input for distance measurement via ultrasonic sonar sensor (HC-SR04)
+Variable-Input for temperature measurement via onewire
+
+UNTESTED !!!
 
 ```
         {

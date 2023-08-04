@@ -11,3 +11,7 @@ Analog-Input (4CH ADC)
     }
 },
 ```
+
+# vin_ads1115.v
+![graphviz](./vin_ads1115.svg)
+

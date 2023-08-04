@@ -15,7 +15,7 @@ from functools import partial
 from struct import *
 
 from PyQt5.QtCore import QDateTime, Qt, QTimer
-from PyQt5.QtGui import QFont
+from PyQt5.QtGui import QFont, QPixmap
 from PyQt5.QtWidgets import (
     QApplication,
     QTabWidget,
@@ -38,6 +38,7 @@ parser.add_argument(
 
 args = parser.parse_args()
 
+config_dir = "/".join(args.configfile.split("/")[:-1])
 print(f"loading json config: {args.configfile}")
 jdata = json.loads(open(args.configfile, "r").read())
 
@@ -150,7 +151,7 @@ class WinForm(QWidget):
         self.setWindowTitle("RIO-Setup")
         self.layoutMain = QGridLayout()
         self.setLayout(self.layoutMain)
-        self.resize(800, 600)
+        self.resize(1600, 600)
         signal.signal(signal.SIGINT, signal.SIG_DFL)
         self.load()
 
@@ -164,6 +165,29 @@ class WinForm(QWidget):
         label = QLabel("!!! please edit your config by hand !!!")
         label.setStyleSheet("border: 1px solid red;")
         self.layoutMain.addWidget(label, 1, 0)
+
+
+        tabwidgetR = QTabWidget()
+        self.layoutMain.addWidget(tabwidgetR, 2, 1)
+
+
+        if "images" in jdata:
+            for name, image in jdata["images"].items():
+                ifile = f"{config_dir}/{image}"
+                img = QLabel()
+                pixmap = QPixmap(ifile)
+                pixmapResized = pixmap.scaledToHeight(600)
+                img.setPixmap(pixmapResized)
+                tabwidgetR.addTab(img, ifile.split("/")[-1].split(".")[0])
+
+        else:
+            for ifile in glob.glob(f"{config_dir}/*.png") + glob.glob(f"{config_dir}/*.jpg"):
+                img = QLabel()
+                pixmap = QPixmap(ifile)
+                pixmapResized = pixmap.scaledToHeight(600)
+                img.setPixmap(pixmapResized)
+                tabwidgetR.addTab(img, ifile.split("/")[-1].split(".")[0])
+
 
         tabwidget = QTabWidget()
         self.layoutMain.addWidget(tabwidget, 2, 0)
@@ -246,11 +270,11 @@ class WinForm(QWidget):
 
         exitbutton = QPushButton("Exit")
         exitbutton.clicked.connect(self.exit_callback)
-        self.layout.addWidget(exitbutton, self.layout_row, self.layout_col)
+        self.layoutMain.addWidget(exitbutton, 3, 0)
 
         savebutton = QPushButton("Save")
         savebutton.clicked.connect(self.save_callback)
-        self.layout.addWidget(savebutton, self.layout_row, self.layout_col + 3)
+        self.layoutMain.addWidget(savebutton, 3, 1)
 
     def exit_callback(self):
         exit(0)

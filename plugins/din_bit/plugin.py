@@ -44,18 +44,25 @@ class Plugin:
     def pinlist(self):
         pinlist_out = []
         for num, din in enumerate(self.jdata["din"]):
-            pullup = din.get("pullup", False)
-            pinlist_out.append((f"DIN{num}", din["pin"], "INPUT", pullup))
+            if din.get("type", "bit") == "bit":
+                name = din.get("name", f"DIN.{num}")
+                nameIntern = name.replace(".", "").replace("-", "_").upper()
+                pullup = din.get("pullup", False)
+                pinlist_out.append((nameIntern, din["pin"], "INPUT", pullup))
         return pinlist_out
 
-    def dins(self):
-        dins_out = 0
-        for _num, _din in enumerate(self.jdata["din"]):
-            dins_out += 1
-        return dins_out
+    def dins_data(self):
+        ddata = []
+        for num, din in enumerate(self.jdata["din"]):
+            if din.get("type", "bit") == "bit":
+                ddata.append(din)
+        return ddata
 
     def dinnames(self):
         dins_out = []
-        for num, _din in enumerate(self.jdata["din"]):
-            dins_out.append((f"DIN{num}", f"DIN.{num}"))
+        for num, din in enumerate(self.jdata["din"]):
+            if din.get("type", "bit") == "bit":
+                name = din.get("name", f"DIN.{num}")
+                nameIntern = name.replace(".", "").replace("-", "_").upper()
+                dins_out.append((nameIntern, name, din))
         return dins_out

@@ -65,12 +65,16 @@ class Plugin:
                 pinlist_out.append((f"VOUT{num}_PWM_PWM", vout["pin"], "OUTPUT"))
         return pinlist_out
 
-    def vouts(self):
-        vouts_out = 0
-        for _num, vout in enumerate(self.jdata["vout"]):
+    def voutnames(self):
+        ret = []
+        vout_num = 0
+        for num, vout in enumerate(self.jdata.get("vout", [])):
             if vout["type"] in ["pwm", "rcservo"]:
-                vouts_out += 1
-        return vouts_out
+                name = vout.get("name", f"SP.{num}")
+                nameIntern = name.replace(".", "").replace("-", "_").upper()
+                ret.append((nameIntern, name, vout))
+            vout_num += vout.get("vars", 1)
+        return ret
 
     def defs(self):
         func_out = ["    // vout_pwm's"]
@@ -92,6 +96,8 @@ class Plugin:
         func_out = ["    // vout_pwm's"]
         for num, vout in enumerate(self.jdata["vout"]):
             if vout["type"] in ["pwm", "rcservo"]:
+                name = vout.get("name", f"SP.{num}")
+                nameIntern = name.replace(".", "").replace("-", "_").upper()
                 if vout["type"] == "rcservo":
                     freq = int(vout.get("frequency", 100))
                 else:
@@ -104,7 +110,7 @@ class Plugin:
                     )
                 func_out.append(f"    vout_pwm #({divider}) vout_pwm{num} (")
                 func_out.append("        .clk (sysclk),")
-                func_out.append(f"        .dty (setPoint{num}),")
+                func_out.append(f"        .dty ({nameIntern}),")
                 func_out.append(f"        .disabled (ERROR),")
                 func_out.append(f"        .dir (VOUT{num}_PWM_DIR),")
                 if invert_pwm:

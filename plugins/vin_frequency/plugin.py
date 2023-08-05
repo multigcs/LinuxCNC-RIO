@@ -47,34 +47,29 @@ class Plugin:
                 pinlist_out.append((f"VIN{num}_FREQUENCY", vin["pin"], "INPUT", pullup))
         return pinlist_out
 
-    def vins(self):
-        vins_out = 0
-        for _num, vin in enumerate(self.jdata.get("vin", [])):
+    def vinnames(self):
+        ret = []
+        for num, vin in enumerate(self.jdata.get("vin", [])):
             if vin.get("type") == "frequency":
-                vins_out += 1
-        return vins_out
-
-    def vdata(self):
-        vdata = []
-        for _num, vin in enumerate(self.jdata.get("vin", [])):
-            if vin.get("type") == "frequency":
-                vdata.append(vin)
-        return vdata
+                name = vin.get("name", f"PV.{num}")
+                nameIntern = name.replace(".", "").replace("-", "_").upper()
+                ret.append((nameIntern, name, vin))
+        return ret
 
     def funcs(self):
         func_out = ["    // vin_frequency's"]
-        vin_num = 0
         for num, vin in enumerate(self.jdata.get("vin", [])):
             if vin.get("type") == "frequency":
+                name = vin.get("name", f"PV.{num}")
+                nameIntern = name.replace(".", "").replace("-", "_").upper()
                 freq_min = int(vin.get("freq_min", 10))
                 func_out.append(
                     f"    vin_frequency #({int(self.jdata['clock']['speed']) // freq_min}) vin_frequency{num} ("
                 )
                 func_out.append("        .clk (sysclk),")
-                func_out.append(f"        .frequency (processVariable{vin_num}),")
+                func_out.append(f"        .frequency ({nameIntern}),")
                 func_out.append(f"        .SIGNAL (VIN{num}_FREQUENCY)")
                 func_out.append("    );")
-            vin_num += vin.get("vars", 1)
 
         return func_out
 

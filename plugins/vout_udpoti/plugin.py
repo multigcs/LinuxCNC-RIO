@@ -47,23 +47,27 @@ class Plugin:
                 pinlist_out.append((f"VOUT{num}_UDPOTI_INCR", vout["pins"]["incr"], "OUTPUT"))
         return pinlist_out
 
-    def vouts(self):
-        vouts_out = 0
-        for _num, vout in enumerate(self.jdata["vout"]):
-            if vout["type"] in ["udpoti"]:
-                vouts_out += 1
-        return vouts_out
+    def voutnames(self):
+        ret = []
+        for num, vout in enumerate(self.jdata.get("vout", [])):
+            if vout.get("type") == "udpoti":
+                name = vout.get("name", f"SP.{num}")
+                nameIntern = name.replace(".", "").replace("-", "_").upper()
+                ret.append((nameIntern, name, vout))
+        return ret
 
     def funcs(self):
         func_out = ["    // vout_udpoti's"]
         for num, vout in enumerate(self.jdata["vout"]):
             if vout["type"] in ["udpoti"]:
+                name = vout.get("name", f"SP.{num}")
+                nameIntern = name.replace(".", "").replace("-", "_").upper()
                 resolution = int(vout.get("resolution", 100))
                 speed = int(vout.get("speed", 100000))
                 divider = int(self.jdata["clock"]["speed"]) // speed
                 func_out.append(f"    vout_udpoti #({resolution}, {divider}) vout_udpoti{num} (")
                 func_out.append("        .clk (sysclk),")
-                func_out.append(f"        .value (setPoint{num}),")
+                func_out.append(f"        .value ({nameIntern}),")
                 func_out.append(f"        .UPDOWN (VOUT{num}_UDPOTI_UPDOWN),")
                 func_out.append(f"        .INCREMENT (VOUT{num}_UDPOTI_INCR)")
                 func_out.append("    );")

@@ -103,6 +103,7 @@ typedef struct {
     hal_bit_t   	*inputs[DIGITAL_INPUT_BYTES * 8 * 2]; // for not pins * 2
     hal_float_t 	*processVariableScale[VARIABLE_INPUTS];
     hal_float_t 	*processVariableOffset[VARIABLE_INPUTS];
+    hal_float_t 	*processVariableExtra[VARIABLE_INPUTS][2];
 #ifdef INDEX_MAX
     hal_bit_t   	*index_enable[INDEX_MAX];
 #endif
@@ -112,6 +113,7 @@ static data_t *data;
 static txData_t txData;
 static rxData_t rxData;
 
+long stamp = 0;
 
 
 /* other globals */
@@ -386,37 +388,47 @@ int rtapi_app_main(void)
 
     for (n = 0; n < VARIABLE_OUTPUTS; n++) {
         retval = hal_pin_float_newf(HAL_IN, &(data->setPoint[n]),
-                                    comp_id, "%s.SP.%01d", prefix, n);
+                                    comp_id, "%s.%s", prefix, vout_names[n]);
         if (retval < 0) goto error;
         *(data->setPoint[n]) = 0.0;
 
 		retval = hal_pin_float_newf(HAL_IN, &(data->setPointScale[n]),
-									comp_id, "%s.SP.%01d-scale", prefix, n);
+									comp_id, "%s.%s-scale", prefix, vout_names[n]);
         if (retval < 0) goto error;
         *(data->setPointScale[n]) = 1.0;
 
 		retval = hal_pin_float_newf(HAL_IN, &(data->setPointOffset[n]),
-									comp_id, "%s.SP.%01d-offset", prefix, n);
+									comp_id, "%s.%s-offset", prefix, vout_names[n]);
         if (retval < 0) goto error;
         *(data->setPointOffset[n]) = 0.0;
     }
 
     for (n = 0; n < VARIABLE_INPUTS; n++) {
-		retval = hal_pin_float_newf(HAL_OUT, &(data->processVariable[n]), comp_id, "%s.PV.%01d", prefix, n);
+		retval = hal_pin_float_newf(HAL_OUT, &(data->processVariable[n]), comp_id, "%s.%s", prefix, vin_names[n]);
         if (retval < 0) goto error;
         *(data->processVariable[n]) = 0.0;
 
-		retval = hal_pin_s32_newf(HAL_OUT, &(data->processVariableS32[n]), comp_id, "%s.PV.%01d-s32", prefix, n);
+		retval = hal_pin_s32_newf(HAL_OUT, &(data->processVariableS32[n]), comp_id, "%s.%s-s32", prefix, vin_names[n]);
         if (retval < 0) goto error;
         *(data->processVariableS32[n]) = 0;
 
-		retval = hal_pin_float_newf(HAL_IN, &(data->processVariableScale[n]), comp_id, "%s.PV.%01d-scale", prefix, n);
+		retval = hal_pin_float_newf(HAL_IN, &(data->processVariableScale[n]), comp_id, "%s.%s-scale", prefix, vin_names[n]);
         if (retval < 0) goto error;
         *(data->processVariableScale[n]) = 1.0;
 
-		retval = hal_pin_float_newf(HAL_IN, &(data->processVariableOffset[n]), comp_id, "%s.PV.%01d-offset", prefix, n);
+		retval = hal_pin_float_newf(HAL_IN, &(data->processVariableOffset[n]), comp_id, "%s.%s-offset", prefix, vin_names[n]);
         if (retval < 0) goto error;
         *(data->processVariableOffset[n]) = 0.0;
+
+        if (vin_type[n] == VIN_TYPE_ENCODER) {
+            retval = hal_pin_float_newf(HAL_IN, &(data->processVariableExtra[n][0]), comp_id, "%s.%s-rpm", prefix, vin_names[n]);
+            if (retval < 0) goto error;
+            *(data->processVariableExtra[n][0]) = 0.0;
+
+            retval = hal_pin_float_newf(HAL_IN, &(data->processVariableExtra[n][1]), comp_id, "%s.%s-last", prefix, vin_names[n]);
+            if (retval < 0) goto error;
+            *(data->processVariableExtra[n][1]) = 0.0;
+        }
     }
 
     int index_num = 0;
@@ -869,17 +881,15 @@ void rio_readwrite()
     int i = 0;
     int bi = 0;
     double curr_pos;
+    long new_stamp;
+    long duration;
+
+    new_stamp = rtapi_get_time();
+    duration = new_stamp - stamp;
+    stamp = new_stamp;
 
     // Data header
     txData.header = PRU_READ;
-
-    // update the PRUreset output
-    if (*(data->PRUreset)) {
-        //bcm2835_gpio_set(reset_gpio_pin);
-    }
-    else {
-        //bcm2835_gpio_clr(reset_gpio_pin);
-    }
 
     if (*(data->SPIenable)) {
         if( (*(data->SPIreset) && !(data->SPIresetOld)) || *(data->SPIstatus) ) {
@@ -1025,6 +1035,13 @@ void rio_readwrite()
                         value += *(data->processVariableOffset[i]);
                         *(data->processVariable[i]) = value;
                         *(data->processVariableS32[i]) = (int)value;
+
+                        // calc RPM
+                        float last = *(data->processVariableExtra[i][1]);
+                        *(data->processVariableExtra[i][0]) = (value - last) * (1000000000.0 / (float)duration) * 60;
+                        *(data->processVariableExtra[i][1]) = value;
+
+
                     } else {
                         value *= *(data->processVariableScale[i]);
                         value += *(data->processVariableOffset[i]);
@@ -1097,7 +1114,8 @@ void rio_transfer()
 
 #ifdef TRANSPORT_UDP
     int ret;
-    long long t1, t2;
+    long t1;
+    long t2;
 
     // Send datagram
     ret = send(udpSocket, txData.txBuffer, SPIBUFSIZE, 0);

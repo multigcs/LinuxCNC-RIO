@@ -85,7 +85,7 @@ def generate(project):
     vouts_type = []
     vouts_freq = []
     for vout in project['jdata']["vout"]:
-        freq = vout.get('freq', 10000)
+        freq = vout.get('frequency', 10000)
         if vout.get('type') == "sine":
             vouts_min.append(str(vout.get("min", -100)))
             vouts_max.append(str(vout.get("max", 100.0)))
@@ -96,19 +96,19 @@ def generate(project):
             else:
                 vouts_min.append(str(vout.get("min", 0)))
             vouts_max.append(str(vout.get("max", 100.0)))
-            vouts_freq.append(str(vout.get("freq", freq)))
+            vouts_freq.append(str(vout.get("frequency", freq)))
         elif vout.get('type') == "rcservo":
-            freq = vout.get('freq', 100)
+            freq = vout.get('frequency', 100)
             vouts_min.append(str(vout.get("min", -100)))
             vouts_max.append(str(vout.get("max", 100.0)))
-            vouts_freq.append(str(vout.get("freq", freq)))
+            vouts_freq.append(str(vout.get("frequency", freq)))
         else:
             vouts_min.append(str(vout.get("min", 0)))
             vouts_max.append(str(vout.get("max", 10.0)))
-            vouts_freq.append(str(vout.get("freq", freq)))
+            vouts_freq.append(str(vout.get("frequency", freq)))
 
         if vout.get('type') == "pwm" and vout.get('dir'):
-            vouts_type.append(f"VOUT_TYPE_{vout.get('type', 'freq').upper()}DIR")
+            vouts_type.append(f"VOUT_TYPE_{vout.get('type', 'frequency').upper()}DIR")
         elif vout.get('type') == "frequency":
             vouts_type.append(f"VOUT_TYPE_FREQ")
         elif vout.get('type') == "pwm":
@@ -121,14 +121,14 @@ def generate(project):
             vouts_type.append(f"VOUT_TYPE_RAW")
 
     vins_type = []
-    for vin in project["vins_data"]:
-        if vin.get('type') == "frequency":
+    for vin in project["vinnames"]:
+        if vin[2].get('type') == "frequency":
             vins_type.append(f"VIN_TYPE_FREQ")
-        elif vin.get('type') == "pwmcounter":
+        elif vin[2].get('type') == "pwmcounter":
             vins_type.append(f"VIN_TYPE_TIME")
-        elif vin.get('type') == "ads1115":
+        elif vin[2].get('type') == "ads1115":
             vins_type.append(f"VIN_TYPE_ADC")
-        elif vin.get('type') in ("quadencoder", "quadencoderz"):
+        elif vin[2].get('type') in ("quadencoder", "quadencoderz"):
             vins_type.append(f"VIN_TYPE_ENCODER")
         else:
             vins_type.append(f"VIN_TYPE_RAW")
@@ -187,6 +187,20 @@ def generate(project):
     rio_data.append("} rxData_t;")
     rio_data.append("")
     rio_data.append("#endif")
+    rio_data.append("")
+
+    rio_data.append("const char vin_names[][32] = {")
+    for num in range(project['vins']):
+        dname = project['vinnames'][num][1]
+        rio_data.append(f"    \"{dname}\",")
+    rio_data.append("};")
+    rio_data.append("")
+
+    rio_data.append("const char vout_names[][32] = {")
+    for num in range(project['vouts']):
+        dname = project['voutnames'][num][1]
+        rio_data.append(f"    \"{dname}\",")
+    rio_data.append("};")
     rio_data.append("")
 
     rio_data.append("const char din_names[][32] = {")

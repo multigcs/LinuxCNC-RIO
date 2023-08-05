@@ -52,23 +52,27 @@ class Plugin:
                 pinlist_out.append((f"VOUT{num}_SPIPOTI_CS", vout["pins"]["CS"], "OUTPUT"))
         return pinlist_out
 
-    def vouts(self):
-        vouts_out = 0
-        for _num, vout in enumerate(self.jdata["vout"]):
-            if vout["type"] in ["spipoti"]:
-                vouts_out += 1
-        return vouts_out
+    def voutnames(self):
+        ret = []
+        for num, vout in enumerate(self.jdata.get("vout", [])):
+            if vout.get("type") == "spipoti":
+                name = vout.get("name", f"SP.{num}")
+                nameIntern = name.replace(".", "").replace("-", "_").upper()
+                ret.append((nameIntern, name, vout))
+        return ret
 
     def funcs(self):
         func_out = ["    // vout_spipoti's"]
         for num, vout in enumerate(self.jdata["vout"]):
             if vout["type"] in ["spipoti"]:
+                name = vout.get("name", f"SP.{num}")
+                nameIntern = name.replace(".", "").replace("-", "_").upper()
                 bits = int(vout.get("bits", 8))
                 speed = int(vout.get("speed", 100000))
                 divider = int(self.jdata["clock"]["speed"]) // speed
                 func_out.append(f"    vout_spipoti #({bits}, {divider}) vout_spipoti{num} (")
                 func_out.append("        .clk (sysclk),")
-                func_out.append(f"        .value (setPoint{num}),")
+                func_out.append(f"        .value ({nameIntern}),")
                 func_out.append(f"        .MOSI (VOUT{num}_SPIPOTI_MOSI),")
                 func_out.append(f"        .SCLK (VOUT{num}_SPIPOTI_SCLK),")
                 func_out.append(f"        .CS (VOUT{num}_SPIPOTI_CS)")

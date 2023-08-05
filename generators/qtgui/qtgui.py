@@ -46,6 +46,8 @@ def generate(project):
     spitest_data.append(f"DOUTS = {project['douts']}")
     spitest_data.append(f"DINS = {project['dins']}")
     spitest_data.append("")
+    spitest_data.append(f"VIN_NAMES = {project['vinnames']}")
+    spitest_data.append(f"VOUT_NAMES = {project['voutnames']}")
     spitest_data.append(f"DIN_NAMES = {project['dinnames']}")
     spitest_data.append(f"DOUT_NAMES = {project['doutnames']}")
     spitest_data.append(f"JOINT_TYPES = {project['jointtypes']}")
@@ -76,15 +78,15 @@ def generate(project):
     spitest_data.append("")
 
     spitest_data.append("vinminmax = [")
-    for num, vin in enumerate(project["vins_data"]):
-        if vin.get("type") == "frequency":
-            spitest_data.append(f"    ({vin.get('min', -100)}, {vin.get('max', 100)}, 'frequency', 0),")
-        elif vin.get("type") == "pwm":
-            spitest_data.append(f"    ({vin.get('min', -100)}, {vin.get('max', 100)}, 'pwm', 0),")
-        elif vin.get("type") == "sonar":
-            spitest_data.append(f"    ({vin.get('min', 0)}, {vin.get('max', 100000)}, 'sonar', 0),")
+    for num, vin in enumerate(project["vinnames"]):
+        if vin[2].get("type") == "frequency":
+            spitest_data.append(f"    ({vin[2].get('min', -100)}, {vin[2].get('max', 100)}, 'frequency', 0),")
+        elif vin[2].get("type") == "pwm":
+            spitest_data.append(f"    ({vin[2].get('min', -100)}, {vin[2].get('max', 100)}, 'pwm', 0),")
+        elif vin[2].get("type") == "sonar":
+            spitest_data.append(f"    ({vin[2].get('min', 0)}, {vin[2].get('max', 100000)}, 'sonar', 0),")
         else:
-            spitest_data.append(f"    ({vin.get('min', -100)}, {vin.get('max', 100)}, '', 0),")
+            spitest_data.append(f"    ({vin[2].get('min', -100)}, {vin[2].get('max', 100)}, '', 0),")
 
     spitest_data.append("]")
     spitest_data.append("")
@@ -96,8 +98,8 @@ def generate(project):
     spitest_data.append("")
 
     spitest_data.append("vin_types = [")
-    for num, vout in enumerate(project["vins_data"]):
-        spitest_data.append(f"    '{vout['type']}',")
+    for num, vout in enumerate(project["vinnames"]):
+        spitest_data.append(f"    '{vout[2]['type']}',")
     spitest_data.append("]")
     spitest_data.append("")
 
@@ -106,13 +108,13 @@ def generate(project):
         if vout.get('type') == "sine":
             spitest_data.append(f"    ({vout.get('min', -100)}, {vout.get('max', 100)}, 'sine', 30),")
         elif vout.get('type') == "pwm":
-            freq = vout.get('freq', 10000)
+            freq = vout.get('frequency', 10000)
             if "dir" in vout:
                 spitest_data.append(f"    (0, {vout.get('max', 100)}, 'pwmdir', {freq}),")
             else:
                 spitest_data.append(f"    ({vout.get('min', 0)}, {vout.get('max', 100)}, 'pwm', {freq}),")
         elif vout.get('type') == "rcservo":
-            freq = vout.get('freq', 100)
+            freq = vout.get('frequency', 100)
             spitest_data.append(f"    ({vout.get('min', -100)}, {vout.get('max', 100)}, 'rcservo', {freq}),")
         elif vout.get('type') == "frequency":
             spitest_data.append(f"    ({vout.get('min', 0)}, {vout.get('max', 100000)}, 'frequency', 0),")
@@ -184,7 +186,7 @@ class WinForm(QWidget):
 
         layout.addWidget(QLabel(f'VOUT:'), gpy, 0)
         for vn in range(VOUTS):
-            layout.addWidget(QLabel(f'VOUT{vn}'), gpy, vn + 3)
+            layout.addWidget(QLabel(VOUT_NAMES[vn][1]), gpy, vn + 3)
         gpy += 1
         for vn in range(VOUTS):
             layout.addWidget(QLabel(vout_types[vn]), gpy, vn + 3)
@@ -211,7 +213,7 @@ class WinForm(QWidget):
 
         layout.addWidget(QLabel(f'VIN:'), gpy, 0)
         for vn in range(VINS):
-            layout.addWidget(QLabel(f'VIN{vn}'), gpy, vn + 3)
+            layout.addWidget(QLabel(VIN_NAMES[vn][1]), gpy, vn + 3)
         gpy += 1
         for vn in range(VINS):
             layout.addWidget(QLabel(vin_types[vn]), gpy, vn + 3)

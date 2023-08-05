@@ -36,25 +36,21 @@ class Plugin:
                 pinlist_out.append((f"VIN{num}_SONAR_ECHO", vin["pins"]["echo"], "INPUT", pullup))
         return pinlist_out
 
-    def vins(self):
-        vins_out = 0
-        for _num, vin in enumerate(self.jdata.get("vin", [])):
+    def vinnames(self):
+        ret = []
+        for num, vin in enumerate(self.jdata.get("vin", [])):
             if vin.get("type") == "sonar":
-                vins_out += 1
-        return vins_out
-
-    def vdata(self):
-        vdata = []
-        for _num, vin in enumerate(self.jdata.get("vin", [])):
-            if vin.get("type") == "sonar":
-                vdata.append(vin)
-        return vdata
+                name = vin.get("name", f"PV.{num}")
+                nameIntern = name.replace(".", "").replace("-", "_").upper()
+                ret.append((nameIntern, name, vin))
+        return ret
 
     def funcs(self):
         func_out = ["    // vin_sonar's"]
-        vin_num = 0
         for num, vin in enumerate(self.jdata.get("vin", [])):
             if vin.get("type") == "sonar":
+                name = vin.get("name", f"PV.{num}")
+                nameIntern = name.replace(".", "").replace("-", "_").upper()
                 osc = int(self.jdata['clock']['speed'])
                 func_out.append(
                     f"    vin_sonar #({osc // 50000}, {osc // 13}, {osc // 5}) vin_sonar{num} ("
@@ -62,9 +58,8 @@ class Plugin:
                 func_out.append("        .clk (sysclk),")
                 func_out.append(f"        .trigger (VIN{num}_SONAR_TRIGGER),")
                 func_out.append(f"        .echo (VIN{num}_SONAR_ECHO),")
-                func_out.append(f"        .distance (processVariable{vin_num})")
+                func_out.append(f"        .distance ({nameIntern})")
                 func_out.append("    );")
-            vin_num += vin.get("vars", 1)
         return func_out
 
     def ips(self):

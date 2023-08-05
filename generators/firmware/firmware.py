@@ -185,17 +185,18 @@ def generate(project):
 
 
     top_data.append(f"    // vouts {project['vouts']}")
-    for num in range(project['vouts']):
-        top_data.append(f"    wire signed [31:0] setPoint{num};")
+    for num, vout in enumerate(project["voutnames"]):
+        top_data.append(f"    wire signed [31:0] {vout[0]};")
     top_data.append("")
+
     top_data.append(f"    // vins {project['vins']}")
-    for num in range(project['vins']):
-        top_data.append(f"    wire signed [31:0] processVariable{num};")
+    for num, vin in enumerate(project["vinnames"]):
+        top_data.append(f"    wire signed [31:0] {vin[0]};")
     top_data.append("")
+
     top_data.append(f"    // joints {project['joints']}")
     for num in range(project['joints']):
         top_data.append(f"    wire signed [31:0] jointFreqCmd{num};")
-
     for num in range(project['joints']):
         top_data.append(f"    wire signed [31:0] jointFeedback{num};")
     top_data.append("")
@@ -216,9 +217,9 @@ def generate(project):
         )
         pos -= 32
 
-    for num in range(project['vouts']):
+    for num, vout in enumerate(project["voutnames"]):
         top_data.append(
-            f"    assign setPoint{num} = {{rx_data[{pos-3*8-1}:{pos-3*8-8}], rx_data[{pos-2*8-1}:{pos-2*8-8}], rx_data[{pos-1*8-1}:{pos-1*8-8}], rx_data[{pos-1}:{pos-8}]}};"
+            f"    assign {vout[0]} = {{rx_data[{pos-3*8-1}:{pos-3*8-8}], rx_data[{pos-2*8-1}:{pos-2*8-8}], rx_data[{pos-1*8-1}:{pos-1*8-8}], rx_data[{pos-1}:{pos-8}]}};"
         )
         pos -= 32
 
@@ -260,18 +261,18 @@ def generate(project):
             f"        jointFeedback{num}[7:0], jointFeedback{num}[15:8], jointFeedback{num}[23:16], jointFeedback{num}[31:24],"
         )
 
-    for num in range(project['vins']):
-        top_data.append(f"        processVariable{num}[7:0], processVariable{num}[15:8], processVariable{num}[23:16], processVariable{num}[31:24],")
+    for num, vin in enumerate(project["vinnames"]):
+        top_data.append(f"        {vin[0]}[7:0], {vin[0]}[15:8], {vin[0]}[23:16], {vin[0]}[31:24],")
 
     tdins = []
-
-    ldin = len(project['jdata']["din"])
+    ldin = project['dins']
     for dbyte in range(project['dins_total'] // 8):
         for num in range(8):
             bitnum = num + (dbyte * 8)
             if bitnum < project['dins']:
                 dname = project['dinnames'][bitnum][0]
-                if bitnum < ldin and project['jdata']["din"][bitnum].get("invert", False):
+                din_data = project['dinnames'][bitnum][2]
+                if bitnum < ldin and din_data.get("invert", False):
                     tdins.append(f"~{dname}")
                 else:
                     tdins.append(f"{dname}")

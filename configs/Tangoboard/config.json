@@ -92,7 +92,7 @@
             "type": "din_bit",
             "name": "tool-probe",
             "net": "motion.probe-input",
-            "_invert": true,
+            "invert": true,
             "pullup": true,
             "pin": "29"
         },

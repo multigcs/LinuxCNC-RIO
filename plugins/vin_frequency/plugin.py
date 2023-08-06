@@ -41,21 +41,13 @@ class Plugin:
             }
         ]
 
-    def entry_info(self, joint):
-        info = ""
-        if joint.get("type") == self.ptype:
-            pin = joint["pin"]
-            pullup = joint.get("pullup", False)
-            info += f"Variable frequency (pin:{pin}, pullup:{pullup})"
-        return info
-
     def pinlist(self):
-        pinlist_out = []
+        ret = []
         for num, data in enumerate(self.jdata["plugins"]):
             if data.get("type") == self.ptype:
                 pullup = data.get("pullup", False)
-                pinlist_out.append((f"VIN{num}_FREQUENCY", data["pin"], "INPUT", pullup))
-        return pinlist_out
+                ret.append((f"VIN{num}_FREQUENCY", data["pin"], "INPUT", pullup))
+        return ret
 
     def vinnames(self):
         ret = []
@@ -69,21 +61,35 @@ class Plugin:
         return ret
 
     def funcs(self):
-        func_out = ["    // vin_frequency's"]
+        ret = ["    // vin_frequency's"]
         for num, data in enumerate(self.jdata["plugins"]):
             if data.get("type") == self.ptype:
                 name = data.get("name", f"PV.{num}")
                 nameIntern = name.replace(".", "").replace("-", "_").upper()
                 freq_min = int(data.get("freq_min", 10))
-                func_out.append(
+                debounce = data.get("debounce", True)
+
+
+                if debounce:
+                    ret.append(f"    wire VIN{num}_FREQUENCY_DEBOUNCED;")
+                    ret.append(f"    debouncer #(16) din_debouncer{num} (")
+                    ret.append("        .clk (sysclk),")
+                    ret.append(f"        .SIGNAL (VIN{num}_FREQUENCY),")
+                    ret.append(f"        .SIGNAL_state (VIN{num}_FREQUENCY_DEBOUNCED)")
+                    ret.append("    );")
+
+                ret.append(
                     f"    vin_frequency #({int(self.jdata['clock']['speed']) // freq_min}) vin_frequency{num} ("
                 )
-                func_out.append("        .clk (sysclk),")
-                func_out.append(f"        .frequency ({nameIntern}),")
-                func_out.append(f"        .SIGNAL (VIN{num}_FREQUENCY)")
-                func_out.append("    );")
+                ret.append("        .clk (sysclk),")
+                ret.append(f"        .frequency ({nameIntern}),")
+                if debounce:
+                    ret.append(f"        .SIGNAL (VIN{num}_FREQUENCY_DEBOUNCED)")
+                else:
+                    ret.append(f"        .SIGNAL (VIN{num}_FREQUENCY)")
+                ret.append("    );")
 
-        return func_out
+        return ret
 
     def ips(self):
         for num, data in enumerate(self.jdata["plugins"]):

@@ -89,7 +89,7 @@
             "pin": "28"
         },
         {
-            "type": "din_toggle",
+            "type": "din_bit",
             "name": "tool-probe",
             "net": "motion.probe-input",
             "_invert": true,
@@ -142,31 +142,6 @@
             "pin": "37"
         },
         {
-            "type": "vin_ads1115",
-            "function": [
-                "feed-override",
-                "rapid-override",
-                "spindle.0.override",
-                ""
-            ],
-            "pins": {
-                "sda": "69",
-                "scl": "68"
-            }
-        },
-        {
-            "type": "vin_quadencoderz",
-            "quadType": 2,
-            "scale": 600,
-            "function": "spindle-index",
-            "pullup": true,
-            "pins": {
-                "a": "35",
-                "b": "34",
-                "z": "30"
-            }
-        },
-        {
             "type": "joint_stepper",
             "cl": false,
             "scale": -800,
@@ -207,19 +182,6 @@
             "pins": {
                 "step": "79",
                 "dir": "77"
-            }
-        }
-    ],
-    "expansion": [
-        {
-            "type": "shiftreg",
-            "bits": 8,
-            "speed": 100000,
-            "pins": {
-                "clock": "",
-                "load": "",
-                "in": "",
-                "out": ""
             }
         }
     ]

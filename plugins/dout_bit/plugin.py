@@ -6,7 +6,7 @@ class Plugin:
         return [
             {
                 "basetype": "dout",
-                "subtype": "",
+                "subtype": "dout_bit",
                 "comment": "Digital Output",
                 "options": {
                     "name": {
@@ -30,17 +30,21 @@ class Plugin:
         ]
 
     def pinlist(self):
-        pinlist_out = []
-        for num, dout in enumerate(self.jdata["dout"]):
-            name = dout.get("name", f"DOUT.{num}")
-            nameIntern = name.replace(".", "").replace("-", "_").upper()
-            pinlist_out.append((nameIntern, dout["pin"], "OUTPUT"))
-        return pinlist_out
+        ret = []
+        for num, data in enumerate(self.jdata["plugins"]):
+            if data.get("type") == "dout_bit":
+                name = data.get("name", f"DOUT.{num}")
+                nameIntern = name.replace(".", "").replace("-", "_").upper()
+                ret.append((nameIntern, data["pin"], "OUTPUT"))
+        return ret
 
     def doutnames(self):
-        douts_out = []
-        for num, dout in enumerate(self.jdata["dout"]):
-            name = dout.get("name", f"DOUT.{num}")
-            nameIntern = name.replace(".", "").replace("-", "_").upper()
-            douts_out.append((nameIntern, name, dout))
-        return douts_out
+        ret = []
+        for num, data in enumerate(self.jdata["plugins"]):
+            if data.get("type") == "dout_bit":
+                name = data.get("name", f"DOUT.{num}")
+                nameIntern = name.replace(".", "").replace("-", "_").upper()
+                data["_name"] = name
+                data["_prefix"] = nameIntern
+                ret.append(data)
+        return ret

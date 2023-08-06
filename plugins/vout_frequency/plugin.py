@@ -6,7 +6,7 @@ class Plugin:
         return [
             {
                 "basetype": "vout",
-                "subtype": "frequency",
+                "subtype": "vout_frequency",
                 "comment": "generates a variable frequency on the output pin",
                 "options": {
                     "pin": {
@@ -19,25 +19,27 @@ class Plugin:
 
     def pinlist(self):
         pinlist_out = []
-        for num, vout in enumerate(self.jdata["vout"]):
-            if vout["type"] in ["frequency"]:
-                pinlist_out.append((f"VOUT{num}_FREQUENCY", vout["pin"], "OUTPUT"))
+        for num, data in enumerate(self.jdata["plugins"]):
+            if data["type"] in ["vout_frequency"]:
+                pinlist_out.append((f"VOUT{num}_FREQUENCY", data["pin"], "OUTPUT"))
         return pinlist_out
 
     def voutnames(self):
         ret = []
-        for num, vout in enumerate(self.jdata.get("vout", [])):
-            if vout.get("type") == "frequency":
-                name = vout.get("name", f"SP.{num}")
+        for num, data in enumerate(self.jdata["plugins"]):
+            if data.get("type") == "vout_frequency":
+                name = data.get("name", f"SP.{num}")
                 nameIntern = name.replace(".", "").replace("-", "_").upper()
-                ret.append((nameIntern, name, vout))
+                data["_name"] = name
+                data["_prefix"] = nameIntern
+                ret.append(data)
         return ret
 
     def funcs(self):
         func_out = ["    // vout_frequency's"]
-        for num, vout in enumerate(self.jdata["vout"]):
-            if vout["type"] in ["frequency"]:
-                name = vout.get("name", f"SP.{num}")
+        for num, data in enumerate(self.jdata["plugins"]):
+            if data["type"] in ["vout_frequency"]:
+                name = data.get("name", f"SP.{num}")
                 nameIntern = name.replace(".", "").replace("-", "_").upper()
                 func_out.append(f"    vout_frequency vout_frequency{num} (")
                 func_out.append("        .clk (sysclk),")
@@ -49,7 +51,7 @@ class Plugin:
         return func_out
 
     def ips(self):
-        for num, vout in enumerate(self.jdata["vout"]):
-            if vout["type"] in ["frequency"]:
+        for num, data in enumerate(self.jdata["plugins"]):
+            if data["type"] in ["vout_frequency"]:
                 return ["vout_frequency.v"]
         return []

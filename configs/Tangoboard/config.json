@@ -41,32 +41,31 @@
         "invert": true,
         "pin": "73"
     },
-    "dout": [
+    "plugins": [
         {
+            "type": "dout_bit",
             "name": "spindle-enable",
             "net": "spindle.0.on",
             "invert": true,
             "pin": "38"
         },
         {
-            "invert": true,
-            "pin": "37"
-        },
-        {
+            "type": "dout_bit",
             "invert": true,
             "pin": "36"
         },
         {
+            "type": "dout_bit",
             "invert": true,
             "pin": "39"
         },
         {
+            "type": "dout_bit",
             "invert": true,
             "pin": "25"
-        }
-    ],
-    "din": [
+        },
         {
+            "type": "din_bit",
             "name": "home-x",
             "net": "joint.0.home-sw-in",
             "invert": true,
@@ -74,6 +73,7 @@
             "pin": "26"
         },
         {
+            "type": "din_bit",
             "name": "home-y",
             "net": "joint.1.home-sw-in",
             "invert": true,
@@ -81,6 +81,7 @@
             "pin": "27"
         },
         {
+            "type": "din_bit",
             "name": "home-z",
             "net": "joint.2.home-sw-in",
             "invert": true,
@@ -88,65 +89,85 @@
             "pin": "28"
         },
         {
+            "type": "din_toggle",
             "name": "tool-probe",
             "net": "motion.probe-input",
-            "invert": true,
+            "_invert": true,
             "pullup": true,
             "pin": "29"
         },
         {
+            "type": "din_bit",
             "invert": true,
             "pullup": true,
             "pin": "53"
         },
         {
+            "type": "din_bit",
             "invert": true,
             "pullup": true,
             "pin": "54"
         },
         {
+            "type": "din_bit",
             "invert": true,
             "pullup": true,
             "pin": "55"
         },
         {
+            "type": "din_bit",
             "invert": true,
             "pullup": true,
             "pin": "56"
-        }
-    ],
-    "vout": [
+        },
         {
             "name": "spindle-speed",
             "net": "spindle.0.speed-out",
             "min": "0",
             "max": "10000",
             "invert": true,
-            "type": "pwm",
+            "type": "vout_pwm",
             "pin": "76"
         },
         {
-            "type": "pwm",
+            "type": "vout_pwm",
             "invert": true,
             "pin": "75",
             "dir": "74"
-        }
-    ],
-    "vin": [
+        },
         {
-            "type": "quadencoder",
+            "type": "vout_pwm",
+            "frequency": "1500",
+            "invert": true,
+            "pin": "37"
+        },
+        {
+            "type": "vin_ads1115",
+            "function": [
+                "feed-override",
+                "rapid-override",
+                "spindle.0.override",
+                ""
+            ],
+            "pins": {
+                "sda": "69",
+                "scl": "68"
+            }
+        },
+        {
+            "type": "vin_quadencoderz",
             "quadType": 2,
-            "function": "jogwheel",
+            "scale": 600,
+            "function": "spindle-index",
             "pullup": true,
             "pins": {
-                "a": "68",
-                "b": "69"
+                "a": "35",
+                "b": "34",
+                "z": "30"
             }
-        }
-    ],
-    "joints": [
+        },
         {
-            "type": "stepper",
+            "type": "joint_stepper",
             "cl": false,
             "scale": -800,
             "pins": {
@@ -155,7 +176,7 @@
             }
         },
         {
-            "type": "stepper",
+            "type": "joint_stepper",
             "cl": false,
             "scale": -800,
             "pins": {
@@ -164,7 +185,7 @@
             }
         },
         {
-            "type": "stepper",
+            "type": "joint_stepper",
             "cl": false,
             "scale": -1600,
             "pins": {
@@ -173,7 +194,7 @@
             }
         },
         {
-            "type": "stepper",
+            "type": "joint_stepper",
             "cl": false,
             "pins": {
                 "step": "81",
@@ -181,11 +202,24 @@
             }
         },
         {
-            "type": "stepper",
+            "type": "joint_stepper",
             "cl": false,
             "pins": {
                 "step": "79",
                 "dir": "77"
+            }
+        }
+    ],
+    "expansion": [
+        {
+            "type": "shiftreg",
+            "bits": 8,
+            "speed": 100000,
+            "pins": {
+                "clock": "",
+                "load": "",
+                "in": "",
+                "out": ""
             }
         }
     ]

@@ -42,6 +42,9 @@ args = parser.parse_args()
 config_dir = "/".join(args.configfile.split("/")[:-1])
 print(f"loading json config: {args.configfile}")
 jdata = json.loads(open(args.configfile, "r").read())
+if "plugins" not in jdata:
+    print("ERROR: old json config format, please run 'python3 convert-configs.py'")
+    sys.exit(1)
 
 
 print("family:", jdata["family"])
@@ -126,6 +129,8 @@ for plugin in plugins:
         for setup in setups:
             subtype = setup["subtype"]
             basetype = setup["basetype"]
+            if basetype not in {"interface", "expansion"}:
+                basetype = "plugins"
             if basetype not in setup_data:
                 setup_data[basetype] = {}
             setup_data[basetype][subtype] = setup["options"]
@@ -214,11 +219,7 @@ class WinForm(QWidget):
         self.layoutMain.addWidget(tabwidget, 2, 0)
 
         for section in [
-            "joints",
-            "vout",
-            "vin",
-            "dout",
-            "din",
+            "plugins",
             "expansion",
             "interface",
         ]:
@@ -235,20 +236,20 @@ class WinForm(QWidget):
             if section in jdata:
                 for num, entry in enumerate(jdata[section]):
                     plugin_name = "???"
-                    etype = entry.get("type", "base")
-                    description = f"Type: {etype}"
+                    etype = entry.get("type", "???")
+                    description = ""
+                    pinlist = []
+
+                    name = entry.get("name", "-")
+
                     pin = entry.get("pin")
                     if pin:
-                        description += f" (pin:{pin})"
+                        pinlist.append(pin)
                     else:
                         pins = entry.get("pins", {})
                         if isinstance(pins, dict):
-                            pin = pins.get("step")
-                            if pin:
-                                description += f" (step:{pin})"
-                            pin = pins.get("pwm")
-                            if pin:
-                                description += f" (pwm:{pin})"
+                            for pname, pin in pins.items():
+                                pinlist.append(f"{pname}:{pin}")
 
                     for plugin in plugins:
                         if hasattr(plugins[plugin], "types"):
@@ -257,14 +258,19 @@ class WinForm(QWidget):
                                 if hasattr(plugins[plugin], "entry_info"):
                                     description = plugins[plugin].entry_info(entry)
 
-                    # self.layout.addWidget(QLabel(plugin_name), self.layout_row, self.layout_col)
                     self.layout.addWidget(
-                        QLabel(description), self.layout_row, self.layout_col
+                        QLabel(name), self.layout_row, self.layout_col
+                    )
+                    self.layout.addWidget(
+                        QLabel(etype), self.layout_row, self.layout_col + 1
+                    )
+                    self.layout.addWidget(
+                        QLabel(','.join(pinlist)), self.layout_row, self.layout_col + 2
                     )
 
                     editbutton = QPushButton("edit")
                     self.layout.addWidget(
-                        editbutton, self.layout_row, self.layout_col + 1
+                        editbutton, self.layout_row, self.layout_col + 3
                     )
                     editbutton.clicked.connect(
                         partial(self.edit_callback, section, num)
@@ -272,7 +278,7 @@ class WinForm(QWidget):
 
                     delbutton = QPushButton("del")
                     self.layout.addWidget(
-                        delbutton, self.layout_row, self.layout_col + 2
+                        delbutton, self.layout_row, self.layout_col + 4
                     )
                     delbutton.clicked.connect(partial(self.del_callback, section, num))
 

@@ -1,5 +1,4 @@
 
-
 def generate(project):
     print("generating qtgui")
 
@@ -59,9 +58,6 @@ def generate(project):
     spitest_data.append("]")
     spitest_data.append("")
 
-    spitest_data.append(f"jointcalcs = {project['jointcalcs']}")
-    spitest_data.append("")
-
     spitest_data.append("vouts = [")
     for _num in range(project['vouts']):
         spitest_data.append("    0,")
@@ -79,48 +75,48 @@ def generate(project):
 
     spitest_data.append("vinminmax = [")
     for num, vin in enumerate(project["vinnames"]):
-        if vin[2].get("type") == "frequency":
-            spitest_data.append(f"    ({vin[2].get('min', -100)}, {vin[2].get('max', 100)}, 'frequency', 0),")
-        elif vin[2].get("type") == "pwm":
-            spitest_data.append(f"    ({vin[2].get('min', -100)}, {vin[2].get('max', 100)}, 'pwm', 0),")
-        elif vin[2].get("type") == "sonar":
-            spitest_data.append(f"    ({vin[2].get('min', 0)}, {vin[2].get('max', 100000)}, 'sonar', 0),")
+        if vin.get("type") == "frequency":
+            spitest_data.append(f"    ({vin.get('min', -100)}, {vin.get('max', 100)}, 'frequency', 0),")
+        elif vin.get("type") == "pwm":
+            spitest_data.append(f"    ({vin.get('min', -100)}, {vin.get('max', 100)}, 'pwm', 0),")
+        elif vin.get("type") == "sonar":
+            spitest_data.append(f"    ({vin.get('min', 0)}, {vin.get('max', 100000)}, 'sonar', 0),")
         else:
-            spitest_data.append(f"    ({vin[2].get('min', -100)}, {vin[2].get('max', 100)}, '', 0),")
+            spitest_data.append(f"    ({vin.get('min', -100)}, {vin.get('max', 100)}, '', 0),")
 
     spitest_data.append("]")
     spitest_data.append("")
 
     spitest_data.append("vout_types = [")
-    for num, vout in enumerate(project['jdata']["vout"]):
+    for num, vout in enumerate(project["voutnames"]):
         spitest_data.append(f"    '{vout['type']}',")
     spitest_data.append("]")
     spitest_data.append("")
 
     spitest_data.append("vin_types = [")
-    for num, vout in enumerate(project["vinnames"]):
-        spitest_data.append(f"    '{vout[2]['type']}',")
+    for num, vin in enumerate(project["vinnames"]):
+        spitest_data.append(f"    '{vin['type']}',")
     spitest_data.append("]")
     spitest_data.append("")
 
     spitest_data.append("voutminmax = [")
-    for num, vout in enumerate(project['jdata']["vout"]):
-        if vout.get('type') == "sine":
+    for num, vout in enumerate(project["voutnames"]):
+        if vout.get('type') == "vout_sine":
             spitest_data.append(f"    ({vout.get('min', -100)}, {vout.get('max', 100)}, 'sine', 30),")
         elif vout.get('type') == "pwm":
-            freq = vout.get('frequency', 10000)
+            freq = vout.get('vout_frequency', 10000)
             if "dir" in vout:
                 spitest_data.append(f"    (0, {vout.get('max', 100)}, 'pwmdir', {freq}),")
             else:
                 spitest_data.append(f"    ({vout.get('min', 0)}, {vout.get('max', 100)}, 'pwm', {freq}),")
-        elif vout.get('type') == "rcservo":
+        elif vout.get('type') == "vout_rcservo":
             freq = vout.get('frequency', 100)
             spitest_data.append(f"    ({vout.get('min', -100)}, {vout.get('max', 100)}, 'rcservo', {freq}),")
-        elif vout.get('type') == "frequency":
+        elif vout.get('type') == "vout_frequency":
             spitest_data.append(f"    ({vout.get('min', 0)}, {vout.get('max', 100000)}, 'frequency', 0),")
-        elif vout.get('type') == "udpoti":
+        elif vout.get('type') == "vout_udpoti":
             spitest_data.append(f"    ({vout.get('min', 0)}, {vout.get('max', 100)}, 'udpoti', 0),")
-        elif vout.get('type') == "spipoti":
+        elif vout.get('type') == "vout_spipoti":
             spitest_data.append(f"    ({vout.get('min', 0)}, {vout.get('max', 255)}, 'spipoti', 0),")
         else:
             spitest_data.append(f"    ({vout.get('min', 0)}, {vout.get('max', 10)}, 'scale', 1),")
@@ -158,8 +154,8 @@ class WinForm(QWidget):
         for jn in range(JOINTS):
             key = f'jcs{jn}'
             self.widgets[key] = QSlider(Qt.Horizontal)
-            self.widgets[key].setMinimum(-jointcalcs[jn][1])
-            self.widgets[key].setMaximum(jointcalcs[jn][1])
+            self.widgets[key].setMinimum(-1000)
+            self.widgets[key].setMaximum(1000)
             self.widgets[key].setValue(0)
             layout.addWidget(self.widgets[key], gpy, jn + 3)
         gpy += 1
@@ -186,7 +182,7 @@ class WinForm(QWidget):
 
         layout.addWidget(QLabel(f'VOUT:'), gpy, 0)
         for vn in range(VOUTS):
-            layout.addWidget(QLabel(VOUT_NAMES[vn][1]), gpy, vn + 3)
+            layout.addWidget(QLabel(VOUT_NAMES[vn]['_name']), gpy, vn + 3)
         gpy += 1
         for vn in range(VOUTS):
             layout.addWidget(QLabel(vout_types[vn]), gpy, vn + 3)
@@ -213,7 +209,7 @@ class WinForm(QWidget):
 
         layout.addWidget(QLabel(f'VIN:'), gpy, 0)
         for vn in range(VINS):
-            layout.addWidget(QLabel(VIN_NAMES[vn][1]), gpy, vn + 3)
+            layout.addWidget(QLabel(VIN_NAMES[vn]['_name']), gpy, vn + 3)
         gpy += 1
         for vn in range(VINS):
             layout.addWidget(QLabel(vin_types[vn]), gpy, vn + 3)
@@ -235,7 +231,7 @@ class WinForm(QWidget):
                 layout.addWidget(self.widgets["dout_auto"], gpy, 2)
             for dn in range(8):
                 key = f'doc{dbyte}{dn}'
-                self.widgets[key] = QCheckBox(DOUT_NAMES[dbyte * 8 + dn][1])
+                self.widgets[key] = QCheckBox(DOUT_NAMES[dbyte * 8 + dn]['_name'])
                 self.widgets[key].setChecked(False)
                 layout.addWidget(self.widgets[key], gpy, dn + 3)
                 if dbyte * 8 + dn == DOUTS - 1:
@@ -249,7 +245,7 @@ class WinForm(QWidget):
             if dbyte == 0:
                 layout.addWidget(QLabel(f'DIN:'), gpy, 0)
             for dn in range(8):
-                layout.addWidget(QLabel(DIN_NAMES[dbyte * 8 + dn][1]), gpy, dn + 3)
+                layout.addWidget(QLabel(DIN_NAMES[dbyte * 8 + dn]['_name']), gpy, dn + 3)
                 if dbyte * 8 + dn == DINS - 1:
                     break
             gpy += 1
@@ -341,7 +337,7 @@ class WinForm(QWidget):
                 # precalc
                 if value == 0:
                     value = 0
-                elif jointcalcs[jn][0] == "oscdiv":
+                else:
                     value = int(PRU_OSC / value)
 
                 key = f"jc{jn}"

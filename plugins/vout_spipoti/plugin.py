@@ -6,7 +6,7 @@ class Plugin:
         return [
             {
                 "basetype": "vout",
-                "subtype": "spipoti",
+                "subtype": "vout_spipoti",
                 "comment": "variable output via spi-poti like (MCP4151)",
                 "options": {
                     "bits": {
@@ -45,30 +45,32 @@ class Plugin:
 
     def pinlist(self):
         pinlist_out = []
-        for num, vout in enumerate(self.jdata["vout"]):
-            if vout["type"] in ["spipoti"]:
-                pinlist_out.append((f"VOUT{num}_SPIPOTI_MOSI", vout["pins"]["MOSI"], "OUTPUT"))
-                pinlist_out.append((f"VOUT{num}_SPIPOTI_SCLK", vout["pins"]["SCLK"], "OUTPUT"))
-                pinlist_out.append((f"VOUT{num}_SPIPOTI_CS", vout["pins"]["CS"], "OUTPUT"))
+        for num, data in enumerate(self.jdata["plugins"]):
+            if data["type"] in ["vout_spipoti"]:
+                pinlist_out.append((f"VOUT{num}_SPIPOTI_MOSI", data["pins"]["MOSI"], "OUTPUT"))
+                pinlist_out.append((f"VOUT{num}_SPIPOTI_SCLK", data["pins"]["SCLK"], "OUTPUT"))
+                pinlist_out.append((f"VOUT{num}_SPIPOTI_CS", data["pins"]["CS"], "OUTPUT"))
         return pinlist_out
 
     def voutnames(self):
         ret = []
-        for num, vout in enumerate(self.jdata.get("vout", [])):
-            if vout.get("type") == "spipoti":
-                name = vout.get("name", f"SP.{num}")
+        for num, data in enumerate(self.jdata["plugins"]):
+            if data.get("type") == "vout_spipoti":
+                name = data.get("name", f"SP.{num}")
                 nameIntern = name.replace(".", "").replace("-", "_").upper()
-                ret.append((nameIntern, name, vout))
+                data["_name"] = name
+                data["_prefix"] = nameIntern
+                ret.append(data)
         return ret
 
     def funcs(self):
         func_out = ["    // vout_spipoti's"]
-        for num, vout in enumerate(self.jdata["vout"]):
-            if vout["type"] in ["spipoti"]:
-                name = vout.get("name", f"SP.{num}")
+        for num, data in enumerate(self.jdata["plugins"]):
+            if data["type"] in ["vout_spipoti"]:
+                name = data.get("name", f"SP.{num}")
                 nameIntern = name.replace(".", "").replace("-", "_").upper()
-                bits = int(vout.get("bits", 8))
-                speed = int(vout.get("speed", 100000))
+                bits = int(data.get("bits", 8))
+                speed = int(data.get("speed", 100000))
                 divider = int(self.jdata["clock"]["speed"]) // speed
                 func_out.append(f"    vout_spipoti #({bits}, {divider}) vout_spipoti{num} (")
                 func_out.append("        .clk (sysclk),")
@@ -81,8 +83,8 @@ class Plugin:
         return func_out
 
     def ips(self):
-        for num, vout in enumerate(self.jdata["vout"]):
-            if vout["type"] in ["spipoti"]:
+        for num, data in enumerate(self.jdata["plugins"]):
+            if data["type"] in ["vout_spipoti"]:
                 return ["vout_spipoti.v"]
         return []
 

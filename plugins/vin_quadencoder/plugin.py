@@ -6,7 +6,7 @@ class Plugin:
         return [
             {
                 "basetype": "vin",
-                "subtype": "quadencoder",
+                "subtype": "vin_quadencoder",
                 "comment": "quad-encoder input",
                 "options": {
                     "debounce": {
@@ -39,12 +39,12 @@ class Plugin:
 
     def pinlist(self):
         pinlist_out = []
-        for num, vin in enumerate(self.jdata.get("vin", [])):
-            if vin.get("type") == "quadencoder":
-                pullup = vin.get("pullup", False)
-                pins = vin.get("pins", {})
-                pin_a = pins.get("a", vin.get("pin_a"))
-                pin_b = pins.get("b", vin.get("pin_b"))
+        for num, data in enumerate(self.jdata["plugins"]):
+            if data.get("type") == "vin_quadencoder":
+                pullup = data.get("pullup", False)
+                pins = data.get("pins", {})
+                pin_a = pins.get("a", data.get("pin_a"))
+                pin_b = pins.get("b", data.get("pin_b"))
                 pinlist_out.append(
                     (f"VIN{num}_ENCODER_A", pin_a, "INPUT", pullup)
                 )
@@ -55,21 +55,23 @@ class Plugin:
 
     def vinnames(self):
         ret = []
-        for num, vin in enumerate(self.jdata.get("vin", [])):
-            if vin.get("type") == "quadencoder":
-                name = vin.get("name", f"PV.{num}")
+        for num, data in enumerate(self.jdata["plugins"]):
+            if data.get("type") == "vin_quadencoder":
+                name = data.get("name", f"PV.{num}")
                 nameIntern = name.replace(".", "").replace("-", "_").upper()
-                ret.append((nameIntern, name, vin))
+                data["_name"] = name
+                data["_prefix"] = nameIntern
+                ret.append(data)
         return ret
 
     def funcs(self):
         func_out = ["    // vin_quadencoder's"]
-        for num, vin in enumerate(self.jdata.get("vin", [])):
-            if vin.get("type") == "quadencoder" or vin.get("type") == "mpgencoder":
-                name = vin.get("name", f"PV.{num}")
+        for num, data in enumerate(self.jdata["plugins"]):
+            if data.get("type") == "vin_quadencoder" or data.get("type") == "mpgencoder":
+                name = data.get("name", f"PV.{num}")
                 nameIntern = name.replace(".", "").replace("-", "_").upper()
-                debounce = vin.get("debounce", False)
-                quadType = vin.get("quadType", 2)
+                debounce = data.get("debounce", False)
+                quadType = data.get("quadType", 2)
 
                 if debounce:
                     func_out.append(f"    wire VIN{num}_ENCODER_A_DEBOUNCED;")
@@ -98,7 +100,7 @@ class Plugin:
         return func_out
 
     def ips(self):
-        for num, vin in enumerate(self.jdata["vin"]):
-            if vin["type"] in ["quadencoder"]:
+        for num, data in enumerate(self.jdata["plugins"]):
+            if data["type"] in ["vin_quadencoder"]:
                 return ["vin_quadencoder.v"]
         return []

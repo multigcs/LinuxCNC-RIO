@@ -12,100 +12,114 @@
         "pin": "35"
     },
     "interface": [
-    	{
-	        "type": "spi",
-	        "pins": {
-	            "MOSI": "42",
-	            "MISO": "43",
-	            "SCK": "38",
-	            "SEL": "36"
-	        }
-    	}
-   ],
+        {
+            "type": "spi",
+            "pins": {
+                "MOSI": "42",
+                "MISO": "43",
+                "SCK": "38",
+                "SEL": "36"
+            }
+        }
+    ],
     "blink": {
         "pin": "27"
     },
-    "din": [
+    "plugins": [
         {
             "debounce": true,
-            "pin": "10"
-        },
-        {
-            "debounce": true,
-            "pin": "20"
+            "pin": "10",
+            "name": "DIN0",
+            "type": "din_bit"
         },
         {
             "debounce": true,
-            "pin": "19"
+            "pin": "20",
+            "name": "DIN1",
+            "type": "din_bit"
         },
         {
             "debounce": true,
-            "pin": "18"
-        }
-    ],
-    "dout": [
-        {
-            "pin": "23"
+            "pin": "19",
+            "name": "DIN2",
+            "type": "din_bit"
         },
         {
-            "pin": "25"
+            "debounce": true,
+            "pin": "18",
+            "name": "DIN3",
+            "type": "din_bit"
         },
         {
-            "pin": "26"
+            "pin": "23",
+            "name": "DOUT0",
+            "type": "dout_bit"
         },
         {
-            "pin": "21"
-        }
-    ],
-    "vin": [
+            "pin": "25",
+            "name": "DOUT1",
+            "type": "dout_bit"
+        },
         {
-            "type": "frequency",
+            "pin": "26",
+            "name": "DOUT2",
+            "type": "dout_bit"
+        },
+        {
+            "pin": "21",
+            "name": "DOUT3",
+            "type": "dout_bit"
+        },
+        {
+            "type": "vin_frequency",
             "pin": "44",
-            "pullup": true
-        }
-    ],
-    "vout": [
-        {
-            "type": "pwm",
-            "pin": "37",
-            "invert_pwm": true
+            "pullup": true,
+            "name": "VIN0"
         },
         {
-            "type": "pwm",
+            "type": "vout_pwm",
+            "pin": "37",
+            "invert_pwm": true,
+            "name": "VOUT0"
+        },
+        {
+            "type": "vout_pwm",
             "pin": "11",
-            "invert_pwm": true
-        }
-    ],
-    "joints": [
+            "invert_pwm": true,
+            "name": "VOUT1"
+        },
         {
             "comment": "J9.1+3+4",
-            "type": "stepper",
+            "type": "joint_stepper",
             "cl": false,
             "pins": {
                 "dir": "3",
                 "step": "4",
                 "enable": "48"
-            }
+            },
+            "name": "JOINT0"
         },
         {
             "comment": "J9.1+3+4_2",
-            "type": "stepper",
+            "type": "joint_stepper",
             "cl": false,
             "pins": {
                 "dir": "2",
                 "step": "46",
                 "enable": "47"
-            }
+            },
+            "name": "JOINT1"
         },
         {
             "comment": "J9.1+3+4_3",
-            "type": "stepper",
+            "type": "joint_stepper",
             "cl": false,
             "pins": {
                 "dir": "32",
                 "step": "34",
                 "enable": "28"
-            }
+            },
+            "name": "JOINT2"
         }
     ]
 }

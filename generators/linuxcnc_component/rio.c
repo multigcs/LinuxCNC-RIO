@@ -420,7 +420,7 @@ int rtapi_app_main(void)
         if (retval < 0) goto error;
         *(data->processVariableOffset[n]) = 0.0;
 
-        if (vin_type[n] == VIN_TYPE_ENCODER) {
+        if (vin_type[n] == TYPE_VIN_ENCODER) {
             retval = hal_pin_float_newf(HAL_IN, &(data->processVariableExtra[n][0]), comp_id, "%s.%s-rpm", prefix, vin_names[n]);
             if (retval < 0) goto error;
             *(data->processVariableExtra[n][0]) = 0.0;
@@ -925,9 +925,9 @@ void rio_readwrite()
                 value *= *(data->setPointScale[i]);
                 value += *(data->setPointOffset[i]);
 
-                if (vout_type[i] == VOUT_TYPE_SINE) {
+                if (vout_type[i] == TYPE_VOUT_SINE) {
                     txData.setPoint[i] = PRU_OSC / value / vout_freq[i];
-                } else if (vout_type[i] == VOUT_TYPE_PWMDIR) {
+                } else if (vout_type[i] == TYPE_VOUT_PWMDIR) {
                     if (value > vout_max[i]) {
                         value = vout_max[i];
                     }
@@ -935,7 +935,7 @@ void rio_readwrite()
                         value = -vout_max[i];
                     }
                     txData.setPoint[i] = (value) * (PRU_OSC / vout_freq[i]) / (vout_max[i]);
-                } else if (vout_type[i] == VOUT_TYPE_PWM) {
+                } else if (vout_type[i] == TYPE_VOUT_PWM) {
                     if (value > vout_max[i]) {
                         value = vout_max[i];
                     }
@@ -943,7 +943,7 @@ void rio_readwrite()
                         value = vout_min[i];
                     }
                     txData.setPoint[i] = (value - vout_min[i]) * (PRU_OSC / vout_freq[i]) / (vout_max[i] - vout_min[i]);
-                } else if (vout_type[i] == VOUT_TYPE_RCSERVO) {
+                } else if (vout_type[i] == TYPE_VOUT_RCSERVO) {
                     txData.setPoint[i] = (value + 200 + 100) * (PRU_OSC / 200000);
                 } else {
                     txData.setPoint[i] = (value - vout_min[i]) * (0xFFFFFFFF / 2) / (vout_max[i] - vout_min[i]);
@@ -1001,7 +1001,7 @@ void rio_readwrite()
                 // Feedback
                 for (i = 0; i < VARIABLE_INPUTS; i++) {
                     float value = rxData.processVariable[i];
-                    if (vin_type[i] == VIN_TYPE_FREQ) {
+                    if (vin_type[i] == TYPE_VIN_FREQ) {
                         if (value != 0) {
                             value = (float)PRU_OSC / value;
                         }
@@ -1009,7 +1009,7 @@ void rio_readwrite()
                         value += *(data->processVariableOffset[i]);
                         *(data->processVariable[i]) = value;
                         *(data->processVariableS32[i]) = (int)value;
-                    } else if (vin_type[i] == VIN_TYPE_TIME) {
+                    } else if (vin_type[i] == TYPE_VIN_TIME) {
                         if (value != 0) {
                             value = 1000.0 / ((float)PRU_OSC / value);
                         }
@@ -1017,7 +1017,7 @@ void rio_readwrite()
                         value += *(data->processVariableOffset[i]);
                         *(data->processVariable[i]) = value;
                         *(data->processVariableS32[i]) = (int)value;
-                    } else if (vin_type[i] == VIN_TYPE_SONAR) {
+                    } else if (vin_type[i] == TYPE_VIN_SONAR) {
                         if (value != 0) {
                             value = 1000.0 / (float)PRU_OSC / 20.0 * value * 343.2;
                         }
@@ -1025,12 +1025,12 @@ void rio_readwrite()
                         value += *(data->processVariableOffset[i]);
                         *(data->processVariable[i]) = value;
                         *(data->processVariableS32[i]) = (int)value;
-                    } else if (vin_type[i] == VIN_TYPE_ADC) {
+                    } else if (vin_type[i] == TYPE_VIN_ADC) {
                         value *= *(data->processVariableScale[i]);
                         value += *(data->processVariableOffset[i]);
                         *(data->processVariable[i]) = value / 1000.0;
                         *(data->processVariableS32[i]) = (int)(value / 10);
-                    } else if (vin_type[i] == VIN_TYPE_ENCODER) {
+                    } else if (vin_type[i] == TYPE_VIN_ENCODER) {
                         value /= *(data->processVariableScale[i]);
                         value += *(data->processVariableOffset[i]);
                         *(data->processVariable[i]) = value;

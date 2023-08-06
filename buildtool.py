@@ -26,6 +26,9 @@ project["config"] = args.configfile
 
 data = open(project["config"], "r").read()
 project["jdata"] = json.loads(data)
+if "plugins" not in project["jdata"]:
+    print("ERROR: old json config format, please run 'python3 convert-configs.py'")
+    sys.exit(1)
 
 
 # loading plugins
@@ -129,21 +132,15 @@ for plugin in project["plugins"]:
         project["doutnames"] += project["plugins"][plugin].doutnames()
 project["douts"] = len(project["doutnames"])
 
+project["jointnames"] = []
+for plugin in project["plugins"]:
+    if hasattr(project["plugins"][plugin], "jointnames"):
+        project["jointnames"] += project["plugins"][plugin].jointnames()
+project["joints"] = len(project["jointnames"])
 
 project["jointtypes"] = []
-for joint in project['jdata']['joints']:
-    project["jointtypes"].append(joint['type'])
-
-
-project["joints"] = 0
-for plugin in project["plugins"]:
-    if hasattr(project["plugins"][plugin], "joints"):
-        project["joints"] += project["plugins"][plugin].joints()
-
-project["jointcalcs"] = {}
-for plugin in project["plugins"]:
-    if hasattr(project["plugins"][plugin], "jointcalcs"):
-        project["jointcalcs"].update(project["plugins"][plugin].jointcalcs())
+for joint in project["jointnames"]:
+        project["jointtypes"].append(joint['type'])
 
 project["joints_en_total"] = (project["joints"] + 7) // 8 * 8
 project["douts_total"] = (project["douts"] + 7) // 8 * 8

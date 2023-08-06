@@ -6,7 +6,7 @@ class Plugin:
         return [
             {
                 "basetype": "vout",
-                "subtype": "udpoti",
+                "subtype": "vout_udpoti",
                 "options": {
                     "resolution": {
                         "type": "int",
@@ -41,29 +41,31 @@ class Plugin:
 
     def pinlist(self):
         pinlist_out = []
-        for num, vout in enumerate(self.jdata["vout"]):
-            if vout["type"] in ["udpoti"]:
-                pinlist_out.append((f"VOUT{num}_UDPOTI_UPDOWN", vout["pins"]["updown"], "OUTPUT"))
-                pinlist_out.append((f"VOUT{num}_UDPOTI_INCR", vout["pins"]["incr"], "OUTPUT"))
+        for num, data in enumerate(self.jdata["plugins"]):
+            if data["type"] in ["vout_udpoti"]:
+                pinlist_out.append((f"VOUT{num}_UDPOTI_UPDOWN", data["pins"]["updown"], "OUTPUT"))
+                pinlist_out.append((f"VOUT{num}_UDPOTI_INCR", data["pins"]["incr"], "OUTPUT"))
         return pinlist_out
 
     def voutnames(self):
         ret = []
-        for num, vout in enumerate(self.jdata.get("vout", [])):
-            if vout.get("type") == "udpoti":
-                name = vout.get("name", f"SP.{num}")
+        for num, data in enumerate(self.jdata["plugins"]):
+            if data.get("type") == "vout_udpoti":
+                name = data.get("name", f"SP.{num}")
                 nameIntern = name.replace(".", "").replace("-", "_").upper()
-                ret.append((nameIntern, name, vout))
+                data["_name"] = name
+                data["_prefix"] = nameIntern
+                ret.append(data)
         return ret
 
     def funcs(self):
         func_out = ["    // vout_udpoti's"]
-        for num, vout in enumerate(self.jdata["vout"]):
-            if vout["type"] in ["udpoti"]:
-                name = vout.get("name", f"SP.{num}")
+        for num, data in enumerate(self.jdata["plugins"]):
+            if data["type"] in ["vout_udpoti"]:
+                name = data.get("name", f"SP.{num}")
                 nameIntern = name.replace(".", "").replace("-", "_").upper()
-                resolution = int(vout.get("resolution", 100))
-                speed = int(vout.get("speed", 100000))
+                resolution = int(data.get("resolution", 100))
+                speed = int(data.get("speed", 100000))
                 divider = int(self.jdata["clock"]["speed"]) // speed
                 func_out.append(f"    vout_udpoti #({resolution}, {divider}) vout_udpoti{num} (")
                 func_out.append("        .clk (sysclk),")
@@ -75,8 +77,8 @@ class Plugin:
         return func_out
 
     def ips(self):
-        for num, vout in enumerate(self.jdata["vout"]):
-            if vout["type"] in ["udpoti"]:
+        for num, data in enumerate(self.jdata["plugins"]):
+            if data["type"] in ["vout_udpoti"]:
                 return ["vout_udpoti.v"]
         return []
 

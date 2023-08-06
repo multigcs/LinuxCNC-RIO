@@ -168,9 +168,9 @@ def generate(project):
 
 
     jointEnables = []
-    for num in range(project['joints']):
-        top_data.append(f"    wire jointEnable{num};")
-        jointEnables.append(f"jointEnable{num}")
+    for num, joint in enumerate(project['jointnames']):
+        top_data.append(f"    wire {joint['_prefix']}Enable;")
+        jointEnables.append(f"{joint['_prefix']}Enable")
     top_data.append("")
 
     if "enable" in project['jdata']:
@@ -186,19 +186,19 @@ def generate(project):
 
     top_data.append(f"    // vouts {project['vouts']}")
     for num, vout in enumerate(project["voutnames"]):
-        top_data.append(f"    wire signed [31:0] {vout[0]};")
+        top_data.append(f"    wire signed [31:0] {vout['_prefix']};")
     top_data.append("")
 
     top_data.append(f"    // vins {project['vins']}")
     for num, vin in enumerate(project["vinnames"]):
-        top_data.append(f"    wire signed [31:0] {vin[0]};")
+        top_data.append(f"    wire signed [31:0] {vin['_prefix']};")
     top_data.append("")
 
     top_data.append(f"    // joints {project['joints']}")
-    for num in range(project['joints']):
-        top_data.append(f"    wire signed [31:0] jointFreqCmd{num};")
-    for num in range(project['joints']):
-        top_data.append(f"    wire signed [31:0] jointFeedback{num};")
+    for num, joint in enumerate(project['jointnames']):
+        top_data.append(f"    wire signed [31:0] {joint['_prefix']}FreqCmd;")
+    for num, joint in enumerate(project['jointnames']):
+        top_data.append(f"    wire signed [31:0] {joint['_prefix']}Feedback;")
     top_data.append("")
 
 
@@ -211,15 +211,15 @@ def generate(project):
     )
     pos -= 32
 
-    for num in range(project['joints']):
+    for num, joint in enumerate(project['jointnames']):
         top_data.append(
-            f"    assign jointFreqCmd{num} = {{rx_data[{pos-3*8-1}:{pos-3*8-8}], rx_data[{pos-2*8-1}:{pos-2*8-8}], rx_data[{pos-1*8-1}:{pos-1*8-8}], rx_data[{pos-1}:{pos-8}]}};"
+            f"    assign {joint['_prefix']}FreqCmd = {{rx_data[{pos-3*8-1}:{pos-3*8-8}], rx_data[{pos-2*8-1}:{pos-2*8-8}], rx_data[{pos-1*8-1}:{pos-1*8-8}], rx_data[{pos-1}:{pos-8}]}};"
         )
         pos -= 32
 
     for num, vout in enumerate(project["voutnames"]):
         top_data.append(
-            f"    assign {vout[0]} = {{rx_data[{pos-3*8-1}:{pos-3*8-8}], rx_data[{pos-2*8-1}:{pos-2*8-8}], rx_data[{pos-1*8-1}:{pos-1*8-8}], rx_data[{pos-1}:{pos-8}]}};"
+            f"    assign {vout['_prefix']} = {{rx_data[{pos-3*8-1}:{pos-3*8-8}], rx_data[{pos-2*8-1}:{pos-2*8-8}], rx_data[{pos-1*8-1}:{pos-1*8-8}], rx_data[{pos-1}:{pos-8}]}};"
         )
         pos -= 32
 
@@ -228,17 +228,16 @@ def generate(project):
         for num in range(8):
             bitnum = dbyte * 8 + (7 - num)
             if bitnum < project['joints']:
-                top_data.append(f"    assign jointEnable{bitnum} = rx_data[{pos-1}];")
-            else:
-                top_data.append(f"    // assign jointEnable{bitnum} = rx_data[{pos-1}];")
+                jname = project['jointnames'][bitnum]["_prefix"]
+                top_data.append(f"    assign {jname}Enable = rx_data[{pos-1}];")
             pos -= 1
 
     for dbyte in range(project['douts_total'] // 8):
         for num in range(8):
             bitnum = num + (dbyte * 8)
             if bitnum < project['douts']:
-                dname = project['doutnames'][bitnum][0]
-                if bitnum in project['jdata']["dout"] and project['jdata']["dout"][bitnum].get("invert", False):
+                dname = project['doutnames'][bitnum]["_prefix"]
+                if project['doutnames'][bitnum].get("invert", False):
                     top_data.append(f"    assign {dname} = ~rx_data[{pos-1}];")
                 else:
                     top_data.append(f"    assign {dname} = rx_data[{pos-1}];")
@@ -256,13 +255,13 @@ def generate(project):
         "        header_tx[7:0], header_tx[15:8], header_tx[23:16], header_tx[31:24],"
     )
 
-    for num in range(project['joints']):
+    for num, joint in enumerate(project['jointnames']):
         top_data.append(
-            f"        jointFeedback{num}[7:0], jointFeedback{num}[15:8], jointFeedback{num}[23:16], jointFeedback{num}[31:24],"
+            f"        {joint['_prefix']}Feedback[7:0], {joint['_prefix']}Feedback[15:8], {joint['_prefix']}Feedback[23:16], {joint['_prefix']}Feedback[31:24],"
         )
 
     for num, vin in enumerate(project["vinnames"]):
-        top_data.append(f"        {vin[0]}[7:0], {vin[0]}[15:8], {vin[0]}[23:16], {vin[0]}[31:24],")
+        top_data.append(f"        {vin['_prefix']}[7:0], {vin['_prefix']}[15:8], {vin['_prefix']}[23:16], {vin['_prefix']}[31:24],")
 
     tdins = []
     ldin = project['dins']
@@ -270,8 +269,8 @@ def generate(project):
         for num in range(8):
             bitnum = num + (dbyte * 8)
             if bitnum < project['dins']:
-                dname = project['dinnames'][bitnum][0]
-                din_data = project['dinnames'][bitnum][2]
+                dname = project['dinnames'][bitnum]["_prefix"]
+                din_data = project['dinnames'][bitnum]
                 if bitnum < ldin and din_data.get("invert", False):
                     tdins.append(f"~{dname}")
                 else:

@@ -54,37 +54,37 @@ class Plugin:
         ]
 
     def types(self):
-        return ["pwm", "rcservo", ]
+        return ["vout_pwm", "vout_rcservo", ]
 
     def pinlist(self):
         pinlist_out = []
-        for num, vout in enumerate(self.jdata["vout"]):
-            if vout["type"] in ["pwm", "rcservo"]:
-                if "dir" in vout:
-                    pinlist_out.append((f"VOUT{num}_PWM_DIR", vout["dir"], "OUTPUT"))
-                pinlist_out.append((f"VOUT{num}_PWM_PWM", vout["pin"], "OUTPUT"))
+        for num, data in enumerate(self.jdata["plugins"]):
+            if data["type"] in ["vout_pwm", "vout_rcservo"]:
+                if "dir" in data:
+                    pinlist_out.append((f"VOUT{num}_PWM_DIR", data["dir"], "OUTPUT"))
+                pinlist_out.append((f"VOUT{num}_PWM_PWM", data["pin"], "OUTPUT"))
         return pinlist_out
 
     def voutnames(self):
         ret = []
-        vout_num = 0
-        for num, vout in enumerate(self.jdata.get("vout", [])):
-            if vout["type"] in ["pwm", "rcservo"]:
-                name = vout.get("name", f"SP.{num}")
+        for num, data in enumerate(self.jdata["plugins"]):
+            if data["type"] in ["vout_pwm", "vout_rcservo"]:
+                name = data.get("name", f"SP.{num}")
                 nameIntern = name.replace(".", "").replace("-", "_").upper()
-                ret.append((nameIntern, name, vout))
-            vout_num += vout.get("vars", 1)
+                data["_name"] = name
+                data["_prefix"] = nameIntern
+                ret.append(data)
         return ret
 
     def defs(self):
         func_out = ["    // vout_pwm's"]
-        for num, vout in enumerate(self.jdata["vout"]):
-            if vout["type"] in ["pwm", "rcservo"]:
-                if "dir" not in vout:
+        for num, data in enumerate(self.jdata["plugins"]):
+            if data["type"] in ["vout_pwm", "vout_rcservo"]:
+                if "dir" not in data:
                     func_out.append(
                         f"    wire VOUT{num}_PWM_DIR; // fake direction output"
                     )
-                invert_pwm = vout.get("invert_pwm", False)
+                invert_pwm = data.get("invert_pwm", False)
                 if invert_pwm:
                     func_out.append(
                         f"    wire VOUT{num}_PWM_PWM_INVERTED; // inverted pwm wire"
@@ -94,16 +94,16 @@ class Plugin:
 
     def funcs(self):
         func_out = ["    // vout_pwm's"]
-        for num, vout in enumerate(self.jdata["vout"]):
-            if vout["type"] in ["pwm", "rcservo"]:
-                name = vout.get("name", f"SP.{num}")
+        for num, data in enumerate(self.jdata["plugins"]):
+            if data["type"] in ["vout_pwm", "vout_rcservo"]:
+                name = data.get("name", f"SP.{num}")
                 nameIntern = name.replace(".", "").replace("-", "_").upper()
-                if vout["type"] == "rcservo":
-                    freq = int(vout.get("frequency", 100))
+                if data["type"] == "rcservo":
+                    freq = int(data.get("frequency", 100))
                 else:
-                    freq = int(vout.get("frequency", 10000))
+                    freq = int(data.get("frequency", 10000))
                 divider = int(self.jdata["clock"]["speed"]) // freq
-                invert_pwm = vout.get("invert_pwm", False)
+                invert_pwm = data.get("invert_pwm", False)
                 if invert_pwm:
                     func_out.append(
                         f"    assign VOUT{num}_PWM_PWM = ~VOUT{num}_PWM_PWM_INVERTED; // invert pwm output"
@@ -121,7 +121,7 @@ class Plugin:
         return func_out
 
     def ips(self):
-        for num, vout in enumerate(self.jdata["vout"]):
-            if vout["type"] in ["pwm", "rcservo"]:
+        for num, data in enumerate(self.jdata["plugins"]):
+            if data["type"] in ["vout_pwm", "vout_rcservo"]:
                 return ["vout_pwm.v"]
         return []

@@ -11,11 +11,13 @@ class Plugin:
                 "options": {
                     "bits": {
                         "type": "int",
+                        "default": 8,
                         "name": "number of bits",
                         "comment": "total number of bits to send/receive N = max(8bit * num input-devices, 8bit * num output-devices)",
                     },
                     "speed": {
                         "type": "int",
+                        "default": 100000,
                         "name": "clock speed",
                         "comment": "the clock-speed in Hz",
                     },

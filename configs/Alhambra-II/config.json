@@ -34,73 +34,82 @@
     "enable": {
         "pin": "39"
     },
-    "dout": [
-        {
-            "pin": "41"
-        },
-        {
-            "pin": "42"
-        },
-        {
-            "pin": "43"
-        },
-        {
-            "pin": "44"
-        }
-    ],
-    "din": [
+    "plugins": [
         {
             "pullup": true,
-            "pin": "63"
+            "pin": "63",
+            "name": "DIN0",
+            "type": "din_bit"
         },
         {
             "pullup": true,
-            "pin": "64"
-        }
-    ],
-    "vout": [
+            "pin": "64",
+            "name": "DIN1",
+            "type": "din_bit"
+        },
         {
-            "type": "pwm",
-            "pin": "45"
-        }
-    ],
-    "vin": [
+            "pin": "41",
+            "name": "DOUT0",
+            "type": "dout_bit"
+        },
         {
-            "type": "counter",
+            "pin": "42",
+            "name": "DOUT1",
+            "type": "dout_bit"
+        },
+        {
+            "pin": "43",
+            "name": "DOUT2",
+            "type": "dout_bit"
+        },
+        {
+            "pin": "44",
+            "name": "DOUT3",
+            "type": "dout_bit"
+        },
+        {
+            "type": "vin_counter",
             "pullup": true,
             "pins": {
                 "up": "34",
                 "down": "33"
-            }
-        }
-    ],
-    "joints": [
+            },
+            "name": "VIN0"
+        },
         {
-            "type": "stepper",
+            "type": "vout_pwm",
+            "pin": "45",
+            "name": "VOUT0"
+        },
+        {
+            "type": "joint_stepper",
             "cl": false,
             "scale": 800,
             "pins": {
                 "step": "1",
                 "dir": "2"
-            }
+            },
+            "name": "JOINT0"
         },
         {
-            "type": "stepper",
+            "type": "joint_stepper",
             "cl": false,
             "scale": 800,
             "pins": {
                 "step": "3",
                 "dir": "4"
-            }
+            },
+            "name": "JOINT1"
         },
         {
-            "type": "stepper",
+            "type": "joint_stepper",
             "cl": false,
             "scale": 800,
             "pins": {
                 "step": "7",
                 "dir": "8"
-            }
+            },
+            "name": "JOINT2"
         }
     ]
 }

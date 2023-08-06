@@ -6,7 +6,7 @@ class Plugin:
         return [
             {
                 "basetype": "din",
-                "subtype": "",
+                "subtype": "din_bit",
                 "comment": "normal binary input pin",
                 "options": {
                     "name": {
@@ -42,27 +42,22 @@ class Plugin:
         ]
 
     def pinlist(self):
-        pinlist_out = []
-        for num, din in enumerate(self.jdata["din"]):
-            if din.get("type", "bit") == "bit":
-                name = din.get("name", f"DIN.{num}")
+        ret = []
+        for num, data in enumerate(self.jdata["plugins"]):
+            if data.get("type") == "din_bit":
+                name = data.get("name", f"DIN.{num}")
                 nameIntern = name.replace(".", "").replace("-", "_").upper()
-                pullup = din.get("pullup", False)
-                pinlist_out.append((nameIntern, din["pin"], "INPUT", pullup))
-        return pinlist_out
-
-    def dins_data(self):
-        ddata = []
-        for num, din in enumerate(self.jdata["din"]):
-            if din.get("type", "bit") == "bit":
-                ddata.append(din)
-        return ddata
+                pullup = data.get("pullup", False)
+                ret.append((nameIntern, data["pin"], "INPUT", pullup))
+        return ret
 
     def dinnames(self):
-        dins_out = []
-        for num, din in enumerate(self.jdata["din"]):
-            if din.get("type", "bit") == "bit":
-                name = din.get("name", f"DIN.{num}")
+        ret = []
+        for num, data in enumerate(self.jdata["plugins"]):
+            if data.get("type") == "din_bit":
+                name = data.get("name", f"DIN.{num}")
                 nameIntern = name.replace(".", "").replace("-", "_").upper()
-                dins_out.append((nameIntern, name, din))
-        return dins_out
+                data["_name"] = name
+                data["_prefix"] = nameIntern
+                ret.append(data)
+        return ret

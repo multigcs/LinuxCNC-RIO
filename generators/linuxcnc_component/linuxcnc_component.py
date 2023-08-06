@@ -1,3 +1,4 @@
+
 import os
 import sys
 
@@ -36,7 +37,7 @@ def generate(project):
     rio_data.append(f"#define SPIBUFSIZE           {project['data_size'] // 8}")
     index_num = 0
     for num in range(project['dins']):
-        dname = project['dinnames'][num][1]
+        dname = project['dinnames'][num]["_name"]
         if dname.endswith("-index-enable-out"):
             index_num += 1
     if index_num > 0:
@@ -55,20 +56,20 @@ def generate(project):
     rio_data.append(f"#define PRU_OSC             {project['jdata']['clock']['speed']}")
     rio_data.append("")
 
-    rio_data.append("#define VOUT_TYPE_RAW  0")
-    rio_data.append("#define VOUT_TYPE_PWM  1")
-    rio_data.append("#define VOUT_TYPE_PWMDIR  2")
-    rio_data.append("#define VOUT_TYPE_RCSERVO 3")
-    rio_data.append("#define VOUT_TYPE_SINE 4")
-    rio_data.append("#define VOUT_TYPE_FREQ 5")
-    rio_data.append("#define VOUT_TYPE_UDPOTI 6")
+    rio_data.append("#define TYPE_VOUT_RAW  0")
+    rio_data.append("#define TYPE_VOUT_PWM  1")
+    rio_data.append("#define TYPE_VOUT_PWMDIR  2")
+    rio_data.append("#define TYPE_VOUT_RCSERVO 3")
+    rio_data.append("#define TYPE_VOUT_SINE 4")
+    rio_data.append("#define TYPE_VOUT_FREQ 5")
+    rio_data.append("#define TYPE_VOUT_UDPOTI 6")
 
-    rio_data.append("#define VIN_TYPE_RAW  0")
-    rio_data.append("#define VIN_TYPE_FREQ 1")
-    rio_data.append("#define VIN_TYPE_TIME 2")
-    rio_data.append("#define VIN_TYPE_SONAR 3")
-    rio_data.append("#define VIN_TYPE_ADC 4")
-    rio_data.append("#define VIN_TYPE_ENCODER 5")
+    rio_data.append("#define TYPE_VIN_RAW  0")
+    rio_data.append("#define TYPE_VIN_FREQ 1")
+    rio_data.append("#define TYPE_VIN_TIME 2")
+    rio_data.append("#define TYPE_VIN_SONAR 3")
+    rio_data.append("#define TYPE_VIN_ADC 4")
+    rio_data.append("#define TYPE_VIN_ENCODER 5")
 
     rio_data.append("#define JOINT_FB_REL 0")
     rio_data.append("#define JOINT_FB_ABS 1")
@@ -84,7 +85,7 @@ def generate(project):
     vouts_max = []
     vouts_type = []
     vouts_freq = []
-    for vout in project['jdata']["vout"]:
+    for vout in project["voutnames"]:
         freq = vout.get('frequency', 10000)
         if vout.get('type') == "sine":
             vouts_min.append(str(vout.get("min", -100)))
@@ -107,31 +108,31 @@ def generate(project):
             vouts_max.append(str(vout.get("max", 10.0)))
             vouts_freq.append(str(vout.get("frequency", freq)))
 
-        if vout.get('type') == "pwm" and vout.get('dir'):
-            vouts_type.append(f"VOUT_TYPE_{vout.get('type', 'frequency').upper()}DIR")
-        elif vout.get('type') == "frequency":
-            vouts_type.append(f"VOUT_TYPE_FREQ")
-        elif vout.get('type') == "pwm":
-            vouts_type.append(f"VOUT_TYPE_PWM")
-        elif vout.get('type') == "SINE":
-            vouts_type.append(f"VOUT_TYPE_SINE")
-        elif vout.get('type') == "udpoti":
-            vouts_type.append(f"VOUT_TYPE_UDPOTI")
+        if vout.get('type') == "vout_pwm" and vout.get('dir'):
+            vouts_type.append(f"TYPE_{vout['type'].upper()}DIR")
+        elif vout.get('type') == "vout_frequency":
+            vouts_type.append(f"TYPE_VOUT_FREQ")
+        elif vout.get('type') == "vout_pwm":
+            vouts_type.append(f"TYPE_VOUT_PWM")
+        elif vout.get('type') == "vout_sine":
+            vouts_type.append(f"TYPE_VOUT_SINE")
+        elif vout.get('type') == "vout_udpoti":
+            vouts_type.append(f"TYPE_VOUT_UDPOTI")
         else:
-            vouts_type.append(f"VOUT_TYPE_RAW")
+            vouts_type.append(f"TYPE_VOUT_RAW")
 
     vins_type = []
     for vin in project["vinnames"]:
-        if vin[2].get('type') == "frequency":
-            vins_type.append(f"VIN_TYPE_FREQ")
-        elif vin[2].get('type') == "pwmcounter":
-            vins_type.append(f"VIN_TYPE_TIME")
-        elif vin[2].get('type') == "ads1115":
-            vins_type.append(f"VIN_TYPE_ADC")
-        elif vin[2].get('type') in ("quadencoder", "quadencoderz"):
-            vins_type.append(f"VIN_TYPE_ENCODER")
+        if vin.get('type') == "vin_frequency":
+            vins_type.append(f"TYPE_VIN_FREQ")
+        elif vin.get('type') == "vin_pwmcounter":
+            vins_type.append(f"TYPE_VIN_TIME")
+        elif vin.get('type') == "vin_ads1115":
+            vins_type.append(f"TYPE_VIN_ADC")
+        elif vin.get('type') in ("vin_quadencoder", "vin_quadencoderz"):
+            vins_type.append(f"TYPE_VIN_ENCODER")
         else:
-            vins_type.append(f"VIN_TYPE_RAW")
+            vins_type.append(f"TYPE_VIN_RAW")
 
     rio_data.append(f"float vout_min[VARIABLE_OUTPUTS] = {{{', '.join(vouts_min)}}};")
     rio_data.append(f"float vout_max[VARIABLE_OUTPUTS] = {{{', '.join(vouts_max)}}};")
@@ -141,8 +142,8 @@ def generate(project):
     rio_data.append("")
 
     joints_fb_type = []
-    for num, joint in enumerate(project['jdata']["joints"]):
-        if joint.get('type') == "rcservo":
+    for num, joint in enumerate(project["jointnames"]):
+        if joint.get('type') == "joint_rcservo":
             joints_fb_type.append("JOINT_FB_ABS")
         else:
             joints_fb_type.append("JOINT_FB_REL")
@@ -150,10 +151,10 @@ def generate(project):
     rio_data.append("")
 
     joints_type = []
-    for num, joint in enumerate(project['jdata']["joints"]):
-        if joint.get('type') == "rcservo":
+    for num, joint in enumerate(project["jointnames"]):
+        if joint.get('type') == "joint_rcservo":
             joints_type.append("JOINT_RCSERVO")
-        elif joint.get('type') == "pwmdir":
+        elif joint.get('type') == "joint_pwmdir":
             joints_type.append("JOINT_PWMDIR")
         else:
             joints_type.append("JOINT_STEPPER")
@@ -191,35 +192,35 @@ def generate(project):
 
     rio_data.append("const char vin_names[][32] = {")
     for num in range(project['vins']):
-        dname = project['vinnames'][num][1]
+        dname = project['vinnames'][num]["_name"]
         rio_data.append(f"    \"{dname}\",")
     rio_data.append("};")
     rio_data.append("")
 
     rio_data.append("const char vout_names[][32] = {")
     for num in range(project['vouts']):
-        dname = project['voutnames'][num][1]
+        dname = project['voutnames'][num]["_name"]
         rio_data.append(f"    \"{dname}\",")
     rio_data.append("};")
     rio_data.append("")
 
     rio_data.append("const char din_names[][32] = {")
     for num in range(project['dins']):
-        dname = project['dinnames'][num][1]
+        dname = project['dinnames'][num]["_name"]
         rio_data.append(f"    \"{dname}\",")
     rio_data.append("};")
     rio_data.append("")
 
     rio_data.append("const char dout_names[][32] = {")
     for num in range(project['douts']):
-        dname = project['doutnames'][num][1]
+        dname = project['doutnames'][num]["_name"]
         rio_data.append(f"    \"{dname}\",")
     rio_data.append("};")
     rio_data.append("")
 
     rio_data.append("const char din_types[] = {")
     for num in range(project['dins']):
-        dname = project['dinnames'][num][1]
+        dname = project['dinnames'][num]["_name"]
         if dname.endswith("-index-enable-out"):
             rio_data.append(f"    DTYPE_INDEX,")
         else:
@@ -230,7 +231,7 @@ def generate(project):
 
     rio_data.append("const char dout_types[] = {")
     for num in range(project['douts']):
-        dname = project['doutnames'][num][1]
+        dname = project['doutnames'][num]["_name"]
         if dname.endswith("-index-enable"):
             rio_data.append(f"    DTYPE_INDEX,")
         else:

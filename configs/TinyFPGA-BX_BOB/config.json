@@ -31,118 +31,137 @@
     "enable": {
         "pin": "G9"
     },
-    "dout": [
-        {
-            "pin": "A6"
-        },
-        {
-            "pin": "B6"
-        },
-        {
-            "pin": "A7"
-        }
-    ],
-    "din": [
+    "plugins": [
         {
             "joint": "0",
             "pin": "C2",
             "pullup": true,
-            "invert": true
+            "invert": true,
+            "name": "DIN0",
+            "type": "din_bit"
         },
         {
             "joint": "1",
             "pin": "B1",
             "pullup": true,
-            "invert": true
+            "invert": true,
+            "name": "DIN1",
+            "type": "din_bit"
         },
         {
             "joint": "2",
             "pin": "A1",
             "pullup": true,
-            "invert": true
+            "invert": true,
+            "name": "DIN2",
+            "type": "din_bit"
         },
         {
             "joint": "3",
             "pin": "A2",
             "pullup": true,
-            "invert": true
+            "invert": true,
+            "name": "DIN3",
+            "type": "din_bit"
         },
         {
             "joint": "4",
             "pin": "J4",
             "pullup": true,
-            "invert": true
+            "invert": true,
+            "name": "DIN4",
+            "type": "din_bit"
         },
         {
             "pin": "D9",
-            "pullup": true
+            "pullup": true,
+            "name": "DIN5",
+            "type": "din_bit"
         },
         {
             "pin": "C9",
-            "pullup": true
-        }
-    ],
-    "vout": [
+            "pullup": true,
+            "name": "DIN6",
+            "type": "din_bit"
+        },
         {
-            "type": "pwm",
-            "pin": "H2",
-            "invert_pwm": true
-        }
-    ],
-    "vin": [
+            "pin": "A6",
+            "name": "DOUT0",
+            "type": "dout_bit"
+        },
         {
-            "type": "frequency",
+            "pin": "B6",
+            "name": "DOUT1",
+            "type": "dout_bit"
+        },
+        {
+            "pin": "A7",
+            "name": "DOUT2",
+            "type": "dout_bit"
+        },
+        {
+            "type": "vin_frequency",
             "pin": "H9",
-            "pullup": true
-        }
-    ],
-    "joints": [
+            "pullup": true,
+            "name": "VIN0"
+        },
         {
-            "type": "stepper",
+            "type": "vout_pwm",
+            "pin": "H2",
+            "invert_pwm": true,
+            "name": "VOUT0"
+        },
+        {
+            "type": "joint_stepper",
             "scale": 1600,
             "cl": false,
             "pins": {
                 "step": "J1",
                 "dir": "H1"
-            }
+            },
+            "name": "JOINT0"
         },
         {
-            "type": "stepper",
+            "type": "joint_stepper",
             "scale": 1600,
             "cl": false,
             "invert_dir": true,
             "pins": {
                 "step": "G2",
                 "dir": "E1"
-            }
+            },
+            "name": "JOINT1"
         },
         {
-            "type": "stepper",
+            "type": "joint_stepper",
             "scale": 1600,
             "cl": false,
             "pins": {
                 "step": "E2",
                 "dir": "D1"
-            }
+            },
+            "name": "JOINT2"
         },
         {
-            "type": "stepper",
+            "type": "joint_stepper",
             "scale": 360,
             "cl": false,
             "invert_dir": true,
             "pins": {
                 "step": "D2",
                 "dir": "C1"
-            }
+            },
+            "name": "JOINT3"
         },
         {
-            "type": "stepper",
+            "type": "joint_stepper",
             "scale": 360,
             "cl": false,
             "pins": {
                 "step": "J9",
                 "dir": "J3"
-            }
+            },
+            "name": "JOINT4"
         }
     ]
 }

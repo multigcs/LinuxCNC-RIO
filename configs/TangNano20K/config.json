@@ -33,61 +33,62 @@
     "enable": {
         "pin": "17"
     },
-    "dout": [
-        {
-            "invert": true,
-            "pin": "73"
-        }
-    ],
-    "din": [
+    "plugins": [
         {
             "pullup": true,
-            "pin": "74"
-        }
-    ],
-    "vout": [
+            "pin": "74",
+            "name": "DIN0",
+            "type": "din_bit"
+        },
         {
-            "type": "pwm",
-            "pin": "75"
-        }
-    ],
-    "vin": [
+            "invert": true,
+            "pin": "73",
+            "name": "DOUT0",
+            "type": "dout_bit"
+        },
         {
-            "type": "counter",
+            "type": "vin_counter",
             "pullup": true,
             "pins": {
                 "up": "85",
                 "down": "77"
-            }
-    }
-    ],
-    "joints": [
+            },
+            "name": "VIN0"
+        },
         {
-            "type": "stepper",
+            "type": "vout_pwm",
+            "pin": "75",
+            "name": "VOUT0"
+        },
+        {
+            "type": "joint_stepper",
             "cl": false,
             "scale": 800,
             "pins": {
                 "step": "27",
                 "dir": "28"
-            }
+            },
+            "name": "JOINT0"
         },
         {
-            "type": "stepper",
+            "type": "joint_stepper",
             "cl": false,
             "scale": 800,
             "pins": {
                 "step": "25",
                 "dir": "26"
-            }
+            },
+            "name": "JOINT1"
         },
-	    {
-            "type": "stepper",
+        {
+            "type": "joint_stepper",
             "cl": false,
             "scale": 800,
             "pins": {
                 "step": "29",
                 "dir": "30"
-            }
+            },
+            "name": "JOINT2"
         }
     ]
 }

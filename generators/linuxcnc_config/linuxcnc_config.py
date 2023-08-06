@@ -1,3 +1,4 @@
+
 import os
 import sys
 
@@ -23,7 +24,7 @@ def generate(project):
     cfghal_data = []
     ctrl_types = []
     num_pids = 0
-    for num, joint in enumerate(project["jdata"]["joints"]):
+    for num, joint in enumerate(project["jointnames"]):
         if joint.get("cl", False):
             num_pids += 1
             ctrl_types.append("v")  # velocity mode
@@ -58,9 +59,9 @@ net user-request-enable <= iocontrol.0.user-request-enable	=> rio.SPI-reset
             cfghal_data.append("")
 
     for num, vout in enumerate(project["voutnames"]):
-        vname = vout[1]
-        vout_name = vout[2].get("name", vname)
-        vout_net = vout[2].get("net")
+        vname = vout['_name']
+        vout_name = vout.get("name", vname)
+        vout_net = vout.get("net")
         if vout_net:
             netlist.append(vout_net)
             cfghal_data.append(f"net {vout_name} <= {vout_net}")
@@ -68,12 +69,12 @@ net user-request-enable <= iocontrol.0.user-request-enable	=> rio.SPI-reset
             cfghal_data.append("")
 
     for num, din in enumerate(project["dinnames"]):
-        dname = project["dinnames"][num][1]
-        invert = din[2].get("invert", False)
-        din_type = din[2].get("type")
-        din_joint = din[2].get("joint", str(num))
-        din_name = din[2].get("name", dname)
-        din_net = din[2].get("net")
+        dname = project["dinnames"][num]['_name']
+        invert = din.get("invert", False)
+        din_type = din.get("type")
+        din_joint = din.get("joint", str(num))
+        din_name = din.get("name", dname)
+        din_net = din.get("net")
         if din_net:
             netlist.append(din_net)
             cfghal_data.append(f"net {din_name} <= rio.{dname}")
@@ -99,9 +100,9 @@ net user-request-enable <= iocontrol.0.user-request-enable	=> rio.SPI-reset
             cfghal_data.append("")
 
     for num, dout in enumerate(project["doutnames"]):
-        dname = dout[1]
-        dout_name = dout[2].get("name", dname)
-        dout_net = dout[2].get("net")
+        dname = dout['_name']
+        dout_name = dout.get("name", dname)
+        dout_net = dout.get("net")
         if dout_net:
             netlist.append(dout_net)
             cfghal_data.append(f"net {dout_name} <= {dout_net}")
@@ -115,12 +116,12 @@ net user-request-enable <= iocontrol.0.user-request-enable	=> rio.SPI-reset
 
 
     for num, vin in enumerate(project["vinnames"]):
-        function = vin[2].get("function")
+        function = vin.get("function")
         if function == "spindle-index":
-            scale = vin[2].get("scale", 1.0)
-            cfghal_data.append(f"setp rio.{vin[1]}-scale {scale}")
-            cfghal_data.append(f"net spindle-position rio.{vin[1]} => spindle.0.revs")
-            cfghal_data.append(f"net spindle-index-enable rio.{vin[1]}-index-enable <=> spindle.0.index-enable")
+            scale = vin.get("scale", 1.0)
+            cfghal_data.append(f"setp rio.{vin['_name']}-scale {scale}")
+            cfghal_data.append(f"net spindle-position rio.{vin['_name']} => spindle.0.revs")
+            cfghal_data.append(f"net spindle-index-enable rio.{vin['_name']}-index-enable <=> spindle.0.index-enable")
             cfghal_data.append("")
         elif function:
             pass
@@ -128,7 +129,7 @@ net user-request-enable <= iocontrol.0.user-request-enable	=> rio.SPI-reset
     cfghal_data.append("")
 
     pidn = 0
-    for num, joint in enumerate(project["jdata"]["joints"]):
+    for num, joint in enumerate(project["jointnames"]):
         # limit axis configurations
         if num >= num_joints:
             continue
@@ -294,7 +295,7 @@ net j{num}enable 		<= joint.{num}.amp-enable-out 	=> rio.joint.{num}.enable
         cfgini_data.append("")
 
 
-    for num, joint in enumerate(project["jdata"]["joints"]):
+    for num, joint in enumerate(project["jointnames"]):
         # limit axis configurations
         if num >= num_joints:
             continue
@@ -451,9 +452,9 @@ MIN_FERROR = 0.5
     cfghal_data.append("")
 
     for num, dout in enumerate(project["doutnames"]):
-        dname = dout[1]
-        dout_name = dout[2].get("name", dname)
-        dout_net = dout[2].get("net")
+        dname = dout['_name']
+        dout_name = dout.get("name", dname)
+        dout_net = dout.get("net")
         if dout_net:
             cfghal_data.append(
                 f"net {dout_name} => pyvcp.led-out{num}"
@@ -462,11 +463,11 @@ MIN_FERROR = 0.5
             cfghal_data.append(f"net {dname} pyvcp.btn{num} rio.{dname}")
 
     for num, din in enumerate(project["dinnames"]):
-        dname = project["dinnames"][num][1]
-        din_type = din[2].get("type")
-        din_joint = din[2].get("joint", str(num))
-        din_name = din[2].get("name", dname)
-        din_net = din[2].get("net")
+        dname = project["dinnames"][num]['_name']
+        din_type = din.get("type")
+        din_joint = din.get("joint", str(num))
+        din_name = din.get("name", dname)
+        din_net = din.get("net")
         if din_net:
             cfghal_data.append(
                 f"net {din_name} => pyvcp.led-in{num}"
@@ -481,18 +482,18 @@ MIN_FERROR = 0.5
             )
 
     for num, vout in enumerate(project["voutnames"]):
-        vout_name = vout[2].get("name", f"vout{num}")
-        vout_net = vout[2].get("net")
+        vout_name = vout.get("name", f"vout{num}")
+        vout_net = vout.get("net")
         if vout_net:
             cfghal_data.append(f"net {vout_name} => pyvcp.vout{num}")
         else:
-            cfghal_data.append(f"net vout{num} pyvcp.vout{num}-f rio.{vout[1]}")
+            cfghal_data.append(f"net vout{num} pyvcp.vout{num}-f rio.{vout['_name']}")
 
     jogwheel = False
     for num, vin in enumerate(project["vinnames"]):
-        function = vin[2].get("function")
-        vin_name = vin[2].get("name", f"vin{num}")
-        vin_net = vin[2].get("net")
+        function = vin.get("function")
+        vin_name = vin.get("name", f"vin{num}")
+        vin_net = vin.get("net")
         if vin_net in ["halui.feed-override", "halui.rapid-override", "halui.spindle.0.override", "halui.spindle.1.override"]:
             function = vin_net.split(".")[-1]
         if function == "jogwheel" and not jogwheel:
@@ -519,26 +520,26 @@ MIN_FERROR = 0.5
                 cfghal_data.append(f"net jog-counts => joint.{jnum}.jog-counts axis.{axis_str}.jog-counts")
                 #cfghal_data.append(f"net jog-enable-{axis_str} axisui.jog.{axis_str} => joint.{jnum}.jog-enable axis.{axis_str}.jog-enable")
                 cfghal_data.append(f"net jog-enable-{axis_str} pyvcp.jog-axis.{axis_str} => joint.{jnum}.jog-enable axis.{axis_str}.jog-enable")
-            cfghal_data.append(f"net jog-counts <= rio.{vin[1]}-s32")
+            cfghal_data.append(f"net jog-counts <= rio.{vin['_name']}-s32")
             cfghal_data.append("")
         elif function in ["feed-override", "rapid-override", "spindle.0.override", "spindle.1.override"]:
             cfghal_data.append("")
             cfghal_data.append(f"# {function}")
-            if vin[2]['type'] == "ads1115":
-                cfghal_data.append(f"setp rio.{vin[1]}-scale 0.3025")
+            if vin['type'] == "ads1115":
+                cfghal_data.append(f"setp rio.{vin['_name']}-scale 0.3025")
             else:
-                cfghal_data.append(f"setp rio.{vin[1]}-scale 1.0")
+                cfghal_data.append(f"setp rio.{vin['_name']}-scale 1.0")
             cfghal_data.append(f"setp halui.{function}.direct-value 1")
             cfghal_data.append(f"setp halui.{function}.scale 0.01")
-            cfghal_data.append(f"net {function} rio.{vin[1]}-s32 => halui.{function}.counts")
+            cfghal_data.append(f"net {function} rio.{vin['_name']}-s32 => halui.{function}.counts")
             cfghal_data.append("")
         elif function:
             pass
         else:
-            cfghal_data.append(f"net vin{num} rio.{vin[1]} pyvcp.vin{num}")
+            cfghal_data.append(f"net vin{num} rio.{vin['_name']} pyvcp.vin{num}")
 
-        if vin[2].get("type") in {"quadencoder", "quadencoderz"}:
-            cfghal_data.append(f"net rpm{num} rio.{vin[1]}-rpm pyvcp.rpm{num}")
+        if vin.get("type") in {"vin_quadencoder", "vin_quadencoderz"}:
+            cfghal_data.append(f"net rpm{num} rio.{vin['_name']}-rpm pyvcp.rpm{num}")
 
     cfghal_data.append("net zeroxy halui.mdi-command-00 <= pyvcp.zeroxy")
     cfghal_data.append("net zeroz halui.mdi-command-01 <= pyvcp.zeroz")
@@ -554,13 +555,13 @@ MIN_FERROR = 0.5
 
     # defined IO's
     for num, din in enumerate(project["dinnames"]):
-        dname = din[1]
+        dname = din['_name']
         if dname.endswith("-index-enable-out"):
             continue
-        din_type = din[2].get("type")
-        din_joint = din[2].get("joint", str(num))
-        din_name = din[2].get("name", dname)
-        din_net = din[2].get("net")
+        din_type = din.get("type")
+        din_joint = din.get("joint", str(num))
+        din_name = din.get("name", dname)
+        din_net = din.get("net")
 
         if din_net:
             cfgxml_data.append("  <hbox>")
@@ -579,9 +580,9 @@ MIN_FERROR = 0.5
             cfgxml_data.append("  </hbox>")
 
     for num, dout in enumerate(project["doutnames"]):
-        dname = dout[1]
-        dout_name = dout[2].get("name", dname)
-        dout_net = dout[2].get("net")
+        dname = dout['_name']
+        dout_name = dout.get("name", dname)
+        dout_net = dout.get("net")
         if dout_net:
             cfgxml_data.append("  <hbox>")
             cfgxml_data.append("    <relief>RAISED</relief>")
@@ -599,8 +600,8 @@ MIN_FERROR = 0.5
             cfgxml_data.append("  </hbox>")
 
     for num, vout in enumerate(project["voutnames"]):
-        vout_name = vout[1]
-        vout_net = vout[2].get("net")
+        vout_name = vout['_name']
+        vout_net = vout.get("net")
         if vout_net:
             cfgxml_data.append("  <hbox>")
             cfgxml_data.append("    <relief>RAISED</relief>")
@@ -609,15 +610,15 @@ MIN_FERROR = 0.5
             cfgxml_data.append(f'      <text>"{vout_name}"</text>')
             cfgxml_data.append('      <font>("Helvetica",12)</font>')
             cfgxml_data.append("    </label>")
-            if vout[2].get("type") == "pwm":
+            if vout.get("type") == "pwm":
                 cfgxml_data.append("    <bar>")
                 cfgxml_data.append(f'        <halpin>"vout{num}"</halpin>')
                 if "dir" in vout:
-                    cfgxml_data.append(f"        <min_>{int(vout[2].get('max', 100)) * -1}</min_>")
-                    cfgxml_data.append(f"        <max_>{vout[2].get('max', 100)}</max_>")
+                    cfgxml_data.append(f"        <min_>{int(vout.get('max', 100)) * -1}</min_>")
+                    cfgxml_data.append(f"        <max_>{vout.get('max', 100)}</max_>")
                 else:
-                    cfgxml_data.append(f"        <min_>{vout[2].get('min', 0)}</min_>")
-                    cfgxml_data.append(f"        <max_>{vout[2].get('max', 100)}</max_>")
+                    cfgxml_data.append(f"        <min_>{vout.get('min', 0)}</min_>")
+                    cfgxml_data.append(f"        <max_>{vout.get('max', 100)}</max_>")
                 cfgxml_data.append("    </bar>")
             else:
                 cfgxml_data.append("    <number>")
@@ -630,9 +631,9 @@ MIN_FERROR = 0.5
     # jogging
     jogwheel = False
     for num, vin in enumerate(project["vinnames"]):
-        function = vin[2].get("function")
-        vin_name = vin[2].get("name", f"vin{num}")
-        vin_net = vin[2].get("net")
+        function = vin.get("function")
+        vin_name = vin.get("name", f"vin{num}")
+        vin_net = vin.get("net")
         if vin_net in ["halui.feed-override", "halui.rapid-override", "halui.spindle.0.override", "halui.spindle.1.override"]:
             function = vin_net.split(".")[-1]
         if function == "jogwheel" and not jogwheel:
@@ -666,8 +667,8 @@ MIN_FERROR = 0.5
             cfgxml_data.append("  </hbox>")
             cfgxml_data.append("  </labelframe>")
 
-        elif vin[2].get("type") in {"quadencoder", "quadencoderz"}:
-            cfgxml_data.append(f"  <labelframe text=\"RPM - {vin[1]}\">")
+        elif vin.get("type") in {"vin_quadencoder", "vin_quadencoderz"}:
+            cfgxml_data.append(f"  <labelframe text=\"RPM - {vin['_name']}\">")
             cfgxml_data.append("    <relief>RAISED</relief>")
             cfgxml_data.append("    <font>(\"Helvetica\", 12)</font>")
             cfgxml_data.append("    <number>")
@@ -717,9 +718,9 @@ MIN_FERROR = 0.5
     cfgxml_data.append("    <font>(\"Helvetica\", 12)</font>")
     cfgxml_data.append("  <hbox>")
     for num, dout in enumerate(project["doutnames"]):
-        dname = dout[1]
-        dout_name = dout[2].get("name", dname)
-        dout_net = dout[2].get("net")
+        dname = dout['_name']
+        dout_name = dout.get("name", dname)
+        dout_net = dout.get("net")
         if dout_net:
             continue
         elif dname.endswith("-index-enable"):
@@ -746,13 +747,13 @@ MIN_FERROR = 0.5
     cfgxml_data.append("  <hbox>")
 
     for num, din in enumerate(project["dinnames"]):
-        dname = din[1]
+        dname = din['_name']
         if dname.endswith("-index-enable-out"):
             continue
-        din_type = din[2].get("type")
-        din_joint = din[2].get("joint", str(num))
-        din_name = din[2].get("name", dname)
-        din_net = din[2].get("net")
+        din_type = din.get("type")
+        din_joint = din.get("joint", str(num))
+        din_name = din.get("name", dname)
+        din_net = din.get("net")
 
         if din_net:
             pass
@@ -780,11 +781,11 @@ MIN_FERROR = 0.5
     cfgxml_data.append("  </labelframe>")
 
     for num, vout in enumerate(project["voutnames"]):
-        vout_name = vout[2].get("name", f"Variable-Out{num}")
-        vout_net = vout[2].get("net")
+        vout_name = vout.get("name", f"Variable-Out{num}")
+        vout_net = vout.get("net")
         if vout_net:
             continue
-        vtype = vout[2].get("type")
+        vtype = vout.get("type")
         if vtype:
             vout_name = f"{vout_name} ({vtype})"
         cfgxml_data.append(f"  <labelframe text=\"{vout_name}\">")
@@ -797,23 +798,23 @@ MIN_FERROR = 0.5
         cfgxml_data.append("      <resolution>0.1</resolution>")
         cfgxml_data.append("      <orient>HORIZONTAL</orient>")
         cfgxml_data.append("      <initval>0</initval>")
-        if vout[2].get("type") == "sine":
-            cfgxml_data.append(f"      <min_>{str(vout[2].get('min', -100))}</min_>")
-            cfgxml_data.append(f"      <max_>{str(vout[2].get('max', 100))}</max_>")
-        elif vout[2].get("type") == "pwm":
+        if vout.get("type") == "vout_sine":
+            cfgxml_data.append(f"      <min_>{str(vout.get('min', -100))}</min_>")
+            cfgxml_data.append(f"      <max_>{str(vout.get('max', 100))}</max_>")
+        elif vout.get("type") == "vout_pwm":
             if "dir" in vout:
                 cfgxml_data.append(
-                    f"    <min_>{str(int(vout[2].get('max', 100)) * -1)}</min_>"
+                    f"    <min_>{str(int(vout.get('max', 100)) * -1)}</min_>"
                 )
             else:
-                cfgxml_data.append(f"      <min_>{str(vout[2].get('min', 0))}</min_>")
-            cfgxml_data.append(f"      <max_>{str(vout[2].get('max', 100))}</max_>")
-        elif vout[2].get("type") == "rcservo":
-            cfgxml_data.append(f"      <min_>{str(vout[2].get('min', -100))}</min_>")
-            cfgxml_data.append(f"      <max_>{str(vout[2].get('max', 100))}</max_>")
+                cfgxml_data.append(f"      <min_>{str(vout.get('min', 0))}</min_>")
+            cfgxml_data.append(f"      <max_>{str(vout.get('max', 100))}</max_>")
+        elif vout.get("type") == "vout_rcservo":
+            cfgxml_data.append(f"      <min_>{str(vout.get('min', -100))}</min_>")
+            cfgxml_data.append(f"      <max_>{str(vout.get('max', 100))}</max_>")
         else:
-            cfgxml_data.append(f"      <min_>{str(vout[2].get('min', 0))}</min_>")
-            cfgxml_data.append(f"      <max_>{str(vout[2].get('max', 10))}</max_>")
+            cfgxml_data.append(f"      <min_>{str(vout.get('min', 0))}</min_>")
+            cfgxml_data.append(f"      <max_>{str(vout.get('max', 10))}</max_>")
         cfgxml_data.append("      <param_pin>1</param_pin>")
         cfgxml_data.append("    </scale>")
         cfgxml_data.append("  </labelframe>")
@@ -822,9 +823,9 @@ MIN_FERROR = 0.5
 
     jogwheel = False
     for num, vin in enumerate(project["vinnames"]):
-        vin_name = vin[2].get("name", f"Variable-In{num}")
-        function = vin[2].get("function")
-        vtype = vin[2].get("type")
+        vin_name = vin.get("name", f"Variable-In{num}")
+        function = vin.get("function")
+        vtype = vin.get("type")
         if vtype:
             vin_name = f"{vin_name} ({vtype})"
 
@@ -840,7 +841,7 @@ MIN_FERROR = 0.5
                 cfgxml_data.append("  <meter>")
                 cfgxml_data.append(f'    <halpin>"vin{num}"</halpin>')
                 cfgxml_data.append(f'    <text>"{vout_name}"</text>')
-                cfgxml_data.append(f"    <subtext>\"{vin[2].get('type', '-')}\"</subtext>")
+                cfgxml_data.append(f"    <subtext>\"{vin.get('type', '-')}\"</subtext>")
                 cfgxml_data.append("    <size>150</size>")
                 cfgxml_data.append("    <min_>-32800</min_>")
                 cfgxml_data.append("    <max_>32800</max_>")

@@ -6,7 +6,7 @@ class Plugin:
         return [
             {
                 "basetype": "vin",
-                "subtype": "pwm",
+                "subtype": "vin_pwm",
                 "comment": "measures the puls-lenght of pwm-signals on the input-pin",
                 "options": {
                     "pin": {
@@ -25,28 +25,30 @@ class Plugin:
 
     def pinlist(self):
         pinlist_out = []
-        for num, vin in enumerate(self.jdata.get("vin", [])):
-            if vin.get("type") == "pwm":
-                pullup = vin.get("pullup", False)
-                pinlist_out.append((f"VIN{num}_PWM", vin["pin"], "INPUT", pullup))
+        for num, data in enumerate(self.jdata["plugins"]):
+            if data.get("type") == "vin_pwm":
+                pullup = data.get("pullup", False)
+                pinlist_out.append((f"VIN{num}_PWM", data["pin"], "INPUT", pullup))
         return pinlist_out
 
     def vinnames(self):
         ret = []
-        for num, vin in enumerate(self.jdata.get("vin", [])):
-            if vin.get("type") == "pwm":
-                name = vin.get("name", f"PV.{num}")
+        for num, data in enumerate(self.jdata["plugins"]):
+            if data.get("type") == "vin_pwm":
+                name = data.get("name", f"PV.{num}")
                 nameIntern = name.replace(".", "").replace("-", "_").upper()
-                ret.append((nameIntern, name, vin))
+                data["_name"] = name
+                data["_prefix"] = nameIntern
+                ret.append(data)
         return ret
 
     def funcs(self):
         func_out = ["    // vin_pwmcounter's"]
-        for num, vin in enumerate(self.jdata.get("vin", [])):
-            if vin.get("type") == "pwm":
-                name = vin.get("name", f"PV.{num}")
+        for num, data in enumerate(self.jdata["plugins"]):
+            if data.get("type") == "vin_pwm":
+                name = data.get("name", f"PV.{num}")
                 nameIntern = name.replace(".", "").replace("-", "_").upper()
-                freq_min = int(vin.get("freq_min", 10))
+                freq_min = int(data.get("freq_min", 10))
                 func_out.append(
                     f"    vin_pwmcounter #({int(self.jdata['clock']['speed']) // freq_min}) vin_pwmcounter{num} ("
                 )
@@ -57,7 +59,7 @@ class Plugin:
         return func_out
 
     def ips(self):
-        for num, vin in enumerate(self.jdata["vin"]):
-            if vin["type"] in ["pwm"]:
+        for num, data in enumerate(self.jdata["plugins"]):
+            if data["type"] in ["vin_pwm"]:
                 return ["vin_pwmcounter.v"]
         return []

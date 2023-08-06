@@ -38,58 +38,63 @@
     "error": {
         "pin": "T6"
     },
-    "din": [
+    "plugins": [
         {
             "invert": true,
-            "pin": "EXPANSION0_INPUT[0]"
+            "pin": "EXPANSION0_INPUT[0]",
+            "name": "DIN0",
+            "type": "din_bit"
         },
         {
-            "pin": "EXPANSION0_INPUT[1]"
+            "pin": "EXPANSION0_INPUT[1]",
+            "name": "DIN1",
+            "type": "din_bit"
         },
         {
-            "pin": "EXPANSION0_INPUT[2]"
+            "pin": "EXPANSION0_INPUT[2]",
+            "name": "DIN2",
+            "type": "din_bit"
         },
         {
-            "pin": "EXPANSION0_INPUT[3]"
-        }
-    ],
-    "vin": [
-        {
-            "type": "frequency",
-            "pin": "J5"
-        }
-    ],
-    "dout": [
+            "pin": "EXPANSION0_INPUT[3]",
+            "name": "DIN3",
+            "type": "din_bit"
+        },
         {
             "invert": true,
-            "pin": "EXPANSION0_OUTPUT[4]"
-        }
-    ],
-    "vout": [
+            "pin": "EXPANSION0_OUTPUT[4]",
+            "name": "DOUT0",
+            "type": "dout_bit"
+        },
+        {
+            "type": "vin_frequency",
+            "pin": "J5",
+            "name": "VIN0"
+        },
         {
             "comment": "J7.1+2",
-            "type": "udpoti",
+            "type": "vout_udpoti",
             "resolution": "100",
             "speed": "100000",
             "pins": {
                 "updown": "T3",
                 "incr": "R4"
-            }
-        }
-    ],
-    "joints": [
+            },
+            "name": "VOUT0"
+        },
         {
             "comment": "J9.1",
-            "type": "stepper",
+            "type": "joint_stepper",
             "scale": "800",
             "pins": {
                 "dir": "P11",
                 "step": "N11"
-            }
+            },
+            "name": "JOINT0"
         },
         {
             "comment": "J10.1",
-            "type": "pwmdir",
+            "type": "joint_pwmdir",
             "cl": true,
             "scale": "10",
             "enc_scale": "720",
@@ -108,15 +113,17 @@
                 "pwm": "L5",
                 "enc_a": "G5",
                 "enc_b": "H5"
-            }
+            },
+            "name": "JOINT1"
         },
         {
             "comment": "J11.1",
-            "type": "rcservo",
+            "type": "joint_rcservo",
             "cl": false,
             "pins": {
                 "pwm": "P2"
-            }
+            },
+            "name": "JOINT2"
         }
     ]
 }

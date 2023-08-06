@@ -6,7 +6,7 @@ class Plugin:
         return [
             {
                 "basetype": "vin",
-                "subtype": "sonar",
+                "subtype": "vin_sonar",
                 "comment": "to messure distance via ultrasonic modules with trigger/echo pins",
                 "options": {
                     "pins": {
@@ -26,30 +26,31 @@ class Plugin:
             }
         ]
 
-
     def pinlist(self):
         pinlist_out = []
-        for num, vin in enumerate(self.jdata.get("vin", [])):
-            if vin.get("type") == "sonar":
-                pullup = vin.get("pullup", False)
-                pinlist_out.append((f"VIN{num}_SONAR_TRIGGER", vin["pins"]["trigger"], "OUTPUT", False))
-                pinlist_out.append((f"VIN{num}_SONAR_ECHO", vin["pins"]["echo"], "INPUT", pullup))
+        for num, data in enumerate(self.jdata["plugins"]):
+            if data.get("type") == "vin_sonar":
+                pullup = data.get("pullup", False)
+                pinlist_out.append((f"VIN{num}_SONAR_TRIGGER", data["pins"]["trigger"], "OUTPUT", False))
+                pinlist_out.append((f"VIN{num}_SONAR_ECHO", data["pins"]["echo"], "INPUT", pullup))
         return pinlist_out
 
     def vinnames(self):
         ret = []
-        for num, vin in enumerate(self.jdata.get("vin", [])):
-            if vin.get("type") == "sonar":
-                name = vin.get("name", f"PV.{num}")
+        for num, data in enumerate(self.jdata["plugins"]):
+            if data.get("type") == "vin_sonar":
+                name = data.get("name", f"PV.{num}")
                 nameIntern = name.replace(".", "").replace("-", "_").upper()
-                ret.append((nameIntern, name, vin))
+                data["_name"] = name
+                data["_prefix"] = nameIntern
+                ret.append(data)
         return ret
 
     def funcs(self):
         func_out = ["    // vin_sonar's"]
-        for num, vin in enumerate(self.jdata.get("vin", [])):
-            if vin.get("type") == "sonar":
-                name = vin.get("name", f"PV.{num}")
+        for num, data in enumerate(self.jdata["plugins"]):
+            if data.get("type") == "vin_sonar":
+                name = data.get("name", f"PV.{num}")
                 nameIntern = name.replace(".", "").replace("-", "_").upper()
                 osc = int(self.jdata['clock']['speed'])
                 func_out.append(
@@ -63,7 +64,7 @@ class Plugin:
         return func_out
 
     def ips(self):
-        for num, vin in enumerate(self.jdata["vin"]):
-            if vin["type"] in ["sonar"]:
+        for num, data in enumerate(self.jdata["plugins"]):
+            if data["type"] in ["vin_sonar"]:
                 return ["vin_sonar.v"]
         return []

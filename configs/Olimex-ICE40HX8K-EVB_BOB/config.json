@@ -26,107 +26,125 @@
     "enable": {
         "pin": "F5"
     },
-    "dout": [
-        {
-            "pin": "F4"
-        },
-        {
-            "pin": "D2"
-        },
-        {
-            "pin": "G5"
-        },
-        {
-            "pin": "D1"
-        }
-    ],
-    "din": [
+    "plugins": [
         {
             "pullup": true,
-            "pin": "H6"
+            "pin": "H6",
+            "name": "DIN0",
+            "type": "din_bit"
         },
         {
             "pullup": true,
-            "pin": "F2"
+            "pin": "F2",
+            "name": "DIN1",
+            "type": "din_bit"
         },
         {
             "pullup": true,
-            "pin": "H3"
+            "pin": "H3",
+            "name": "DIN2",
+            "type": "din_bit"
         },
         {
             "pullup": true,
-            "pin": "F3"
+            "pin": "F3",
+            "name": "DIN3",
+            "type": "din_bit"
         },
         {
             "pullup": true,
-            "pin": "B1"
-        }
-    ],
-    "vout": [
-        {
-            "type": "pwm",
-            "pin": "J2",
-            "dir": "J14"
+            "pin": "B1",
+            "name": "DIN4",
+            "type": "din_bit"
         },
         {
-            "type": "pwm",
-            "min": "-10",
-            "max": "+10",
-            "pin": "H5",
-            "dir": "J12"
-        }
-    ],
-    "vin": [
+            "pin": "F4",
+            "name": "DOUT0",
+            "type": "dout_bit"
+        },
         {
-            "type": "quadencoder",
+            "pin": "D2",
+            "name": "DOUT1",
+            "type": "dout_bit"
+        },
+        {
+            "pin": "G5",
+            "name": "DOUT2",
+            "type": "dout_bit"
+        },
+        {
+            "pin": "D1",
+            "name": "DOUT3",
+            "type": "dout_bit"
+        },
+        {
+            "type": "vin_quadencoder",
             "pullup": true,
             "pins": {
                 "a": "E2",
                 "b": "G3"
-            }
-        }
-    ],
-    "joints": [
+            },
+            "name": "VIN0"
+        },
         {
-            "type": "stepper",
+            "type": "vout_pwm",
+            "pin": "J2",
+            "dir": "J14",
+            "name": "VOUT0"
+        },
+        {
+            "type": "vout_pwm",
+            "min": "-10",
+            "max": "+10",
+            "pin": "H5",
+            "dir": "J12",
+            "name": "VOUT1"
+        },
+        {
+            "type": "joint_stepper",
             "cl": false,
             "pins": {
                 "step": "H1",
                 "dir": "G1"
-            }
+            },
+            "name": "JOINT0"
         },
         {
-            "type": "stepper",
+            "type": "joint_stepper",
             "cl": false,
             "pins": {
                 "step": "J5",
                 "dir": "H2"
-            }
+            },
+            "name": "JOINT1"
         },
         {
-            "type": "stepper",
+            "type": "joint_stepper",
             "cl": false,
             "pins": {
                 "step": "J4",
                 "dir": "G2"
-            }
+            },
+            "name": "JOINT2"
         },
         {
-            "type": "stepper",
+            "type": "joint_stepper",
             "cl": false,
             "enc_scale": "2",
             "pins": {
                 "step": "H4",
                 "dir": "F1"
-            }
+            },
+            "name": "JOINT3"
         },
         {
-            "type": "stepper",
+            "type": "joint_stepper",
             "cl": false,
             "pins": {
                 "step": "C2",
                 "dir": "C1"
-            }
+            },
+            "name": "JOINT4"
         }
     ]
 }

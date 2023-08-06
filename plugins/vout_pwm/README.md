@@ -13,16 +13,6 @@ Variable-Output for PWM-Signals with optional DIR pin
 },
 ```
 
-## setup for rcservo's (1-2ms @ 50Hz)
-
-```
-{
-    "type": "rcservo",
-    "frequency": "50",
-    "pin": "M5"
-},
-```
-
 ##  extended setup:
 
 for better generated sample config's

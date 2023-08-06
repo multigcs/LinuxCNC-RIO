@@ -363,6 +363,7 @@ class WinForm(QWidget):
         self.add_setup_options(setup_data[section][subtype], jdata[section][num])
 
         self.edit = EditAdd(section, num, self)
+        self.edit.added = True
         self.edit.show()
 
     def edit_callback(self, section, num):
@@ -375,6 +376,8 @@ class WinForm(QWidget):
 
 
 class EditAdd(QWidget):
+    added = False
+
     def __init__(self, section, num, gui, parent=None):
         super(EditAdd, self).__init__(parent)
 
@@ -458,9 +461,15 @@ class EditAdd(QWidget):
                 elif name in data:
                     del data[name]
             else:
-                data[name] = self.widgets[f"{dpath}/{name}"].text()
+                value = self.widgets[f"{dpath}/{name}"].text()
+                if value:
+                    data[name] = value
+                elif name in data:
+                    del data[name]
 
     def cancel_callback(self):
+        if self.added:
+            jdata[self.section].pop()
         self.close()
         self.gui.load()
 

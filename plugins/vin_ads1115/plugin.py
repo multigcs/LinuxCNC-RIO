@@ -1,4 +1,6 @@
 class Plugin:
+    ptype = "vin_ads1115"
+
     def __init__(self, jdata):
         self.jdata = jdata
 
@@ -6,7 +8,7 @@ class Plugin:
         return [
             {
                 "basetype": "vin",
-                "subtype": "vin_ads1115",
+                "subtype": self.ptype,
                 "comment": "4Channel ADC",
                 "options": {
                     "name": {
@@ -41,7 +43,7 @@ class Plugin:
     def pinlist(self):
         pinlist_out = []
         for num, data in enumerate(self.jdata["plugins"]):
-            if data.get("type") == "vin_ads1115":
+            if data.get("type") == self.ptype:
                 pullup = data.get("pullup", True)
                 pinlist_out.append(
                     (f"VIN{num}_SDA", data["pins"]["sda"], "INOUT", pullup)
@@ -55,7 +57,7 @@ class Plugin:
     def vinnames(self):
         ret = []
         for num, data in enumerate(self.jdata["plugins"]):
-            if data.get("type") == "vin_ads1115":
+            if data.get("type") == self.ptype:
                 name = data.get("name", f"PV.{num}")
                 nameIntern = name.replace(".", "").replace("-", "_").upper()
                 function = data.get("function")
@@ -88,7 +90,7 @@ class Plugin:
     def funcs(self):
         func_out = ["    // vin_ads1115's"]
         for num, data in enumerate(self.jdata["plugins"]):
-            if data.get("type") == "vin_ads1115":
+            if data.get("type") == self.ptype:
                 name = data.get("name", f"PV.{num}")
                 nameIntern = name.replace(".", "").replace("-", "_").upper()
                 func_out.append(f"    vin_ads1115 vin_ads1115{num} (")
@@ -104,6 +106,6 @@ class Plugin:
 
     def ips(self):
         for num, data in enumerate(self.jdata["plugins"]):
-            if data["type"] in ["vin_ads1115"]:
+            if data["type"] == self.ptype:
                 return ["vin_ads1115.v"]
         return []

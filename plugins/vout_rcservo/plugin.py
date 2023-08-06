@@ -1,5 +1,5 @@
 class Plugin:
-    ptype = "vout_pwm"
+    ptype = "vout_rcservo"
 
     def __init__(self, jdata):
         self.jdata = jdata
@@ -25,12 +25,8 @@ class Plugin:
                     "frequency": {
                         "type": "int",
                         "name": "pwm frequency",
-                        "comment": "pwm frequency in Hz",
-                        "default": "10000",
-                    },
-                    "dir": {
-                        "type": "output",
-                        "name": "dir output pin",
+                        "default": "100",
+                        "comment": "servo update-rate in Hz (max 50Hz for old analog servos)",
                     },
                     "pin": {
                         "type": "output",
@@ -39,7 +35,6 @@ class Plugin:
                     "invert_pwm": {
                         "type": "bool",
                         "name": "inverted pwm pin",
-                        "default": False,
                         "comment": "this option inverts the pwm signal",
                     },
                 },
@@ -67,7 +62,7 @@ class Plugin:
         return ret
 
     def defs(self):
-        func_out = ["    // vout_pwm's"]
+        func_out = ["    // vout_rcservo's"]
         for num, data in enumerate(self.jdata["plugins"]):
             if data["type"] == self.ptype:
                 if "dir" not in data:
@@ -83,7 +78,7 @@ class Plugin:
 
 
     def funcs(self):
-        func_out = ["    // vout_pwm's"]
+        func_out = ["    // vout_rcservo's"]
         for num, data in enumerate(self.jdata["plugins"]):
             if data["type"] == self.ptype:
                 name = data.get("name", f"SP.{num}")
@@ -98,7 +93,7 @@ class Plugin:
                     func_out.append(
                         f"    assign VOUT{num}_PWM_PWM = ~VOUT{num}_PWM_PWM_INVERTED; // invert pwm output"
                     )
-                func_out.append(f"    vout_pwm #({divider}) vout_pwm{num} (")
+                func_out.append(f"    vout_rcservo #({divider}) vout_rcservo{num} (")
                 func_out.append("        .clk (sysclk),")
                 func_out.append(f"        .dty ({nameIntern}),")
                 func_out.append(f"        .disabled (ERROR),")
@@ -113,5 +108,5 @@ class Plugin:
     def ips(self):
         for num, data in enumerate(self.jdata["plugins"]):
             if data["type"] == self.ptype:
-                return ["vout_pwm.v"]
+                return ["vout_rcservo.v"]
         return []

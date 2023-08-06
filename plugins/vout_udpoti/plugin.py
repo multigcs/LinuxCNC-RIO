@@ -1,4 +1,6 @@
 class Plugin:
+    ptype = "vout_udpoti"
+
     def __init__(self, jdata):
         self.jdata = jdata
 
@@ -6,8 +8,20 @@ class Plugin:
         return [
             {
                 "basetype": "vout",
-                "subtype": "vout_udpoti",
+                "subtype": self.ptype,
                 "options": {
+                    "name": {
+                        "type": "str",
+                        "name": "pin name",
+                        "comment": "the name of the pin",
+                        "default": '',
+                    },
+                    "net": {
+                        "type": "vtarget",
+                        "name": "net target",
+                        "comment": "the target net of the pin in the hal",
+                        "default": '',
+                    },
                     "resolution": {
                         "type": "int",
                         "name": "resolution",
@@ -42,7 +56,7 @@ class Plugin:
     def pinlist(self):
         pinlist_out = []
         for num, data in enumerate(self.jdata["plugins"]):
-            if data["type"] in ["vout_udpoti"]:
+            if data["type"] == self.ptype:
                 pinlist_out.append((f"VOUT{num}_UDPOTI_UPDOWN", data["pins"]["updown"], "OUTPUT"))
                 pinlist_out.append((f"VOUT{num}_UDPOTI_INCR", data["pins"]["incr"], "OUTPUT"))
         return pinlist_out
@@ -50,7 +64,7 @@ class Plugin:
     def voutnames(self):
         ret = []
         for num, data in enumerate(self.jdata["plugins"]):
-            if data.get("type") == "vout_udpoti":
+            if data.get("type") == self.ptype:
                 name = data.get("name", f"SP.{num}")
                 nameIntern = name.replace(".", "").replace("-", "_").upper()
                 data["_name"] = name
@@ -61,7 +75,7 @@ class Plugin:
     def funcs(self):
         func_out = ["    // vout_udpoti's"]
         for num, data in enumerate(self.jdata["plugins"]):
-            if data["type"] in ["vout_udpoti"]:
+            if data["type"] in self.ptype:
                 name = data.get("name", f"SP.{num}")
                 nameIntern = name.replace(".", "").replace("-", "_").upper()
                 resolution = int(data.get("resolution", 100))
@@ -78,7 +92,7 @@ class Plugin:
 
     def ips(self):
         for num, data in enumerate(self.jdata["plugins"]):
-            if data["type"] in ["vout_udpoti"]:
+            if data["type"] in self.ptype:
                 return ["vout_udpoti.v"]
         return []
 

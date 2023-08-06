@@ -1,4 +1,6 @@
 class Plugin:
+    ptype = "vin_quadencoderz"
+
     def __init__(self, jdata):
         self.jdata = jdata
 
@@ -6,7 +8,7 @@ class Plugin:
         return [
             {
                 "basetype": "vin",
-                "subtype": "vin_quadencoderz",
+                "subtype": self.ptype,
                 "comment": "quad-encoder input with z-pin",
                 "options": {
                     "name": {
@@ -56,7 +58,7 @@ class Plugin:
     def pinlist(self):
         pinlist_out = []
         for num, data in enumerate(self.jdata["plugins"]):
-            if data.get("type") == "vin_quadencoderz":
+            if data.get("type") == self.ptype:
                 pullup = data.get("pullup", False)
                 pins = data.get("pins", {})
                 pin_a = pins.get("a", data.get("pin_a"))
@@ -76,7 +78,7 @@ class Plugin:
     def vinnames(self):
         ret = []
         for num, data in enumerate(self.jdata["plugins"]):
-            if data.get("type") == "vin_quadencoderz":
+            if data.get("type") == self.ptype:
                 name = data.get("name", f"PV.{num}")
                 nameIntern = name.replace(".", "").replace("-", "_").upper()
                 data["_name"] = name
@@ -87,7 +89,7 @@ class Plugin:
     def dinnames(self):
         ret = []
         for num, data in enumerate(self.jdata["plugins"]):
-            if data.get("type") == "vin_quadencoderz":
+            if data.get("type") == self.ptype:
                 name = data.get("name", f"PV.{num}") + "-index-enable-out"
                 nameIntern = name.replace(".", "").replace("-", "_").upper()
                 data["_name"] = name
@@ -98,7 +100,7 @@ class Plugin:
     def doutnames(self):
         ret = []
         for num, data in enumerate(self.jdata["plugins"]):
-            if data.get("type") == "vin_quadencoderz":
+            if data.get("type") == self.ptype:
                 name = data.get("name", f"PV.{num}") + "-index-enable"
                 nameIntern = name.replace(".", "").replace("-", "_").upper()
                 data["_name"] = name
@@ -109,7 +111,7 @@ class Plugin:
     def defs(self):
         ret = ["    // vin_quadencoderz's"]
         for num, data in enumerate(self.jdata["plugins"]):
-            if data.get("type") == "vin_quadencoderz":
+            if data.get("type") == self.ptype:
                 name = data.get("name", f"PV.{num}")
                 nameIntern = name.replace(".", "").replace("-", "_").upper()
                 ret.append(f"    wire {nameIntern}_INDEX_ENABLE_OUT;")
@@ -119,7 +121,7 @@ class Plugin:
     def funcs(self):
         ret = ["    // vin_quadencoderz's"]
         for num, data in enumerate(self.jdata["plugins"]):
-            if data.get("type") == "vin_quadencoderz":
+            if data.get("type") == self.ptype:
                 name = data.get("name", f"PV.{num}")
                 nameIntern = name.replace(".", "").replace("-", "_").upper()
                 debounce = data.get("debounce", False)
@@ -162,6 +164,6 @@ class Plugin:
 
     def ips(self):
         for num, data in enumerate(self.jdata["plugins"]):
-            if data["type"] in ["vin_quadencoderz"]:
+            if data["type"] == self.ptype:
                 return ["vin_quadencoderz.v"]
         return []

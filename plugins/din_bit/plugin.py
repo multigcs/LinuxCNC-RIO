@@ -1,4 +1,6 @@
 class Plugin:
+    ptype = "din_bit"
+
     def __init__(self, jdata):
         self.jdata = jdata
 
@@ -6,7 +8,7 @@ class Plugin:
         return [
             {
                 "basetype": "din",
-                "subtype": "din_bit",
+                "subtype": self.ptype,
                 "comment": "normal binary input pin",
                 "options": {
                     "name": {
@@ -44,8 +46,8 @@ class Plugin:
     def pinlist(self):
         ret = []
         for num, data in enumerate(self.jdata["plugins"]):
-            if data.get("type") == "din_bit":
-                name = data.get("name", f"DIN.{num}")
+            if data.get("type") == self.ptype:
+                name = data.get("name") or f"DIN.{num}"
                 nameIntern = name.replace(".", "").replace("-", "_").upper()
                 pullup = data.get("pullup", False)
                 ret.append((nameIntern, data["pin"], "INPUT", pullup))
@@ -54,8 +56,8 @@ class Plugin:
     def dinnames(self):
         ret = []
         for num, data in enumerate(self.jdata["plugins"]):
-            if data.get("type") == "din_bit":
-                name = data.get("name", f"DIN.{num}")
+            if data.get("type") == self.ptype:
+                name = data.get("name") or f"DIN.{num}"
                 nameIntern = name.replace(".", "").replace("-", "_").upper()
                 data["_name"] = name
                 data["_prefix"] = nameIntern

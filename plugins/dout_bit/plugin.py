@@ -1,4 +1,6 @@
 class Plugin:
+    ptype = "dout_bit"
+
     def __init__(self, jdata):
         self.jdata = jdata
 
@@ -6,7 +8,7 @@ class Plugin:
         return [
             {
                 "basetype": "dout",
-                "subtype": "dout_bit",
+                "subtype": self.ptype,
                 "comment": "Digital Output",
                 "options": {
                     "name": {
@@ -32,7 +34,7 @@ class Plugin:
     def pinlist(self):
         ret = []
         for num, data in enumerate(self.jdata["plugins"]):
-            if data.get("type") == "dout_bit":
+            if data.get("type") == self.ptype:
                 name = data.get("name", f"DOUT.{num}")
                 nameIntern = name.replace(".", "").replace("-", "_").upper()
                 ret.append((nameIntern, data["pin"], "OUTPUT"))
@@ -41,7 +43,7 @@ class Plugin:
     def doutnames(self):
         ret = []
         for num, data in enumerate(self.jdata["plugins"]):
-            if data.get("type") == "dout_bit":
+            if data.get("type") == self.ptype:
                 name = data.get("name", f"DOUT.{num}")
                 nameIntern = name.replace(".", "").replace("-", "_").upper()
                 data["_name"] = name

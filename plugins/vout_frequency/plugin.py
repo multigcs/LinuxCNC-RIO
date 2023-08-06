@@ -1,4 +1,6 @@
 class Plugin:
+    ptype = "vout_frequency"
+
     def __init__(self, jdata):
         self.jdata = jdata
 
@@ -6,9 +8,21 @@ class Plugin:
         return [
             {
                 "basetype": "vout",
-                "subtype": "vout_frequency",
+                "subtype": self.ptype,
                 "comment": "generates a variable frequency on the output pin",
                 "options": {
+                    "name": {
+                        "type": "str",
+                        "name": "pin name",
+                        "comment": "the name of the pin",
+                        "default": '',
+                    },
+                    "net": {
+                        "type": "vtarget",
+                        "name": "net target",
+                        "comment": "the target net of the pin in the hal",
+                        "default": '',
+                    },
                     "pin": {
                         "type": "input",
                         "name": "output pin",
@@ -20,14 +34,14 @@ class Plugin:
     def pinlist(self):
         pinlist_out = []
         for num, data in enumerate(self.jdata["plugins"]):
-            if data["type"] in ["vout_frequency"]:
+            if data["type"] == self.ptype:
                 pinlist_out.append((f"VOUT{num}_FREQUENCY", data["pin"], "OUTPUT"))
         return pinlist_out
 
     def voutnames(self):
         ret = []
         for num, data in enumerate(self.jdata["plugins"]):
-            if data.get("type") == "vout_frequency":
+            if data.get("type") == self.ptype:
                 name = data.get("name", f"SP.{num}")
                 nameIntern = name.replace(".", "").replace("-", "_").upper()
                 data["_name"] = name
@@ -38,7 +52,7 @@ class Plugin:
     def funcs(self):
         func_out = ["    // vout_frequency's"]
         for num, data in enumerate(self.jdata["plugins"]):
-            if data["type"] in ["vout_frequency"]:
+            if data["type"] == self.ptype:
                 name = data.get("name", f"SP.{num}")
                 nameIntern = name.replace(".", "").replace("-", "_").upper()
                 func_out.append(f"    vout_frequency vout_frequency{num} (")
@@ -52,6 +66,6 @@ class Plugin:
 
     def ips(self):
         for num, data in enumerate(self.jdata["plugins"]):
-            if data["type"] in ["vout_frequency"]:
+            if data["type"] == self.ptype:
                 return ["vout_frequency.v"]
         return []

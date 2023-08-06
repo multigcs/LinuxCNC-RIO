@@ -492,7 +492,7 @@ MIN_FERROR = 0.5
     jogwheel = False
     for num, vin in enumerate(project["vinnames"]):
         function = vin.get("function")
-        vin_name = vin.get("name", f"vin{num}")
+        vin_name = vin.get("_name")
         vin_net = vin.get("net")
         if vin_net in ["halui.feed-override", "halui.rapid-override", "halui.spindle.0.override", "halui.spindle.1.override"]:
             function = vin_net.split(".")[-1]
@@ -536,7 +536,7 @@ MIN_FERROR = 0.5
         elif function:
             pass
         else:
-            cfghal_data.append(f"net vin{num} rio.{vin['_name']} pyvcp.vin{num}")
+            cfghal_data.append(f"net {vin['_name']} rio.{vin['_name']} pyvcp.vin{num}")
 
         if vin.get("type") in {"vin_quadencoder", "vin_quadencoderz"}:
             cfghal_data.append(f"net rpm{num} rio.{vin['_name']}-rpm pyvcp.rpm{num}")
@@ -632,7 +632,7 @@ MIN_FERROR = 0.5
     jogwheel = False
     for num, vin in enumerate(project["vinnames"]):
         function = vin.get("function")
-        vin_name = vin.get("name", f"vin{num}")
+        vin_name = vin.get("_name")
         vin_net = vin.get("net")
         if vin_net in ["halui.feed-override", "halui.rapid-override", "halui.spindle.0.override", "halui.spindle.1.override"]:
             function = vin_net.split(".")[-1]
@@ -687,25 +687,29 @@ MIN_FERROR = 0.5
     cfgxml_data.append("  <labelframe text=\"MDI-Commands\">")
     cfgxml_data.append("    <relief>RAISED</relief>")
     cfgxml_data.append("    <font>(\"Helvetica\", 12)</font>")
+    cfgxml_data.append("  <hbox>")
+    cfgxml_data.append("    <relief>RIDGE</relief>")
+    cfgxml_data.append("    <bd>2</bd>")
     cfgxml_data.append("  <button>")
     cfgxml_data.append("    <relief>RAISED</relief>")
     cfgxml_data.append("    <bd>3</bd>")
     cfgxml_data.append("    <halpin>\"zeroxy\"</halpin><text>\"Zero XY\"</text>")
-    cfgxml_data.append("    <font>(\"Helvetica\", 16)</font>")
+    cfgxml_data.append("    <font>(\"Helvetica\", 12)</font>")
     cfgxml_data.append("  </button>")
     cfgxml_data.append("  <button>")
     cfgxml_data.append("    <relief>RAISED</relief>")
     cfgxml_data.append("    <bd>3</bd>")
     cfgxml_data.append("    <halpin>\"zeroz\"</halpin><text>\"Zero Z\"</text>")
-    cfgxml_data.append("    <font>(\"Helvetica\", 16)</font>")
+    cfgxml_data.append("    <font>(\"Helvetica\", 12)</font>")
     cfgxml_data.append("  </button>")
     if "motion.probe-input" in netlist:
         cfgxml_data.append("  <button>")
         cfgxml_data.append("    <relief>RAISED</relief>")
         cfgxml_data.append("    <bd>3</bd>")
-        cfgxml_data.append("    <halpin>\"ztouch\"</halpin><text>\"Touch Off Z\"</text>")
-        cfgxml_data.append("    <font>(\"Helvetica\", 16)</font>")
+        cfgxml_data.append("    <halpin>\"ztouch\"</halpin><text>\"Touch Off\"</text>")
+        cfgxml_data.append("    <font>(\"Helvetica\", 12)</font>")
         cfgxml_data.append("  </button>")
+    cfgxml_data.append("  </hbox>")
     cfgxml_data.append("  </labelframe>")
 
     # misc IO's
@@ -717,6 +721,7 @@ MIN_FERROR = 0.5
     cfgxml_data.append("    <relief>RIDGE</relief>")
     cfgxml_data.append("    <font>(\"Helvetica\", 12)</font>")
     cfgxml_data.append("  <hbox>")
+    dnum = 0
     for num, dout in enumerate(project["doutnames"]):
         dname = dout['_name']
         dout_name = dout.get("name", dname)
@@ -729,7 +734,7 @@ MIN_FERROR = 0.5
         cfgxml_data.append(f'      <halpin>"btn{num}"</halpin>')
         cfgxml_data.append(f'      <text>"{num}"</text>')
         cfgxml_data.append("    </checkbutton>")
-        if (num + 1) % 8 == 0 and num + 1 < project["douts"]:
+        if (dnum + 1) % 8 == 0 and dnum + 1 < project["douts"]:
             cfgxml_data.append("  </hbox>")
             cfgxml_data.append("  <hbox>")
             cfgxml_data.append("    <relief>RIDGE</relief>")
@@ -738,6 +743,7 @@ MIN_FERROR = 0.5
             cfgxml_data.append(f'      <text>"DOUT"</text>')
             cfgxml_data.append('      <font>("Helvetica",12)</font>')
             cfgxml_data.append("    </label>")
+        dnum += 1
     cfgxml_data.append("  </hbox>")
     cfgxml_data.append("  </labelframe>")
 
@@ -823,7 +829,7 @@ MIN_FERROR = 0.5
 
     jogwheel = False
     for num, vin in enumerate(project["vinnames"]):
-        vin_name = vin.get("name", f"Variable-In{num}")
+        vin_name = vin.get("_name")
         function = vin.get("function")
         vtype = vin.get("type")
         if vtype:
@@ -840,7 +846,7 @@ MIN_FERROR = 0.5
             if False:
                 cfgxml_data.append("  <meter>")
                 cfgxml_data.append(f'    <halpin>"vin{num}"</halpin>')
-                cfgxml_data.append(f'    <text>"{vout_name}"</text>')
+                cfgxml_data.append(f'    <text>"{vin_name}"</text>')
                 cfgxml_data.append(f"    <subtext>\"{vin.get('type', '-')}\"</subtext>")
                 cfgxml_data.append("    <size>150</size>")
                 cfgxml_data.append("    <min_>-32800</min_>")

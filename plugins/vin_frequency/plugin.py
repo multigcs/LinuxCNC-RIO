@@ -33,7 +33,7 @@ class Plugin:
                     },
                     "freq_min": {
                         "type": "int",
-                        "name": "internal pullup",
+                        "name": "min-frequency",
                         "default": 10,
                         "comment": "this is the minumum frequency in Hz on the input-pin, all below is set to 0 Hz",
                     },

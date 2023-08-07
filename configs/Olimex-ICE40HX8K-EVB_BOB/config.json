@@ -88,16 +88,20 @@
         },
         {
             "type": "vout_pwm",
-            "pin": "J2",
-            "dir": "J14",
+            "pins": {
+                "pwm": "J2",
+                "dir": "J14"
+            },
             "name": "VOUT0"
         },
         {
             "type": "vout_pwm",
             "min": "-10",
             "max": "+10",
-            "pin": "H5",
-            "dir": "J12",
+            "pins": {
+                "pwm": "H5",
+                "dir": "J12"
+            },
             "name": "VOUT1"
         },
         {

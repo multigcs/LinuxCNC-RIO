@@ -28,19 +28,24 @@ class Plugin:
                         "comment": "pwm frequency in Hz",
                         "default": "10000",
                     },
-                    "dir": {
-                        "type": "output",
-                        "name": "dir output pin",
-                    },
-                    "pin": {
-                        "type": "output",
-                        "name": "pwm output pin",
-                    },
                     "invert_pwm": {
                         "type": "bool",
                         "name": "inverted pwm pin",
                         "default": False,
                         "comment": "this option inverts the pwm signal",
+                    },
+                    "pins": {
+                        "type": "dict",
+                        "options": {
+                            "dir": {
+                                "type": "output",
+                                "name": "dir output pin",
+                            },
+                            "pwm": {
+                                "type": "output",
+                                "name": "pwm output pin",
+                            },
+                        },
                     },
                 },
             }
@@ -50,9 +55,17 @@ class Plugin:
         pinlist_out = []
         for num, data in enumerate(self.jdata["plugins"]):
             if data["type"] == self.ptype:
-                if "dir" in data:
-                    pinlist_out.append((f"VOUT{num}_PWM_DIR", data["dir"], "OUTPUT"))
-                pinlist_out.append((f"VOUT{num}_PWM_PWM", data["pin"], "OUTPUT"))
+                if "pins" not in data:
+                    data["pins"] = {
+                        "pwm": data["pin"],
+                    }
+                    if "dir" in data:
+                        data["pins"]["dir"] = data["dir"]
+                    print(f"WARNING: {data['type']}: please use new format for pins: '\"pins\": {data['pins']}'")
+                pins = data["pins"]
+                if "dir" in pins:
+                    pinlist_out.append((f"VOUT{num}_PWM_DIR", pins["dir"], "OUTPUT"))
+                pinlist_out.append((f"VOUT{num}_PWM_PWM", pins["pwm"], "OUTPUT"))
         return pinlist_out
 
     def voutnames(self):
@@ -70,7 +83,8 @@ class Plugin:
         func_out = ["    // vout_pwm's"]
         for num, data in enumerate(self.jdata["plugins"]):
             if data["type"] == self.ptype:
-                if "dir" not in data:
+                pins = data["pins"]
+                if "dir" not in pins:
                     func_out.append(
                         f"    wire VOUT{num}_PWM_DIR; // fake direction output"
                     )

@@ -180,7 +180,9 @@
             "max": "20000",
             "_invert": true,
             "type": "vout_pwm",
-            "pin": "55"
+            "pins": {
+                "pwm": "55"
+            }
         },
         {
             "type": "joint_stepper",

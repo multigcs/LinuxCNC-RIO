@@ -127,19 +127,25 @@
             "max": "10000",
             "invert": true,
             "type": "vout_pwm",
-            "pin": "76"
+            "pins": {
+                "pwm": "76"
+            }
         },
         {
             "type": "vout_pwm",
             "invert": true,
-            "pin": "75",
-            "dir": "74"
+            "pins": {
+                "pwm": "75",
+                "dir": "74"
+            }
         },
         {
             "type": "vout_pwm",
             "frequency": "1500",
             "invert": true,
-            "pin": "37"
+            "pins": {
+                "pwm": "37"
+            }
         },
         {
             "type": "joint_stepper",

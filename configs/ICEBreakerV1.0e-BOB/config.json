@@ -153,7 +153,9 @@
         },
         {
             "type": "vout_pwm",
-            "pin": "4",
+            "pins": {
+                "pwm": "4"
+            },
             "name": "VOUT0"
         },
         {

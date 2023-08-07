@@ -355,17 +355,23 @@
         },
         {
             "type": "vout_pwm",
-            "pin": "76",
+            "pins": {
+                "pwm": "76"
+            },
             "name": "VOUT0"
         },
         {
             "type": "vout_pwm",
-            "pin": "75",
+            "pins": {
+                "pwm": "75"
+            },
             "name": "VOUT1"
         },
         {
             "type": "vout_pwm",
-            "pin": "74",
+            "pins": {
+                "pwm": "74"
+            },
             "name": "VOUT2"
         },
         {

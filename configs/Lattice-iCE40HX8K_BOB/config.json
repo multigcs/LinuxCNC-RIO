@@ -118,8 +118,10 @@
             "type": "vout_pwm",
             "min": "-10",
             "max": "+10",
-            "pin": "E14",
-            "dir": "G16",
+            "pins": {
+                "pwm": "E14",
+                "dir": "G16"
+            },
             "name": "VOUT0"
         },
         {

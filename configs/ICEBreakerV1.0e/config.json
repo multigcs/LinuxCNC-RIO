@@ -78,13 +78,17 @@
         },
         {
             "type": "vout_pwm",
-            "pin": "37",
+            "pins": {
+                "pwm": "37"
+            },
             "invert_pwm": true,
             "name": "VOUT0"
         },
         {
             "type": "vout_pwm",
-            "pin": "11",
+            "pins": {
+                "pwm": "11"
+            },
             "invert_pwm": true,
             "name": "VOUT1"
         },

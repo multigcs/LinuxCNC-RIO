@@ -57,7 +57,9 @@
         },
         {
             "type": "vout_pwm",
-            "pin": "75",
+            "pins": {
+                "pwm": "75"
+            },
             "name": "VOUT0"
         },
         {

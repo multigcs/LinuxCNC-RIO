@@ -107,7 +107,9 @@
         },
         {
             "type": "vout_pwm",
-            "pin": "H2",
+            "pins": {
+                "pwm": "H2"
+            },
             "invert_pwm": true,
             "name": "VOUT0"
         },

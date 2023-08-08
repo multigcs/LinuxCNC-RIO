@@ -50,25 +50,20 @@ void setup() {
 
   Serial.println("Init Ethernert");
 
-  // You can use Ethernet.init(pin) to configure the CS pin
-  //Ethernet.init(10);  // Most Arduino shields
-  Ethernet.init(5);   // MKR ETH Shield <---- this worked on ESP32 WROOM32 VSPI CS GPIO5
-  //Ethernet.init(0);   // Teensy 2.0
-  //Ethernet.init(20);  // Teensy++ 2.0
-  //Ethernet.init(15);  // ESP8266 with Adafruit FeatherWing Ethernet
-  //Ethernet.init(33);  // ESP32 with Adafruit FeatherWing Ethernet
-    // Check for Ethernet hardware present
+  Serial.println("Configuring Ethernet using STATIC IP address");
+  
+  
+  
+  // Static IP setup
 
-  if (Ethernet.hardwareStatus() == EthernetNoHardware) {
-    Serial.println("Ethernet shield was not found.  Sorry, can't run without hardware. :(");
-    while (true) {
-      delay(1); // do nothing, no point running without Ethernet hardware
-    }
-  }
+  // Ethernet.begin(mac, ip, dns, gw, sn);
+    
+  // Dynamic IP setup
 
-  if (Ethernet.begin(mac)) { // Dynamic IP setup
+  if (Ethernet.begin(mac)) {
     Serial.println("DHCP OK!");
-  }else{
+  }
+  else{
     Serial.println("Failed to configure Ethernet using DHCP");
 
     if (Ethernet.linkStatus() == LinkOFF) {
@@ -78,10 +73,28 @@ void setup() {
     Ethernet.begin(mac, ip, dns, gw, sn);
   }
 
-  Serial.print("Local IP : ");
-  Serial.println(Ethernet.localIP());
-  Serial.print("Subnet Mask : ");
-  Serial.println(Ethernet.subnetMask());
+  // You can use Ethernet.init(pin) to configure the CS pin
+
+  //Ethernet.init(10);  // Most Arduino shields
+  Ethernet.init(5);   // MKR ETH Shield <---- this worked on ESP32 WROOM32 VSPI CS GPIO5
+  //Ethernet.init(0);   // Teensy 2.0
+  //Ethernet.init(20);  // Teensy++ 2.0
+  //Ethernet.init(15);  // ESP8266 with Adafruit FeatherWing Ethernet
+  //Ethernet.init(33);  // ESP32 with Adafruit FeatherWing Ethernet
+  
+  // Check for Ethernet hardware present
+
+  if (Ethernet.hardwareStatus() == EthernetNoHardware) {
+    Serial.println("Ethernet shield was not found.  Sorry, can't run without hardware. :(");
+    while (true) {
+      delay(1); // do nothing, no point running without Ethernet hardware
+    }
+  }
+
+  // Serial.print("Local IP : ");
+  // Serial.println(Ethernet.localIP());
+  // Serial.print("Subnet Mask : ");
+  // Serial.println(Ethernet.subnetMask());
   // Serial.print("Gateway IP : ");
   // Serial.println(Ethernet.gatewayIP());
   // Serial.print("DNS Server : ");
@@ -91,10 +104,6 @@ void setup() {
 
   Udp.begin(localPort);
 
-  Serial.println("STATIC OK!");
-
-
-  Serial.println("Ethernet connected");
   Serial.print("MAC Address: ");
   printMacAddress(mac);
   Serial.println();

@@ -114,7 +114,6 @@ net user-request-enable <= iocontrol.0.user-request-enable	=> rio.SPI-reset
         cfghal_data.append("")
 
 
-
     for num, vin in enumerate(project["vinnames"]):
         function = vin.get("function")
         if function == "spindle-index":
@@ -536,7 +535,13 @@ MIN_FERROR = 0.5
         elif function:
             pass
         else:
-            cfghal_data.append(f"net {vin['_name']} rio.{vin['_name']} pyvcp.vin{num}")
+            scale = vin.get("scale")
+            if scale:
+                cfghal_data.append(f"setp rio.{vin_name}-scale {scale}")
+            offset = vin.get("offset")
+            if offset:
+                cfghal_data.append(f"setp rio.{vin_name}-offset {offset}")
+            cfghal_data.append(f"net {vin_name} rio.{vin['_name']} pyvcp.vin{num}")
 
         if vin.get("type") in {"vin_quadencoder", "vin_quadencoderz"}:
             cfghal_data.append(f"net rpm{num} rio.{vin['_name']}-rpm pyvcp.rpm{num}")
@@ -840,45 +845,63 @@ MIN_FERROR = 0.5
         elif function:
             pass
         else:
-            cfgxml_data.append(f"  <labelframe text=\"{vin_name}\">")
-            cfgxml_data.append("    <relief>RIDGE</relief>")
-            cfgxml_data.append("    <font>(\"Helvetica\", 12)</font>")
-            if False:
+            display = vin.get("display", {})
+            display_type = display.get("type")
+            if display_type == "meter":
+                display_text = display.get("text", vin_name)
+                display_subtext = display.get("subtext", vin.get('type', '-'))
+                display_min = display.get("min", 0)
+                display_max = display.get("max", 65000)
+                display_region = display.get("region", [])
+                display_size = display.get("size", 150)
                 cfgxml_data.append("  <meter>")
                 cfgxml_data.append(f'    <halpin>"vin{num}"</halpin>')
-                cfgxml_data.append(f'    <text>"{vin_name}"</text>')
-                cfgxml_data.append(f"    <subtext>\"{vin.get('type', '-')}\"</subtext>")
-                cfgxml_data.append("    <size>150</size>")
-                cfgxml_data.append("    <min_>-32800</min_>")
-                cfgxml_data.append("    <max_>32800</max_>")
-                cfgxml_data.append("    <majorscale>10000</majorscale>")
-                cfgxml_data.append("    <minorscale>1000</minorscale>")
-                cfgxml_data.append('    <region1>(-32800,0,"red")</region1>')
-                cfgxml_data.append('    <region2>(0,32800,"green")</region2>')
+                cfgxml_data.append(f'    <text>"{display_text}"</text>')
+                cfgxml_data.append(f"    <subtext>\"{display_subtext}\"</subtext>")
+                cfgxml_data.append(f"    <size>{display_size}</size>")
+                cfgxml_data.append(f"    <min_>{display_min}</min_>")
+                cfgxml_data.append(f"    <max_>{display_max}</max_>")
+                for rnum, region in enumerate(display_region):
+                    cfgxml_data.append(f'    <region{rnum + 1}>({region[0]},{region[1]},"{region[2]}")</region{rnum + 1}>')
                 cfgxml_data.append("  </meter>")
-            elif False:
+            elif display_type == "bar":
+                display_text = display.get("text", vin_name)
+                display_min = display.get("min", 0)
+                display_max = display.get("max", 65000)
+                display_range = display.get("range", [])
+                display_format = display.get("size", "05d")
+                display_fillcolor = display.get("fillcolor", "red")
+                display_bgcolor = display.get("fillcolor", "grey")
+                cfgxml_data.append(f"  <labelframe text=\"{display_text}\">")
+                cfgxml_data.append("    <relief>RIDGE</relief>")
+                cfgxml_data.append("    <font>(\"Helvetica\", 12)</font>")
                 cfgxml_data.append("  <bar>")
                 cfgxml_data.append(f'    <halpin>"vin{num}"</halpin>')
-                cfgxml_data.append("    <min_>-32800</min_>")
-                cfgxml_data.append("    <max_>32800</max_>")
-                cfgxml_data.append('    <format>"05d"</format>')
-                cfgxml_data.append('    <bgcolor>"grey"</bgcolor>')
-                cfgxml_data.append('    <fillcolor>"red"</fillcolor>')
-                cfgxml_data.append('    <range1>0,100,"green"</range1>')
-                cfgxml_data.append('    <range2>101,135,"orange"</range2>')
-                cfgxml_data.append('    <range3>136, 150,"red"</range3>')
+                cfgxml_data.append(f"    <min_>{display_min}</min_>")
+                cfgxml_data.append(f"    <max_>{display_max}</max_>")
+                cfgxml_data.append(f'    <format>"{display_format}"</format>')
+                cfgxml_data.append(f'    <bgcolor>"{display_bgcolor}"</bgcolor>')
+                cfgxml_data.append(f'    <fillcolor>"{display_fillcolor}"</fillcolor>')
+                for rnum, brange in enumerate(display_range):
+                    cfgxml_data.append(f'    <range{rnum + 1}>({brange[0]},{brange[1]},"{brange[2]}")</range{rnum + 1}>')
                 cfgxml_data.append("    <canvas_width>200</canvas_width>")
                 cfgxml_data.append("    <canvas_height>50</canvas_height>")
                 cfgxml_data.append("    <bar_height>30</bar_height>")
                 cfgxml_data.append("    <bar_width>150</bar_width>")
                 cfgxml_data.append("  </bar>")
+                cfgxml_data.append("  </labelframe>")
             else:
+                display_text = display.get("text", vin_name)
+                display_format = display.get("size", "05d")
+                cfgxml_data.append(f"  <labelframe text=\"{display_text}\">")
+                cfgxml_data.append("    <relief>RIDGE</relief>")
+                cfgxml_data.append("    <font>(\"Helvetica\", 12)</font>")
                 cfgxml_data.append("  <number>")
                 cfgxml_data.append(f'    <halpin>"vin{num}"</halpin>')
                 cfgxml_data.append('    <font>("Helvetica",24)</font>')
-                cfgxml_data.append('    <format>"0.2f"</format>')
+                cfgxml_data.append(f'    <format>"{display_format}"</format>')
                 cfgxml_data.append("  </number>")
-            cfgxml_data.append("  </labelframe>")
+                cfgxml_data.append("  </labelframe>")
 
     cfgxml_data.append("</pyvcp>")
     open(f"{project['LINUXCNC_PATH']}/ConfigSamples/rio/rio-gui.xml", "w").write(

@@ -1,3 +1,5 @@
+
+#include <Arduino.h>
 #include <SPI.h>
 #include <Ethernet.h>
 #include <EthernetUdp.h>
@@ -8,7 +10,7 @@
 #define HSPI_SS 15
 
 // Set the static IP address to use if the DHCP fails to assign
-#define MYIPADDR 192,168,10,28
+#define MYIPADDR 192,168,10,133
 #define MYIPMASK 255,255,255,0
 #define MYDNS 192,168,10,1
 #define MYGW 192,168,10,1
@@ -19,7 +21,7 @@ static const int spiClk = 2000000;
 
 // Enter a MAC address and IP address for your controller below.
 // The IP address will be dependent on your local network:
-byte mac[] = { 0xCA, 0xFE, 0xCA, 0xFE, 0xCA, 0xFE };
+byte mac[] = { 0xAA, 0xBB, 0xCC, 0xDD, 0xEE, 0xFF };
 
 unsigned int localPort = 2390;      // local port to listen on
 
@@ -51,37 +53,52 @@ void setup() {
   Serial.println("Init Ethernert");
 
   // You can use Ethernet.init(pin) to configure the CS pin
+
   //Ethernet.init(10);  // Most Arduino shields
-  Ethernet.init(5);   // MKR ETH Shield <---- this worked on ESP32 WROOM32 VSPI CS GPIO5
+  Ethernet.init(5);     // MKR ETH Shield <---- this worked on ESP32 WROOM32 VSPI CS GPIO5
   //Ethernet.init(0);   // Teensy 2.0
   //Ethernet.init(20);  // Teensy++ 2.0
   //Ethernet.init(15);  // ESP8266 with Adafruit FeatherWing Ethernet
   //Ethernet.init(33);  // ESP32 with Adafruit FeatherWing Ethernet
-    // Check for Ethernet hardware present
+   
+  // Static IP setup
 
-  if (Ethernet.hardwareStatus() == EthernetNoHardware) {
-    Serial.println("Ethernet shield was not found.  Sorry, can't run without hardware. :(");
-    while (true) {
-      delay(1); // do nothing, no point running without Ethernet hardware
-    }
-  }
+  // Serial.println("Configuring Ethernet using STATIC IP address");
+  // Ethernet.begin(mac, ip, dns, gw, sn);
+  
+  // Dynamic IP setup
 
-  if (Ethernet.begin(mac)) { // Dynamic IP setup
+  if (Ethernet.begin(mac)) {
+    Serial.println("Configuring Ethernet using DHCP");
     Serial.println("DHCP OK!");
-  }else{
+  }
+  else {
     Serial.println("Failed to configure Ethernet using DHCP");
 
     if (Ethernet.linkStatus() == LinkOFF) {
       Serial.println("Ethernet cable is not connected.");
     }
+
     Serial.println("Configuring Ethernet using STATIC IP address");
     Ethernet.begin(mac, ip, dns, gw, sn);
   }
+  
+  // Check for Ethernet hardware present
 
-  Serial.print("Local IP : ");
-  Serial.println(Ethernet.localIP());
-  Serial.print("Subnet Mask : ");
-  Serial.println(Ethernet.subnetMask());
+  if (Ethernet.hardwareStatus() == EthernetNoHardware) {
+
+    Serial.println("Ethernet shield was not found.  Sorry, can't run without hardware. :(");
+
+    while (true) {
+      delay(1); // do nothing, no point running without Ethernet hardware
+    }
+
+  }
+
+  // Serial.print("Local IP : ");
+  // Serial.println(Ethernet.localIP());
+  // Serial.print("Subnet Mask : ");
+  // Serial.println(Ethernet.subnetMask());
   // Serial.print("Gateway IP : ");
   // Serial.println(Ethernet.gatewayIP());
   // Serial.print("DNS Server : ");
@@ -91,12 +108,10 @@ void setup() {
 
   Udp.begin(localPort);
 
-  Serial.println("STATIC OK!");
-
-
-  Serial.println("Ethernet connected");
   Serial.print("MAC Address: ");
+
   printMacAddress(mac);
+
   Serial.println();
   
 
@@ -109,31 +124,43 @@ void setup() {
 }
 
 void loop() {
+
   // if there's data available, read a packet
-  
 
   int packetSize = Udp.parsePacket();
-  if (packetSize)
-  {
+
+  if (packetSize) {
+
     IPAddress remote = Udp.remoteIP();
+
     // read the packet into packetBufffer
     int len = Udp.read(packetBuffer, BUFFER_SIZE);
+
     hspi->beginTransaction(SPISettings(spiClk, MSBFIRST, SPI_MODE0));
+
     digitalWrite(hspi->pinSS(), LOW);
     hspi->transfer(packetBuffer, len);
     digitalWrite(hspi->pinSS(), HIGH);
     hspi->endTransaction();
+
     Udp.beginPacket(Udp.remoteIP(), Udp.remotePort());
     Udp.write((uint8_t*)packetBuffer, len);
     Udp.endPacket();
+
   }
 
 }
 
 void printMacAddress(byte mac[]) {
+
   for (int i = 0; i < 6; ++i) {
+
     if (mac[i] < 16) Serial.print("0");
+    
     Serial.print(mac[i], HEX);
+
     if (i < 5) Serial.print(":");
+
   }
+
 }

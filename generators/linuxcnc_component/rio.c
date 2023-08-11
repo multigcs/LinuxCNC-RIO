@@ -1030,6 +1030,23 @@ void rio_readwrite()
                         value += *(data->processVariableOffset[i]);
                         *(data->processVariable[i]) = value / 1000.0;
                         *(data->processVariableS32[i]) = (int)(value / 10);
+
+
+                    } else if (vin_type[i] == TYPE_VIN_NTC) {
+
+                        value /= 1000.0;
+                        float Rt = 10.0 * value / (3.3 - value);
+                        float tempK = 1.0 / (log(Rt / 10.0) / 3950.0 + 1.0 / (273.15 + 25.0));
+                        float tempC = tempK - 273.15;
+                        value = tempC;
+
+                        value *= *(data->processVariableScale[i]);
+                        value += *(data->processVariableOffset[i]);
+                        *(data->processVariable[i]) = value;
+                        *(data->processVariableS32[i]) = (int)(value);
+
+
+
                     } else if (vin_type[i] == TYPE_VIN_ENCODER) {
                         value /= *(data->processVariableScale[i]);
                         value += *(data->processVariableOffset[i]);

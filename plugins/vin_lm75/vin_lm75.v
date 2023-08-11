@@ -232,19 +232,6 @@ module lm75_adc #(
         input completeI2C
     );
 
-    // setup config
-    reg [15:0] setupRegister = {
-        1'b1, // Start Conversion
-        3'b100, // Channel 0 Single ended
-        3'b001, // FSR +- 4.096v
-        1'b1, // Single shot mode
-        3'b100, // 128 SPS
-        1'b0, // Traditional Comparator
-        1'b0, // Active low alert
-        1'b0, // Non latching
-        2'b11 // Disable comparator
-    };
-
     localparam INST_START_TX = 0;
     localparam INST_STOP_TX = 1;
     localparam INST_READ_BYTE = 2;

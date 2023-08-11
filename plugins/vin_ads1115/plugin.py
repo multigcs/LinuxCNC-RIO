@@ -60,31 +60,26 @@ class Plugin:
             if data.get("type") == self.ptype:
                 name = data.get("name", f"PV.{num}")
                 nameIntern = name.replace(".", "").replace("-", "_").upper()
+
+                names = data.get("names")
+                sensors = data.get("sensors")
                 function = data.get("function")
+                displays = data.get("displays")
 
-                data["_name"] = name + ".0"
-                data["_prefix"] = nameIntern + "_0"
-                if isinstance(function, list):
-                    data["function"] = function[0]
-                ret.append(data.copy())
+                for vnum in range(4):
+                    data["_name"] = f"{name}.{vnum}"
+                    data["_prefix"] = f"{nameIntern}_{vnum}"
+                    if isinstance(function, list):
+                        data["function"] = function[vnum]
+                    if isinstance(sensors, list):
+                        data["sensor"] = sensors[vnum]
+                    if isinstance(displays, list):
+                        data["display"] = displays[vnum]
+                    if isinstance(names, list):
+                        data["name"] = names[vnum] or f"PV.{num}.{vnum}"
+                        data["_prefix"] = data["name"].replace(".", "").replace("-", "_").upper()
+                    ret.append(data.copy())
 
-                data["_name"] = name + ".1"
-                data["_prefix"] = nameIntern + "_1"
-                if isinstance(function, list):
-                    data["function"] = function[1]
-                ret.append(data.copy())
-
-                data["_name"] = name + ".2"
-                data["_prefix"] = nameIntern + "_2"
-                if isinstance(function, list):
-                    data["function"] = function[2]
-                ret.append(data.copy())
-
-                data["_name"] = name + ".3"
-                data["_prefix"] = nameIntern + "_3"
-                if isinstance(function, list):
-                    data["function"] = function[3]
-                ret.append(data.copy())
         return ret
 
     def funcs(self):
@@ -109,3 +104,6 @@ class Plugin:
             if data["type"] == self.ptype:
                 return ["vin_ads1115.v"]
         return []
+
+
+

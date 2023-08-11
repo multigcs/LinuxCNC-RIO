@@ -835,6 +835,8 @@ MIN_FERROR = 0.5
     jogwheel = False
     for num, vin in enumerate(project["vinnames"]):
         vin_name = vin.get("_name")
+        vin_title = vin.get("name")
+        print(vin_name, vin_title)
         function = vin.get("function")
         vtype = vin.get("type")
         if vtype:
@@ -846,7 +848,7 @@ MIN_FERROR = 0.5
             pass
         else:
             display = vin.get("display", {})
-            display_type = display.get("type")
+            display_type = display.get("type", "number")
             if display_type == "meter":
                 display_text = display.get("text", vin_name)
                 display_subtext = display.get("subtext", vin.get('type', '-'))
@@ -869,7 +871,7 @@ MIN_FERROR = 0.5
                 display_min = display.get("min", 0)
                 display_max = display.get("max", 65000)
                 display_range = display.get("range", [])
-                display_format = display.get("size", "05d")
+                display_format = display.get("format", "05d")
                 display_fillcolor = display.get("fillcolor", "red")
                 display_bgcolor = display.get("fillcolor", "grey")
                 cfgxml_data.append(f"  <labelframe text=\"{display_text}\">")
@@ -891,8 +893,9 @@ MIN_FERROR = 0.5
                 cfgxml_data.append("  </bar>")
                 cfgxml_data.append("  </labelframe>")
             else:
-                display_text = display.get("text", vin_name)
-                display_format = display.get("size", "05d")
+                display_text = display.get("text", vin_title)
+                print("---", vin_title)
+                display_format = display.get("size", "05.2f")
                 cfgxml_data.append(f"  <labelframe text=\"{display_text}\">")
                 cfgxml_data.append("    <relief>RIDGE</relief>")
                 cfgxml_data.append("    <font>(\"Helvetica\", 12)</font>")

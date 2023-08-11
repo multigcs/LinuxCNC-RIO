@@ -70,6 +70,7 @@ def generate(project):
     rio_data.append("#define TYPE_VIN_SONAR 3")
     rio_data.append("#define TYPE_VIN_ADC 4")
     rio_data.append("#define TYPE_VIN_ENCODER 5")
+    rio_data.append("#define TYPE_VIN_NTC 6")
 
     rio_data.append("#define JOINT_FB_REL 0")
     rio_data.append("#define JOINT_FB_ABS 1")
@@ -127,6 +128,8 @@ def generate(project):
             vins_type.append(f"TYPE_VIN_FREQ")
         elif vin.get('type') == "vin_pwmcounter":
             vins_type.append(f"TYPE_VIN_TIME")
+        elif vin.get('type') == "vin_ads1115" and vin.get('sensor') == "NTC":
+            vins_type.append(f"TYPE_VIN_NTC")
         elif vin.get('type') == "vin_ads1115":
             vins_type.append(f"TYPE_VIN_ADC")
         elif vin.get('type') in ("vin_quadencoder", "vin_quadencoderz"):

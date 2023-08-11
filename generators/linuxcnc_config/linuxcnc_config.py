@@ -3,6 +3,125 @@ import os
 import sys
 
 
+def draw_scale(name, halpin, vmin, vmax):
+    cfgxml_data = []
+    cfgxml_data.append("  <hbox>")
+    cfgxml_data.append("    <relief>RAISED</relief>")
+    cfgxml_data.append("    <bd>2</bd>")
+    cfgxml_data.append("    <scale>")
+    cfgxml_data.append(f'      <halpin>"{halpin}"</halpin>')
+    cfgxml_data.append("      <resolution>0.1</resolution>")
+    cfgxml_data.append("      <orient>HORIZONTAL</orient>")
+    cfgxml_data.append("      <initval>0</initval>")
+    cfgxml_data.append(f"      <min_>{vmin}</min_>")
+    cfgxml_data.append(f"      <max_>{vmax}</max_>")
+    cfgxml_data.append("      <param_pin>1</param_pin>")
+    cfgxml_data.append("    </scale>")
+    cfgxml_data.append("    <label>")
+    cfgxml_data.append(f'      <text>"{name}"</text>')
+    cfgxml_data.append("    </label>")
+    cfgxml_data.append("  </hbox>")
+    return cfgxml_data
+
+def draw_meter(name, halpin, setup={}, vmin=0, vmax=100):
+    display_min = setup.get("min", vmin)
+    display_max = setup.get("max", vmax)
+    display_subtext = setup.get("subtext", '')
+    display_region = setup.get("region", [])
+    display_size = setup.get("size", 150)
+    cfgxml_data = []
+    cfgxml_data.append("  <hbox>")
+    cfgxml_data.append("    <relief>RAISED</relief>")
+    cfgxml_data.append("    <bd>2</bd>")
+    cfgxml_data.append("  <meter>")
+    cfgxml_data.append(f'      <halpin>"{halpin}"</halpin>')
+    cfgxml_data.append(f'      <text>"{name}"</text>')
+    cfgxml_data.append(f"      <subtext>\"{display_subtext}\"</subtext>")
+    cfgxml_data.append(f"      <size>{display_size}</size>")
+    cfgxml_data.append(f"      <min_>{display_min}</min_>")
+    cfgxml_data.append(f"      <max_>{display_max}</max_>")
+    for rnum, region in enumerate(display_region):
+        cfgxml_data.append(f'      <region{rnum + 1}>({region[0]},{region[1]},"{region[2]}")</region{rnum + 1}>')
+    cfgxml_data.append("    </meter>")
+    cfgxml_data.append("  </hbox>")
+    return cfgxml_data
+
+def draw_bar(name, halpin, setup={}, vmin=0, vmax=100):
+    display_min = setup.get("min", vmin)
+    display_max = setup.get("max", vmax)
+    display_range = setup.get("range", [])
+    display_format = setup.get("format", "05d")
+    display_fillcolor = setup.get("fillcolor", "red")
+    display_bgcolor = setup.get("fillcolor", "grey")
+    cfgxml_data = []
+    cfgxml_data.append("  <hbox>")
+    cfgxml_data.append("    <relief>RAISED</relief>")
+    cfgxml_data.append("    <bd>2</bd>")
+    cfgxml_data.append("    <label>")
+    cfgxml_data.append(f'      <text>"{name}"</text>')
+    cfgxml_data.append("    </label>")
+    cfgxml_data.append("    <bar>")
+    cfgxml_data.append(f'    <halpin>"{halpin}"</halpin>')
+    cfgxml_data.append(f"    <min_>{display_min}</min_>")
+    cfgxml_data.append(f"    <max_>{display_max}</max_>")
+    cfgxml_data.append(f'    <format>"{display_format}"</format>')
+    cfgxml_data.append(f'    <bgcolor>"{display_bgcolor}"</bgcolor>')
+    cfgxml_data.append(f'    <fillcolor>"{display_fillcolor}"</fillcolor>')
+    for rnum, brange in enumerate(display_range):
+        cfgxml_data.append(f'    <range{rnum + 1}>({brange[0]},{brange[1]},"{brange[2]}")</range{rnum + 1}>')
+    cfgxml_data.append("    </bar>")
+    cfgxml_data.append("  </hbox>")
+    return cfgxml_data
+
+def draw_number(name, halpin, setup={}):
+    display_format = setup.get("size", "05.2f")
+    cfgxml_data = []
+    cfgxml_data.append("  <hbox>")
+    cfgxml_data.append("    <relief>RAISED</relief>")
+    cfgxml_data.append("    <bd>2</bd>")
+    cfgxml_data.append("    <label>")
+    cfgxml_data.append(f'      <text>"{name}"</text>')
+    cfgxml_data.append("    </label>")
+    cfgxml_data.append("    <number>")
+    cfgxml_data.append(f'        <halpin>"{halpin}"</halpin>')
+    cfgxml_data.append('        <font>("Helvetica",18)</font>')
+    cfgxml_data.append(f'        <format>"{display_format}"</format>')
+    cfgxml_data.append("    </number>")
+    cfgxml_data.append("  </hbox>")
+    return cfgxml_data
+
+def draw_checkbutton(name, halpin):
+    cfgxml_data = []
+    cfgxml_data.append("  <hbox>")
+    cfgxml_data.append("    <relief>RAISED</relief>")
+    cfgxml_data.append("    <bd>2</bd>")
+    cfgxml_data.append("    <checkbutton>")
+    cfgxml_data.append(f'      <halpin>"{halpin}"</halpin>')
+    cfgxml_data.append(f'      <text>"{name}"</text>')
+    cfgxml_data.append("    </checkbutton>")
+    cfgxml_data.append("  </hbox>")
+    return cfgxml_data
+
+def draw_led(name, halpin):
+    cfgxml_data = []
+    cfgxml_data.append("  <hbox>")
+    cfgxml_data.append("    <relief>RAISED</relief>")
+    cfgxml_data.append("    <bd>2</bd>")
+    cfgxml_data.append("    <led>")
+    cfgxml_data.append(f'      <halpin>"{halpin}"</halpin>')
+    cfgxml_data.append("      <size>10</size>")
+    cfgxml_data.append('      <on_color>"green"</on_color>')
+    cfgxml_data.append('      <off_color>"red"</off_color>')
+    cfgxml_data.append("    </led>")
+    cfgxml_data.append("    <label>")
+    cfgxml_data.append(f'      <text>"{name}"</text>')
+    cfgxml_data.append("    </label>")
+    cfgxml_data.append("  </hbox>")
+    return cfgxml_data
+
+
+
+
 def generate(project):
     print("generating linux-cnc config")
 
@@ -127,12 +246,13 @@ net user-request-enable <= iocontrol.0.user-request-enable	=> rio.SPI-reset
 
 
     for num, vin in enumerate(project["vinnames"]):
+        vname = vin['_name']
         function = vin.get("function")
         if function == "spindle-index":
             scale = vin.get("scale", 1.0)
-            cfghal_data.append(f"setp rio.{vin['_name']}-scale {scale}")
-            cfghal_data.append(f"net spindle-position rio.{vin['_name']} => spindle.0.revs")
-            cfghal_data.append(f"net spindle-index-enable rio.{vin['_name']}-index-enable <=> spindle.0.index-enable")
+            cfghal_data.append(f"setp rio.{vname}-scale {scale}")
+            cfghal_data.append(f"net spindle-position rio.{vname} => spindle.0.revs")
+            cfghal_data.append(f"net spindle-index-enable rio.{vname}-index-enable <=> spindle.0.index-enable")
             cfghal_data.append("")
         elif function:
             pass
@@ -467,44 +587,42 @@ MIN_FERROR = 0.5
         dout_name = dout.get("name", dname)
         dout_net = dout.get("net")
         if dout_net:
-            cfghal_data.append(
-                f"net {dout_name} => pyvcp.led-out{num}"
-            )
+            cfghal_data.append(f"net {dname} => pyvcp.{dname}")
         elif not dname.endswith("-index-enable"):
-            cfghal_data.append(f"net {dname} pyvcp.btn{num} rio.{dname}")
+            cfghal_data.append(f"net {dname} pyvcp.{dname} rio.{dname}")
 
     for num, din in enumerate(project["dinnames"]):
-        dname = project["dinnames"][num]['_name']
+        dname = din['_name']
         din_type = din.get("type")
         din_joint = din.get("joint", str(num))
         din_name = din.get("name", dname)
         din_net = din.get("net")
         if din_net:
-            cfghal_data.append(
-                f"net {din_name} => pyvcp.led-in{num}"
-            )
+            cfghal_data.append(f"net {dname} => pyvcp.{dname}")
         elif din_type == "alarm" and din_joint:
             pass
         elif din_type == "home" and din_joint:
             pass
         elif not dname.endswith("-index-enable-out"):
             cfghal_data.append(
-                f"net {dname} rio.{dname} pyvcp.led-in{num}"
+                f"net {dname} rio.{dname} pyvcp.{dname}"
             )
 
     for num, vout in enumerate(project["voutnames"]):
+        vname = vout['_name']
         vout_name = vout.get("name", f"vout{num}")
         vout_net = vout.get("net")
         if vout_net:
-            cfghal_data.append(f"net {vout_name} => pyvcp.vout{num}")
+            cfghal_data.append(f"net {vname} => pyvcp.{vname}")
         else:
-            cfghal_data.append(f"net vout{num} pyvcp.vout{num}-f rio.{vout['_name']}")
+            cfghal_data.append(f"net {vname} pyvcp.{vname}-f rio.{vname}")
 
     jogwheel = False
     for num, vin in enumerate(project["vinnames"]):
-        function = vin.get("function")
-        vin_name = vin.get("_name")
+        vname = vin['_name']
+        vin_name = vin.get("name", f"vin{num}")
         vin_net = vin.get("net")
+        function = vin.get("function")
         if vin_net in ["halui.feed-override", "halui.rapid-override", "halui.spindle.0.override", "halui.spindle.1.override"]:
             function = vin_net.split(".")[-1]
         if function == "jogwheel" and not jogwheel:
@@ -531,32 +649,32 @@ MIN_FERROR = 0.5
                 cfghal_data.append(f"net jog-counts => joint.{jnum}.jog-counts axis.{axis_str}.jog-counts")
                 #cfghal_data.append(f"net jog-enable-{axis_str} axisui.jog.{axis_str} => joint.{jnum}.jog-enable axis.{axis_str}.jog-enable")
                 cfghal_data.append(f"net jog-enable-{axis_str} pyvcp.jog-axis.{axis_str} => joint.{jnum}.jog-enable axis.{axis_str}.jog-enable")
-            cfghal_data.append(f"net jog-counts <= rio.{vin['_name']}-s32")
+            cfghal_data.append(f"net jog-counts <= rio.{vname}-s32")
             cfghal_data.append("")
         elif function in ["feed-override", "rapid-override", "spindle.0.override", "spindle.1.override"]:
             cfghal_data.append("")
             cfghal_data.append(f"# {function}")
             if vin['type'] == "ads1115":
-                cfghal_data.append(f"setp rio.{vin['_name']}-scale 0.3025")
+                cfghal_data.append(f"setp rio.{vname}-scale 0.3025")
             else:
-                cfghal_data.append(f"setp rio.{vin['_name']}-scale 1.0")
+                cfghal_data.append(f"setp rio.{vname}-scale 1.0")
             cfghal_data.append(f"setp halui.{function}.direct-value 1")
             cfghal_data.append(f"setp halui.{function}.scale 0.01")
-            cfghal_data.append(f"net {function} rio.{vin['_name']}-s32 => halui.{function}.counts")
+            cfghal_data.append(f"net {function} rio.{vname}-s32 => halui.{function}.counts")
             cfghal_data.append("")
         elif function:
             pass
         else:
             scale = vin.get("scale")
             if scale:
-                cfghal_data.append(f"setp rio.{vin_name}-scale {scale}")
+                cfghal_data.append(f"setp rio.{vname}-scale {scale}")
             offset = vin.get("offset")
             if offset:
-                cfghal_data.append(f"setp rio.{vin_name}-offset {offset}")
-            cfghal_data.append(f"net {vin_name} rio.{vin['_name']} pyvcp.vin{num}")
+                cfghal_data.append(f"setp rio.{vname}-offset {offset}")
+            cfghal_data.append(f"net {vname} rio.{vname} pyvcp.{vname}")
 
         if vin.get("type") in {"vin_quadencoder", "vin_quadencoderz"}:
-            cfghal_data.append(f"net rpm{num} rio.{vin['_name']}-rpm pyvcp.rpm{num}")
+            cfghal_data.append(f"net {vname}-rpm rio.{vname}-rpm pyvcp.{vname}-rpm")
 
     cfghal_data.append("net zeroxy halui.mdi-command-00 <= pyvcp.zeroxy")
     cfghal_data.append("net zeroz halui.mdi-command-01 <= pyvcp.zeroz")
@@ -575,88 +693,24 @@ MIN_FERROR = 0.5
         "\n".join(cfghal_data)
     )
 
+    ###################
+    # XML-GUI
+    ###################
     cfgxml_data = []
     cfgxml_data.append("<pyvcp>")
+    cfgxml_data.append('<tabs>')
+    cfgxml_data.append('    <names>["Status", "Inputs", "Outputs"]</names>')
 
-    # defined IO's
-    for num, din in enumerate(project["dinnames"]):
-        dname = din['_name']
-        if dname.endswith("-index-enable-out"):
-            continue
-        din_type = din.get("type")
-        din_joint = din.get("joint", str(num))
-        din_name = din.get("name", dname)
-        din_net = din.get("net")
-
-        if din_net:
-            cfgxml_data.append("  <hbox>")
-            cfgxml_data.append("    <relief>RAISED</relief>")
-            cfgxml_data.append("    <bd>2</bd>")
-            cfgxml_data.append("    <led>")
-            cfgxml_data.append(f'      <halpin>"led-in{num}"</halpin>')
-            cfgxml_data.append("      <size>10</size>")
-            cfgxml_data.append('      <on_color>"green"</on_color>')
-            cfgxml_data.append('      <off_color>"red"</off_color>')
-            cfgxml_data.append("    </led>")
-            cfgxml_data.append("    <label>")
-            cfgxml_data.append(f'      <text>"{din_name}"</text>')
-            cfgxml_data.append("    </label>")
-            cfgxml_data.append("  </hbox>")
-
-    for num, dout in enumerate(project["doutnames"]):
-        dname = dout['_name']
-        dout_name = dout.get("name", dname)
-        dout_net = dout.get("net")
-        if dout_net:
-            cfgxml_data.append("  <hbox>")
-            cfgxml_data.append("    <relief>RAISED</relief>")
-            cfgxml_data.append("    <bd>2</bd>")
-            cfgxml_data.append("    <led>")
-            cfgxml_data.append(f'      <halpin>"led-out{num}"</halpin>')
-            cfgxml_data.append("      <size>10</size>")
-            cfgxml_data.append('      <on_color>"green"</on_color>')
-            cfgxml_data.append('      <off_color>"red"</off_color>')
-            cfgxml_data.append("    </led>")
-            cfgxml_data.append("    <label>")
-            cfgxml_data.append(f'      <text>"{dout_name}"</text>')
-            cfgxml_data.append("    </label>")
-            cfgxml_data.append("  </hbox>")
-
-    for num, vout in enumerate(project["voutnames"]):
-        vout_name = vout['_name']
-        vout_net = vout.get("net")
-        if vout_net:
-            cfgxml_data.append("  <hbox>")
-            cfgxml_data.append("    <relief>RAISED</relief>")
-            cfgxml_data.append("    <bd>2</bd>")
-            cfgxml_data.append("    <label>")
-            cfgxml_data.append(f'      <text>"{vout_name}"</text>')
-            cfgxml_data.append('      <font>("Helvetica",12)</font>')
-            cfgxml_data.append("    </label>")
-            if vout.get("type") == "pwm":
-                cfgxml_data.append("    <bar>")
-                cfgxml_data.append(f'        <halpin>"vout{num}"</halpin>')
-                if "dir" in vout:
-                    cfgxml_data.append(f"        <min_>{int(vout.get('max', 100)) * -1}</min_>")
-                    cfgxml_data.append(f"        <max_>{vout.get('max', 100)}</max_>")
-                else:
-                    cfgxml_data.append(f"        <min_>{vout.get('min', 0)}</min_>")
-                    cfgxml_data.append(f"        <max_>{vout.get('max', 100)}</max_>")
-                cfgxml_data.append("    </bar>")
-            else:
-                cfgxml_data.append("    <number>")
-                cfgxml_data.append(f'        <halpin>"vout{num}"</halpin>')
-                cfgxml_data.append('        <font>("Helvetica",24)</font>')
-                cfgxml_data.append('        <format>"05d"</format>')
-                cfgxml_data.append("    </number>")
-            cfgxml_data.append("  </hbox>")
+    # Tab: Status
+    cfgxml_data.append('    <vbox>')
 
     # jogging
     jogwheel = False
     for num, vin in enumerate(project["vinnames"]):
-        function = vin.get("function")
-        vin_name = vin.get("_name")
+        vname = vin['_name']
+        vin_name = vin.get("name", f"vin{num}")
         vin_net = vin.get("net")
+        function = vin.get("function")
         if vin_net in ["halui.feed-override", "halui.rapid-override", "halui.spindle.0.override", "halui.spindle.1.override"]:
             function = vin_net.split(".")[-1]
         if function == "jogwheel" and not jogwheel:
@@ -689,18 +743,8 @@ MIN_FERROR = 0.5
             cfgxml_data.append("    </checkbutton>")
             cfgxml_data.append("  </hbox>")
             cfgxml_data.append("  </labelframe>")
-
         elif vin.get("type") in {"vin_quadencoder", "vin_quadencoderz"}:
-            cfgxml_data.append(f"  <labelframe text=\"RPM - {vin['_name']}\">")
-            cfgxml_data.append("    <relief>RAISED</relief>")
-            cfgxml_data.append("    <font>(\"Helvetica\", 12)</font>")
-            cfgxml_data.append("    <number>")
-            cfgxml_data.append(f'        <halpin>"rpm{num}"</halpin>')
-            cfgxml_data.append('        <font>("Helvetica",24)</font>')
-            cfgxml_data.append('        <format>"05d"</format>')
-            cfgxml_data.append("    </number>")
-
-            cfgxml_data.append("  </labelframe>")
+            cfgxml_data += draw_number(f"RPM - {vname}", f"{vname}-rpm")
 
         elif function:
             pass
@@ -712,112 +756,42 @@ MIN_FERROR = 0.5
         cfgxml_data.append("    <font>(\"Helvetica\", 12)</font>")
         cfgxml_data.append("  <vbox>")
         cfgxml_data.append("    <hbox>")
-        cfgxml_data.append("        <label>")
-        cfgxml_data.append("            <text>\"RPM\"</text>")
-        cfgxml_data.append("            <font>(\"Helvetica\",10)</font>")
-        cfgxml_data.append("        </label>")
-        cfgxml_data.append("        <number>")
-        cfgxml_data.append('          <halpin>"spindle-speed"</halpin>')
-        cfgxml_data.append('          <font>("Helvetica",24)</font>')
-        cfgxml_data.append('          <format>"05d"</format>')
-        cfgxml_data.append("        </number>")
+        cfgxml_data.append("      <label>")
+        cfgxml_data.append("          <text>\"RPM\"</text>")
+        cfgxml_data.append("          <font>(\"Helvetica\",10)</font>")
+        cfgxml_data.append("      </label>")
+        cfgxml_data.append("      <number>")
+        cfgxml_data.append('        <halpin>"spindle-speed"</halpin>')
+        cfgxml_data.append('        <font>("Helvetica",24)</font>')
+        cfgxml_data.append('        <format>"05d"</format>')
+        cfgxml_data.append("      </number>")
         cfgxml_data.append("      <vbox>")
-        cfgxml_data.append("       <hbox>")
-        cfgxml_data.append("        <led>")
+        cfgxml_data.append("        <hbox>")
+        cfgxml_data.append("          <led>")
         cfgxml_data.append("            <halpin>\"hycomm-ok\"</halpin>")
         cfgxml_data.append("            <size>\"10\"</size>")
         cfgxml_data.append("            <on_color>\"green\"</on_color>")
         cfgxml_data.append("            <off_color>\"red\"</off_color>")
-        cfgxml_data.append("        </led>")
-        cfgxml_data.append("        <label>")
+        cfgxml_data.append("          </led>")
+        cfgxml_data.append("          <label>")
         cfgxml_data.append("            <text>\"Modbus\"</text>")
-        cfgxml_data.append("        </label>")
-        cfgxml_data.append("       </hbox>")
-        cfgxml_data.append("       <hbox>")
-        cfgxml_data.append("        <led>")
+        cfgxml_data.append("          </label>")
+        cfgxml_data.append("        </hbox>")
+        cfgxml_data.append("        <hbox>")
+        cfgxml_data.append("          <led>")
         cfgxml_data.append("            <halpin>\"spindle-at-speed\"</halpin>")
         cfgxml_data.append("            <size>\"10\"</size>")
         cfgxml_data.append("            <on_color>\"green\"</on_color>")
         cfgxml_data.append("            <off_color>\"red\"</off_color>")
-        cfgxml_data.append("        </led>")
-        cfgxml_data.append("        <label>")
+        cfgxml_data.append("          </led>")
+        cfgxml_data.append("          <label>")
         cfgxml_data.append("            <text>\"at speed\"</text>")
-        cfgxml_data.append("        </label>")
-        cfgxml_data.append("       </hbox>")
+        cfgxml_data.append("          </label>")
+        cfgxml_data.append("        </hbox>")
         cfgxml_data.append("      </vbox>")
         cfgxml_data.append("    </hbox>")
         cfgxml_data.append("  </vbox>")
         cfgxml_data.append("</labelframe>")
-
-
-    # mdi-command buttons
-    cfgxml_data.append("  <labelframe text=\"MDI-Commands\">")
-    cfgxml_data.append("    <relief>RAISED</relief>")
-    cfgxml_data.append("    <font>(\"Helvetica\", 12)</font>")
-    cfgxml_data.append("  <hbox>")
-    cfgxml_data.append("    <relief>RIDGE</relief>")
-    cfgxml_data.append("    <bd>2</bd>")
-    cfgxml_data.append("  <button>")
-    cfgxml_data.append("    <relief>RAISED</relief>")
-    cfgxml_data.append("    <bd>3</bd>")
-    cfgxml_data.append("    <halpin>\"zeroxy\"</halpin><text>\"Zero XY\"</text>")
-    cfgxml_data.append("    <font>(\"Helvetica\", 12)</font>")
-    cfgxml_data.append("  </button>")
-    cfgxml_data.append("  <button>")
-    cfgxml_data.append("    <relief>RAISED</relief>")
-    cfgxml_data.append("    <bd>3</bd>")
-    cfgxml_data.append("    <halpin>\"zeroz\"</halpin><text>\"Zero Z\"</text>")
-    cfgxml_data.append("    <font>(\"Helvetica\", 12)</font>")
-    cfgxml_data.append("  </button>")
-    if "motion.probe-input" in netlist:
-        cfgxml_data.append("  <button>")
-        cfgxml_data.append("    <relief>RAISED</relief>")
-        cfgxml_data.append("    <bd>3</bd>")
-        cfgxml_data.append("    <halpin>\"ztouch\"</halpin><text>\"Touch Off\"</text>")
-        cfgxml_data.append("    <font>(\"Helvetica\", 12)</font>")
-        cfgxml_data.append("  </button>")
-    cfgxml_data.append("  </hbox>")
-    cfgxml_data.append("  </labelframe>")
-
-    # misc IO's
-    cfgxml_data.append("  <label>")
-    cfgxml_data.append('    <text>"--- misc IOs ---"</text>')
-    cfgxml_data.append('    <font>("Helvetica", 14)</font>')
-    cfgxml_data.append("  </label>")
-    cfgxml_data.append("  <labelframe text=\"Digital-Outputs\">")
-    cfgxml_data.append("    <relief>RIDGE</relief>")
-    cfgxml_data.append("    <font>(\"Helvetica\", 12)</font>")
-    cfgxml_data.append("  <hbox>")
-    dnum = 0
-    for num, dout in enumerate(project["doutnames"]):
-        dname = dout['_name']
-        dout_name = dout.get("name", dname)
-        dout_net = dout.get("net")
-        if dout_net:
-            continue
-        elif dname.endswith("-index-enable"):
-            continue
-        cfgxml_data.append("    <checkbutton>")
-        cfgxml_data.append(f'      <halpin>"btn{num}"</halpin>')
-        cfgxml_data.append(f'      <text>"{num}"</text>')
-        cfgxml_data.append("    </checkbutton>")
-        if (dnum + 1) % 8 == 0 and dnum + 1 < project["douts"]:
-            cfgxml_data.append("  </hbox>")
-            cfgxml_data.append("  <hbox>")
-            cfgxml_data.append("    <relief>RIDGE</relief>")
-            cfgxml_data.append("    <bd>2</bd>")
-            cfgxml_data.append("    <label>")
-            cfgxml_data.append(f'      <text>"DOUT"</text>')
-            cfgxml_data.append('      <font>("Helvetica",12)</font>')
-            cfgxml_data.append("    </label>")
-        dnum += 1
-    cfgxml_data.append("  </hbox>")
-    cfgxml_data.append("  </labelframe>")
-
-    cfgxml_data.append("  <labelframe text=\"Digital-Inputs\">")
-    cfgxml_data.append("    <relief>RIDGE</relief>")
-    cfgxml_data.append("    <font>(\"Helvetica\", 12)</font>")
-    cfgxml_data.append("  <hbox>")
 
     for num, din in enumerate(project["dinnames"]):
         dname = din['_name']
@@ -827,77 +801,30 @@ MIN_FERROR = 0.5
         din_joint = din.get("joint", str(num))
         din_name = din.get("name", dname)
         din_net = din.get("net")
-
         if din_net:
-            pass
-        elif din_type == "alarm" and din_joint:
-            pass
-        elif din_type == "home" and din_joint:
-            pass
-        else:
-            cfgxml_data.append("    <led>")
-            cfgxml_data.append(f'      <halpin>"led-in{num}"</halpin>')
-            cfgxml_data.append("      <size>25</size>")
-            cfgxml_data.append('      <on_color>"green"</on_color>')
-            cfgxml_data.append('      <off_color>"red"</off_color>')
-            cfgxml_data.append("    </led>")
-
-            if (num + 1) % 8 == 0 and num + 1 < project["dins"]:
-                cfgxml_data.append("  </hbox>")
-                cfgxml_data.append("  <hbox>")
-                cfgxml_data.append("    <label>")
-                cfgxml_data.append(f'      <text>"DIN"</text>')
-                cfgxml_data.append('      <font>("Helvetica",12)</font>')
-                cfgxml_data.append("    </label>")
-
-    cfgxml_data.append("  </hbox>")
-    cfgxml_data.append("  </labelframe>")
+            cfgxml_data += draw_led(din_name, dname)
 
     for num, vout in enumerate(project["voutnames"]):
-        vout_name = vout.get("name", f"Variable-Out{num}")
+        vname = vout['_name']
+        vout_name = vout.get("name", f"vout{num}")
         vout_net = vout.get("net")
         if vout_net:
-            continue
-        vtype = vout.get("type")
-        if vtype:
-            vout_name = f"{vout_name} ({vtype})"
-        cfgxml_data.append(f"  <labelframe text=\"{vout_name}\">")
-        cfgxml_data.append("    <relief>RIDGE</relief>")
-        cfgxml_data.append("    <font>(\"Helvetica\", 12)</font>")
-        cfgxml_data.append("    <scale>")
-        cfgxml_data.append('      <font>("Helvetica",12)</font>')
-        #cfgxml_data.append('      <width>"25"</width>')
-        cfgxml_data.append(f'      <halpin>"vout{num}"</halpin>')
-        cfgxml_data.append("      <resolution>0.1</resolution>")
-        cfgxml_data.append("      <orient>HORIZONTAL</orient>")
-        cfgxml_data.append("      <initval>0</initval>")
-        if vout.get("type") == "vout_sine":
-            cfgxml_data.append(f"      <min_>{str(vout.get('min', -100))}</min_>")
-            cfgxml_data.append(f"      <max_>{str(vout.get('max', 100))}</max_>")
-        elif vout.get("type") == "vout_pwm":
             if "dir" in vout:
-                cfgxml_data.append(
-                    f"    <min_>{str(int(vout.get('max', 100)) * -1)}</min_>"
-                )
+                vmin = int(vout.get('min', vout.get('max', 100)) * -1)
+                vmax = vout.get('max', 100)
             else:
-                cfgxml_data.append(f"      <min_>{str(vout.get('min', 0))}</min_>")
-            cfgxml_data.append(f"      <max_>{str(vout.get('max', 100))}</max_>")
-        elif vout.get("type") == "vout_rcservo":
-            cfgxml_data.append(f"      <min_>{str(vout.get('min', -100))}</min_>")
-            cfgxml_data.append(f"      <max_>{str(vout.get('max', 100))}</max_>")
-        else:
-            cfgxml_data.append(f"      <min_>{str(vout.get('min', 0))}</min_>")
-            cfgxml_data.append(f"      <max_>{str(vout.get('max', 10))}</max_>")
-        cfgxml_data.append("      <param_pin>1</param_pin>")
-        cfgxml_data.append("    </scale>")
-        cfgxml_data.append("  </labelframe>")
-
-
+                vmin = int(vout.get('min', 0))
+                vmax = vout.get('max', 100)
+            if vout.get("type") == "pwm":
+                cfgxml_data += draw_bar(name, halpin, vmin=vmin, vmax=vmax)
+            else:
+                cfgxml_data += draw_number(name, halpin)
 
     jogwheel = False
     for num, vin in enumerate(project["vinnames"]):
-        vin_name = vin.get("_name")
-        vin_title = vin.get("name")
+        vname = vin['_name']
+        vin_name = vin.get("name", f"vin{num}")
+        vin_net = vin.get("net")
         function = vin.get("function")
         vtype = vin.get("type")
         if vtype:
@@ -908,62 +835,125 @@ MIN_FERROR = 0.5
             pass
         else:
             display = vin.get("display", {})
-            display_type = display.get("type", "number")
+            display_type = display.get("type")
             if display_type == "meter":
                 display_text = display.get("text", vin_name)
-                display_subtext = display.get("subtext", vin.get('type', '-'))
-                display_min = display.get("min", 0)
-                display_max = display.get("max", 65000)
-                display_region = display.get("region", [])
-                display_size = display.get("size", 150)
-                cfgxml_data.append("  <meter>")
-                cfgxml_data.append(f'    <halpin>"vin{num}"</halpin>')
-                cfgxml_data.append(f'    <text>"{display_text}"</text>')
-                cfgxml_data.append(f"    <subtext>\"{display_subtext}\"</subtext>")
-                cfgxml_data.append(f"    <size>{display_size}</size>")
-                cfgxml_data.append(f"    <min_>{display_min}</min_>")
-                cfgxml_data.append(f"    <max_>{display_max}</max_>")
-                for rnum, region in enumerate(display_region):
-                    cfgxml_data.append(f'    <region{rnum + 1}>({region[0]},{region[1]},"{region[2]}")</region{rnum + 1}>')
-                cfgxml_data.append("  </meter>")
+                cfgxml_data += draw_meter(display_text, vname, display)
             elif display_type == "bar":
                 display_text = display.get("text", vin_name)
-                display_min = display.get("min", 0)
-                display_max = display.get("max", 65000)
-                display_range = display.get("range", [])
-                display_format = display.get("format", "05d")
-                display_fillcolor = display.get("fillcolor", "red")
-                display_bgcolor = display.get("fillcolor", "grey")
-                cfgxml_data.append(f"  <labelframe text=\"{display_text}\">")
-                cfgxml_data.append("    <relief>RIDGE</relief>")
-                cfgxml_data.append("    <font>(\"Helvetica\", 12)</font>")
-                cfgxml_data.append("  <bar>")
-                cfgxml_data.append(f'    <halpin>"vin{num}"</halpin>')
-                cfgxml_data.append(f"    <min_>{display_min}</min_>")
-                cfgxml_data.append(f"    <max_>{display_max}</max_>")
-                cfgxml_data.append(f'    <format>"{display_format}"</format>')
-                cfgxml_data.append(f'    <bgcolor>"{display_bgcolor}"</bgcolor>')
-                cfgxml_data.append(f'    <fillcolor>"{display_fillcolor}"</fillcolor>')
-                for rnum, brange in enumerate(display_range):
-                    cfgxml_data.append(f'    <range{rnum + 1}>({brange[0]},{brange[1]},"{brange[2]}")</range{rnum + 1}>')
-                cfgxml_data.append("    <canvas_width>200</canvas_width>")
-                cfgxml_data.append("    <canvas_height>50</canvas_height>")
-                cfgxml_data.append("    <bar_height>30</bar_height>")
-                cfgxml_data.append("    <bar_width>150</bar_width>")
-                cfgxml_data.append("  </bar>")
-                cfgxml_data.append("  </labelframe>")
+                cfgxml_data += draw_bar(display_text, vname, display)
+            elif display_type:
+                display_text = display.get("text", vin_name)
+                cfgxml_data += draw_number(display_text, vname, display)
+
+
+    cfgxml_data.append('  </vbox>')
+
+    # Tab: Inputs
+    cfgxml_data.append('  <vbox>')
+    for num, din in enumerate(project["dinnames"]):
+        dname = din['_name']
+        if dname.endswith("-index-enable-out"):
+            continue
+        din_type = din.get("type")
+        din_joint = din.get("joint", str(num))
+        din_name = din.get("name", dname)
+        din_net = din.get("net")
+        if not din_net:
+            cfgxml_data += draw_led(din_name, dname)
+
+    jogwheel = False
+    for num, vin in enumerate(project["vinnames"]):
+        vname = vin['_name']
+        vin_name = vin.get("name", f"vin{num}")
+        vin_net = vin.get("net")
+        function = vin.get("function")
+        vtype = vin.get("type")
+        if vtype:
+            vin_name = f"{vin_name} ({vtype})"
+        if function == "jogwheel" and not jogwheel:
+            jogwheel = True
+        elif function:
+            pass
+        else:
+            display = vin.get("display", {})
+            display_type = display.get("type")
+            if not display_type:
+                display_text = display.get("text", vin_name)
+                cfgxml_data += draw_number(display_text, vname, display)
+    cfgxml_data.append('  </vbox>')
+
+    # Tab: Outputs
+    cfgxml_data.append('  <vbox>')
+    for num, dout in enumerate(project["doutnames"]):
+        dname = dout['_name']
+        dout_name = dout.get("name", dname)
+        dout_net = dout.get("net")
+        if dout_net:
+            cfgxml_data += draw_led(dout_name, dname)
+        else:
+            cfgxml_data += draw_checkbutton(dout_name, dname)
+
+    for num, vout in enumerate(project["voutnames"]):
+        vname = vout['_name']
+        vout_name = vout.get("name", f"vout{num}")
+        vout_net = vout.get("net")
+        vmin = vout.get('min', 0)
+        vmax = vout.get('max', 100)
+        if vout_net:
+            continue
+        vtype = vout.get("type")
+        if vtype:
+            vout_name = f"{vout_name} ({vtype})"
+        if vout.get("type") == "vout_sine":
+            vmin = vout.get('min', -100)
+            vmax = vout.get('max', 100)
+        elif vout.get("type") == "vout_pwm":
+            if "dir" in vout:
+                vmin = int(vout.get('max', 100)) * -1
             else:
-                display_text = display.get("text", vin_title)
-                display_format = display.get("size", "05.2f")
-                cfgxml_data.append(f"  <labelframe text=\"{display_text}\">")
-                cfgxml_data.append("    <relief>RIDGE</relief>")
-                cfgxml_data.append("    <font>(\"Helvetica\", 12)</font>")
-                cfgxml_data.append("  <number>")
-                cfgxml_data.append(f'    <halpin>"vin{num}"</halpin>')
-                cfgxml_data.append('    <font>("Helvetica",24)</font>')
-                cfgxml_data.append(f'    <format>"{display_format}"</format>')
-                cfgxml_data.append("  </number>")
-                cfgxml_data.append("  </labelframe>")
+                vmin = vout.get('min', 0)
+            vmax = vout.get('max', 100)
+        elif vout.get("type") == "vout_rcservo":
+            vmin = vout.get('min', -100)
+            vmax = vout.get('max', 100)
+        else:
+            vmin = vout.get('min', 0)
+            vmax = vout.get('max', 10)
+
+        cfgxml_data += draw_scale(vout_name, vname, vmin, vmax)
+
+    cfgxml_data.append('  </vbox>')
+    cfgxml_data.append('</tabs>')
+
+    # mdi-command buttons
+    cfgxml_data.append("  <labelframe text=\"MDI-Commands\">")
+    cfgxml_data.append("    <relief>RAISED</relief>")
+    cfgxml_data.append("    <font>(\"Helvetica\", 12)</font>")
+    cfgxml_data.append("    <hbox>")
+    cfgxml_data.append("      <relief>RIDGE</relief>")
+    cfgxml_data.append("      <bd>2</bd>")
+    cfgxml_data.append("      <button>")
+    cfgxml_data.append("        <relief>RAISED</relief>")
+    cfgxml_data.append("        <bd>3</bd>")
+    cfgxml_data.append("        <halpin>\"zeroxy\"</halpin><text>\"Zero XY\"</text>")
+    cfgxml_data.append("        <font>(\"Helvetica\", 12)</font>")
+    cfgxml_data.append("      </button>")
+    cfgxml_data.append("      <button>")
+    cfgxml_data.append("        <relief>RAISED</relief>")
+    cfgxml_data.append("        <bd>3</bd>")
+    cfgxml_data.append("        <halpin>\"zeroz\"</halpin><text>\"Zero Z\"</text>")
+    cfgxml_data.append("        <font>(\"Helvetica\", 12)</font>")
+    cfgxml_data.append("      </button>")
+    if "motion.probe-input" in netlist:
+        cfgxml_data.append("      <button>")
+        cfgxml_data.append("        <relief>RAISED</relief>")
+        cfgxml_data.append("        <bd>3</bd>")
+        cfgxml_data.append("        <halpin>\"ztouch\"</halpin><text>\"Touch Off\"</text>")
+        cfgxml_data.append("        <font>(\"Helvetica\", 12)</font>")
+        cfgxml_data.append("      </button>")
+    cfgxml_data.append("    </hbox>")
+    cfgxml_data.append("  </labelframe>")
 
     cfgxml_data.append("</pyvcp>")
     open(f"{project['LINUXCNC_PATH']}/ConfigSamples/rio/rio-gui.xml", "w").write(

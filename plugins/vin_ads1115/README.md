@@ -15,3 +15,22 @@ Analog-Input (4CH ADC)
 # vin_ads1115.v
 ![graphviz](./vin_ads1115.svg)
 
+
+# Examples
+
+## 4 NTC temperature sensors
+
+![ntc-sensors](./ntc.jpg)
+
+```
+{
+    "type": "vin_ads1115",
+    "name": "temp",
+    "sensors": ["NTC", "NTC", "NTC", "NTC"],
+    "pins": {
+        "sda": "20",
+        "scl": "18"
+    }
+}
+```
+

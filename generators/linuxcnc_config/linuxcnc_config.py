@@ -52,6 +52,18 @@ net user-request-enable <= iocontrol.0.user-request-enable	=> rio.SPI-reset
 """
     )
 
+
+    if "hy_vfd" in project["jdata"]:
+        hy_vfd_dev = project["jdata"]["hy_vfd"]
+        cfghal_data.append(f"loadusr -Wn vfd hy_vfd -n vfd -d {hy_vfd_dev} -p none -r 9600")
+        cfghal_data.append("setp vfd.enable 1")
+        cfghal_data.append("net spindle0_speed spindle.0.speed-out-abs => vfd.speed-command")
+        cfghal_data.append("net spindle0_forward spindle.0.forward => vfd.spindle-forward")
+        cfghal_data.append("net spindle0_reverse spindle.0.reverse => vfd.spindle-reverse")
+        cfghal_data.append("net spindle0_on spindle.0.on => vfd.spindle-on")
+        cfghal_data.append("")
+
+
     if num_pids > 0:
         cfghal_data.append(f"loadrt pid num_chan={num_pids}")
         for pidn in range(num_pids):
@@ -408,8 +420,8 @@ MIN_FERROR = 0.5
                 REV = 1.0
                 if OUTPUT_SCALE < 0:
                     REV = -1.0
-                if num == 2:
-                    REV *= -1.0
+                #if num == 2:
+                #    REV *= -1.0
 
                 options = {
                     "HOME_SEARCH_VEL": 10.0 * REV,
@@ -551,6 +563,14 @@ MIN_FERROR = 0.5
     if "motion.probe-input" in netlist:
         cfghal_data.append("net ztouch halui.mdi-command-02 <= pyvcp.ztouch")
 
+    # spindle.0
+    if "hy_vfd" in project["jdata"]:
+        cfghal_data.append("net pyvcp-spindle-at-speed   vfd.spindle-at-speed      => pyvcp.spindle-at-speed")
+        cfghal_data.append("net pyvcp-spindle-speed_fb   vfd.spindle-speed-fb      => pyvcp.spindle-speed")
+        cfghal_data.append("net pyvcp-hycomm-ok          vfd.hycomm-ok             => pyvcp.hycomm-ok")
+        cfghal_data.append("#net pyvcp-spindle-voltage    vfd.rated-motor-voltage   => pyvcp.spindle-voltage")
+        cfghal_data.append("#net pyvcp-spindle-current    vfd.rated-motor-current   => pyvcp.spindle-current")
+
     open(f"{project['LINUXCNC_PATH']}/ConfigSamples/rio/custom_postgui.hal", "w").write(
         "\n".join(cfghal_data)
     )
@@ -572,16 +592,15 @@ MIN_FERROR = 0.5
             cfgxml_data.append("  <hbox>")
             cfgxml_data.append("    <relief>RAISED</relief>")
             cfgxml_data.append("    <bd>2</bd>")
-            cfgxml_data.append("    <label>")
-            cfgxml_data.append(f'      <text>"{din_name}"</text>')
-            cfgxml_data.append('      <font>("Helvetica",12)</font>')
-            cfgxml_data.append("    </label>")
             cfgxml_data.append("    <led>")
             cfgxml_data.append(f'      <halpin>"led-in{num}"</halpin>')
-            cfgxml_data.append("      <size>25</size>")
+            cfgxml_data.append("      <size>10</size>")
             cfgxml_data.append('      <on_color>"green"</on_color>')
             cfgxml_data.append('      <off_color>"red"</off_color>')
             cfgxml_data.append("    </led>")
+            cfgxml_data.append("    <label>")
+            cfgxml_data.append(f'      <text>"{din_name}"</text>')
+            cfgxml_data.append("    </label>")
             cfgxml_data.append("  </hbox>")
 
     for num, dout in enumerate(project["doutnames"]):
@@ -592,16 +611,15 @@ MIN_FERROR = 0.5
             cfgxml_data.append("  <hbox>")
             cfgxml_data.append("    <relief>RAISED</relief>")
             cfgxml_data.append("    <bd>2</bd>")
-            cfgxml_data.append("    <label>")
-            cfgxml_data.append(f'      <text>"{dout_name}"</text>')
-            cfgxml_data.append('      <font>("Helvetica",12)</font>')
-            cfgxml_data.append("    </label>")
             cfgxml_data.append("    <led>")
             cfgxml_data.append(f'      <halpin>"led-out{num}"</halpin>')
-            cfgxml_data.append("      <size>25</size>")
+            cfgxml_data.append("      <size>10</size>")
             cfgxml_data.append('      <on_color>"green"</on_color>')
             cfgxml_data.append('      <off_color>"red"</off_color>')
             cfgxml_data.append("    </led>")
+            cfgxml_data.append("    <label>")
+            cfgxml_data.append(f'      <text>"{dout_name}"</text>')
+            cfgxml_data.append("    </label>")
             cfgxml_data.append("  </hbox>")
 
     for num, vout in enumerate(project["voutnames"]):
@@ -686,6 +704,50 @@ MIN_FERROR = 0.5
 
         elif function:
             pass
+
+    # spindle.0
+    if "hy_vfd" in project["jdata"]:
+        cfgxml_data.append("<labelframe text=\"Spindle\">")
+        cfgxml_data.append("    <relief>RAISED</relief>")
+        cfgxml_data.append("    <font>(\"Helvetica\", 12)</font>")
+        cfgxml_data.append("  <vbox>")
+        cfgxml_data.append("    <hbox>")
+        cfgxml_data.append("        <label>")
+        cfgxml_data.append("            <text>\"RPM\"</text>")
+        cfgxml_data.append("            <font>(\"Helvetica\",10)</font>")
+        cfgxml_data.append("        </label>")
+        cfgxml_data.append("        <number>")
+        cfgxml_data.append('          <halpin>"spindle-speed"</halpin>')
+        cfgxml_data.append('          <font>("Helvetica",24)</font>')
+        cfgxml_data.append('          <format>"05d"</format>')
+        cfgxml_data.append("        </number>")
+        cfgxml_data.append("      <vbox>")
+        cfgxml_data.append("       <hbox>")
+        cfgxml_data.append("        <led>")
+        cfgxml_data.append("            <halpin>\"hycomm-ok\"</halpin>")
+        cfgxml_data.append("            <size>\"10\"</size>")
+        cfgxml_data.append("            <on_color>\"green\"</on_color>")
+        cfgxml_data.append("            <off_color>\"red\"</off_color>")
+        cfgxml_data.append("        </led>")
+        cfgxml_data.append("        <label>")
+        cfgxml_data.append("            <text>\"Modbus\"</text>")
+        cfgxml_data.append("        </label>")
+        cfgxml_data.append("       </hbox>")
+        cfgxml_data.append("       <hbox>")
+        cfgxml_data.append("        <led>")
+        cfgxml_data.append("            <halpin>\"spindle-at-speed\"</halpin>")
+        cfgxml_data.append("            <size>\"10\"</size>")
+        cfgxml_data.append("            <on_color>\"green\"</on_color>")
+        cfgxml_data.append("            <off_color>\"red\"</off_color>")
+        cfgxml_data.append("        </led>")
+        cfgxml_data.append("        <label>")
+        cfgxml_data.append("            <text>\"at speed\"</text>")
+        cfgxml_data.append("        </label>")
+        cfgxml_data.append("       </hbox>")
+        cfgxml_data.append("      </vbox>")
+        cfgxml_data.append("    </hbox>")
+        cfgxml_data.append("  </vbox>")
+        cfgxml_data.append("</labelframe>")
 
 
     # mdi-command buttons
@@ -836,12 +898,10 @@ MIN_FERROR = 0.5
     for num, vin in enumerate(project["vinnames"]):
         vin_name = vin.get("_name")
         vin_title = vin.get("name")
-        print(vin_name, vin_title)
         function = vin.get("function")
         vtype = vin.get("type")
         if vtype:
             vin_name = f"{vin_name} ({vtype})"
-
         if function == "jogwheel" and not jogwheel:
             jogwheel = True
         elif function:
@@ -894,7 +954,6 @@ MIN_FERROR = 0.5
                 cfgxml_data.append("  </labelframe>")
             else:
                 display_text = display.get("text", vin_title)
-                print("---", vin_title)
                 display_format = display.get("size", "05.2f")
                 cfgxml_data.append(f"  <labelframe text=\"{display_text}\">")
                 cfgxml_data.append("    <relief>RIDGE</relief>")

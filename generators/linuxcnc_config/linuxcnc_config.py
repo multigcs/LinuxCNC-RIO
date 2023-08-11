@@ -2,6 +2,7 @@
 import os
 import sys
 
+axis_names = ["X", "Y", "Z", "A", "C", "B", "U", "V", "W"]
 
 def draw_scale(name, halpin, vmin, vmax):
     cfgxml_data = []
@@ -121,16 +122,16 @@ def draw_led(name, halpin):
 
 
 
-
-def generate(project):
-    print("generating linux-cnc config")
-
-    netlist = []
+def generate_rio_ini(project):
     gui = project["jdata"].get("gui", "axis")
     limit_joints = int(project["jdata"].get("axis", 9))
     num_joints = min(project['joints'], limit_joints)
+    netlist = []
+    for num, din in enumerate(project["dinnames"]):
+        din_net = din.get("net")
+        if din_net:
+            netlist.append(din_net)
 
-    axis_names = ["X", "Y", "Z", "A", "C", "B", "U", "V", "W"]
     axis_str = ""
     axis_str2 = ""
     for num in range(min(project["joints"], len(axis_names))):
@@ -139,178 +140,6 @@ def generate(project):
             continue
         axis_str += axis_names[num]
         axis_str2 += " " + axis_names[num]
-
-    cfghal_data = []
-    ctrl_types = []
-    num_pids = 0
-    for num, joint in enumerate(project["jointnames"]):
-        if joint.get("cl", False):
-            num_pids += 1
-            ctrl_types.append("v")  # velocity mode
-        else:
-            ctrl_types.append("p")  # position mode
-
-    cfghal_data.append(
-        f"""
-# load the realtime components
-loadrt [KINS]KINEMATICS
-loadrt [EMCMOT]EMCMOT base_period_nsec=[EMCMOT]BASE_PERIOD servo_period_nsec=[EMCMOT]SERVO_PERIOD num_joints=[KINS]JOINTS
-
-# set joint modes (p=postion, v=velocity)
-loadrt rio ctrl_type={','.join(ctrl_types)}
-
-# add the rio and motion functions to threads
-addf motion-command-handler servo-thread
-addf motion-controller servo-thread
-addf rio.update-freq servo-thread
-addf rio.readwrite servo-thread
-
-# estop loopback, SPI comms enable and feedback
-net user-enable-out 	<= iocontrol.0.user-enable-out		=> rio.SPI-enable
-net user-request-enable <= iocontrol.0.user-request-enable	=> rio.SPI-reset
-"""
-    )
-
-
-    if "hy_vfd" in project["jdata"]:
-        hy_vfd_dev = project["jdata"]["hy_vfd"]
-        cfghal_data.append(f"loadusr -Wn vfd hy_vfd -n vfd -d {hy_vfd_dev} -p none -r 9600")
-        cfghal_data.append("setp vfd.enable 1")
-        cfghal_data.append("net spindle0_speed spindle.0.speed-out-abs => vfd.speed-command")
-        cfghal_data.append("net spindle0_forward spindle.0.forward => vfd.spindle-forward")
-        cfghal_data.append("net spindle0_reverse spindle.0.reverse => vfd.spindle-reverse")
-        cfghal_data.append("net spindle0_on spindle.0.on => vfd.spindle-on")
-        cfghal_data.append("")
-
-
-    if num_pids > 0:
-        cfghal_data.append(f"loadrt pid num_chan={num_pids}")
-        for pidn in range(num_pids):
-            cfghal_data.append(f"addf pid.{pidn}.do-pid-calcs        servo-thread")
-            cfghal_data.append("")
-
-    for num, vout in enumerate(project["voutnames"]):
-        vname = vout['_name']
-        vout_name = vout.get("name", vname)
-        vout_net = vout.get("net")
-        if vout_net:
-            netlist.append(vout_net)
-            cfghal_data.append(f"net {vout_name} <= {vout_net}")
-            cfghal_data.append(f"net {vout_name} => rio.{vname}")
-            cfghal_data.append("")
-
-    for num, din in enumerate(project["dinnames"]):
-        dname = project["dinnames"][num]['_name']
-        invert = din.get("invert", False)
-        din_type = din.get("type")
-        din_joint = din.get("joint", str(num))
-        din_name = din.get("name", dname)
-        din_net = din.get("net")
-        if din_net:
-            netlist.append(din_net)
-            cfghal_data.append(f"net {din_name} <= rio.{dname}")
-            cfghal_data.append(f"net {din_name} => {din_net}")
-            cfghal_data.append("")
-        elif din_type == "alarm" and din_joint:
-            cfghal_data.append(
-                f"net din{num} joint.{din_joint}.amp-fault-in <= rio.{dname}"
-            )
-            cfghal_data.append("")
-        elif din_type == "home" and din_joint:
-            netlist.append(f"joint.{din_joint}.home-sw-in")
-            cfghal_data.append(
-                f"net home-{axis_names[int(din_joint)].lower()} <= rio.{dname}"
-            )
-            cfghal_data.append(
-                f"net home-{axis_names[int(din_joint)].lower()} => joint.{din_joint}.home-sw-in"
-            )
-            cfghal_data.append("")
-        elif din_type == "probe":
-            cfghal_data.append(f"net toolprobe <= rio.input.{dname}")
-            cfghal_data.append(f"net toolprobe => motion.probe-input")
-            cfghal_data.append("")
-
-    for num, dout in enumerate(project["doutnames"]):
-        dname = dout['_name']
-        dout_name = dout.get("name", dname)
-        dout_net = dout.get("net")
-        if dout_net:
-            netlist.append(dout_net)
-            cfghal_data.append(f"net {dout_name} <= {dout_net}")
-            cfghal_data.append(f"net {dout_name} => rio.{dname}")
-            cfghal_data.append("")
-
-    if f"iocontrol.0.emc-enable-in" not in netlist:
-        cfghal_data.append("net rio-status <= rio.SPI-status => iocontrol.0.emc-enable-in")
-        cfghal_data.append("")
-
-
-    for num, vin in enumerate(project["vinnames"]):
-        vname = vin['_name']
-        function = vin.get("function")
-        if function == "spindle-index":
-            scale = vin.get("scale", 1.0)
-            cfghal_data.append(f"setp rio.{vname}-scale {scale}")
-            cfghal_data.append(f"net spindle-position rio.{vname} => spindle.0.revs")
-            cfghal_data.append(f"net spindle-index-enable rio.{vname}-index-enable <=> spindle.0.index-enable")
-            cfghal_data.append("")
-        elif function:
-            pass
-
-    cfghal_data.append("")
-
-    pidn = 0
-    for num, joint in enumerate(project["jointnames"]):
-        # limit axis configurations
-        if num >= num_joints:
-            continue
-        if joint.get("cl", False):
-            cfghal_data.append(
-                f"""# Joint {num} setup
-
-setp pid.{pidn}.maxoutput 300
-setp pid.{pidn}.Pgain [JOINT_{num}]P
-setp pid.{pidn}.Igain [JOINT_{num}]I
-setp pid.{pidn}.Dgain [JOINT_{num}]D
-setp pid.{pidn}.bias [JOINT_{num}]BIAS
-setp pid.{pidn}.FF0 [JOINT_{num}]FF0
-setp pid.{pidn}.FF1 [JOINT_{num}]FF1
-setp pid.{pidn}.FF2 [JOINT_{num}]FF2
-setp pid.{pidn}.deadband [JOINT_{num}]DEADBAND
-
-setp rio.joint.{num}.scale 		[JOINT_{num}]OUTPUT_SCALE
-setp rio.joint.{num}.fb-scale 	[JOINT_{num}]INPUT_SCALE
-setp rio.joint.{num}.maxaccel 	[JOINT_{num}]STEPGEN_MAXACCEL
-
-net {axis_names[num]}vel-cmd 		<= pid.{pidn}.output 	=> rio.joint.{num}.vel-cmd  
-net {axis_names[num]}pos-cmd 		<= joint.{num}.motor-pos-cmd 	=> pid.{pidn}.command
-net j{num}pos-fb 		<= rio.joint.{num}.pos-fb 	=> joint.{num}.motor-pos-fb
-net j{num}pos-fb 		=> pid.{pidn}.feedback
-
-net j{num}enable 		<= joint.{num}.amp-enable-out 	=> rio.joint.{num}.enable
-net j{num}enable 		=> pid.{pidn}.enable
-
-"""
-            )
-
-            pidn += 1
-        else:
-
-            cfghal_data.append(
-                f"""# Joint {num} setup
-
-setp rio.joint.{num}.scale 		[JOINT_{num}]SCALE
-setp rio.joint.{num}.maxaccel 	[JOINT_{num}]STEPGEN_MAXACCEL
-
-net {axis_names[num]}pos-cmd 		<= joint.{num}.motor-pos-cmd 	=> rio.joint.{num}.pos-cmd  
-net j{num}pos-fb 		<= rio.joint.{num}.pos-fb 	=> joint.{num}.motor-pos-fb
-net j{num}enable 		<= joint.{num}.amp-enable-out 	=> rio.joint.{num}.enable
-
-"""
-            )
-    open(f"{project['LINUXCNC_PATH']}/ConfigSamples/rio/rio.hal", "w").write(
-        "\n".join(cfghal_data)
-    )
 
     basic_setup = {
         "EMC": {
@@ -578,6 +407,201 @@ MIN_FERROR = 0.5
         "\n".join(cfgini_data)
     )
 
+def generate_rio_hal(project):
+    netlist = []
+    gui = project["jdata"].get("gui", "axis")
+    limit_joints = int(project["jdata"].get("axis", 9))
+    num_joints = min(project['joints'], limit_joints)
+
+    axis_str = ""
+    axis_str2 = ""
+    for num in range(min(project["joints"], len(axis_names))):
+        # limit axis configurations
+        if num >= num_joints:
+            continue
+        axis_str += axis_names[num]
+        axis_str2 += " " + axis_names[num]
+
+    cfghal_data = []
+    ctrl_types = []
+    num_pids = 0
+    for num, joint in enumerate(project["jointnames"]):
+        if joint.get("cl", False):
+            num_pids += 1
+            ctrl_types.append("v")  # velocity mode
+        else:
+            ctrl_types.append("p")  # position mode
+
+    cfghal_data.append(
+        f"""
+# load the realtime components
+loadrt [KINS]KINEMATICS
+loadrt [EMCMOT]EMCMOT base_period_nsec=[EMCMOT]BASE_PERIOD servo_period_nsec=[EMCMOT]SERVO_PERIOD num_joints=[KINS]JOINTS
+
+# set joint modes (p=postion, v=velocity)
+loadrt rio ctrl_type={','.join(ctrl_types)}
+
+# add the rio and motion functions to threads
+addf motion-command-handler servo-thread
+addf motion-controller servo-thread
+addf rio.update-freq servo-thread
+addf rio.readwrite servo-thread
+
+# estop loopback, SPI comms enable and feedback
+net user-enable-out 	<= iocontrol.0.user-enable-out		=> rio.SPI-enable
+net user-request-enable <= iocontrol.0.user-request-enable	=> rio.SPI-reset
+"""
+    )
+
+
+    if "hy_vfd" in project["jdata"]:
+        hy_vfd_dev = project["jdata"]["hy_vfd"]
+        cfghal_data.append(f"loadusr -Wn vfd hy_vfd -n vfd -d {hy_vfd_dev} -p none -r 9600")
+        cfghal_data.append("setp vfd.enable 1")
+        cfghal_data.append("net spindle0_speed spindle.0.speed-out-abs => vfd.speed-command")
+        cfghal_data.append("net spindle0_forward spindle.0.forward => vfd.spindle-forward")
+        cfghal_data.append("net spindle0_reverse spindle.0.reverse => vfd.spindle-reverse")
+        cfghal_data.append("net spindle0_on spindle.0.on => vfd.spindle-on")
+        cfghal_data.append("")
+
+
+    if num_pids > 0:
+        cfghal_data.append(f"loadrt pid num_chan={num_pids}")
+        for pidn in range(num_pids):
+            cfghal_data.append(f"addf pid.{pidn}.do-pid-calcs        servo-thread")
+            cfghal_data.append("")
+
+    for num, vout in enumerate(project["voutnames"]):
+        vname = vout['_name']
+        vout_name = vout.get("name", vname)
+        vout_net = vout.get("net")
+        if vout_net:
+            netlist.append(vout_net)
+            cfghal_data.append(f"net {vout_name} <= {vout_net}")
+            cfghal_data.append(f"net {vout_name} => rio.{vname}")
+            cfghal_data.append("")
+
+    for num, din in enumerate(project["dinnames"]):
+        dname = project["dinnames"][num]['_name']
+        invert = din.get("invert", False)
+        din_type = din.get("type")
+        din_joint = din.get("joint", str(num))
+        din_name = din.get("name", dname)
+        din_net = din.get("net")
+        if din_net:
+            netlist.append(din_net)
+            cfghal_data.append(f"net {din_name} <= rio.{dname}")
+            cfghal_data.append(f"net {din_name} => {din_net}")
+            cfghal_data.append("")
+        elif din_type == "alarm" and din_joint:
+            cfghal_data.append(
+                f"net din{num} joint.{din_joint}.amp-fault-in <= rio.{dname}"
+            )
+            cfghal_data.append("")
+        elif din_type == "home" and din_joint:
+            netlist.append(f"joint.{din_joint}.home-sw-in")
+            cfghal_data.append(
+                f"net home-{axis_names[int(din_joint)].lower()} <= rio.{dname}"
+            )
+            cfghal_data.append(
+                f"net home-{axis_names[int(din_joint)].lower()} => joint.{din_joint}.home-sw-in"
+            )
+            cfghal_data.append("")
+        elif din_type == "probe":
+            cfghal_data.append(f"net toolprobe <= rio.input.{dname}")
+            cfghal_data.append(f"net toolprobe => motion.probe-input")
+            cfghal_data.append("")
+
+    for num, dout in enumerate(project["doutnames"]):
+        dname = dout['_name']
+        dout_name = dout.get("name", dname)
+        dout_net = dout.get("net")
+        if dout_net:
+            netlist.append(dout_net)
+            cfghal_data.append(f"net {dout_name} <= {dout_net}")
+            cfghal_data.append(f"net {dout_name} => rio.{dname}")
+            cfghal_data.append("")
+
+    if f"iocontrol.0.emc-enable-in" not in netlist:
+        cfghal_data.append("net rio-status <= rio.SPI-status => iocontrol.0.emc-enable-in")
+        cfghal_data.append("")
+
+
+    for num, vin in enumerate(project["vinnames"]):
+        vname = vin['_name']
+        function = vin.get("function")
+        if function == "spindle-index":
+            scale = vin.get("scale", 1.0)
+            cfghal_data.append(f"setp rio.{vname}-scale {scale}")
+            cfghal_data.append(f"net spindle-position rio.{vname} => spindle.0.revs")
+            cfghal_data.append(f"net spindle-index-enable rio.{vname}-index-enable <=> spindle.0.index-enable")
+            cfghal_data.append("")
+        elif function:
+            pass
+
+    cfghal_data.append("")
+
+    pidn = 0
+    for num, joint in enumerate(project["jointnames"]):
+        # limit axis configurations
+        if num >= num_joints:
+            continue
+        if joint.get("cl", False):
+            cfghal_data.append(
+                f"""# Joint {num} setup
+
+setp pid.{pidn}.maxoutput 300
+setp pid.{pidn}.Pgain [JOINT_{num}]P
+setp pid.{pidn}.Igain [JOINT_{num}]I
+setp pid.{pidn}.Dgain [JOINT_{num}]D
+setp pid.{pidn}.bias [JOINT_{num}]BIAS
+setp pid.{pidn}.FF0 [JOINT_{num}]FF0
+setp pid.{pidn}.FF1 [JOINT_{num}]FF1
+setp pid.{pidn}.FF2 [JOINT_{num}]FF2
+setp pid.{pidn}.deadband [JOINT_{num}]DEADBAND
+
+setp rio.joint.{num}.scale 		[JOINT_{num}]OUTPUT_SCALE
+setp rio.joint.{num}.fb-scale 	[JOINT_{num}]INPUT_SCALE
+setp rio.joint.{num}.maxaccel 	[JOINT_{num}]STEPGEN_MAXACCEL
+
+net {axis_names[num]}vel-cmd 		<= pid.{pidn}.output 	=> rio.joint.{num}.vel-cmd  
+net {axis_names[num]}pos-cmd 		<= joint.{num}.motor-pos-cmd 	=> pid.{pidn}.command
+net j{num}pos-fb 		<= rio.joint.{num}.pos-fb 	=> joint.{num}.motor-pos-fb
+net j{num}pos-fb 		=> pid.{pidn}.feedback
+
+net j{num}enable 		<= joint.{num}.amp-enable-out 	=> rio.joint.{num}.enable
+net j{num}enable 		=> pid.{pidn}.enable
+
+"""
+            )
+
+            pidn += 1
+        else:
+
+            cfghal_data.append(
+                f"""# Joint {num} setup
+
+setp rio.joint.{num}.scale 		[JOINT_{num}]SCALE
+setp rio.joint.{num}.maxaccel 	[JOINT_{num}]STEPGEN_MAXACCEL
+
+net {axis_names[num]}pos-cmd 		<= joint.{num}.motor-pos-cmd 	=> rio.joint.{num}.pos-cmd  
+net j{num}pos-fb 		<= rio.joint.{num}.pos-fb 	=> joint.{num}.motor-pos-fb
+net j{num}enable 		<= joint.{num}.amp-enable-out 	=> rio.joint.{num}.enable
+
+"""
+            )
+    open(f"{project['LINUXCNC_PATH']}/ConfigSamples/rio/rio.hal", "w").write(
+        "\n".join(cfghal_data)
+    )
+
+def generate_custom_postgui_hal(project):
+    gui = project["jdata"].get("gui", "axis")
+
+    netlist = []
+    for num, din in enumerate(project["dinnames"]):
+        din_net = din.get("net")
+        if din_net:
+            netlist.append(din_net)
 
     cfghal_data = []
     cfghal_data.append("")
@@ -693,9 +717,21 @@ MIN_FERROR = 0.5
         "\n".join(cfghal_data)
     )
 
-    ###################
-    # XML-GUI
-    ###################
+    postgui_list = []
+    if gui == "axis":
+        postgui_list.append("source custom_postgui.hal")
+    open(f"{project['LINUXCNC_PATH']}/ConfigSamples/rio/postgui_call_list.hal", "w").write(
+        "\n".join(postgui_list)
+    )
+
+
+def generate_rio_xml(project):
+    netlist = []
+    for num, din in enumerate(project["dinnames"]):
+        din_net = din.get("net")
+        if din_net:
+            netlist.append(din_net)
+
     cfgxml_data = []
     cfgxml_data.append("<pyvcp>")
     cfgxml_data.append('<tabs>')
@@ -960,13 +996,7 @@ MIN_FERROR = 0.5
         "\n".join(cfgxml_data)
     )
 
-    postgui_list = []
-    if gui == "axis":
-        postgui_list.append("source custom_postgui.hal")
-    open(f"{project['LINUXCNC_PATH']}/ConfigSamples/rio/postgui_call_list.hal", "w").write(
-        "\n".join(postgui_list)
-    )
-
+def generate_tool_tbl(project):
     tool_tbl = []
     tool_tbl.append("T1 P1 D0.125000 Z+0.511000 ;1/8 end mill")
     tool_tbl.append("T2 P2 D0.062500 Z+0.100000 ;1/16 end mill")
@@ -975,6 +1005,17 @@ MIN_FERROR = 0.5
     open(f"{project['LINUXCNC_PATH']}/ConfigSamples/rio/tool.tbl", "w").write(
         "\n".join(tool_tbl)
     )
+
+
+
+def generate(project):
+    print("generating linux-cnc config")
+
+    generate_rio_ini(project)
+    generate_rio_hal(project)
+    generate_custom_postgui_hal(project)
+    generate_rio_xml(project)
+    generate_tool_tbl(project)
 
     os.system(
         f"cp -a generators/linuxcnc_config/linuxcnc.var {project['LINUXCNC_PATH']}/ConfigSamples/rio"

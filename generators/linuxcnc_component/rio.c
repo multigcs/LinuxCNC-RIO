@@ -1026,10 +1026,11 @@ void rio_readwrite()
                         *(data->processVariable[i]) = value;
                         *(data->processVariableS32[i]) = (int)value;
                     } else if (vin_type[i] == TYPE_VIN_ADC) {
+                        value /= 1000.0; // to Volt
                         value += *(data->processVariableOffset[i]);
                         value *= *(data->processVariableScale[i]);
-                        *(data->processVariable[i]) = value / 1000.0;
-                        *(data->processVariableS32[i]) = (int)(value / 10);
+                        *(data->processVariable[i]) = value;
+                        *(data->processVariableS32[i]) = (int)(value * 100); // to mV
 
 
                     } else if (vin_type[i] == TYPE_VIN_NTC) {

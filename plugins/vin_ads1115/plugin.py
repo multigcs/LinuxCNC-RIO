@@ -69,22 +69,23 @@ class Plugin:
                 offsets = data.get("offsets", data.get("offset"))
 
                 for vnum in range(4):
-                    data["_name"] = f"{name}.{vnum}"
-                    data["_prefix"] = f"{nameIntern}_{vnum}"
+                    data_copy = data.copy()
+                    data_copy["_name"] = f"{name}.{vnum}"
+                    data_copy["_prefix"] = f"{nameIntern}_{vnum}"
                     if isinstance(functions, list):
-                        data["function"] = functions[vnum]
+                        data_copy["function"] = functions[vnum]
                     if isinstance(sensors, list):
-                        data["sensor"] = sensors[vnum]
+                        data_copy["sensor"] = sensors[vnum]
                     if isinstance(displays, list):
-                        data["display"] = displays[vnum]
+                        data_copy["display"] = displays[vnum]
                     if isinstance(scales, list):
-                        data["scale"] = scales[vnum]
+                        data_copy["scale"] = scales[vnum]
                     if isinstance(offsets, list):
-                        data["offset"] = offsets[vnum]
+                        data_copy["offset"] = offsets[vnum]
                     if isinstance(names, list):
-                        data["name"] = names[vnum] or f"PV.{num}.{vnum}"
-                        data["_prefix"] = data["name"].replace(".", "").replace("-", "_").upper()
-                    ret.append(data.copy())
+                        data_copy["name"] = names[vnum] or f"PV.{num}.{vnum}"
+                        data_copy["_prefix"] = data_copy["name"].replace(".", "").replace("-", "_").upper()
+                    ret.append(data_copy)
 
         return ret
 

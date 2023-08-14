@@ -61,20 +61,26 @@ class Plugin:
                 name = data.get("name", f"PV.{num}")
                 nameIntern = name.replace(".", "").replace("-", "_").upper()
 
-                names = data.get("names")
-                sensors = data.get("sensors")
-                function = data.get("function")
-                displays = data.get("displays")
+                names = data.get("names", data.get("name"))
+                sensors = data.get("sensors", data.get("sensor"))
+                functions = data.get("functions", data.get("function"))
+                displays = data.get("displays", data.get("display"))
+                scales = data.get("scales", data.get("scale"))
+                offsets = data.get("offsets", data.get("offset"))
 
                 for vnum in range(4):
                     data["_name"] = f"{name}.{vnum}"
                     data["_prefix"] = f"{nameIntern}_{vnum}"
-                    if isinstance(function, list):
-                        data["function"] = function[vnum]
+                    if isinstance(functions, list):
+                        data["function"] = functions[vnum]
                     if isinstance(sensors, list):
                         data["sensor"] = sensors[vnum]
                     if isinstance(displays, list):
                         data["display"] = displays[vnum]
+                    if isinstance(scales, list):
+                        data["scale"] = scales[vnum]
+                    if isinstance(offsets, list):
+                        data["offset"] = offsets[vnum]
                     if isinstance(names, list):
                         data["name"] = names[vnum] or f"PV.{num}.{vnum}"
                         data["_prefix"] = data["name"].replace(".", "").replace("-", "_").upper()

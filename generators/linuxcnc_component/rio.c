@@ -1005,29 +1005,29 @@ void rio_readwrite()
                         if (value != 0) {
                             value = (float)PRU_OSC / value;
                         }
-                        value *= *(data->processVariableScale[i]);
                         value += *(data->processVariableOffset[i]);
+                        value *= *(data->processVariableScale[i]);
                         *(data->processVariable[i]) = value;
                         *(data->processVariableS32[i]) = (int)value;
                     } else if (vin_type[i] == TYPE_VIN_TIME) {
                         if (value != 0) {
                             value = 1000.0 / ((float)PRU_OSC / value);
                         }
-                        value *= *(data->processVariableScale[i]);
                         value += *(data->processVariableOffset[i]);
+                        value *= *(data->processVariableScale[i]);
                         *(data->processVariable[i]) = value;
                         *(data->processVariableS32[i]) = (int)value;
                     } else if (vin_type[i] == TYPE_VIN_SONAR) {
                         if (value != 0) {
                             value = 1000.0 / (float)PRU_OSC / 20.0 * value * 343.2;
                         }
-                        value *= *(data->processVariableScale[i]);
                         value += *(data->processVariableOffset[i]);
+                        value *= *(data->processVariableScale[i]);
                         *(data->processVariable[i]) = value;
                         *(data->processVariableS32[i]) = (int)value;
                     } else if (vin_type[i] == TYPE_VIN_ADC) {
-                        value *= *(data->processVariableScale[i]);
                         value += *(data->processVariableOffset[i]);
+                        value *= *(data->processVariableScale[i]);
                         *(data->processVariable[i]) = value / 1000.0;
                         *(data->processVariableS32[i]) = (int)(value / 10);
 
@@ -1040,16 +1040,16 @@ void rio_readwrite()
                         float tempC = tempK - 273.15;
                         value = tempC;
 
-                        value *= *(data->processVariableScale[i]);
                         value += *(data->processVariableOffset[i]);
+                        value *= *(data->processVariableScale[i]);
                         *(data->processVariable[i]) = value;
                         *(data->processVariableS32[i]) = (int)(value);
 
 
 
                     } else if (vin_type[i] == TYPE_VIN_ENCODER) {
-                        value /= *(data->processVariableScale[i]);
                         value += *(data->processVariableOffset[i]);
+                        value /= *(data->processVariableScale[i]);
                         *(data->processVariable[i]) = value;
                         *(data->processVariableS32[i]) = (int)value;
 
@@ -1060,8 +1060,8 @@ void rio_readwrite()
 
 
                     } else {
-                        value *= *(data->processVariableScale[i]);
                         value += *(data->processVariableOffset[i]);
+                        value *= *(data->processVariableScale[i]);
                         *(data->processVariable[i]) = value;
                         *(data->processVariableS32[i]) = (int)value;
                     }

@@ -1160,10 +1160,10 @@ def generate_custom_postgui_hal_axis(project):
             pass
         else:
             scale = vin.get("scale")
-            if scale:
+            if scale is not None and float(scale) != float(1.0):
                 cfghal_data.append(f"setp rio.{vname}-scale {scale}")
             offset = vin.get("offset")
-            if offset:
+            if offset is not None and float(offset) != float(0.0):
                 cfghal_data.append(f"setp rio.{vname}-offset {offset}")
             cfghal_data.append(f"net {vname} rio.{vname} pyvcp.{vname}")
 

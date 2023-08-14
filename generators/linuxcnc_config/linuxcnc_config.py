@@ -161,7 +161,6 @@ class qtdragon():
         cfgxml_data.append('         </color>')
         cfgxml_data.append('        </property>')
         cfgxml_data.append('      <property name="halpin_name" stdset="0">')
-        print("#", halpin)
         cfgxml_data.append(f'       <string>{halpin}</string>')
         cfgxml_data.append('      </property>')
         cfgxml_data.append('      <property name="halpin_option" stdset="0">')
@@ -1744,25 +1743,20 @@ def generate_rio_qtdragon(project):
     cfgxml_data.append("")
     cfgxml_data.append("")
 
-
-
     os.system(
         f"mkdir -p {project['LINUXCNC_PATH']}/ConfigSamples/rio/rio_hd"
     )
-    
     os.system(
-        f"cp -a generators/linuxcnc_config/qtdragon_hd/rio_hd/* {project['LINUXCNC_PATH']}/ConfigSamples/rio/rio_hd/"
+        f"cp -a generators/linuxcnc_config/rio_hd/* {project['LINUXCNC_PATH']}/ConfigSamples/rio/rio_hd/"
     )
-
     os.system(
-        f"cat generators/linuxcnc_config/qtdragon_hd/rio_hd/rio_hd.ui.pre > {project['LINUXCNC_PATH']}/ConfigSamples/rio/rio_hd/rio_hd.ui"
+        f"cat generators/linuxcnc_config/rio_hd/rio_hd.ui.pre > {project['LINUXCNC_PATH']}/ConfigSamples/rio/rio_hd/rio_hd.ui"
     )
-    #print("\n".join(cfgxml_data))
     open(f"{project['LINUXCNC_PATH']}/ConfigSamples/rio/rio_hd/rio_hd.ui", "a").write(
         "\n".join(cfgxml_data)
     )
     os.system(
-        f"cat generators/linuxcnc_config/qtdragon_hd/rio_hd/rio_hd.ui.post >> {project['LINUXCNC_PATH']}/ConfigSamples/rio/rio_hd/rio_hd.ui"
+        f"cat generators/linuxcnc_config/rio_hd/rio_hd.ui.post >> {project['LINUXCNC_PATH']}/ConfigSamples/rio/rio_hd/rio_hd.ui"
     )
 
 

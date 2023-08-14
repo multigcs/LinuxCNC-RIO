@@ -851,16 +851,6 @@ net user-request-enable <= iocontrol.0.user-request-enable	=> rio.SPI-reset
 """
     )
 
-
-    if project["jdata"].get("toolchange") == "manual_":
-        cfghal_data.append("loadusr hal_manualtoolchange")
-        cfghal_data.append("net tool-change      hal_manualtoolchange.change   <=  iocontrol.0.tool-change")
-        cfghal_data.append("net tool-changed     hal_manualtoolchange.changed  <=  iocontrol.0.tool-changed")
-        cfghal_data.append("net tool-prep-number hal_manualtoolchange.number   <=  iocontrol.0.tool-prep-number")
-        cfghal_data.append("net tool-prepare-loopback iocontrol.0.tool-prepare => iocontrol.0.tool-prepared")
-        cfghal_data.append("")
-
-
     if "hy_vfd" in project["jdata"]:
         hy_vfd_dev = project["jdata"]["hy_vfd"]
         cfghal_data.append(f"loadusr -Wn vfd hy_vfd -n vfd -d {hy_vfd_dev} -p none -r 9600")
@@ -869,6 +859,14 @@ net user-request-enable <= iocontrol.0.user-request-enable	=> rio.SPI-reset
         cfghal_data.append("net spindle0_forward spindle.0.forward => vfd.spindle-forward")
         cfghal_data.append("net spindle0_reverse spindle.0.reverse => vfd.spindle-reverse")
         cfghal_data.append("net spindle0_on spindle.0.on => vfd.spindle-on")
+        cfghal_data.append("")
+
+    if project["jdata"].get("toolchange", "manual") == "manual":
+        cfghal_data.append("loadusr -W hal_manualtoolchange")
+        cfghal_data.append("net tool-change      hal_manualtoolchange.change   <=  iocontrol.0.tool-change")
+        cfghal_data.append("net tool-changed     hal_manualtoolchange.changed  <=  iocontrol.0.tool-changed")
+        cfghal_data.append("net tool-prep-number hal_manualtoolchange.number   <=  iocontrol.0.tool-prep-number")
+        cfghal_data.append("net tool-prepare-loopback iocontrol.0.tool-prepare => iocontrol.0.tool-prepared")
         cfghal_data.append("")
 
     if num_pids > 0:
@@ -1003,8 +1001,33 @@ net j{num}enable 		<= joint.{num}.amp-enable-out 	=> rio.joint.{num}.enable
 def generate_custom_postgui_hal_qtdragon(project):
     gui = project["jdata"].get("gui", "axis")
 
+    netlist = []
+    for num, din in enumerate(project["dinnames"]):
+        din_net = din.get("net")
+        if din_net:
+            netlist.append(din_net)
+
     cfghal_data = []
     cfghal_data.append("")
+
+
+    for num, din in enumerate(project["dinnames"]):
+        dname = din['_name']
+        din_type = din.get("type")
+        din_joint = din.get("joint", str(num))
+        din_name = din.get("name", dname)
+        din_net = din.get("net")
+        if din_net:
+            cfghal_data.append(f"net {dname} => qtdragon.{dname}")
+        elif din_type == "alarm" and din_joint:
+            pass
+        elif din_type == "home" and din_joint:
+            pass
+        elif not dname.endswith("-index-enable-out"):
+            cfghal_data.append(
+                f"net {dname} rio.{dname} qtdragon.{dname}"
+            )
+
     """
     postgui_list.append("net home-x => qtdragon.home-x")
     postgui_list.append("net home-y => qtdragon.home-y")
@@ -1019,8 +1042,15 @@ def generate_custom_postgui_hal_qtdragon(project):
         cfghal_data.append("net pyvcp-spindle-at-speed   vfd.spindle-at-speed      => pyvcp.spindle-at-speed")
         cfghal_data.append("net pyvcp-spindle-speed_fb   vfd.spindle-speed-fb      => pyvcp.spindle-speed")
         cfghal_data.append("net pyvcp-hycomm-ok          vfd.hycomm-ok             => pyvcp.hycomm-ok")
-        cfghal_data.append("#net pyvcp-spindle-voltage    vfd.rated-motor-voltage   => pyvcp.spindle-voltage")
-        cfghal_data.append("#net pyvcp-spindle-current    vfd.rated-motor-current   => pyvcp.spindle-current")
+        cfghal_data.append("#net qtdragon-spindle-voltage    vfd.rated-motor-voltage   => qtdragon.spindle-volts")
+        cfghal_data.append("#net qtdragon-spindle-current    vfd.rated-motor-current   => qtdragon.spindle-amps")
+        """
+        qtdragon.spindle-modbus-connection
+        qtdragon.spindle-modbus-errors
+        qtdragon.spindle-amps
+        qtdragon.spindle-fault
+        qtdragon.spindle-volts
+        """
         cfghal_data.append("")
 
     open(f"{project['LINUXCNC_PATH']}/ConfigSamples/rio/custom_postgui.hal", "w").write(
@@ -1152,6 +1182,7 @@ def generate_custom_postgui_hal_axis(project):
         cfghal_data.append("net pyvcp-hycomm-ok          vfd.hycomm-ok             => pyvcp.hycomm-ok")
         cfghal_data.append("#net pyvcp-spindle-voltage    vfd.rated-motor-voltage   => pyvcp.spindle-voltage")
         cfghal_data.append("#net pyvcp-spindle-current    vfd.rated-motor-current   => pyvcp.spindle-current")
+
 
     open(f"{project['LINUXCNC_PATH']}/ConfigSamples/rio/custom_postgui.hal", "w").write(
         "\n".join(cfghal_data)

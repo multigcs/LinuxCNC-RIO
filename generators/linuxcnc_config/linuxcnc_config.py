@@ -4,121 +4,428 @@ import sys
 
 axis_names = ["X", "Y", "Z", "A", "C", "B", "U", "V", "W"]
 
-def draw_scale(name, halpin, vmin, vmax):
-    cfgxml_data = []
-    cfgxml_data.append("  <hbox>")
-    cfgxml_data.append("    <relief>RAISED</relief>")
-    cfgxml_data.append("    <bd>2</bd>")
-    cfgxml_data.append("    <scale>")
-    cfgxml_data.append(f'      <halpin>"{halpin}"</halpin>')
-    cfgxml_data.append("      <resolution>0.1</resolution>")
-    cfgxml_data.append("      <orient>HORIZONTAL</orient>")
-    cfgxml_data.append("      <initval>0</initval>")
-    cfgxml_data.append(f"      <min_>{vmin}</min_>")
-    cfgxml_data.append(f"      <max_>{vmax}</max_>")
-    cfgxml_data.append("      <param_pin>1</param_pin>")
-    cfgxml_data.append("    </scale>")
-    cfgxml_data.append("    <label>")
-    cfgxml_data.append(f'      <text>"{name}"</text>')
-    cfgxml_data.append("    </label>")
-    cfgxml_data.append("  </hbox>")
-    return cfgxml_data
+class qtdragon():
+    def draw_scale(self, name, halpin, vmin, vmax):
+        cfgxml_data = []
+        cfgxml_data.append('   <item>')
+        cfgxml_data.append(f'    <widget class="QWidget" name="widget_{halpin}" native="true">')
+        cfgxml_data.append(f'     <layout class="QVBoxLayout" name="verticalLayout_{halpin}">')
+        cfgxml_data.append('      <property name="spacing">')
+        cfgxml_data.append('       <number>0</number>')
+        cfgxml_data.append('      </property>')
+        cfgxml_data.append('      <property name="leftMargin">')
+        cfgxml_data.append('       <number>0</number>')
+        cfgxml_data.append('      </property>')
+        cfgxml_data.append('      <property name="topMargin">')
+        cfgxml_data.append('       <number>0</number>')
+        cfgxml_data.append('      </property>')
+        cfgxml_data.append('      <property name="rightMargin">')
+        cfgxml_data.append('       <number>0</number>')
+        cfgxml_data.append('      </property>')
+        cfgxml_data.append('      <property name="bottomMargin">')
+        cfgxml_data.append('       <number>0</number>')
+        cfgxml_data.append('      </property>')
+        cfgxml_data.append('      <item>')
+        cfgxml_data.append(f'       <widget class="QLabel" name="label_{halpin}">')
+        cfgxml_data.append('        <property name="minimumSize">')
+        cfgxml_data.append('         <size>')
+        cfgxml_data.append('          <width>0</width>')
+        cfgxml_data.append('          <height>20</height>')
+        cfgxml_data.append('         </size>')
+        cfgxml_data.append('        </property>')
+        cfgxml_data.append('        <property name="maximumSize">')
+        cfgxml_data.append('         <size>')
+        cfgxml_data.append('          <width>16777215</width>')
+        cfgxml_data.append('          <height>20</height>')
+        cfgxml_data.append('         </size>')
+        cfgxml_data.append('        </property>')
+        cfgxml_data.append('        <property name="text">')
+        cfgxml_data.append(f'         <string>{name}</string>')
+        cfgxml_data.append('        </property>')
+        cfgxml_data.append('        <property name="alignment">')
+        cfgxml_data.append('           <set>Qt::AlignCenter</set>')
+        cfgxml_data.append('        </property>')
+        cfgxml_data.append('        <property name="margin">')
+        cfgxml_data.append('         <number>0</number>')
+        cfgxml_data.append('        </property>')
+        cfgxml_data.append('        <property name="indent">')
+        cfgxml_data.append('         <number>40</number>')
+        cfgxml_data.append('        </property>')
+        cfgxml_data.append('       </widget>')
+        cfgxml_data.append('      </item>')
+        cfgxml_data.append('      <item>')
+        cfgxml_data.append(f'       <layout class="QHBoxLayout" name="horizontalLayout_{halpin}">')
+        cfgxml_data.append('        <property name="spacing">')
+        cfgxml_data.append('         <number>4</number>')
+        cfgxml_data.append('        </property>')
+        cfgxml_data.append('        <item>')
+        cfgxml_data.append(f'         <widget class="StatusSlider" name="slider_{halpin}">')
+        cfgxml_data.append('          <property name="sizePolicy">')
+        cfgxml_data.append('           <sizepolicy hsizetype="Preferred" vsizetype="Fixed">')
+        cfgxml_data.append('            <horstretch>0</horstretch>')
+        cfgxml_data.append('            <verstretch>0</verstretch>')
+        cfgxml_data.append('           </sizepolicy>')
+        cfgxml_data.append('          </property>')
+        cfgxml_data.append('          <property name="minimumSize">')
+        cfgxml_data.append('           <size>')
+        cfgxml_data.append('            <width>100</width>')
+        cfgxml_data.append('            <height>30</height>')
+        cfgxml_data.append('           </size>')
+        cfgxml_data.append('          </property>')
+        cfgxml_data.append('          <property name="maximumSize">')
+        cfgxml_data.append('           <size>')
+        cfgxml_data.append('            <width>16777215</width>')
+        cfgxml_data.append('            <height>30</height>')
+        cfgxml_data.append('           </size>')
+        cfgxml_data.append('          </property>')
+        cfgxml_data.append('          <property name="toolTip">')
+        cfgxml_data.append(f'           <string>Adjust {halpin}</string>')
+        cfgxml_data.append('          </property>')
+        cfgxml_data.append('          <property name="maximum">')
+        cfgxml_data.append('           <number>120</number>')
+        cfgxml_data.append('          </property>')
+        cfgxml_data.append('          <property name="singleStep">')
+        cfgxml_data.append('           <number>1</number>')
+        cfgxml_data.append('          </property>')
+        cfgxml_data.append('          <property name="value">')
+        cfgxml_data.append('           <number>100</number>')
+        cfgxml_data.append('          </property>')
+        cfgxml_data.append('          <property name="orientation">')
+        cfgxml_data.append('           <enum>Qt::Horizontal</enum>')
+        cfgxml_data.append('          </property>')
+        cfgxml_data.append('          <property name="tickInterval">')
+        cfgxml_data.append('           <number>10</number>')
+        cfgxml_data.append('          </property>')
 
-def draw_meter(name, halpin, setup={}, vmin=0, vmax=100):
-    display_min = setup.get("min", vmin)
-    display_max = setup.get("max", vmax)
-    display_subtext = setup.get("subtext", '')
-    display_region = setup.get("region", [])
-    display_size = setup.get("size", 150)
-    cfgxml_data = []
-    cfgxml_data.append("  <hbox>")
-    cfgxml_data.append("    <relief>RAISED</relief>")
-    cfgxml_data.append("    <bd>2</bd>")
-    cfgxml_data.append("  <meter>")
-    cfgxml_data.append(f'      <halpin>"{halpin}"</halpin>')
-    cfgxml_data.append(f'      <text>"{name}"</text>')
-    cfgxml_data.append(f"      <subtext>\"{display_subtext}\"</subtext>")
-    cfgxml_data.append(f"      <size>{display_size}</size>")
-    cfgxml_data.append(f"      <min_>{display_min}</min_>")
-    cfgxml_data.append(f"      <max_>{display_max}</max_>")
-    for rnum, region in enumerate(display_region):
-        cfgxml_data.append(f'      <region{rnum + 1}>({region[0]},{region[1]},"{region[2]}")</region{rnum + 1}>')
-    cfgxml_data.append("    </meter>")
-    cfgxml_data.append("  </hbox>")
-    return cfgxml_data
+        cfgxml_data.append('                          <property name="rapid_rate" stdset="0">')
+        cfgxml_data.append('                           <bool>false</bool>')
+        cfgxml_data.append('                          </property>')
+        cfgxml_data.append('                          <property name="feed_rate" stdset="0">')
+        cfgxml_data.append('                           <bool>false</bool>')
+        cfgxml_data.append('                          </property>')
+        cfgxml_data.append('                          <property name="jograte_rate" stdset="0">')
+        cfgxml_data.append('                           <bool>false</bool>')
+        cfgxml_data.append('                          </property>')
 
-def draw_bar(name, halpin, setup={}, vmin=0, vmax=100):
-    display_min = setup.get("min", vmin)
-    display_max = setup.get("max", vmax)
-    display_range = setup.get("range", [])
-    display_format = setup.get("format", "05d")
-    display_fillcolor = setup.get("fillcolor", "red")
-    display_bgcolor = setup.get("fillcolor", "grey")
-    cfgxml_data = []
-    cfgxml_data.append("  <hbox>")
-    cfgxml_data.append("    <relief>RAISED</relief>")
-    cfgxml_data.append("    <bd>2</bd>")
-    cfgxml_data.append("    <label>")
-    cfgxml_data.append(f'      <text>"{name}"</text>')
-    cfgxml_data.append("    </label>")
-    cfgxml_data.append("    <bar>")
-    cfgxml_data.append(f'    <halpin>"{halpin}"</halpin>')
-    cfgxml_data.append(f"    <min_>{display_min}</min_>")
-    cfgxml_data.append(f"    <max_>{display_max}</max_>")
-    cfgxml_data.append(f'    <format>"{display_format}"</format>')
-    cfgxml_data.append(f'    <bgcolor>"{display_bgcolor}"</bgcolor>')
-    cfgxml_data.append(f'    <fillcolor>"{display_fillcolor}"</fillcolor>')
-    for rnum, brange in enumerate(display_range):
-        cfgxml_data.append(f'    <range{rnum + 1}>({brange[0]},{brange[1]},"{brange[2]}")</range{rnum + 1}>')
-    cfgxml_data.append("    </bar>")
-    cfgxml_data.append("  </hbox>")
-    return cfgxml_data
+        cfgxml_data.append('          <property name="halpin_name" stdset="0">')
+        cfgxml_data.append(f'           <string>{halpin}</string>')
+        cfgxml_data.append('          </property>')
+        cfgxml_data.append('      <property name="halpin_option" stdset="0">')
+        cfgxml_data.append('       <bool>true</bool>')
+        cfgxml_data.append('      </property>')
+        cfgxml_data.append('         </widget>')
+        cfgxml_data.append('        </item>')
+        cfgxml_data.append('       </layout>')
+        cfgxml_data.append('      </item>')
+        cfgxml_data.append('     </layout>')
+        cfgxml_data.append('    </widget>')
+        cfgxml_data.append('   </item>')
+        return cfgxml_data
 
-def draw_number(name, halpin, setup={}):
-    display_format = setup.get("size", "05.2f")
-    cfgxml_data = []
-    cfgxml_data.append("  <hbox>")
-    cfgxml_data.append("    <relief>RAISED</relief>")
-    cfgxml_data.append("    <bd>2</bd>")
-    cfgxml_data.append("    <label>")
-    cfgxml_data.append(f'      <text>"{name}"</text>')
-    cfgxml_data.append("    </label>")
-    cfgxml_data.append("    <number>")
-    cfgxml_data.append(f'        <halpin>"{halpin}"</halpin>')
-    cfgxml_data.append('        <font>("Helvetica",18)</font>')
-    cfgxml_data.append(f'        <format>"{display_format}"</format>')
-    cfgxml_data.append("    </number>")
-    cfgxml_data.append("  </hbox>")
-    return cfgxml_data
+    def draw_meter(self, name, halpin, setup={}, vmin=0, vmax=100):
+        display_min = setup.get("min", vmin)
+        display_max = setup.get("max", vmax)
+        display_subtext = setup.get("subtext", '')
+        display_region = setup.get("region", [])
+        display_size = setup.get("size", 150)
+        cfgxml_data = []
+        cfgxml_data.append('   <item>')
+        cfgxml_data.append(f'       <widget class="Gauge" name="gauge_{halpin}">')
+        cfgxml_data.append('        <property name="minimumSize">')
+        cfgxml_data.append('         <size>')
+        cfgxml_data.append('          <width>150</width>')
+        cfgxml_data.append('          <height>150</height>')
+        cfgxml_data.append('         </size>')
+        cfgxml_data.append('        </property>')
+        cfgxml_data.append('        <property name="threshold" stdset="0">')
+        cfgxml_data.append('         <number>50</number>')
+        cfgxml_data.append('        </property>')
+        cfgxml_data.append('        <property name="num_ticks" stdset="0">')
+        cfgxml_data.append('         <number>9</number>')
+        cfgxml_data.append('        </property>')
+        cfgxml_data.append('        <property name="gauge_label" stdset="0">')
+        cfgxml_data.append(f'         <string>{name}</string>')
+        cfgxml_data.append('        </property>')
+        cfgxml_data.append('        <property name="zone1_color" stdset="0">')
+        cfgxml_data.append('         <color>')
+        cfgxml_data.append('          <red>0</red>')
+        cfgxml_data.append('          <green>100</green>')
+        cfgxml_data.append('          <blue>0</blue>')
+        cfgxml_data.append('         </color>')
+        cfgxml_data.append('        </property>')
+        cfgxml_data.append('        <property name="zone2_color" stdset="0">')
+        cfgxml_data.append('         <color>')
+        cfgxml_data.append('          <red>200</red>')
+        cfgxml_data.append('          <green>0</green>')
+        cfgxml_data.append('          <blue>0</blue>')
+        cfgxml_data.append('         </color>')
+        cfgxml_data.append('        </property>')
+        cfgxml_data.append('      <property name="halpin_name" stdset="0">')
+        print("#", halpin)
+        cfgxml_data.append(f'       <string>{halpin}</string>')
+        cfgxml_data.append('      </property>')
+        cfgxml_data.append('      <property name="halpin_option" stdset="0">')
+        cfgxml_data.append('       <bool>true</bool>')
+        cfgxml_data.append('      </property>')
+        cfgxml_data.append('       </widget>')
+        cfgxml_data.append('   </item>')
+        return cfgxml_data
 
-def draw_checkbutton(name, halpin):
-    cfgxml_data = []
-    cfgxml_data.append("  <hbox>")
-    cfgxml_data.append("    <relief>RAISED</relief>")
-    cfgxml_data.append("    <bd>2</bd>")
-    cfgxml_data.append("    <checkbutton>")
-    cfgxml_data.append(f'      <halpin>"{halpin}"</halpin>')
-    cfgxml_data.append(f'      <text>"{name}"</text>')
-    cfgxml_data.append("    </checkbutton>")
-    cfgxml_data.append("  </hbox>")
-    return cfgxml_data
+    def draw_bar(self, name, halpin, setup={}, vmin=0, vmax=100):
+        display_min = setup.get("min", vmin)
+        display_max = setup.get("max", vmax)
+        display_range = setup.get("range", [])
+        display_format = setup.get("format", "05d")
+        display_fillcolor = setup.get("fillcolor", "red")
+        display_bgcolor = setup.get("fillcolor", "grey")
+        cfgxml_data = []
+        return cfgxml_data
 
-def draw_led(name, halpin):
-    cfgxml_data = []
-    cfgxml_data.append("  <hbox>")
-    cfgxml_data.append("    <relief>RAISED</relief>")
-    cfgxml_data.append("    <bd>2</bd>")
-    cfgxml_data.append("    <led>")
-    cfgxml_data.append(f'      <halpin>"{halpin}"</halpin>')
-    cfgxml_data.append("      <size>10</size>")
-    cfgxml_data.append('      <on_color>"green"</on_color>')
-    cfgxml_data.append('      <off_color>"red"</off_color>')
-    cfgxml_data.append("    </led>")
-    cfgxml_data.append("    <label>")
-    cfgxml_data.append(f'      <text>"{name}"</text>')
-    cfgxml_data.append("    </label>")
-    cfgxml_data.append("  </hbox>")
-    return cfgxml_data
+    def draw_number(self, name, halpin, setup={}):
+        display_format = setup.get("size", "05.2f")
+        cfgxml_data = []
+        cfgxml_data.append('  <item>')
+        cfgxml_data.append('   <layout class="QHBoxLayout" name="horizontalLayout_20">')
+        cfgxml_data.append('    <item>')
+        cfgxml_data.append('     <widget class="QLabel" name="label_22">')
+        cfgxml_data.append('      <property name="text">')
+        cfgxml_data.append(f'       <string>{name}</string>')
+        cfgxml_data.append('      </property>')
+        cfgxml_data.append('      <property name="indent">')
+        cfgxml_data.append('       <number>4</number>')
+        cfgxml_data.append('      </property>')
+        cfgxml_data.append('     </widget>')
+        cfgxml_data.append('    </item>')
+        cfgxml_data.append('        <item>')
+        cfgxml_data.append(f'         <widget class="StatusLabel" name="{halpin}">')
+        cfgxml_data.append('          <property name="sizePolicy">')
+        cfgxml_data.append('           <sizepolicy hsizetype="Fixed" vsizetype="Fixed">')
+        cfgxml_data.append('            <horstretch>0</horstretch>')
+        cfgxml_data.append('            <verstretch>0</verstretch>')
+        cfgxml_data.append('           </sizepolicy>')
+        cfgxml_data.append('          </property>')
+        cfgxml_data.append('          <property name="minimumSize">')
+        cfgxml_data.append('           <size>')
+        cfgxml_data.append('            <width>60</width>')
+        cfgxml_data.append('            <height>26</height>')
+        cfgxml_data.append('           </size>')
+        cfgxml_data.append('          </property>')
+        cfgxml_data.append('          <property name="maximumSize">')
+        cfgxml_data.append('           <size>')
+        cfgxml_data.append('            <width>60</width>')
+        cfgxml_data.append('            <height>26</height>')
+        cfgxml_data.append('           </size>')
+        cfgxml_data.append('          </property>')
+        cfgxml_data.append('          <property name="toolTip">')
+        cfgxml_data.append('           <string>input value</string>')
+        cfgxml_data.append('          </property>')
+        cfgxml_data.append('          <property name="frameShape">')
+        cfgxml_data.append('           <enum>QFrame::WinPanel</enum>')
+        cfgxml_data.append('          </property>')
+        cfgxml_data.append('          <property name="frameShadow">')
+        cfgxml_data.append('           <enum>QFrame::Sunken</enum>')
+        cfgxml_data.append('          </property>')
+        cfgxml_data.append('          <property name="lineWidth">')
+        cfgxml_data.append('           <number>1</number>')
+        cfgxml_data.append('          </property>')
+        cfgxml_data.append('          <property name="alignment">')
+        cfgxml_data.append('           <set>Qt::AlignCenter</set>')
+        cfgxml_data.append('          </property>')
+        cfgxml_data.append('          <property name="textTemplate" stdset="0">')
+        cfgxml_data.append('           <string>%d</string>')
+        cfgxml_data.append('          </property>')
+        cfgxml_data.append('      <property name="halpin_name" stdset="0">')
+        cfgxml_data.append(f'       <string>{halpin}</string>')
+        cfgxml_data.append('      </property>')
+        cfgxml_data.append('      <property name="halpin_option" stdset="0">')
+        cfgxml_data.append('       <bool>true</bool>')
+        cfgxml_data.append('      </property>')
+        cfgxml_data.append('         </widget>')
+        cfgxml_data.append('        </item>')
+        cfgxml_data.append('   </layout>')
+        cfgxml_data.append('  </item>')
+        return cfgxml_data
+
+    def draw_checkbutton(self, name, halpin):
+        cfgxml_data = []
+        return cfgxml_data
+
+    def draw_led(self, name, halpin):
+        cfgxml_data = []
+        cfgxml_data.append('  <item>')
+        cfgxml_data.append(f'   <layout class="QHBoxLayout" name="layl_{halpin}">')
+        cfgxml_data.append('    <item>')
+        cfgxml_data.append('     <widget class="QLabel" name="label_22">')
+        cfgxml_data.append('      <property name="text">')
+        cfgxml_data.append(f'       <string>{name}</string>')
+        cfgxml_data.append('      </property>')
+        cfgxml_data.append('      <property name="indent">')
+        cfgxml_data.append('       <number>4</number>')
+        cfgxml_data.append('      </property>')
+        cfgxml_data.append('     </widget>')
+        cfgxml_data.append('    </item>')
+        cfgxml_data.append('<item>')
+        cfgxml_data.append(f' <widget class="LED" name="hal_{halpin}">')
+        cfgxml_data.append('  <property name="sizePolicy">')
+        cfgxml_data.append('   <sizepolicy hsizetype="Fixed" vsizetype="Fixed">')
+        cfgxml_data.append('    <horstretch>0</horstretch>')
+        cfgxml_data.append('    <verstretch>0</verstretch>')
+        cfgxml_data.append('   </sizepolicy>')
+        cfgxml_data.append('  </property>')
+        cfgxml_data.append('  <property name="minimumSize">')
+        cfgxml_data.append('   <size>')
+        cfgxml_data.append('    <width>24</width>')
+        cfgxml_data.append('    <height>24</height>')
+        cfgxml_data.append('   </size>')
+        cfgxml_data.append('  </property>')
+        cfgxml_data.append('  <property name="maximumSize">')
+        cfgxml_data.append('   <size>')
+        cfgxml_data.append('    <width>24</width>')
+        cfgxml_data.append('    <height>24</height>')
+        cfgxml_data.append('   </size>')
+        cfgxml_data.append('  </property>')
+        cfgxml_data.append('  <property name="pin_name" stdset="0">')
+        cfgxml_data.append(f'   <string>{halpin}</string>')
+        cfgxml_data.append('  </property>')
+        cfgxml_data.append('  <property name="diameter">')
+        cfgxml_data.append('   <number>15</number>')
+        cfgxml_data.append('  </property>')
+        cfgxml_data.append('  <property name="color">')
+        cfgxml_data.append('   <color>')
+        cfgxml_data.append('    <red>0</red>')
+        cfgxml_data.append('    <green>255</green>')
+        cfgxml_data.append('    <blue>0</blue>')
+        cfgxml_data.append('   </color>')
+        cfgxml_data.append('  </property>')
+        cfgxml_data.append('  <property name="off_color" stdset="0">')
+        cfgxml_data.append('   <color>')
+        cfgxml_data.append('    <red>0</red>')
+        cfgxml_data.append('    <green>0</green>')
+        cfgxml_data.append('    <blue>0</blue>')
+        cfgxml_data.append('   </color>')
+        cfgxml_data.append('  </property>')
+        cfgxml_data.append(' </widget>')
+        cfgxml_data.append('</item>')
+        cfgxml_data.append('   </layout>')
+        cfgxml_data.append('  </item>')
+        return cfgxml_data
+
+class axis():
+    def draw_scale(self, name, halpin, vmin, vmax):
+        cfgxml_data = []
+        cfgxml_data.append("  <hbox>")
+        cfgxml_data.append("    <relief>RAISED</relief>")
+        cfgxml_data.append("    <bd>2</bd>")
+        cfgxml_data.append("    <scale>")
+        cfgxml_data.append(f'      <halpin>"{halpin}"</halpin>')
+        cfgxml_data.append("      <resolution>0.1</resolution>")
+        cfgxml_data.append("      <orient>HORIZONTAL</orient>")
+        cfgxml_data.append("      <initval>0</initval>")
+        cfgxml_data.append(f"      <min_>{vmin}</min_>")
+        cfgxml_data.append(f"      <max_>{vmax}</max_>")
+        cfgxml_data.append("      <param_pin>1</param_pin>")
+        cfgxml_data.append("    </scale>")
+        cfgxml_data.append("    <label>")
+        cfgxml_data.append(f'      <text>"{name}"</text>')
+        cfgxml_data.append("    </label>")
+        cfgxml_data.append("  </hbox>")
+        return cfgxml_data
+
+    def draw_meter(self, name, halpin, setup={}, vmin=0, vmax=100):
+        display_min = setup.get("min", vmin)
+        display_max = setup.get("max", vmax)
+        display_subtext = setup.get("subtext", '')
+        display_region = setup.get("region", [])
+        display_size = setup.get("size", 150)
+        cfgxml_data = []
+        cfgxml_data.append("  <hbox>")
+        cfgxml_data.append("    <relief>RAISED</relief>")
+        cfgxml_data.append("    <bd>2</bd>")
+        cfgxml_data.append("  <meter>")
+        cfgxml_data.append(f'      <halpin>"{halpin}"</halpin>')
+        cfgxml_data.append(f'      <text>"{name}"</text>')
+        cfgxml_data.append(f"      <subtext>\"{display_subtext}\"</subtext>")
+        cfgxml_data.append(f"      <size>{display_size}</size>")
+        cfgxml_data.append(f"      <min_>{display_min}</min_>")
+        cfgxml_data.append(f"      <max_>{display_max}</max_>")
+        for rnum, region in enumerate(display_region):
+            cfgxml_data.append(f'      <region{rnum + 1}>({region[0]},{region[1]},"{region[2]}")</region{rnum + 1}>')
+        cfgxml_data.append("    </meter>")
+        cfgxml_data.append("  </hbox>")
+        return cfgxml_data
+
+    def draw_bar(self, name, halpin, setup={}, vmin=0, vmax=100):
+        display_min = setup.get("min", vmin)
+        display_max = setup.get("max", vmax)
+        display_range = setup.get("range", [])
+        display_format = setup.get("format", "05d")
+        display_fillcolor = setup.get("fillcolor", "red")
+        display_bgcolor = setup.get("fillcolor", "grey")
+        cfgxml_data = []
+        cfgxml_data.append("  <hbox>")
+        cfgxml_data.append("    <relief>RAISED</relief>")
+        cfgxml_data.append("    <bd>2</bd>")
+        cfgxml_data.append("    <label>")
+        cfgxml_data.append(f'      <text>"{name}"</text>')
+        cfgxml_data.append("    </label>")
+        cfgxml_data.append("    <bar>")
+        cfgxml_data.append(f'    <halpin>"{halpin}"</halpin>')
+        cfgxml_data.append(f"    <min_>{display_min}</min_>")
+        cfgxml_data.append(f"    <max_>{display_max}</max_>")
+        cfgxml_data.append(f'    <format>"{display_format}"</format>')
+        cfgxml_data.append(f'    <bgcolor>"{display_bgcolor}"</bgcolor>')
+        cfgxml_data.append(f'    <fillcolor>"{display_fillcolor}"</fillcolor>')
+        for rnum, brange in enumerate(display_range):
+            cfgxml_data.append(f'    <range{rnum + 1}>({brange[0]},{brange[1]},"{brange[2]}")</range{rnum + 1}>')
+        cfgxml_data.append("    </bar>")
+        cfgxml_data.append("  </hbox>")
+        return cfgxml_data
+
+    def draw_number(self, name, halpin, setup={}):
+        display_format = setup.get("size", "05.2f")
+        cfgxml_data = []
+        cfgxml_data.append("  <hbox>")
+        cfgxml_data.append("    <relief>RAISED</relief>")
+        cfgxml_data.append("    <bd>2</bd>")
+        cfgxml_data.append("    <label>")
+        cfgxml_data.append(f'      <text>"{name}"</text>')
+        cfgxml_data.append("    </label>")
+        cfgxml_data.append("    <number>")
+        cfgxml_data.append(f'        <halpin>"{halpin}"</halpin>')
+        cfgxml_data.append('        <font>("Helvetica",18)</font>')
+        cfgxml_data.append(f'        <format>"{display_format}"</format>')
+        cfgxml_data.append("    </number>")
+        cfgxml_data.append("  </hbox>")
+        return cfgxml_data
+
+    def draw_checkbutton(self, name, halpin):
+        cfgxml_data = []
+        cfgxml_data.append("  <hbox>")
+        cfgxml_data.append("    <relief>RAISED</relief>")
+        cfgxml_data.append("    <bd>2</bd>")
+        cfgxml_data.append("    <checkbutton>")
+        cfgxml_data.append(f'      <halpin>"{halpin}"</halpin>')
+        cfgxml_data.append(f'      <text>"{name}"</text>')
+        cfgxml_data.append("    </checkbutton>")
+        cfgxml_data.append("  </hbox>")
+        return cfgxml_data
+
+    def draw_led(self, name, halpin):
+        cfgxml_data = []
+        cfgxml_data.append("  <hbox>")
+        cfgxml_data.append("    <relief>RAISED</relief>")
+        cfgxml_data.append("    <bd>2</bd>")
+        cfgxml_data.append("    <led>")
+        cfgxml_data.append(f'      <halpin>"{halpin}"</halpin>')
+        cfgxml_data.append("      <size>10</size>")
+        cfgxml_data.append('      <on_color>"green"</on_color>')
+        cfgxml_data.append('      <off_color>"red"</off_color>')
+        cfgxml_data.append("    </led>")
+        cfgxml_data.append("    <label>")
+        cfgxml_data.append(f'      <text>"{name}"</text>')
+        cfgxml_data.append("    </label>")
+        cfgxml_data.append("  </hbox>")
+        return cfgxml_data
 
 
 
@@ -141,104 +448,196 @@ def generate_rio_ini(project):
         axis_str += axis_names[num]
         axis_str2 += " " + axis_names[num]
 
-    basic_setup = {
-        "EMC": {
-            "MACHINE": "Rio",
-            "DEBUG": 0,
-            "VERSION": 1.1,
-        },
-        "DISPLAY": {
-            "DISPLAY": None,
-            "TITLE": "LinuxCNC - RIO",
-            "ICON": None,
-            "EDITOR": None,
-            "PYVCP": None,
-            "PREFERENCE_FILE_PATH": None,
-            "POSITION_OFFSET": "RELATIVE",
-            "POSITION_FEEDBACK": "ACTUAL",
-            "ARCDIVISION": 64,
-            "GRIDS": "10mm 20mm 50mm 100mm",
-            "INTRO_GRAPHIC": "linuxcnc.gif",
-            "INTRO_TIME": 2,
-            "PROGRAM_PREFIX": "~/linuxcnc/nc_files",
-            "INCREMENTS": "50mm 10mm 5mm 1mm .5mm .1mm .05mm .01mm",
-            "MAX_FEED_OVERRIDE": 5.0,
-            "MIN_SPINDLE_0_OVERRIDE": 0.5,
-            "MAX_SPINDLE_0_OVERRIDE": 1.2,
-            "MIN_SPINDLE_0_SPEED": 1000,
-            "DEFAULT_SPINDLE_0_SPEED": 5000,
-            "MAX_SPINDLE_0_SPEED": 20000,
-            "MIN_LINEAR_VELOCITY": 0.0,
-            "DEFAULT_LINEAR_VELOCITY": 10.0,
-            "MAX_LINEAR_VELOCITY": 40.0,
-            "MIN_ANGULAR_VELOCITY": 0.0,
-            "DEFAULT_ANGULAR_VELOCITY": 2.5,
-            "MAX_ANGULAR_VELOCITY": 5.0,
-        },
-        "KINS": {
-            "JOINTS": num_joints,
-            "KINEMATICS": f"trivkins coordinates={axis_str}",
-        },
-        "FILTER": {
-            "PROGRAM_EXTENSION": ".py Python Script",
-            "py": "python",
-        },
-        "TASK": {
-            "TASK": "milltask",
-            "CYCLE_TIME": 0.010,
-        },
-        "RS274NGC": {
-            "PARAMETER_FILE": "linuxcnc.var",
-            "SUBROUTINE_PATH": "./subroutines/",
-            "USER_M_PATH": "./mcodes/",
-        },
-        "EMCMOT": {
-            "EMCMOT": "motmod",
-            "COMM_TIMEOUT": 1.0,
-            "COMM_WAIT": 0.010,
-            "BASE_PERIOD": 0,
-            "SERVO_PERIOD": 1000000,
-        },
-        "HAL": {
-            "HALFILE": "rio.hal",
-            "POSTGUI_HALFILE": "postgui_call_list.hal",
-            "HALUI": "halui",
-        },
-        "HALUI": {
-            "MDI_COMMAND": [
-                "G92 X0 Y0",
-                "G92 Z0",
-                "o<z_touch> call",
-            ],
-        },
-        "TRAJ": {
-            "COORDINATES": axis_str2,
-            "LINEAR_UNITS": "mm",
-            "ANGULAR_UNITS": "degree",
-            "CYCLE_TIME": 0.010,
-            "DEFAULT_LINEAR_VELOCITY": 50.00,
-            "MAX_LINEAR_VELOCITY": 50.00,
-            "NO_FORCE_HOMING": 1,
-        },
-        "EMCIO": {
-            "EMCIO": "io",
-            "CYCLE_TIME": 0.100,
-            "TOOL_TABLE": "tool.tbl",
-        },
-    }
-
     if gui == "qtdragon":
-        basic_setup["DISPLAY"]["DISPLAY"] = "qtvcp qtdragon"
-        basic_setup["DISPLAY"]["ICON"] = "silver_dragon.png"
-        basic_setup["DISPLAY"]["PREFERENCE_FILE_PATH"] = "WORKINGFOLDER/qtdragon.pref"
-        basic_setup["PROBE"] = {
-            "#USE_PROBE": "versaprobe",
-            "USE_PROBE": "basicprobe",
+        basic_setup = {
+            "EMC": {
+                "MACHINE": "Rio",
+                "DEBUG": 0,
+                "VERSION": 1.1,
+            },
+            "DISPLAY": {
+                "DISPLAY": "qtvcp -d rio_hd",
+                "TITLE": "LinuxCNC - RIO",
+                "ICON": "silver_dragon.png",
+                "EDITOR": None,
+                "PYVCP": None,
+                "PREFERENCE_FILE_PATH": "WORKINGFOLDER/qtdragon_hd.pref",
+                "POSITION_OFFSET": "RELATIVE",
+                "POSITION_FEEDBACK": "ACTUAL",
+                "ARCDIVISION": 64,
+                "GRIDS": "10mm 20mm 50mm 100mm",
+                "INTRO_GRAPHIC": "silver_dragon.png",
+                "INTRO_TIME": 2,
+                "CYCLE_TIME": 100,
+                "NGCGUI_SUBFILE_PATH": "../../../nc_files/ngcgui_lib/",
+                "NGCGUI_SUBFILE": "qpocket.ngc",
+                "MDI_HISTORY_FILE": "mdi_history.dat",
+                "LOG_FILE": "qtdragon_hd.log",
+                "PROGRAM_PREFIX": "~/linuxcnc/nc_files",
+                "INCREMENTS": "50mm 10mm 5mm 1mm .5mm .1mm .05mm .01mm",
+                "SPINDLE_INCREMENT": 200,
+                "MAX_SPINDLE_POWER": 2000,
+                "MAX_FEED_OVERRIDE": 5.0,
+                "MIN_SPINDLE_0_OVERRIDE": 0.5,
+                "MAX_SPINDLE_0_OVERRIDE": 1.2,
+                "MIN_SPINDLE_0_SPEED": 1000,
+                "DEFAULT_SPINDLE_0_SPEED": 5000,
+                "MAX_SPINDLE_0_SPEED": 20000,
+                "MIN_LINEAR_VELOCITY": 0.0,
+                "DEFAULT_LINEAR_VELOCITY": 10.0,
+                "MAX_LINEAR_VELOCITY": 40.0,
+                "MIN_ANGULAR_VELOCITY": 0.0,
+                "DEFAULT_ANGULAR_VELOCITY": 2.5,
+                "MAX_ANGULAR_VELOCITY": 5.0,
+            },
+            "MDI_COMMAND_LIST": {
+                "MDI_COMMAND": "G0 Z25 X0 Y0;Z0,Goto\\nZero",
+                "MDI_COMMAND": "G53 G0 Z0;G53 G0 X0 Y0,Goto\\nMach\\nZero",
+            },
+            "FILTER": {
+                "PROGRAM_EXTENSION": ".ngc,.nc,.tap G-Code File (*.ngc,*.nc,*.tap)",
+                "PROGRAM_EXTENSION": ".png,.gif,.jpg Greyscale Depth Image",
+                "PROGRAM_EXTENSION": ".py Python Script",
+                "png": "image-to-gcode",
+                "gif": "image-to-gcode",
+                "jpg": "image-to-gcode",
+                "py": "python3",
+            },
+
+            "KINS": {
+                "JOINTS": num_joints,
+                "KINEMATICS": f"trivkins coordinates={axis_str}",
+            },
+            "TASK": {
+                "TASK": "milltask",
+                "CYCLE_TIME": 0.010,
+            },
+            "RS274NGC": {
+                "PARAMETER_FILE": "linuxcnc.var",
+                "RS274NGC_STARTUP_CODE": "G17 G21 G40 G43H0 G54 G64P0.0127 G80 G90 G94 G97 M5 M9",
+                "SUBROUTINE_PATH": "./subroutines/",
+                "USER_M_PATH": "./mcodes/",
+                "ON_ABORT_COMMAND": "O <on_abort> call",
+            },
+            "EMCMOT": {
+                "EMCMOT": "motmod",
+                "COMM_TIMEOUT": 1.0,
+                "COMM_WAIT": 0.010,
+                "BASE_PERIOD": 0,
+                "SERVO_PERIOD": 1000000,
+            },
+            "HAL": {
+                "HALFILE": "rio.hal",
+                "POSTGUI_HALFILE": "postgui_call_list.hal",
+                "HALUI": "halui",
+            },
+            "HALUI": {
+            },
+            "PROBE": {
+                "USE_PROBE": "basicprobe",
+            },
+            "TRAJ": {
+                "COORDINATES": axis_str2,
+                "LINEAR_UNITS": "mm",
+                "ANGULAR_UNITS": "degree",
+                "CYCLE_TIME": 0.010,
+                "DEFAULT_LINEAR_VELOCITY": 50.00,
+                "MAX_LINEAR_VELOCITY": 50.00,
+                "SPINDLES": 1,
+                "NO_FORCE_HOMING": 1,
+            },
+            "EMCIO": {
+                "EMCIO": "io",
+                "CYCLE_TIME": 0.100,
+                "TOOL_TABLE": "tool.tbl",
+            },
         }
     else:
-        basic_setup["DISPLAY"]["DISPLAY"] = "axis"
-        basic_setup["DISPLAY"]["EDITOR"] = "gedit"
-        basic_setup["DISPLAY"]["PYVCP"] = "rio-gui.xml"
+        basic_setup = {
+            "EMC": {
+                "MACHINE": "Rio",
+                "DEBUG": 0,
+                "VERSION": 1.1,
+            },
+            "DISPLAY": {
+                "DISPLAY": "axis",
+                "TITLE": "LinuxCNC - RIO",
+                "ICON": None,
+                "EDITOR": "gedit",
+                "PYVCP": "rio-gui.xml",
+                "PREFERENCE_FILE_PATH": None,
+                "POSITION_OFFSET": "RELATIVE",
+                "POSITION_FEEDBACK": "ACTUAL",
+                "ARCDIVISION": 64,
+                "GRIDS": "10mm 20mm 50mm 100mm",
+                "INTRO_GRAPHIC": "linuxcnc.gif",
+                "INTRO_TIME": 2,
+                "PROGRAM_PREFIX": "~/linuxcnc/nc_files",
+                "INCREMENTS": "50mm 10mm 5mm 1mm .5mm .1mm .05mm .01mm",
+                "MAX_FEED_OVERRIDE": 5.0,
+                "MIN_SPINDLE_0_OVERRIDE": 0.5,
+                "MAX_SPINDLE_0_OVERRIDE": 1.2,
+                "MIN_SPINDLE_0_SPEED": 1000,
+                "DEFAULT_SPINDLE_0_SPEED": 5000,
+                "MAX_SPINDLE_0_SPEED": 20000,
+                "MIN_LINEAR_VELOCITY": 0.0,
+                "DEFAULT_LINEAR_VELOCITY": 10.0,
+                "MAX_LINEAR_VELOCITY": 40.0,
+                "MIN_ANGULAR_VELOCITY": 0.0,
+                "DEFAULT_ANGULAR_VELOCITY": 2.5,
+                "MAX_ANGULAR_VELOCITY": 5.0,
+            },
+            "KINS": {
+                "JOINTS": num_joints,
+                "KINEMATICS": f"trivkins coordinates={axis_str}",
+            },
+            "FILTER": {
+                "PROGRAM_EXTENSION": ".py Python Script",
+                "py": "python",
+            },
+            "TASK": {
+                "TASK": "milltask",
+                "CYCLE_TIME": 0.010,
+            },
+            "RS274NGC": {
+                "PARAMETER_FILE": "linuxcnc.var",
+                "SUBROUTINE_PATH": "./subroutines/",
+                "USER_M_PATH": "./mcodes/",
+            },
+            "EMCMOT": {
+                "EMCMOT": "motmod",
+                "COMM_TIMEOUT": 1.0,
+                "COMM_WAIT": 0.010,
+                "BASE_PERIOD": 0,
+                "SERVO_PERIOD": 1000000,
+            },
+            "HAL": {
+                "HALFILE": "rio.hal",
+                "POSTGUI_HALFILE": "postgui_call_list.hal",
+                "HALUI": "halui",
+            },
+            "HALUI": {
+                "MDI_COMMAND": [
+                    "G92 X0 Y0",
+                    "G92 Z0",
+                    "o<z_touch> call",
+                ],
+            },
+            "TRAJ": {
+                "COORDINATES": axis_str2,
+                "LINEAR_UNITS": "mm",
+                "ANGULAR_UNITS": "degree",
+                "CYCLE_TIME": 0.010,
+                "DEFAULT_LINEAR_VELOCITY": 50.00,
+                "MAX_LINEAR_VELOCITY": 50.00,
+                "NO_FORCE_HOMING": 1,
+            },
+            "EMCIO": {
+                "EMCIO": "io",
+                "CYCLE_TIME": 0.100,
+                "TOOL_TABLE": "tool.tbl",
+            },
+        }
 
 
     cfgini_data = []
@@ -454,6 +853,15 @@ net user-request-enable <= iocontrol.0.user-request-enable	=> rio.SPI-reset
     )
 
 
+    if project["jdata"].get("toolchange") == "manual_":
+        cfghal_data.append("loadusr hal_manualtoolchange")
+        cfghal_data.append("net tool-change      hal_manualtoolchange.change   <=  iocontrol.0.tool-change")
+        cfghal_data.append("net tool-changed     hal_manualtoolchange.changed  <=  iocontrol.0.tool-changed")
+        cfghal_data.append("net tool-prep-number hal_manualtoolchange.number   <=  iocontrol.0.tool-prep-number")
+        cfghal_data.append("net tool-prepare-loopback iocontrol.0.tool-prepare => iocontrol.0.tool-prepared")
+        cfghal_data.append("")
+
+
     if "hy_vfd" in project["jdata"]:
         hy_vfd_dev = project["jdata"]["hy_vfd"]
         cfghal_data.append(f"loadusr -Wn vfd hy_vfd -n vfd -d {hy_vfd_dev} -p none -r 9600")
@@ -463,7 +871,6 @@ net user-request-enable <= iocontrol.0.user-request-enable	=> rio.SPI-reset
         cfghal_data.append("net spindle0_reverse spindle.0.reverse => vfd.spindle-reverse")
         cfghal_data.append("net spindle0_on spindle.0.on => vfd.spindle-on")
         cfghal_data.append("")
-
 
     if num_pids > 0:
         cfghal_data.append(f"loadrt pid num_chan={num_pids}")
@@ -594,7 +1001,41 @@ net j{num}enable 		<= joint.{num}.amp-enable-out 	=> rio.joint.{num}.enable
         "\n".join(cfghal_data)
     )
 
-def generate_custom_postgui_hal(project):
+def generate_custom_postgui_hal_qtdragon(project):
+    gui = project["jdata"].get("gui", "axis")
+
+    cfghal_data = []
+    cfghal_data.append("")
+    """
+    postgui_list.append("net home-x => qtdragon.home-x")
+    postgui_list.append("net home-y => qtdragon.home-y")
+    postgui_list.append("net home-z => qtdragon.home-z")
+    #postgui_list.append("net qtdragon.slider_SP.12")
+    #postgui_list.append("setp rio.flow-scale 0.033")
+    postgui_list.append("setp rio.flow-scale 10.0")
+    postgui_list.append("net flow rio.flow => qtdragon.gauge_flow_value")
+    """
+    # spindle.0
+    if "hy_vfd" in project["jdata"]:
+        cfghal_data.append("net pyvcp-spindle-at-speed   vfd.spindle-at-speed      => pyvcp.spindle-at-speed")
+        cfghal_data.append("net pyvcp-spindle-speed_fb   vfd.spindle-speed-fb      => pyvcp.spindle-speed")
+        cfghal_data.append("net pyvcp-hycomm-ok          vfd.hycomm-ok             => pyvcp.hycomm-ok")
+        cfghal_data.append("#net pyvcp-spindle-voltage    vfd.rated-motor-voltage   => pyvcp.spindle-voltage")
+        cfghal_data.append("#net pyvcp-spindle-current    vfd.rated-motor-current   => pyvcp.spindle-current")
+        cfghal_data.append("")
+
+    open(f"{project['LINUXCNC_PATH']}/ConfigSamples/rio/custom_postgui.hal", "w").write(
+        "\n".join(cfghal_data)
+    )
+
+    postgui_list = []
+    postgui_list.append("source custom_postgui.hal")
+    open(f"{project['LINUXCNC_PATH']}/ConfigSamples/rio/postgui_call_list.hal", "w").write(
+        "\n".join(postgui_list)
+    )
+
+
+def generate_custom_postgui_hal_axis(project):
     gui = project["jdata"].get("gui", "axis")
 
     netlist = []
@@ -718,19 +1159,20 @@ def generate_custom_postgui_hal(project):
     )
 
     postgui_list = []
-    if gui == "axis":
-        postgui_list.append("source custom_postgui.hal")
+    postgui_list.append("source custom_postgui.hal")
     open(f"{project['LINUXCNC_PATH']}/ConfigSamples/rio/postgui_call_list.hal", "w").write(
         "\n".join(postgui_list)
     )
 
 
-def generate_rio_xml(project):
+def generate_rio_axis(project):
     netlist = []
     for num, din in enumerate(project["dinnames"]):
         din_net = din.get("net")
         if din_net:
             netlist.append(din_net)
+
+    gui_gen = axis()
 
     cfgxml_data = []
     cfgxml_data.append("<pyvcp>")
@@ -780,7 +1222,7 @@ def generate_rio_xml(project):
             cfgxml_data.append("  </hbox>")
             cfgxml_data.append("  </labelframe>")
         elif vin.get("type") in {"vin_quadencoder", "vin_quadencoderz"}:
-            cfgxml_data += draw_number(f"RPM - {vname}", f"{vname}-rpm")
+            cfgxml_data += gui_gen.draw_number(f"RPM - {vname}", f"{vname}-rpm")
 
         elif function:
             pass
@@ -838,7 +1280,7 @@ def generate_rio_xml(project):
         din_name = din.get("name", dname)
         din_net = din.get("net")
         if din_net:
-            cfgxml_data += draw_led(din_name, dname)
+            cfgxml_data += gui_gen.draw_led(din_name, dname)
 
     for num, vout in enumerate(project["voutnames"]):
         vname = vout['_name']
@@ -852,9 +1294,9 @@ def generate_rio_xml(project):
                 vmin = int(vout.get('min', 0))
                 vmax = vout.get('max', 100)
             if vout.get("type") == "pwm":
-                cfgxml_data += draw_bar(name, halpin, vmin=vmin, vmax=vmax)
+                cfgxml_data += gui_gen.draw_bar(vout_name, vname, vmin=vmin, vmax=vmax)
             else:
-                cfgxml_data += draw_number(name, halpin)
+                cfgxml_data += gui_gen.draw_number(vout_name, vname)
 
     jogwheel = False
     for num, vin in enumerate(project["vinnames"]):
@@ -874,13 +1316,13 @@ def generate_rio_xml(project):
             display_type = display.get("type")
             if display_type == "meter":
                 display_text = display.get("text", vin_name)
-                cfgxml_data += draw_meter(display_text, vname, display)
+                cfgxml_data += gui_gen.draw_meter(display_text, vname, display)
             elif display_type == "bar":
                 display_text = display.get("text", vin_name)
-                cfgxml_data += draw_bar(display_text, vname, display)
+                cfgxml_data += gui_gen.draw_bar(display_text, vname, display)
             elif display_type:
                 display_text = display.get("text", vin_name)
-                cfgxml_data += draw_number(display_text, vname, display)
+                cfgxml_data += gui_gen.draw_number(display_text, vname, display)
 
 
     cfgxml_data.append('  </vbox>')
@@ -896,7 +1338,7 @@ def generate_rio_xml(project):
         din_name = din.get("name", dname)
         din_net = din.get("net")
         if not din_net:
-            cfgxml_data += draw_led(din_name, dname)
+            cfgxml_data += gui_gen.draw_led(din_name, dname)
 
     jogwheel = False
     for num, vin in enumerate(project["vinnames"]):
@@ -916,7 +1358,7 @@ def generate_rio_xml(project):
             display_type = display.get("type")
             if not display_type:
                 display_text = display.get("text", vin_name)
-                cfgxml_data += draw_number(display_text, vname, display)
+                cfgxml_data += gui_gen.draw_number(display_text, vname, display)
     cfgxml_data.append('  </vbox>')
 
     # Tab: Outputs
@@ -926,9 +1368,9 @@ def generate_rio_xml(project):
         dout_name = dout.get("name", dname)
         dout_net = dout.get("net")
         if dout_net:
-            cfgxml_data += draw_led(dout_name, dname)
+            cfgxml_data += gui_gen.draw_led(dout_name, dname)
         else:
-            cfgxml_data += draw_checkbutton(dout_name, dname)
+            cfgxml_data += gui_gen.draw_checkbutton(dout_name, dname)
 
     for num, vout in enumerate(project["voutnames"]):
         vname = vout['_name']
@@ -957,7 +1399,7 @@ def generate_rio_xml(project):
             vmin = vout.get('min', 0)
             vmax = vout.get('max', 10)
 
-        cfgxml_data += draw_scale(vout_name, vname, vmin, vmax)
+        cfgxml_data += gui_gen.draw_scale(vout_name, vname, vmin, vmax)
 
     cfgxml_data.append('  </vbox>')
     cfgxml_data.append('</tabs>')
@@ -996,6 +1438,336 @@ def generate_rio_xml(project):
         "\n".join(cfgxml_data)
     )
 
+
+
+
+
+def generate_rio_qtdragon(project):
+    netlist = []
+    for num, din in enumerate(project["dinnames"]):
+        din_net = din.get("net")
+        if din_net:
+            netlist.append(din_net)
+
+    gui = project["jdata"].get("gui", "axis")
+    
+    gui_gen = qtdragon()
+
+    cfgxml_data = []
+    cfgxml_data.append("")
+    cfgxml_data.append("")
+
+
+    cfgxml_data.append("           <item>")
+    cfgxml_data.append("            <widget class=\"QGroupBox\" name=\"groupBox_power\">")
+    cfgxml_data.append("             <property name=\"title\">")
+    cfgxml_data.append("              <string>RIO</string>")
+    cfgxml_data.append("             </property>")
+    cfgxml_data.append("             <property name=\"alignment\">")
+    cfgxml_data.append("              <set>Qt::AlignCenter</set>")
+    cfgxml_data.append("             </property>")
+    cfgxml_data.append("             <layout class=\"QVBoxLayout\" name=\"verticalLayout_30\">")
+    cfgxml_data.append("              <property name=\"spacing\">")
+    cfgxml_data.append("               <number>6</number>")
+    cfgxml_data.append("              </property>")
+    cfgxml_data.append("              <property name=\"leftMargin\">")
+    cfgxml_data.append("               <number>2</number>")
+    cfgxml_data.append("              </property>")
+    cfgxml_data.append("              <property name=\"topMargin\">")
+    cfgxml_data.append("               <number>2</number>")
+    cfgxml_data.append("              </property>")
+    cfgxml_data.append("              <property name=\"rightMargin\">")
+    cfgxml_data.append("               <number>2</number>")
+    cfgxml_data.append("              </property>")
+    cfgxml_data.append("              <property name=\"bottomMargin\">")
+    cfgxml_data.append("               <number>2</number>")
+    cfgxml_data.append("              </property>")
+
+
+
+    cfgxml_data.append("                    <item>")
+    cfgxml_data.append("                     <widget class=\"QTabWidget\" name=\"tabWidget_setup\">")
+
+    cfgxml_data.append("  <property name=\"geometry\">")
+    cfgxml_data.append("   <rect>")
+    cfgxml_data.append("    <x>0</x>")
+    cfgxml_data.append("    <y>0</y>")
+    cfgxml_data.append("    <width>400</width>")
+    cfgxml_data.append("    <height>300</height>")
+    cfgxml_data.append("   </rect>")
+    cfgxml_data.append("  </property>")
+
+    cfgxml_data.append("                      <property name=\"sizePolicy\">")
+    cfgxml_data.append("                       <sizepolicy hsizetype=\"Expanding\" vsizetype=\"Preferred\">")
+    cfgxml_data.append("                        <horstretch>1</horstretch>")
+    cfgxml_data.append("                        <verstretch>0</verstretch>")
+    cfgxml_data.append("                       </sizepolicy>")
+    cfgxml_data.append("                      </property>")
+    cfgxml_data.append("                      <property name=\"currentIndex\">")
+    cfgxml_data.append("                       <number>0</number>")
+    cfgxml_data.append("                      </property>")
+
+
+
+    cfgxml_data.append("                      <widget class=\"QWidget\" name=\"tab_stat\">")
+    cfgxml_data.append("                       <attribute name=\"title\">")
+    cfgxml_data.append("                        <string>Stat</string>")
+    cfgxml_data.append("                       </attribute>")
+    cfgxml_data.append("                       <layout class=\"QVBoxLayout\" name=\"layout_stat\">")
+    cfgxml_data.append("                        <property name=\"spacing\">")
+    cfgxml_data.append("                         <number>0</number>")
+    cfgxml_data.append("                        </property>")
+    cfgxml_data.append("                        <property name=\"leftMargin\">")
+    cfgxml_data.append("                         <number>0</number>")
+    cfgxml_data.append("                        </property>")
+    cfgxml_data.append("                        <property name=\"topMargin\">")
+    cfgxml_data.append("                         <number>0</number>")
+    cfgxml_data.append("                        </property>")
+    cfgxml_data.append("                        <property name=\"rightMargin\">")
+    cfgxml_data.append("                         <number>0</number>")
+    cfgxml_data.append("                        </property>")
+    cfgxml_data.append("                        <property name=\"bottomMargin\">")
+    cfgxml_data.append("                         <number>0</number>")
+    cfgxml_data.append("                        </property>")
+
+    cfgxml_data.append("                         <item>")
+    cfgxml_data.append("                          <layout class=\"QVBoxLayout\" name=\"verticalLayout_58\">")
+
+
+
+
+
+
+
+
+    for num, din in enumerate(project["dinnames"]):
+        dname = din['_name']
+        if dname.endswith("-index-enable-out"):
+            continue
+        din_type = din.get("type")
+        din_joint = din.get("joint", str(num))
+        din_name = din.get("name", dname)
+        din_net = din.get("net")
+        if din_net:
+            cfgxml_data += gui_gen.draw_led(din_name, dname)
+
+    for num, vout in enumerate(project["voutnames"]):
+        vname = vout['_name']
+        vout_name = vout.get("name", f"vout{num}")
+        vout_net = vout.get("net")
+        if vout_net:
+            if "dir" in vout:
+                vmin = int(vout.get('min', vout.get('max', 100)) * -1)
+                vmax = vout.get('max', 100)
+            else:
+                vmin = int(vout.get('min', 0))
+                vmax = vout.get('max', 100)
+            if vout.get("type") == "pwm":
+                cfgxml_data += gui_gen.draw_bar(vout_name, vname, vmin=vmin, vmax=vmax)
+            else:
+                cfgxml_data += gui_gen.draw_number(vout_name, vname)
+
+    jogwheel = False
+    for num, vin in enumerate(project["vinnames"]):
+        vname = vin['_name']
+        vin_name = vin.get("name", f"vin{num}")
+        vin_net = vin.get("net")
+        function = vin.get("function")
+        vtype = vin.get("type")
+        if vtype:
+            vin_name = f"{vin_name} ({vtype})"
+        if function == "jogwheel" and not jogwheel:
+            jogwheel = True
+        elif function:
+            pass
+        else:
+            display = vin.get("display", {})
+            display_type = display.get("type")
+            if display_type == "meter":
+                display_text = display.get("text", vin_name)
+                cfgxml_data += gui_gen.draw_meter(display_text, vname, display)
+            elif display_type == "bar":
+                display_text = display.get("text", vin_name)
+                cfgxml_data += gui_gen.draw_bar(display_text, vname, display)
+            elif display_type:
+                display_text = display.get("text", vin_name)
+                cfgxml_data += gui_gen.draw_number(display_text, vname, display)
+
+
+    cfgxml_data.append("                          </layout>")
+    cfgxml_data.append("                         </item>")
+    cfgxml_data.append("                        </layout>")
+    cfgxml_data.append("                      </widget>")
+
+    cfgxml_data.append("                      <widget class=\"QWidget\" name=\"tab_inputs\">")
+    cfgxml_data.append("                       <attribute name=\"title\">")
+    cfgxml_data.append("                        <string>In/Out</string>")
+    cfgxml_data.append("                       </attribute>")
+    cfgxml_data.append("                       <layout class=\"QVBoxLayout\" name=\"layout_properties\">")
+    cfgxml_data.append("                        <property name=\"spacing\">")
+    cfgxml_data.append("                         <number>0</number>")
+    cfgxml_data.append("                        </property>")
+    cfgxml_data.append("                        <property name=\"leftMargin\">")
+    cfgxml_data.append("                         <number>0</number>")
+    cfgxml_data.append("                        </property>")
+    cfgxml_data.append("                        <property name=\"topMargin\">")
+    cfgxml_data.append("                         <number>0</number>")
+    cfgxml_data.append("                        </property>")
+    cfgxml_data.append("                        <property name=\"rightMargin\">")
+    cfgxml_data.append("                         <number>0</number>")
+    cfgxml_data.append("                        </property>")
+    cfgxml_data.append("                        <property name=\"bottomMargin\">")
+    cfgxml_data.append("                         <number>0</number>")
+    cfgxml_data.append("                        </property>")
+
+    cfgxml_data.append("                         <item>")
+    cfgxml_data.append("                          <layout class=\"QVBoxLayout\" name=\"verticalLayout_58\">")
+
+    # Tab: Inputs
+    for num, din in enumerate(project["dinnames"]):
+        dname = din['_name']
+        if dname.endswith("-index-enable-out"):
+            continue
+        din_type = din.get("type")
+        din_joint = din.get("joint", str(num))
+        din_name = din.get("name", dname)
+        din_net = din.get("net")
+        if not din_net:
+            cfgxml_data += gui_gen.draw_led(din_name, dname)
+
+    jogwheel = False
+    for num, vin in enumerate(project["vinnames"]):
+        vname = vin['_name']
+        vin_name = vin.get("name", f"vin{num}")
+        vin_net = vin.get("net")
+        function = vin.get("function")
+        vtype = vin.get("type")
+        if vtype:
+            vin_name = f"{vin_name} ({vtype})"
+        if function == "jogwheel" and not jogwheel:
+            jogwheel = True
+        elif function:
+            pass
+        else:
+            display = vin.get("display", {})
+            display_type = display.get("type")
+            if not display_type:
+                display_text = display.get("text", vin_name)
+                cfgxml_data += gui_gen.draw_number(display_text, vname, display)
+
+
+    """
+    cfgxml_data.append("                          </layout>")
+    cfgxml_data.append("                         </item>")
+    cfgxml_data.append("                        </layout>")
+    cfgxml_data.append("                      </widget>")
+
+    cfgxml_data.append("                      <widget class=\"QWidget\" name=\"tab_outputs\">")
+    cfgxml_data.append("                       <attribute name=\"title\">")
+    cfgxml_data.append("                        <string>Out</string>")
+    cfgxml_data.append("                       </attribute>")
+    cfgxml_data.append("                       <layout class=\"QVBoxLayout\" name=\"layout_properties\">")
+    cfgxml_data.append("                        <property name=\"spacing\">")
+    cfgxml_data.append("                         <number>0</number>")
+    cfgxml_data.append("                        </property>")
+    cfgxml_data.append("                        <property name=\"leftMargin\">")
+    cfgxml_data.append("                         <number>0</number>")
+    cfgxml_data.append("                        </property>")
+    cfgxml_data.append("                        <property name=\"topMargin\">")
+    cfgxml_data.append("                         <number>0</number>")
+    cfgxml_data.append("                        </property>")
+    cfgxml_data.append("                        <property name=\"rightMargin\">")
+    cfgxml_data.append("                         <number>0</number>")
+    cfgxml_data.append("                        </property>")
+    cfgxml_data.append("                        <property name=\"bottomMargin\">")
+    cfgxml_data.append("                         <number>0</number>")
+    cfgxml_data.append("                        </property>")
+
+    cfgxml_data.append("                         <item>")
+    cfgxml_data.append("                          <layout class=\"QVBoxLayout\" name=\"verticalLayout_58\">")
+    """
+
+
+    # Tab: Outputs
+    for num, dout in enumerate(project["doutnames"]):
+        dname = dout['_name']
+        dout_name = dout.get("name", dname)
+        dout_net = dout.get("net")
+        if dout_net:
+            cfgxml_data += gui_gen.draw_led(dout_name, dname)
+        else:
+            cfgxml_data += gui_gen.draw_checkbutton(dout_name, dname)
+
+    for num, vout in enumerate(project["voutnames"]):
+        vname = vout['_name']
+        vout_name = vout.get("name", f"vout{num}")
+        vout_net = vout.get("net")
+        vmin = vout.get('min', 0)
+        vmax = vout.get('max', 100)
+        if vout_net:
+            continue
+        vtype = vout.get("type")
+        if vtype:
+            vout_name = f"{vout_name} ({vtype})"
+        if vout.get("type") == "vout_sine":
+            vmin = vout.get('min', -100)
+            vmax = vout.get('max', 100)
+        elif vout.get("type") == "vout_pwm":
+            if "dir" in vout:
+                vmin = int(vout.get('max', 100)) * -1
+            else:
+                vmin = vout.get('min', 0)
+            vmax = vout.get('max', 100)
+        elif vout.get("type") == "vout_rcservo":
+            vmin = vout.get('min', -100)
+            vmax = vout.get('max', 100)
+        else:
+            vmin = vout.get('min', 0)
+            vmax = vout.get('max', 10)
+
+        cfgxml_data += gui_gen.draw_scale(vout_name, vname, vmin, vmax)
+
+
+    cfgxml_data.append("                          </layout>")
+    cfgxml_data.append("                         </item>")
+    cfgxml_data.append("                        </layout>")
+    cfgxml_data.append("                      </widget>")
+
+
+    cfgxml_data.append("                     </widget>")
+    cfgxml_data.append("                    </item>")
+
+    cfgxml_data.append("             </layout>")
+    cfgxml_data.append("            </widget>")
+    cfgxml_data.append("           </item>")
+
+    cfgxml_data.append("")
+    cfgxml_data.append("")
+
+
+
+    os.system(
+        f"mkdir -p {project['LINUXCNC_PATH']}/ConfigSamples/rio/rio_hd"
+    )
+    
+    os.system(
+        f"cp -a generators/linuxcnc_config/qtdragon_hd/rio_hd/* {project['LINUXCNC_PATH']}/ConfigSamples/rio/rio_hd/"
+    )
+
+    os.system(
+        f"cat generators/linuxcnc_config/qtdragon_hd/rio_hd/rio_hd.ui.pre > {project['LINUXCNC_PATH']}/ConfigSamples/rio/rio_hd/rio_hd.ui"
+    )
+    #print("\n".join(cfgxml_data))
+    open(f"{project['LINUXCNC_PATH']}/ConfigSamples/rio/rio_hd/rio_hd.ui", "a").write(
+        "\n".join(cfgxml_data)
+    )
+    os.system(
+        f"cat generators/linuxcnc_config/qtdragon_hd/rio_hd/rio_hd.ui.post >> {project['LINUXCNC_PATH']}/ConfigSamples/rio/rio_hd/rio_hd.ui"
+    )
+
+
+
+
 def generate_tool_tbl(project):
     tool_tbl = []
     tool_tbl.append("T1 P1 D0.125000 Z+0.511000 ;1/8 end mill")
@@ -1009,12 +1781,16 @@ def generate_tool_tbl(project):
 
 
 def generate(project):
-    print("generating linux-cnc config")
-
+    gui = project["jdata"].get("gui", "axis")
+    print(f"generating linux-cnc config: {gui}")
     generate_rio_ini(project)
     generate_rio_hal(project)
-    generate_custom_postgui_hal(project)
-    generate_rio_xml(project)
+    if gui == "qtdragon":
+        generate_custom_postgui_hal_qtdragon(project)
+        generate_rio_qtdragon(project)
+    else:
+        generate_custom_postgui_hal_axis(project)
+        generate_rio_axis(project)
     generate_tool_tbl(project)
 
     os.system(

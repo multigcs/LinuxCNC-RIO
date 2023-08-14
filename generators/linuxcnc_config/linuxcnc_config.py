@@ -852,9 +852,9 @@ def generate_rio_xml(project):
                 vmin = int(vout.get('min', 0))
                 vmax = vout.get('max', 100)
             if vout.get("type") == "pwm":
-                cfgxml_data += draw_bar(name, halpin, vmin=vmin, vmax=vmax)
+                cfgxml_data += draw_bar(vout_name, vname, vmin=vmin, vmax=vmax)
             else:
-                cfgxml_data += draw_number(name, halpin)
+                cfgxml_data += draw_number(vout_name, vname)
 
     jogwheel = False
     for num, vin in enumerate(project["vinnames"]):

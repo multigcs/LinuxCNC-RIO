@@ -7812,6 +7812,16 @@ ANGULAR</string>
    <container>1</container>
   </customwidget>
   <customwidget>
+   <class>CheckBox</class>
+   <extends>QCheckBox</extends>
+   <header>qtvcp.widgets.simple_widgets</header>
+  </customwidget>
+  <customwidget>
+   <class>Slider</class>
+   <extends>QSlider</extends>
+   <header>qtvcp.widgets.simple_widgets</header>
+  </customwidget>
+  <customwidget>
    <class>ToolOffsetView</class>
    <extends>QTableView</extends>
    <header>qtvcp.widgets.tool_offsetview</header>

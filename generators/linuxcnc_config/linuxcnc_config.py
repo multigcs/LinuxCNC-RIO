@@ -196,50 +196,26 @@ class qtdragon():
         cfgxml_data.append('     </widget>')
         cfgxml_data.append('    </item>')
         cfgxml_data.append('        <item>')
-        cfgxml_data.append(f'         <widget class="StatusLabel" name="{halpin}">')
-        cfgxml_data.append('          <property name="sizePolicy">')
-        cfgxml_data.append('           <sizepolicy hsizetype="Fixed" vsizetype="Fixed">')
-        cfgxml_data.append('            <horstretch>0</horstretch>')
-        cfgxml_data.append('            <verstretch>0</verstretch>')
-        cfgxml_data.append('           </sizepolicy>')
-        cfgxml_data.append('          </property>')
-        cfgxml_data.append('          <property name="minimumSize">')
-        cfgxml_data.append('           <size>')
-        cfgxml_data.append('            <width>60</width>')
-        cfgxml_data.append('            <height>26</height>')
-        cfgxml_data.append('           </size>')
-        cfgxml_data.append('          </property>')
-        cfgxml_data.append('          <property name="maximumSize">')
-        cfgxml_data.append('           <size>')
-        cfgxml_data.append('            <width>60</width>')
-        cfgxml_data.append('            <height>26</height>')
-        cfgxml_data.append('           </size>')
-        cfgxml_data.append('          </property>')
-        cfgxml_data.append('          <property name="toolTip">')
-        cfgxml_data.append('           <string>input value</string>')
-        cfgxml_data.append('          </property>')
-        cfgxml_data.append('          <property name="frameShape">')
-        cfgxml_data.append('           <enum>QFrame::WinPanel</enum>')
-        cfgxml_data.append('          </property>')
-        cfgxml_data.append('          <property name="frameShadow">')
-        cfgxml_data.append('           <enum>QFrame::Sunken</enum>')
-        cfgxml_data.append('          </property>')
-        cfgxml_data.append('          <property name="lineWidth">')
-        cfgxml_data.append('           <number>1</number>')
-        cfgxml_data.append('          </property>')
-        cfgxml_data.append('          <property name="alignment">')
-        cfgxml_data.append('           <set>Qt::AlignCenter</set>')
-        cfgxml_data.append('          </property>')
-        cfgxml_data.append('          <property name="textTemplate" stdset="0">')
-        cfgxml_data.append('           <string>%d</string>')
-        cfgxml_data.append('          </property>')
-        cfgxml_data.append('      <property name="halpin_name" stdset="0">')
-        cfgxml_data.append(f'       <string>{halpin}</string>')
-        cfgxml_data.append('      </property>')
-        cfgxml_data.append('      <property name="halpin_option" stdset="0">')
-        cfgxml_data.append('       <bool>true</bool>')
-        cfgxml_data.append('      </property>')
-        cfgxml_data.append('         </widget>')
+
+        cfgxml_data.append('  <widget class="QWidget" name="centralwidget">')
+        cfgxml_data.append(f'   <widget class="HALLabel" name="{halpin}">')
+        cfgxml_data.append('    <property name="geometry">')
+        cfgxml_data.append('     <rect>')
+        cfgxml_data.append('      <x>60</x>')
+        cfgxml_data.append('      <y>30</y>')
+        cfgxml_data.append('      <width>281</width>')
+        cfgxml_data.append('      <height>41</height>')
+        cfgxml_data.append('     </rect>')
+        cfgxml_data.append('    </property>')
+        cfgxml_data.append('    <property name="float_pin_type" stdset="0">')
+        cfgxml_data.append('     <bool>true</bool>')
+        cfgxml_data.append('    </property>')
+        cfgxml_data.append('    <property name="textTemplate" stdset="0">')
+        cfgxml_data.append('     <string>%f</string>')
+        cfgxml_data.append('    </property>')
+        cfgxml_data.append('   </widget>')
+        cfgxml_data.append('  </widget>')
+
         cfgxml_data.append('        </item>')
         cfgxml_data.append('   </layout>')
         cfgxml_data.append('  </item>')
@@ -1028,14 +1004,38 @@ def generate_custom_postgui_hal_qtdragon(project):
                 f"net {dname} rio.{dname} qtdragon.{dname}"
             )
 
+
+    jogwheel = False
+    for num, vin in enumerate(project["vinnames"]):
+        vname = vin['_name']
+        vin_name = vin.get("name", f"vin{num}")
+        vin_net = vin.get("net")
+        function = vin.get("function")
+        vtype = vin.get("type")
+        if vtype:
+            vin_name = f"{vin_name} ({vtype})"
+
+        if function:
+            pass
+        else:
+            scale = vin.get("scale")
+            if scale is not None and float(scale) != float(1.0):
+                cfghal_data.append(f"setp rio.{vname}-scale {scale}")
+            offset = vin.get("offset")
+            if offset is not None and float(offset) != float(0.0):
+                cfghal_data.append(f"setp rio.{vname}-offset {offset}")
+            display = vin.get("display", {})
+            display_type = display.get("type")
+            if display_type == "meter":
+                cfghal_data.append(f"net {vname} rio.{vname} qtdragon.gauge_{vname}_value")
+            elif display_type == "bar":
+                pass
+            elif display_type:
+                cfghal_data.append(f"net {vname} rio.{vname} qtdragon.{vname}")
+
     """
-    postgui_list.append("net home-x => qtdragon.home-x")
-    postgui_list.append("net home-y => qtdragon.home-y")
-    postgui_list.append("net home-z => qtdragon.home-z")
     #postgui_list.append("net qtdragon.slider_SP.12")
     #postgui_list.append("setp rio.flow-scale 0.033")
-    postgui_list.append("setp rio.flow-scale 10.0")
-    postgui_list.append("net flow rio.flow => qtdragon.gauge_flow_value")
     """
     # spindle.0
     if "hy_vfd" in project["jdata"]:

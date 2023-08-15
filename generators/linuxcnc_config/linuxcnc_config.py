@@ -107,7 +107,7 @@ class qtdragon():
         cfgxml_data.append('     </widget>')
         cfgxml_data.append('    </item>')
         cfgxml_data.append('    <item>')
-        cfgxml_data.append(f'     <widget class="LCDNumber" name="{halpin}">')
+        cfgxml_data.append(f'     <widget class="HALLabel" name="{halpin}">')
         cfgxml_data.append('      <property name="sizePolicy">')
         cfgxml_data.append('       <sizepolicy hsizetype="Minimum" vsizetype="Fixed">')
         cfgxml_data.append('        <horstretch>0</horstretch>')

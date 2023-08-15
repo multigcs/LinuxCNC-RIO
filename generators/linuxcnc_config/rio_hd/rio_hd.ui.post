@@ -7896,8 +7896,6 @@ ANGULAR</string>
  </customwidgets>
  <resources>
   <include location="rio_hd.qrc"/>
-  <include location="../qtdragon/qtdragon.qrc"/>
-  <include location="qtdragon.qrc"/>
  </resources>
  <connections>
   <connection>

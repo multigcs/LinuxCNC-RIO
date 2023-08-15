@@ -141,7 +141,7 @@ QCheckBox::indicator:checked {
 }
 
 QCheckBox::indicator:unchecked {
-    image: url(:/buttons/images/unchecked.png);
+    image: url(:/images/unchecked.png);
     background-color: white;
     height: 14px;
     width: 14px;

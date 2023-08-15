@@ -41,7 +41,7 @@ class qtdragon():
         display_size = setup.get("size", 150)
         cfgxml_data = []
         cfgxml_data.append('   <item>')
-        cfgxml_data.append(f'       <widget class="Gauge" name="gauge_{halpin}">')
+        cfgxml_data.append(f'       <widget class="Gauge" name="{halpin}">')
         cfgxml_data.append('        <property name="minimumSize">')
         cfgxml_data.append('         <size>')
         cfgxml_data.append('          <width>150</width>')
@@ -82,6 +82,8 @@ class qtdragon():
         return cfgxml_data
 
     def draw_bar(self, name, halpin, setup={}, vmin=0, vmax=100):
+        return self.draw_number(name, halpin, setup)
+        
         display_min = setup.get("min", vmin)
         display_max = setup.get("max", vmax)
         display_range = setup.get("range", [])
@@ -113,6 +115,12 @@ class qtdragon():
         cfgxml_data.append('        <horstretch>0</horstretch>')
         cfgxml_data.append('        <verstretch>0</verstretch>')
         cfgxml_data.append('       </sizepolicy>')
+        cfgxml_data.append('      </property>')
+        cfgxml_data.append('      <property name="bit_pin_type" stdset="0">')
+        cfgxml_data.append('       <bool>false</bool>')
+        cfgxml_data.append('      </property>')
+        cfgxml_data.append('      <property name="float_pin_type" stdset="0">')
+        cfgxml_data.append('       <bool>true</bool>')
         cfgxml_data.append('      </property>')
         cfgxml_data.append('     </widget>')
         cfgxml_data.append('    </item>')
@@ -159,48 +167,28 @@ class qtdragon():
         cfgxml_data.append('      </property>')
         cfgxml_data.append('     </widget>')
         cfgxml_data.append('    </item>')
-        cfgxml_data.append('<item>')
-        cfgxml_data.append(f' <widget class="LED" name="hal_{halpin}">')
-        cfgxml_data.append('  <property name="sizePolicy">')
-        cfgxml_data.append('   <sizepolicy hsizetype="Fixed" vsizetype="Fixed">')
-        cfgxml_data.append('    <horstretch>0</horstretch>')
-        cfgxml_data.append('    <verstretch>0</verstretch>')
-        cfgxml_data.append('   </sizepolicy>')
-        cfgxml_data.append('  </property>')
-        cfgxml_data.append('  <property name="minimumSize">')
-        cfgxml_data.append('   <size>')
-        cfgxml_data.append('    <width>24</width>')
-        cfgxml_data.append('    <height>24</height>')
-        cfgxml_data.append('   </size>')
-        cfgxml_data.append('  </property>')
-        cfgxml_data.append('  <property name="maximumSize">')
-        cfgxml_data.append('   <size>')
-        cfgxml_data.append('    <width>24</width>')
-        cfgxml_data.append('    <height>24</height>')
-        cfgxml_data.append('   </size>')
-        cfgxml_data.append('  </property>')
-        cfgxml_data.append('  <property name="pin_name" stdset="0">')
-        cfgxml_data.append(f'   <string>{halpin}</string>')
-        cfgxml_data.append('  </property>')
-        cfgxml_data.append('  <property name="diameter">')
-        cfgxml_data.append('   <number>15</number>')
-        cfgxml_data.append('  </property>')
-        cfgxml_data.append('  <property name="color">')
-        cfgxml_data.append('   <color>')
-        cfgxml_data.append('    <red>0</red>')
-        cfgxml_data.append('    <green>255</green>')
-        cfgxml_data.append('    <blue>0</blue>')
-        cfgxml_data.append('   </color>')
-        cfgxml_data.append('  </property>')
-        cfgxml_data.append('  <property name="off_color" stdset="0">')
-        cfgxml_data.append('   <color>')
-        cfgxml_data.append('    <red>0</red>')
-        cfgxml_data.append('    <green>0</green>')
-        cfgxml_data.append('    <blue>0</blue>')
-        cfgxml_data.append('   </color>')
-        cfgxml_data.append('  </property>')
-        cfgxml_data.append(' </widget>')
-        cfgxml_data.append('</item>')
+        cfgxml_data.append('    <item>')
+        cfgxml_data.append(f'     <widget class="LED" name="{halpin}">')
+        cfgxml_data.append('        <property name="sizePolicy">')
+        cfgxml_data.append('         <sizepolicy hsizetype="Fixed" vsizetype="Fixed">')
+        cfgxml_data.append('          <horstretch>0</horstretch>')
+        cfgxml_data.append('          <verstretch>0</verstretch>')
+        cfgxml_data.append('         </sizepolicy>')
+        cfgxml_data.append('        </property>')
+        cfgxml_data.append('        <property name="minimumSize">')
+        cfgxml_data.append('         <size>')
+        cfgxml_data.append('          <width>24</width>')
+        cfgxml_data.append('          <height>24</height>')
+        cfgxml_data.append('         </size>')
+        cfgxml_data.append('        </property>')
+        cfgxml_data.append('        <property name="maximumSize">')
+        cfgxml_data.append('         <size>')
+        cfgxml_data.append('          <width>24</width>')
+        cfgxml_data.append('          <height>24</height>')
+        cfgxml_data.append('         </size>')
+        cfgxml_data.append('        </property>')
+        cfgxml_data.append('     </widget>')
+        cfgxml_data.append('    </item>')
         cfgxml_data.append('   </layout>')
         cfgxml_data.append('  </item>')
         return cfgxml_data
@@ -906,6 +894,14 @@ def generate_custom_postgui_hal_qtdragon(project):
     cfghal_data = []
     cfghal_data.append("")
 
+    for num, dout in enumerate(project["doutnames"]):
+        dname = dout['_name']
+        dout_name = dout.get("name", dname)
+        dout_net = dout.get("net")
+        if dout_net:
+            cfghal_data.append(f"net {dname} => qtdragon.{dname}")
+        elif not dname.endswith("-index-enable"):
+            cfghal_data.append(f"net {dname} qtdragon.{dname} rio.{dname}")
 
     for num, din in enumerate(project["dinnames"]):
         dname = din['_name']
@@ -924,6 +920,14 @@ def generate_custom_postgui_hal_qtdragon(project):
                 f"net {dname} rio.{dname} qtdragon.{dname}"
             )
 
+    for num, vout in enumerate(project["voutnames"]):
+        vname = vout['_name']
+        vout_name = vout.get("name", f"vout{num}")
+        vout_net = vout.get("net")
+        if vout_net:
+            cfghal_data.append(f"net {vname} => qtdragon.{vname}")
+        else:
+            cfghal_data.append(f"net {vname} qtdragon.{vname}-f rio.{vname}")
 
     jogwheel = False
     for num, vin in enumerate(project["vinnames"]):
@@ -931,11 +935,22 @@ def generate_custom_postgui_hal_qtdragon(project):
         vin_name = vin.get("name", f"vin{num}")
         vin_net = vin.get("net")
         function = vin.get("function")
-        vtype = vin.get("type")
-        if vtype:
-            vin_name = f"{vin_name} ({vtype})"
-
-        if function:
+        if vin_net in ["halui.feed-override", "halui.rapid-override", "halui.spindle.0.override", "halui.spindle.1.override"]:
+            function = vin_net.split(".")[-1]
+        if function == "jogwheel" and not jogwheel:
+            jogwheel = True
+        elif function in ["feed-override", "rapid-override", "spindle.0.override", "spindle.1.override"]:
+            cfghal_data.append("")
+            cfghal_data.append(f"# {function}")
+            if vin['type'] == "ads1115":
+                cfghal_data.append(f"setp rio.{vname}-scale 0.3025")
+            else:
+                cfghal_data.append(f"setp rio.{vname}-scale 1.0")
+            cfghal_data.append(f"setp halui.{function}.direct-value 1")
+            cfghal_data.append(f"setp halui.{function}.scale 0.01")
+            cfghal_data.append(f"net {function} rio.{vname}-s32 => halui.{function}.counts")
+            cfghal_data.append("")
+        elif function:
             pass
         else:
             scale = vin.get("scale")
@@ -944,26 +959,15 @@ def generate_custom_postgui_hal_qtdragon(project):
             offset = vin.get("offset")
             if offset is not None and float(offset) != float(0.0):
                 cfghal_data.append(f"setp rio.{vname}-offset {offset}")
-            display = vin.get("display", {})
-            display_type = display.get("type")
-            if display_type == "meter":
-                cfghal_data.append(f"net {vname} rio.{vname} qtdragon.gauge_{vname}_value")
-            elif display_type == "bar":
-                pass
-            elif display_type:
-                cfghal_data.append(f"net {vname} rio.{vname} qtdragon.{vname}")
+            cfghal_data.append(f"net {vname} rio.{vname} qtdragon.{vname}")
 
-    """
-    #postgui_list.append("net qtdragon.slider_SP.12")
-    #postgui_list.append("setp rio.flow-scale 0.033")
-    """
     # spindle.0
     if "hy_vfd" in project["jdata"]:
-        cfghal_data.append("net pyvcp-spindle-at-speed   vfd.spindle-at-speed      => pyvcp.spindle-at-speed")
-        cfghal_data.append("net pyvcp-spindle-speed_fb   vfd.spindle-speed-fb      => pyvcp.spindle-speed")
-        cfghal_data.append("net pyvcp-hycomm-ok          vfd.hycomm-ok             => pyvcp.hycomm-ok")
-        cfghal_data.append("#net qtdragon-spindle-voltage    vfd.rated-motor-voltage   => qtdragon.spindle-volts")
-        cfghal_data.append("#net qtdragon-spindle-current    vfd.rated-motor-current   => qtdragon.spindle-amps")
+        #cfghal_data.append("net qtdragon-spindle-at-speed   vfd.spindle-at-speed      => qtdragon.spindle-at-speed")
+        #cfghal_data.append("net qtdragon-spindle-speed_fb   vfd.spindle-speed-fb      => qtdragon.spindle-speed")
+        #cfghal_data.append("net qtdragon-hycomm-ok          vfd.hycomm-ok             => qtdragon.hycomm-ok")
+        #cfghal_data.append("#net qtdragon-spindle-voltage    vfd.rated-motor-voltage   => qtdragon.spindle-volts")
+        #cfghal_data.append("#net qtdragon-spindle-current    vfd.rated-motor-current   => qtdragon.spindle-amps")
         """
         qtdragon.spindle-modbus-connection
         qtdragon.spindle-modbus-errors
@@ -972,6 +976,7 @@ def generate_custom_postgui_hal_qtdragon(project):
         qtdragon.spindle-volts
         """
         cfghal_data.append("")
+
 
     open(f"{project['LINUXCNC_PATH']}/ConfigSamples/rio/custom_postgui.hal", "w").write(
         "\n".join(cfghal_data)
@@ -982,6 +987,9 @@ def generate_custom_postgui_hal_qtdragon(project):
     open(f"{project['LINUXCNC_PATH']}/ConfigSamples/rio/postgui_call_list.hal", "w").write(
         "\n".join(postgui_list)
     )
+
+
+
 
 
 def generate_custom_postgui_hal_axis(project):

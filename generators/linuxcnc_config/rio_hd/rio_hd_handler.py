@@ -127,6 +127,7 @@ class HandlerClass:
 <h1>Setup Tab</h1>
 <p>If you select a file with .html as a file ending, it will be shown here..</p>
 <li><a href="http://linuxcnc.org/docs/devel/html/">Documents online</a></li>
+<li><a href="https://github.com/multigcs/LinuxCNC-RIO/">LinuxCNC-RIO</a></li>
 <li><a href="file://%s">Local files</a></li>
 <img src="file://%s" alt="lcnc_swoop" />
 <hr />

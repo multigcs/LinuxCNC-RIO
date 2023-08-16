@@ -17,3 +17,14 @@ PWM Joint Output with DIR-Pin
 # joint_pwmdir.v
 ![graphviz](./joint_pwmdir.svg)
 
+
+# Examples
+
+## Mini Closed-Loop DC-Servo
+
+[![Mini Closed-Loop DC-Servo on LinuxCNC-RIO](https://img.youtube.com/vi/0cOvUS33U_s/0.jpg)](https://www.youtube.com/shorts/0cOvUS33U_s "Mini Closed-Loop DC-Servo on LinuxCNC-RIO")
+
+
+
+
+

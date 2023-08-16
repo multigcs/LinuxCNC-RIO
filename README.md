@@ -129,6 +129,9 @@ make CONFIG=configs/TinyFPGA-BX_BOB/config.json build
 ### LinuxCNC with ICE40 for stepgen
 [![LinuxCNC with ICE40 for stepgen](https://img.youtube.com/vi/m4zXuHERiFU/0.jpg)](https://www.youtube.com/shorts/m4zXuHERiFU "LinuxCNC with ICE40 for stepgen")
 
+### Linuxcnc RIO with Tang Nano 20k FPGA with esp32 and w5500 Ethernet
+[![Linuxcnc RIO with Tang Nano 20k FPGA with esp32 and w5500 Ethernet](https://img.youtube.com/vi/inAFxSs9Hak/0.jpg)](https://www.youtube.com/watch?v=inAFxSs9Hak "Linuxcnc RIO with Tang Nano 20k FPGA with esp32 and w5500 Ethernet")
+
 
 ---
 Thanks to the https://github.com/scottalford75/Remora Project, i'm using a modified version of it's Linux-Component

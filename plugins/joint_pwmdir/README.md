@@ -22,6 +22,7 @@ PWM Joint Output with DIR-Pin
 
 ## Mini Closed-Loop DC-Servo
 
+### Video
 [![Mini Closed-Loop DC-Servo on LinuxCNC-RIO](https://img.youtube.com/vi/0cOvUS33U_s/0.jpg)](https://www.youtube.com/shorts/0cOvUS33U_s "Mini Closed-Loop DC-Servo on LinuxCNC-RIO")
 
 

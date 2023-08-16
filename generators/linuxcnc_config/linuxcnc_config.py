@@ -5,6 +5,9 @@ import sys
 axis_names = ["X", "Y", "Z", "A", "C", "B", "U", "V", "W"]
 
 class qtdragon():
+    #
+    # wget "https://raw.githubusercontent.com/LinuxCNC/linuxcnc/master/lib/python/qtvcp/designer/install_script"
+    #
     def draw_scale(self, name, halpin, vmin, vmax):
         cfgxml_data = []
         cfgxml_data.append('  <item>')
@@ -36,9 +39,11 @@ class qtdragon():
     def draw_meter(self, name, halpin, setup={}, vmin=0, vmax=100):
         display_min = setup.get("min", vmin)
         display_max = setup.get("max", vmax)
+        display_text = setup.get("text", name)
         display_subtext = setup.get("subtext", '')
         display_region = setup.get("region", [])
         display_size = setup.get("size", 150)
+        display_threshold = setup.get("threshold")
         cfgxml_data = []
         cfgxml_data.append('   <item>')
         cfgxml_data.append(f'       <widget class="Gauge" name="{halpin}">')
@@ -48,14 +53,21 @@ class qtdragon():
         cfgxml_data.append('          <height>150</height>')
         cfgxml_data.append('         </size>')
         cfgxml_data.append('        </property>')
-        cfgxml_data.append('        <property name="threshold" stdset="0">')
-        cfgxml_data.append('         <number>50</number>')
+        cfgxml_data.append('        <property name="max_value" stdset="0">')
+        cfgxml_data.append(f'         <number>{display_max}</number>')
         cfgxml_data.append('        </property>')
+        cfgxml_data.append('        <property name="max_reading" stdset="0">')
+        cfgxml_data.append(f'         <number>{display_max}</number>')
+        cfgxml_data.append('        </property>')
+        if display_threshold:
+            cfgxml_data.append('        <property name="threshold" stdset="0">')
+            cfgxml_data.append(f'         <number>{display_threshold}</number>')
+            cfgxml_data.append('        </property>')
         cfgxml_data.append('        <property name="num_ticks" stdset="0">')
         cfgxml_data.append('         <number>9</number>')
         cfgxml_data.append('        </property>')
         cfgxml_data.append('        <property name="gauge_label" stdset="0">')
-        cfgxml_data.append(f'         <string>{name}</string>')
+        cfgxml_data.append(f'         <string>{display_text}</string>')
         cfgxml_data.append('        </property>')
         cfgxml_data.append('        <property name="zone1_color" stdset="0">')
         cfgxml_data.append('         <color>')
@@ -94,7 +106,7 @@ class qtdragon():
         return cfgxml_data
 
     def draw_number(self, name, halpin, setup={}):
-        display_format = setup.get("size", "05.2f")
+        display_format = setup.get("format", "%0.2f")
         cfgxml_data = []
         cfgxml_data.append('  <item>')
         cfgxml_data.append(f'   <layout class="QHBoxLayout" name="layl_{halpin}">')
@@ -116,6 +128,12 @@ class qtdragon():
         cfgxml_data.append('        <verstretch>0</verstretch>')
         cfgxml_data.append('       </sizepolicy>')
         cfgxml_data.append('      </property>')
+        cfgxml_data.append('      <property name="textTemplate" stdset="0">')
+        cfgxml_data.append(f'       <string>{display_format}</string>')
+        cfgxml_data.append('      </property>')
+        cfgxml_data.append('      <property name="styleSheet">')
+        cfgxml_data.append('       <string notr="true">font: 20pt &quot;Lato Heavy&quot;;</string>')
+        cfgxml_data.append('      </property>')
         cfgxml_data.append('      <property name="bit_pin_type" stdset="0">')
         cfgxml_data.append('       <bool>false</bool>')
         cfgxml_data.append('      </property>')
@@ -133,19 +151,21 @@ class qtdragon():
         cfgxml_data.append('  <item>')
         cfgxml_data.append(f'   <layout class="QHBoxLayout" name="layl_{halpin}">')
         cfgxml_data.append('    <item>')
-        cfgxml_data.append('     <widget class="QLabel" name="label_22">')
+        cfgxml_data.append(f'     <widget class="PushButton" name="{halpin}">')
         cfgxml_data.append('      <property name="text">')
         cfgxml_data.append(f'       <string>{name}</string>')
         cfgxml_data.append('      </property>')
-        cfgxml_data.append('      <property name="indent">')
-        cfgxml_data.append('       <number>4</number>')
+        cfgxml_data.append('      <property name="checkable">')
+        cfgxml_data.append('        <bool>true</bool>')
         cfgxml_data.append('      </property>')
-        cfgxml_data.append('     </widget>')
-        cfgxml_data.append('    </item>')
-        cfgxml_data.append('    <item>')
-        cfgxml_data.append(f'     <widget class="CheckBox" name="{halpin}">')
-        cfgxml_data.append('      <property name="text">')
-        cfgxml_data.append('       <string></string>')
+        cfgxml_data.append('      <property name="styleSheet">')
+        cfgxml_data.append('        <string notr="true">font: 18pt &quot;Lato Heavy&quot;;</string>')
+        cfgxml_data.append('      </property>')
+        cfgxml_data.append('      <property name="minimumSize">')
+        cfgxml_data.append('        <size>')
+        cfgxml_data.append('         <width>32</width>')
+        cfgxml_data.append('         <height>32</height>')
+        cfgxml_data.append('        </size>')
         cfgxml_data.append('      </property>')
         cfgxml_data.append('     </widget>')
         cfgxml_data.append('    </item>')
@@ -177,14 +197,14 @@ class qtdragon():
         cfgxml_data.append('        </property>')
         cfgxml_data.append('        <property name="minimumSize">')
         cfgxml_data.append('         <size>')
-        cfgxml_data.append('          <width>24</width>')
-        cfgxml_data.append('          <height>24</height>')
+        cfgxml_data.append('          <width>32</width>')
+        cfgxml_data.append('          <height>32</height>')
         cfgxml_data.append('         </size>')
         cfgxml_data.append('        </property>')
         cfgxml_data.append('        <property name="maximumSize">')
         cfgxml_data.append('         <size>')
-        cfgxml_data.append('          <width>24</width>')
-        cfgxml_data.append('          <height>24</height>')
+        cfgxml_data.append('          <width>32</width>')
+        cfgxml_data.append('          <height>32</height>')
         cfgxml_data.append('         </size>')
         cfgxml_data.append('        </property>')
         cfgxml_data.append('     </widget>')
@@ -935,6 +955,8 @@ def generate_custom_postgui_hal_qtdragon(project):
         vin_name = vin.get("name", f"vin{num}")
         vin_net = vin.get("net")
         function = vin.get("function")
+        display = vin.get("display", {})
+        display_type = display.get("type")
         if vin_net in ["halui.feed-override", "halui.rapid-override", "halui.spindle.0.override", "halui.spindle.1.override"]:
             function = vin_net.split(".")[-1]
         if function == "jogwheel" and not jogwheel:
@@ -959,7 +981,11 @@ def generate_custom_postgui_hal_qtdragon(project):
             offset = vin.get("offset")
             if offset is not None and float(offset) != float(0.0):
                 cfghal_data.append(f"setp rio.{vname}-offset {offset}")
-            cfghal_data.append(f"net {vname} rio.{vname} qtdragon.{vname}")
+            if display_type == "meter":
+                cfghal_data.append(f"net {vname} rio.{vname} qtdragon.{vname}_value")
+                pass
+            else:
+                cfghal_data.append(f"net {vname} rio.{vname} qtdragon.{vname}")
 
     # spindle.0
     if "hy_vfd" in project["jdata"]:
@@ -1513,8 +1539,6 @@ def generate_rio_qtdragon(project):
         dout_net = dout.get("net")
         if dout_net:
             cfgxml_data += gui_gen.draw_led(dout_name, dname)
-        else:
-            cfgxml_data += gui_gen.draw_checkbutton(dout_name, dname)
 
     for num, din in enumerate(project["dinnames"]):
         dname = din['_name']
@@ -1667,14 +1691,12 @@ def generate_rio_qtdragon(project):
     """
 
 
-    # Tab: Outputs
+    # Tab: IO's
     for num, dout in enumerate(project["doutnames"]):
         dname = dout['_name']
         dout_name = dout.get("name", dname)
         dout_net = dout.get("net")
-        if dout_net:
-            cfgxml_data += gui_gen.draw_led(dout_name, dname)
-        else:
+        if not dout_net:
             cfgxml_data += gui_gen.draw_checkbutton(dout_name, dname)
 
     for num, vout in enumerate(project["voutnames"]):

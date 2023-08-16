@@ -37,7 +37,9 @@ RealtimeIO for LinuxCNC based on an FPGA
 | vin | [pulsecounter](plugins/vin_pulsecounter) | Variable-Input for pulse counting with up to 3 pins (all optional) |
 | vin | [pwmcounter](plugins/vin_pwmcounter) | Variable-Input for pulse width measurement |
 | vin | [quadencoder](plugins/vin_quadencoder) | Variable-Input for Quad-Encoder (int32_t) |
+| vin | [quadencoderz](plugins/vin_quadencoderz) | Variable-Input for Quad-Encoder with Z-Pin (int32_t) |
 | vin | [sonar](plugins/vin_sonar) | Variable-Input for distance measurement via ultrasonic sonar sensor (HC-SR04) |
+| vin | [sonar](plugins/vin_lm75) | Variable-Input for temperature measurement via LM75 sensor |
 | vout | [frequency](plugins/vout_frequency) | Variable-Output for frequencys |
 | vout | [pwm](plugins/vout_pwm) | Variable-Output for PWM-Signals with optional DIR pin |
 | vout | [sinepwm](plugins/vout_sinepwm) | Variable-Output for Sine-Waves via PWM-Signal |
@@ -69,8 +71,8 @@ for the TangNano9K, you can also using the Gowin-IDE or Gowin-Shell (it's faster
 you can also use UDP2SPI bridge to communicate via Ethernet (UDP)
 
 * [WT32-ETH01](UDP2SPI-Bridge/WT32-ETH01)
-
 * [ESP32-PoE-ISO](UDP2SPI-Bridge/ESP32-PoE-ISO)
+* [ESP32_W5500](UDP2SPI-Bridge/ESP32_W5500)
 
 
 ## test-tool

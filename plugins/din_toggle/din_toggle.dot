@@ -1,0 +1,30 @@
+digraph "din_toggle" {
+rankdir="LR";
+remincross=true;
+n2 [ shape=octagon, label="clk", color="black", fontcolor="black" ];
+n3 [ shape=octagon, label="din", color="black", fontcolor="black" ];
+n4 [ shape=diamond, label="din_risingedge", color="black", fontcolor="black" ];
+n5 [ shape=diamond, label="dinr", color="black", fontcolor="black" ];
+n6 [ shape=octagon, label="toggled", color="black", fontcolor="black" ];
+c11 [ shape=record, label="{{<p7> CLK|<p8> D|<p9> EN}|$10\n$dffe|{<p10> Q}}",  ];
+v1 [ label="2'01" ];
+c15 [ shape=record, label="{{<p12> A|<p13> B}|$2\n$eq|{<p14> Y}}",  ];
+x0 [ shape=record, style=rounded, label="<s0> 2:1 - 1:0 ", colorscheme="dark28", color="8", fontcolor="8" ];
+x0:e -> c15:p12:w [arrowhead=odiamond, arrowtail=odiamond, dir=both, colorscheme="dark28", color="8", fontcolor="8", style="setlinewidth(3)", label="<2>"];
+c16 [ shape=record, label="{{<p12> A}|$4\n$not|{<p14> Y}}",  ];
+c17 [ shape=record, label="{{<p7> CLK|<p8> D}|$9\n$dff|{<p10> Q}}",  ];
+x2 [ shape=record, style=rounded, label="<s1> 1:0 - 2:1 |<s0> 0:0 - 0:0 ", colorscheme="dark28", color="8", fontcolor="8" ];
+x2:e -> c17:p8:w [arrowhead=odiamond, arrowtail=odiamond, dir=both, colorscheme="dark28", color="4", fontcolor="4", style="setlinewidth(3)", label="<3>"];
+c16:p14:e -> c11:p8:w [colorscheme="dark28", color="6", fontcolor="6", label=""];
+n2:e -> c11:p7:w [colorscheme="dark28", color="5", fontcolor="5", label=""];
+n2:e -> c17:p7:w [colorscheme="dark28", color="5", fontcolor="5", label=""];
+n3:e -> x2:s0:w [colorscheme="dark28", color="2", fontcolor="2", label=""];
+c15:p14:e -> n4:w [colorscheme="dark28", color="8", fontcolor="8", label=""];
+n4:e -> c11:p9:w [colorscheme="dark28", color="8", fontcolor="8", label=""];
+c17:p10:e -> n5:w [colorscheme="dark28", color="3", fontcolor="3", style="setlinewidth(3)", label="<3>"];
+n5:e -> x0:s0:w [colorscheme="dark28", color="3", fontcolor="3", style="setlinewidth(3)", label="<2>"];
+n5:e -> x2:s1:w [colorscheme="dark28", color="3", fontcolor="3", style="setlinewidth(3)", label="<2>"];
+c11:p10:e -> n6:w [colorscheme="dark28", color="1", fontcolor="1", label=""];
+n6:e -> c16:p12:w [colorscheme="dark28", color="1", fontcolor="1", label=""];
+v1:e -> c15:p13:w [colorscheme="dark28", color="8", fontcolor="8", style="setlinewidth(3)", label="<2>"];
+}

@@ -109,25 +109,25 @@ make CONFIG=configs/TinyFPGA-BX_BOB/config.json build
 ## some demo videos
 
 ### LinuxCNC-RIO with TinyFPGA-BX and 5Axis BOB - ATC-Test
-https://www.youtube.com/shorts/G5V5OM_ORsk
+[![LinuxCNC-RIO with TinyFPGA-BX and 5Axis BOB - ATC-Test](https://img.youtube.com/vi/G5V5OM_ORsk/0.jpg)](https://www.youtube.com/shorts/G5V5OM_ORsk "LinuxCNC-RIO with TinyFPGA-BX and 5Axis BOB - ATC-Test")
 
 ### linuxcnc with tinyfpga-bx
-https://www.youtube.com/shorts/0nTmo4afwWs
+[![linuxcnc with tinyfpga-bx](https://img.youtube.com/vi/0nTmo4afwWs/0.jpg)](https://www.youtube.com/shorts/0nTmo4afwWs "linuxcnc with tinyfpga-bx")
 
 ### Mini Closed-Loop DC-Servo on LinuxCNC-RIO
-https://www.youtube.com/shorts/0cOvUS33U_s
+[![Mini Closed-Loop DC-Servo on LinuxCNC-RIO](https://img.youtube.com/vi/0cOvUS33U_s/0.jpg)](https://www.youtube.com/shorts/0cOvUS33U_s "Mini Closed-Loop DC-Servo on LinuxCNC-RIO")
 
 ### Linuxcnc RIO with ICEBreaker FPGA
-https://www.youtube.com/watch?v=58RNJSGD0qs
+[![Linuxcnc RIO with ICEBreaker FPGA](https://img.youtube.com/vi/58RNJSGD0qs/0.jpg)](https://www.youtube.com/watch?v=58RNJSGD0qs "Linuxcnc RIO with ICEBreaker FPGA")
 
 ### LinuxCNC-RIO mixed joint types (on TangNano9K - FPGA)
-https://www.youtube.com/shorts/ZfTr1BNUK_0
+[![LinuxCNC-RIO mixed joint types (on TangNano9K - FPGA)](https://img.youtube.com/vi/ZfTr1BNUK_0/0.jpg)](https://www.youtube.com/shorts/ZfTr1BNUK_0 "LinuxCNC-RIO mixed joint types (on TangNano9K - FPGA)")
 
 ### LinuxCNC-RIO with TinyFPGA-BX and 5Axis BOB
-https://www.youtube.com/watch?v=urRHtw4bcsI
+[![LinuxCNC-RIO with TinyFPGA-BX and 5Axis BOB](https://img.youtube.com/vi/urRHtw4bcsI/0.jpg)](https://www.youtube.com/watch?v=urRHtw4bcsI "LinuxCNC-RIO with TinyFPGA-BX and 5Axis BOB")
 
 ### LinuxCNC with ICE40 for stepgen
-https://www.youtube.com/shorts/m4zXuHERiFU
+[![LinuxCNC with ICE40 for stepgen](https://img.youtube.com/vi/m4zXuHERiFU/0.jpg)](https://www.youtube.com/shorts/m4zXuHERiFU "LinuxCNC with ICE40 for stepgen")
 
 
 ---

@@ -755,6 +755,14 @@ net user-request-enable <= iocontrol.0.user-request-enable	=> rio.SPI-reset
 """
     )
 
+    ## wcomp test ##
+    # loadrt wcomp count=1
+    # addf wcomp.0 servo-thread
+    # setp wcomp.0.min 2.0
+    # setp wcomp.0.max 2.5
+    # net pressure wcomp.0.in <= rio.pressure
+    # net compressor wcomp.0.out => rio.compressor
+
     if "hy_vfd" in project["jdata"]:
         hy_vfd_dev = project["jdata"]["hy_vfd"]
         cfghal_data.append(f"loadusr -Wn vfd hy_vfd -n vfd -d {hy_vfd_dev} -p none -r 9600")

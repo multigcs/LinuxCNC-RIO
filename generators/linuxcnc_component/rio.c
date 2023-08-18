@@ -946,7 +946,7 @@ void rio_readwrite()
                 } else if (vout_type[i] == TYPE_VOUT_RCSERVO) {
                     txData.setPoint[i] = (value + 200 + 100) * (PRU_OSC / 200000);
                 } else {
-                    txData.setPoint[i] = (value - vout_min[i]) * (0xFFFFFFFF / 2) / (vout_max[i] - vout_min[i]);
+                    txData.setPoint[i] = value;
                 }
             }
 

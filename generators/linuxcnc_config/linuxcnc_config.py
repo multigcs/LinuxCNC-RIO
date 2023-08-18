@@ -804,7 +804,7 @@ net user-request-enable <= iocontrol.0.user-request-enable	=> rio.SPI-reset
         din_joint = din.get("joint", str(num))
         din_name = din.get("name", dname)
         din_net = din.get("net")
-        if din_net:
+        if din_net and din_net != "spindle.0.speed-out":
             netlist.append(din_net)
             cfghal_data.append(f"net {din_name} <= rio.{dname}")
             cfghal_data.append(f"net {din_name} => {din_net}")
@@ -832,7 +832,7 @@ net user-request-enable <= iocontrol.0.user-request-enable	=> rio.SPI-reset
         dname = dout['_name']
         dout_name = dout.get("name", dname)
         dout_net = dout.get("net")
-        if dout_net:
+        if dout_net and dout_net != "spindle.0.speed-out":
             netlist.append(dout_net)
             cfghal_data.append(f"net {dout_name} <= {dout_net}")
             cfghal_data.append(f"net {dout_name} => rio.{dname}")
@@ -846,12 +846,21 @@ net user-request-enable <= iocontrol.0.user-request-enable	=> rio.SPI-reset
     for num, vin in enumerate(project["vinnames"]):
         vname = vin['_name']
         function = vin.get("function")
+        vin_name = vin.get("name", vname)
+        vin_net = vin.get("net")
         if function == "spindle-index":
             scale = vin.get("scale", 1.0)
             cfghal_data.append(f"setp rio.{vname}-scale {scale}")
             cfghal_data.append(f"net spindle-position rio.{vname} => spindle.0.revs")
             cfghal_data.append(f"net spindle-index-enable rio.{vname}-index-enable <=> spindle.0.index-enable")
             cfghal_data.append("")
+        if vin_net and vin_net != "spindle.0.speed-out":
+            netlist.append(vin_net)
+            cfghal_data.append(f"net {vin_name} <= {vin_net}")
+            cfghal_data.append(f"net {vin_name} => rio.{vname}")
+            cfghal_data.append("")
+
+
         elif function:
             pass
 
@@ -954,8 +963,8 @@ def generate_custom_postgui_hal_qtdragon(project):
         vout_net = vout.get("net")
         if vout_net:
             cfghal_data.append(f"net {vname} => qtdragon.{vname}")
-        else:
-            cfghal_data.append(f"net {vname} qtdragon.{vname}-f rio.{vname}")
+        elif vout_net != "spindle.0.speed-out":
+            cfghal_data.append(f"net {vname} rio.{vname} => qtdragon.{vname}-f")
 
     jogwheel = False
     for num, vin in enumerate(project["vinnames"]):
@@ -982,7 +991,7 @@ def generate_custom_postgui_hal_qtdragon(project):
             cfghal_data.append("")
         elif function:
             pass
-        else:
+        elif not vin_net or vin_net == "spindle.0.speed-out":
             scale = vin.get("scale")
             if scale is not None and float(scale) != float(1.0):
                 cfghal_data.append(f"setp rio.{vname}-scale {scale}")
@@ -1070,8 +1079,8 @@ def generate_custom_postgui_hal_axis(project):
         vout_net = vout.get("net")
         if vout_net:
             cfghal_data.append(f"net {vname} => pyvcp.{vname}")
-        else:
-            cfghal_data.append(f"net {vname} pyvcp.{vname}-f rio.{vname}")
+        elif vout_net != "spindle.0.speed-out":
+            cfghal_data.append(f"net {vname} rio.{vname} => pyvcp.{vname}-f")
 
     jogwheel = False
     for num, vin in enumerate(project["vinnames"]):
@@ -1216,6 +1225,9 @@ def generate_rio_axis(project):
         elif vin.get("type") in {"vin_quadencoder", "vin_quadencoderz"}:
             cfgxml_data += gui_gen.draw_number(f"RPM - {vname}", f"{vname}-rpm")
 
+        elif vin_net == "spindle.0.speed-out":
+            cfgxml_data += gui_gen.draw_number(f"{vname}", f"{vname}")
+    
         elif function:
             pass
 
@@ -1271,7 +1283,9 @@ def generate_rio_axis(project):
         din_joint = din.get("joint", str(num))
         din_name = din.get("name", dname)
         din_net = din.get("net")
-        if din_net:
+        if din_net == "spindle.0.speed-out":
+            cfgxml_data += gui_gen.draw_led(dname, dname)
+        elif din_net:
             cfgxml_data += gui_gen.draw_led(din_name, dname)
 
     for num, vout in enumerate(project["voutnames"]):
@@ -1303,7 +1317,7 @@ def generate_rio_axis(project):
             jogwheel = True
         elif function:
             pass
-        else:
+        elif not vin_net:
             display = vin.get("display", {})
             display_type = display.get("type")
             if display_type == "meter":
@@ -1345,7 +1359,7 @@ def generate_rio_axis(project):
             jogwheel = True
         elif function:
             pass
-        else:
+        elif not vin_net:
             display = vin.get("display", {})
             display_type = display.get("type")
             if not display_type:
@@ -1588,7 +1602,7 @@ def generate_rio_qtdragon(project):
             jogwheel = True
         elif function:
             pass
-        else:
+        elif not vin_net:
             display = vin.get("display", {})
             display_type = display.get("type")
             if display_type == "meter":
@@ -1656,7 +1670,7 @@ def generate_rio_qtdragon(project):
             jogwheel = True
         elif function:
             pass
-        else:
+        elif not vin_net:
             display = vin.get("display", {})
             display_type = display.get("type")
             if display_type == "meter":

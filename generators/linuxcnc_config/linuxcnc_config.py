@@ -942,6 +942,110 @@ net user-request-enable <= iocontrol.0.user-request-enable	=> rio.SPI-reset
             cfghal_data.append(f"addf pid.{pidn}.do-pid-calcs        servo-thread")
             cfghal_data.append("")
 
+    mixedInputs = {
+        "setup": {
+            # component: [inputs:type], [outputs:type], [parameters:type]
+            "or2": ({"in0": "bit", "in1": "bit"}, {"out": "bit"}, {}),
+            "xor2": ({"in0": "bit", "in1": "bit"}, {"out": "bit"}, {}),
+            "and2": ({"in0": "bit", "in1": "bit"}, {"out": "bit"}, {}),
+            "maj3": ({"in1": "bit", "in2": "bit", "in3": "bit"}, {"out": "bit"}),
+            "mult2": ({"in0": "float", "in1": "float"}, {"out": "float"}),
+            "sum2": ({"in0": "float", "in1": "float"}, {"out": "float"}, {"gain0": "float", "gain1": "float", "offset": "float"}),
+            "hypot": ({"in0": "float", "in1": "float", "in2": "float"}, {"out": "float"}),
+            "comp": ({"in0": "float", "in1": "float"}, {"out": "bit", "equal": "bit"}, {"hyst": "float"}),
+            "blend": ({"in1": "float", "in2": "float", "select": "float"}, {"out": "float"}, {"open": "bit"}),
+            "bitwise": ({"in0": "u32", "in1": "u32", "select": "u32"}, {"out-and": "u32", "out-or": "u32", "out-xor": "u32", "out-nand": "u32", "out-nor": "u32", "out-xnor": "u32"}),
+            "clarke2": ({"a": "float", "b": "float"}, {"x": "float", "y": "float"}),
+            "clarke3": ({"a": "float", "b": "float", "c": "float"}, {"x": "float", "y": "float", "h": "float"}),
+            "deadzone": ({"in": "float"}, {"out": "float"}, {"center": "float", "threshhold": "float"}),
+            "minmax": ({"in": "float", "reset": "bit"}, {"max": "float", "min": "float"}, {}),
+        },
+        "data": {},
+    }
+    ignoreList = tuple([f"{mtype}:" for mtype in mixedInputs["setup"]])
+
+    for mtypeBase, msetup in mixedInputs["setup"].items():
+        mtypeList = [mtypeBase]
+        for oname in msetup[1]:
+            mtypeList.append(f"{mtypeBase}.{oname}")
+        for mtype in mtypeList:
+            for key, inType in {"dinnames": ["bit"], "vinnames": ["float", "u32"]}.items():
+                for num, pin in enumerate(project[key]):
+                    pname = pin['_name']
+                    pin_name = pin.get("name", pname)
+                    pin_net = pin.get("net")
+                    if pin_net and pin_net.lower().startswith(f"{mtype}:"):
+                        if "." in mtype:
+                            output = mtype.split(".", 1)[1]
+                            mtypeReal = mtype.split(".", 1)[0]
+                        else:
+                            output = [msetup[1]][0]
+                            mtypeReal = mtype
+
+                        if mtypeReal not in mixedInputs['data']:
+                            mixedInputs['data'][mtypeReal] = {}
+                        options = pin_net.split(":")
+                        target_net = options[-1]
+                        target_name = target_net.replace(".", "-")
+                        if target_name not in mixedInputs['data'][mtypeReal]:
+                            mixedInputs['data'][mtypeReal][target_name] = {
+                                "output": target_net,
+                                "inputs": {},
+                                "parameters": {},
+                            }
+                        inNames = list(msetup[0].keys())
+                        paraNames = list(msetup[2].keys())
+                        inNum = len(mixedInputs['data'][mtypeReal][target_name]["inputs"])
+                        inName = inNames[inNum]
+                        if len(options) > 2:
+                            inName = options[1]
+                        pinSource = f"rio.{pname}"
+                        if inName in inNames:
+                            if msetup[0][inName] not in inType:
+                                print(f"ERROR: input pin has wrong type, must be: {msetup[0][inName]} for {target_name} ({mtypeReal})")
+                            if inName in mixedInputs['data'][mtypeReal][target_name]["inputs"]:
+                                print(f"ERROR: input pin allready set: {inName} for {target_name} ({mtypeReal})")
+                                exit(1)
+                            if msetup[0][inName] in {"u32", "s32"}:
+                                pinSource = f"{pinSource}-s32"
+                            mixedInputs['data'][mtypeReal][target_name]["inputs"][inName] = {
+                                "name": pin_name,
+                                "pin": pinSource,
+                            }
+                        elif inName in paraNames:
+                            if msetup[2][inName] not in inType:
+                                print(f"ERROR: input pin has wrong type, must be: {msetup[2][inName]} for {target_name} ({mtypeReal})")
+                            if inName in mixedInputs['data'][mtypeReal][target_name]["parameters"]:
+                                print(f"ERROR: parameter pin allready set: {inName} for {target_name} ({mtypeReal})")
+                                exit(1)
+                            mixedInputs['data'][mtypeReal][target_name]["parameters"][inName] = {
+                                "name": pin_name,
+                                "pin": pinSource,
+                            }
+                        else:
+                            print(f"ERROR: input pin not exist: {inName} for {target_name} ({mtypeReal})")
+                            exit(1)
+
+
+    for mtype, mdata in mixedInputs['data'].items():
+        if mdata:
+            cfghal_data.append(f"loadrt {mtype} names={','.join([f'{mtype}-{name}' for name in mdata])}")
+            for name, setup in mdata.items():
+                inNames = list(mixedInputs["setup"][mtype][0].keys())
+                if len(setup["inputs"]) != len(inNames):
+                    print(f"ERROR: each {mtype} component needs #{len(inNames)} inputs: {setup['inputs']}")
+                    exit(1)
+                for inputName, inputPin in setup["inputs"].items():
+                    cfghal_data.append(f"net {inputPin['name']} {inputPin['pin']} => {mtype}-{name}.{inputName}")
+                for inputName, inputPin in setup["parameters"].items():
+                    cfghal_data.append(f"net {inputPin['name']} {inputPin['pin']} => {mtype}-{name}.{inputName}")
+                outNames = list(mixedInputs["setup"][mtype][1].keys())
+                cfghal_data.append(f"net {name} {mtype}-{name}.{outNames[0]}")
+                cfghal_data.append(f"net {name} {setup['output']}")
+            cfghal_data.append("")
+
+
+
     for num, vout in enumerate(project["voutnames"]):
         vname = vout['_name']
         vout_name = vout.get("name", vname)
@@ -954,11 +1058,14 @@ net user-request-enable <= iocontrol.0.user-request-enable	=> rio.SPI-reset
 
     for num, din in enumerate(project["dinnames"]):
         dname = project["dinnames"][num]['_name']
-        invert = din.get("invert", False)
         din_type = din.get("type")
         din_joint = din.get("joint", str(num))
         din_name = din.get("name", dname)
         din_net = din.get("net")
+
+        if din_net and din_net.lower().startswith(ignoreList):
+            continue
+
         if din_net and din_net != "spindle.0.speed-out":
             netlist.append(din_net)
             cfghal_data.append(f"net {din_name} <= rio.{dname}")
@@ -1008,6 +1115,10 @@ net user-request-enable <= iocontrol.0.user-request-enable	=> rio.SPI-reset
         function = vin.get("function")
         vin_name = vin.get("name", vname)
         vin_net = vin.get("net")
+
+        if vin_net and din_net.lower().startswith(ignoreList):
+            continue
+
         if function == "spindle-index":
             scale = vin.get("scale", 1.0)
             cfghal_data.append(f"setp rio.{vname}-scale {scale}")
@@ -1102,20 +1213,20 @@ def generate_custom_postgui_hal(project):
         prefix = "pyvcp"
 
 
-    cfghal_data = []
-    cfghal_data.append("")
+    customhal_data = []
+    customhal_data.append("")
 
-    cfghal_data.append(f"# doutnames")
+    customhal_data.append(f"# doutnames")
     for num, dout in enumerate(project["doutnames"]):
         dname = dout['_name']
         dout_name = dout.get("name", dname)
         dout_net = dout.get("net")
         if dout_net:
-            cfghal_data.append(f"net {dname} => {prefix}.{dname}")
+            customhal_data.append(f"net {dname} => {prefix}.{dname}")
         elif not dname.endswith("-index-enable"):
-            cfghal_data.append(f"net {dname} {prefix}.{dname} rio.{dname}")
+            customhal_data.append(f"net {dname} {prefix}.{dname} rio.{dname}")
 
-    cfghal_data.append(f"# dinnames")
+    customhal_data.append(f"# dinnames")
     for num, din in enumerate(project["dinnames"]):
         dname = din['_name']
         din_type = din.get("type")
@@ -1123,27 +1234,27 @@ def generate_custom_postgui_hal(project):
         din_name = din.get("name", dname)
         din_net = din.get("net")
         if din_net:
-            cfghal_data.append(f"net {dname} => {prefix}.{dname}")
+            customhal_data.append(f"net {dname} => {prefix}.{dname}")
         elif din_type == "alarm" and din_joint:
             pass
         elif din_type == "home" and din_joint:
             pass
         elif not dname.endswith("-index-enable-out"):
-            cfghal_data.append(
+            customhal_data.append(
                 f"net {dname} rio.{dname} {prefix}.{dname}"
             )
 
-    cfghal_data.append(f"# voutnames")
+    customhal_data.append(f"# voutnames")
     for num, vout in enumerate(project["voutnames"]):
         vname = vout['_name']
         vout_name = vout.get("name", f"vout{num}")
         vout_net = vout.get("net")
         if vout_net:
-            cfghal_data.append(f"net {vname} => {prefix}.{vname}")
+            customhal_data.append(f"net {vname} => {prefix}.{vname}")
         elif vout_net != "spindle.0.speed-out":
-            cfghal_data.append(f"net {vname} rio.{vname} => {prefix}.{vname}-f")
+            customhal_data.append(f"net {vname} rio.{vname} => {prefix}.{vname}-f")
 
-    cfghal_data.append(f"# vinnames")
+    customhal_data.append(f"# vinnames")
     jogwheel = False
     for num, vin in enumerate(project["vinnames"]):
         vname = vin['_name']
@@ -1157,81 +1268,81 @@ def generate_custom_postgui_hal(project):
         if function == "jogwheel" and not jogwheel:
             jogwheel = True
             if gui != "qtdragon":
-                cfghal_data.append("")
-                cfghal_data.append("# jog-wheel")
-                cfghal_data.append(f"loadrt mux8 count=1")
-                cfghal_data.append(f"addf mux8.0 servo-thread")
-                cfghal_data.append(f"setp mux8.0.in1 0.01")
-                cfghal_data.append(f"setp mux8.0.in2 0.1")
-                cfghal_data.append(f"setp mux8.0.in4 1.0")
-                cfghal_data.append(f"net scale1 mux8.0.sel0 <= {prefix}.jog-scale.001")
-                cfghal_data.append(f"net scale2 mux8.0.sel1 <= {prefix}.jog-scale.01")
-                cfghal_data.append(f"net scale3 mux8.0.sel2 <= {prefix}.jog-scale.1")
-                cfghal_data.append(f"net jog-scale <= mux8.0.out")
-                cfghal_data.append(f"net jog-vel-mode <= {prefix}.jog-mode")
+                customhal_data.append("")
+                customhal_data.append("# jog-wheel")
+                customhal_data.append(f"loadrt mux8 count=1")
+                customhal_data.append(f"addf mux8.0 servo-thread")
+                customhal_data.append(f"setp mux8.0.in1 0.01")
+                customhal_data.append(f"setp mux8.0.in2 0.1")
+                customhal_data.append(f"setp mux8.0.in4 1.0")
+                customhal_data.append(f"net scale1 mux8.0.sel0 <= {prefix}.jog-scale.001")
+                customhal_data.append(f"net scale2 mux8.0.sel1 <= {prefix}.jog-scale.01")
+                customhal_data.append(f"net scale3 mux8.0.sel2 <= {prefix}.jog-scale.1")
+                customhal_data.append(f"net jog-scale <= mux8.0.out")
+                customhal_data.append(f"net jog-vel-mode <= {prefix}.jog-mode")
                 for jnum in range(min(project["joints"], len(axis_names))):
                     # limit axis configurations
                     if jnum >= num_joints:
                         continue
                     axis_str = axis_names[jnum].lower()
-                    cfghal_data.append(f"net jog-vel-mode => joint.{jnum}.jog-vel-mode axis.{axis_str}.jog-vel-mode")
-                    cfghal_data.append(f"net jog-scale => joint.{jnum}.jog-scale axis.{axis_str}.jog-scale")
-                    cfghal_data.append(f"net jog-counts => joint.{jnum}.jog-counts axis.{axis_str}.jog-counts")
-                    #cfghal_data.append(f"net jog-enable-{axis_str} axisui.jog.{axis_str} => joint.{jnum}.jog-enable axis.{axis_str}.jog-enable")
-                    cfghal_data.append(f"net jog-enable-{axis_str} {prefix}.jog-axis.{axis_str} => joint.{jnum}.jog-enable axis.{axis_str}.jog-enable")
-                cfghal_data.append(f"net jog-counts <= rio.{vname}-s32")
-            cfghal_data.append("")
+                    customhal_data.append(f"net jog-vel-mode => joint.{jnum}.jog-vel-mode axis.{axis_str}.jog-vel-mode")
+                    customhal_data.append(f"net jog-scale => joint.{jnum}.jog-scale axis.{axis_str}.jog-scale")
+                    customhal_data.append(f"net jog-counts => joint.{jnum}.jog-counts axis.{axis_str}.jog-counts")
+                    #customhal_data.append(f"net jog-enable-{axis_str} axisui.jog.{axis_str} => joint.{jnum}.jog-enable axis.{axis_str}.jog-enable")
+                    customhal_data.append(f"net jog-enable-{axis_str} {prefix}.jog-axis.{axis_str} => joint.{jnum}.jog-enable axis.{axis_str}.jog-enable")
+                customhal_data.append(f"net jog-counts <= rio.{vname}-s32")
+            customhal_data.append("")
         elif function in ["feed-override", "rapid-override", "spindle.0.override", "spindle.1.override"]:
             if gui != "qtdragon":
-                cfghal_data.append("")
-                cfghal_data.append(f"# {function}")
+                customhal_data.append("")
+                customhal_data.append(f"# {function}")
                 if vin['type'] == "ads1115":
-                    cfghal_data.append(f"setp rio.{vname}-scale 0.3025")
+                    customhal_data.append(f"setp rio.{vname}-scale 0.3025")
                 else:
-                    cfghal_data.append(f"setp rio.{vname}-scale 1.0")
-                cfghal_data.append(f"setp halui.{function}.direct-value 1")
-                cfghal_data.append(f"setp halui.{function}.scale 0.01")
-                cfghal_data.append(f"net {function} rio.{vname}-s32 => halui.{function}.counts")
-            cfghal_data.append("")
+                    customhal_data.append(f"setp rio.{vname}-scale 1.0")
+                customhal_data.append(f"setp halui.{function}.direct-value 1")
+                customhal_data.append(f"setp halui.{function}.scale 0.01")
+                customhal_data.append(f"net {function} rio.{vname}-s32 => halui.{function}.counts")
+            customhal_data.append("")
         elif function:
             pass
         else:
             scale = vin.get("scale")
             if scale is not None and float(scale) != float(1.0):
-                cfghal_data.append(f"setp rio.{vname}-scale {scale}")
+                customhal_data.append(f"setp rio.{vname}-scale {scale}")
             offset = vin.get("offset")
             if offset is not None and float(offset) != float(0.0):
-                cfghal_data.append(f"setp rio.{vname}-offset {offset}")
+                customhal_data.append(f"setp rio.{vname}-offset {offset}")
 
             if display_type == "meter" and gui == "qtdragon":
-                cfghal_data.append(f"net {vname} rio.{vname} {prefix}.{vname}_value")
+                customhal_data.append(f"net {vname} rio.{vname} {prefix}.{vname}_value")
             else:
                 if vin_net:
-                    cfghal_data.append(f"net {vname} {prefix}.{vname}")
+                    customhal_data.append(f"net {vname} {prefix}.{vname}")
                 else:
-                    cfghal_data.append(f"net {vname} rio.{vname} {prefix}.{vname}")
+                    customhal_data.append(f"net {vname} rio.{vname} {prefix}.{vname}")
 
 
         if vin.get("type") in {"vin_quadencoder", "vin_quadencoderz"}:
-            cfghal_data.append(f"net {vname}-rpm rio.{vname}-rpm {prefix}.{vname}-rpm")
+            customhal_data.append(f"net {vname}-rpm rio.{vname}-rpm {prefix}.{vname}-rpm")
 
     if gui != "qtdragon":
-        cfghal_data.append(f"net zeroxy halui.mdi-command-00 <= {prefix}.zeroxy")
-        cfghal_data.append(f"net zeroz halui.mdi-command-01 <= {prefix}.zeroz")
+        customhal_data.append(f"net zeroxy halui.mdi-command-00 <= {prefix}.zeroxy")
+        customhal_data.append(f"net zeroz halui.mdi-command-01 <= {prefix}.zeroz")
         if "motion.probe-input" in netlist:
-            cfghal_data.append(f"net ztouch halui.mdi-command-02 <= {prefix}.ztouch")
+            customhal_data.append(f"net ztouch halui.mdi-command-02 <= {prefix}.ztouch")
 
         # spindle.0
         if "hy_vfd" in project["jdata"]:
-            cfghal_data.append(f"net {prefix}-spindle-at-speed   vfd.spindle-at-speed      => {prefix}.spindle-at-speed")
-            cfghal_data.append(f"net {prefix}-spindle-speed_fb   vfd.spindle-speed-fb      => {prefix}.spindle-speed")
-            cfghal_data.append(f"net {prefix}-hycomm-ok          vfd.hycomm-ok             => {prefix}.hycomm-ok")
-            cfghal_data.append(f"#net {prefix}-spindle-voltage    vfd.rated-motor-voltage   => {prefix}.spindle-voltage")
-            cfghal_data.append(f"#net {prefix}-spindle-current    vfd.rated-motor-current   => {prefix}.spindle-current")
+            customhal_data.append(f"net {prefix}-spindle-at-speed   vfd.spindle-at-speed      => {prefix}.spindle-at-speed")
+            customhal_data.append(f"net {prefix}-spindle-speed_fb   vfd.spindle-speed-fb      => {prefix}.spindle-speed")
+            customhal_data.append(f"net {prefix}-hycomm-ok          vfd.hycomm-ok             => {prefix}.hycomm-ok")
+            customhal_data.append(f"#net {prefix}-spindle-voltage    vfd.rated-motor-voltage   => {prefix}.spindle-voltage")
+            customhal_data.append(f"#net {prefix}-spindle-current    vfd.rated-motor-current   => {prefix}.spindle-current")
 
 
     open(f"{project['LINUXCNC_PATH']}/ConfigSamples/rio/custom_postgui.hal", "w").write(
-        "\n".join(cfghal_data)
+        "\n".join(customhal_data)
     )
 
     postgui_list = []

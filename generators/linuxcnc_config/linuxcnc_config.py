@@ -3,6 +3,7 @@ import os
 import sys
 
 axis_names = ["X", "Y", "Z", "A", "C", "B", "U", "V", "W"]
+netlist = []
 
 class qtdragon():
     #
@@ -475,7 +476,7 @@ class axis():
         cfgxml_data.append("    <bd>2</bd>")
         cfgxml_data.append("    <led>")
         cfgxml_data.append(f'      <halpin>"{halpin}"</halpin>')
-        cfgxml_data.append("      <size>10</size>")
+        cfgxml_data.append("      <size>16</size>")
         cfgxml_data.append('      <on_color>"green"</on_color>')
         cfgxml_data.append('      <off_color>"black"</off_color>')
         cfgxml_data.append("    </led>")
@@ -488,14 +489,10 @@ class axis():
 
 
 def generate_rio_ini(project):
+    global netlist
     gui = project["jdata"].get("gui", "axis")
     limit_joints = int(project["jdata"].get("axis", 9))
     num_joints = min(project['joints'], limit_joints)
-    netlist = []
-    for num, din in enumerate(project["dinnames"]):
-        din_net = din.get("net")
-        if din_net:
-            netlist.append(din_net)
 
     axis_str = ""
     axis_str2 = ""
@@ -865,7 +862,13 @@ MIN_FERROR = 0.5
     )
 
 def generate_rio_hal(project):
+    global netlist
     netlist = []
+    for num, din in enumerate(project["dinnames"]):
+        din_net = din.get("net")
+        if din_net:
+            netlist.append(din_net)
+
     gui = project["jdata"].get("gui", "axis")
     limit_joints = int(project["jdata"].get("axis", 9))
     num_joints = min(project['joints'], limit_joints)
@@ -1031,6 +1034,7 @@ net user-request-enable <= iocontrol.0.user-request-enable	=> rio.SPI-reset
         if mdata:
             cfghal_data.append(f"loadrt {mtype} names={','.join([f'{mtype}-{name}' for name in mdata])}")
             for name, setup in mdata.items():
+                cfghal_data.append(f"addf {mtype}-{name} servo-thread")
                 inNames = list(mixedInputs["setup"][mtype][0].keys())
                 if len(setup["inputs"]) != len(inNames):
                     print(f"ERROR: each {mtype} component needs #{len(inNames)} inputs: {setup['inputs']}")
@@ -1040,8 +1044,9 @@ net user-request-enable <= iocontrol.0.user-request-enable	=> rio.SPI-reset
                 for inputName, inputPin in setup["parameters"].items():
                     cfghal_data.append(f"net {inputPin['name']} {inputPin['pin']} => {mtype}-{name}.{inputName}")
                 outNames = list(mixedInputs["setup"][mtype][1].keys())
-                cfghal_data.append(f"net {name} {mtype}-{name}.{outNames[0]}")
-                cfghal_data.append(f"net {name} {setup['output']}")
+                cfghal_data.append(f"net {name} <= {mtype}-{name}.{outNames[0]}")
+                cfghal_data.append(f"net {name} => {setup['output']}")
+                netlist.append(setup['output'])
             cfghal_data.append("")
 
 
@@ -1201,12 +1206,6 @@ net j{num}enable 		<= joint.{num}.amp-enable-out 	=> rio.joint.{num}.enable
 def generate_custom_postgui_hal(project):
     gui = project["jdata"].get("gui", "axis")
 
-    netlist = []
-    for num, din in enumerate(project["dinnames"]):
-        din_net = din.get("net")
-        if din_net:
-            netlist.append(din_net)
-
     if gui == "qtdragon":
         prefix = "qtdragon"
     else:
@@ -1353,11 +1352,6 @@ def generate_custom_postgui_hal(project):
 
 
 def generate_rio_gui(project):
-    netlist = []
-    for num, din in enumerate(project["dinnames"]):
-        din_net = din.get("net")
-        if din_net:
-            netlist.append(din_net)
 
     gui = project["jdata"].get("gui", "axis")
 
@@ -1681,8 +1675,8 @@ def generate_tool_tbl(project):
 def generate(project):
     gui = project["jdata"].get("gui", "axis")
     print(f"generating linux-cnc config: {gui}")
-    generate_rio_ini(project)
     generate_rio_hal(project)
+    generate_rio_ini(project)
     generate_custom_postgui_hal(project)
     generate_rio_gui(project)
     generate_tool_tbl(project)

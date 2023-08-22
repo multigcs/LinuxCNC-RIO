@@ -67,9 +67,7 @@ class Plugin:
                 name = data.get("name", f"PV.{num}")
                 nameIntern = name.replace(".", "").replace("-", "_").upper()
                 freq_min = int(data.get("freq_min", 10))
-                debounce = data.get("debounce", True)
-
-
+                debounce = data.get("debounce", False)
                 if debounce:
                     ret.append(f"    wire VIN{num}_FREQUENCY_DEBOUNCED;")
                     ret.append(f"    debouncer #(16) din_debouncer{num} (")

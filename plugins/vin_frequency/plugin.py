@@ -68,9 +68,12 @@ class Plugin:
                 nameIntern = name.replace(".", "").replace("-", "_").upper()
                 freq_min = int(data.get("freq_min", 10))
                 debounce = data.get("debounce", False)
+                debounce_val = 16
                 if debounce:
+                    if isinstance(debounce, int):
+                        debounce_val = debounce
                     ret.append(f"    wire VIN{num}_FREQUENCY_DEBOUNCED;")
-                    ret.append(f"    debouncer #(16) din_debouncer{num} (")
+                    ret.append(f"    debouncer #({debounce_val}) din_debouncer{num} (")
                     ret.append("        .clk (sysclk),")
                     ret.append(f"        .SIGNAL (VIN{num}_FREQUENCY),")
                     ret.append(f"        .SIGNAL_state (VIN{num}_FREQUENCY_DEBOUNCED)")

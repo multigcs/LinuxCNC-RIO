@@ -75,9 +75,12 @@ class Plugin:
                 name = data.get("name") or f"DIN.{num}"
                 nameIntern = name.replace(".", "").replace("-", "_").upper()
                 debounce = data.get("debounce", False)
+                debounce_val = 16
                 if debounce:
+                    if isinstance(debounce, int):
+                        debounce_val = debounce
                     ret.append(f"    wire {nameIntern};")
-                    ret.append(f"    debouncer #(22) din_debouncer{num} (")
+                    ret.append(f"    debouncer #({debounce_val}) din_debouncer{num} (")
                     ret.append("        .clk (sysclk),")
                     ret.append(f"        .SIGNAL ({nameIntern}_RAW),")
                     ret.append(f"        .SIGNAL_state ({nameIntern})")

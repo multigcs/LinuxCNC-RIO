@@ -116,6 +116,7 @@ net home-x => joint.0.home-sw-in
 
 </td>
 <td>
+this also activates the homing setup in the ini file for this axis
 
 ```ini
 HOME_SEARCH_VEL = -10.0

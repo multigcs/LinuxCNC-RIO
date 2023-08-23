@@ -21,11 +21,34 @@ parser.add_argument(
 args = parser.parse_args()
 
 
+if not os.path.isfile(args.configfile):
+    print("")
+    print(f"this is not a file: {args.configfile}")
+    print("")
+    exit(1)
+
 project["config"] = args.configfile
 
 
-data = open(project["config"], "r").read()
-project["jdata"] = json.loads(data)
+try:
+    with open(project["config"], "r") as f:
+        data = f.read()
+except IOError as err:
+    print("")
+    print(err)
+    print("")
+    exit(1)
+
+
+try:
+    project["jdata"] = json.loads(data)
+except ValueError as err:
+    print("")
+    print(f"JSON error: {err}")
+    print("please check your json syntax")
+    print("")
+    exit(1)
+
 if "plugins" not in project["jdata"]:
     print("ERROR: old json config format, please run 'python3 convert-configs.py'")
     sys.exit(1)

@@ -725,11 +725,7 @@ def generate_rio_ini(project):
                 cfgini_data.append(f"{key} = {value}")
         cfgini_data.append("")
 
-
-
     for num, axis in enumerate(axis_str):
-        print("##", num, axis)
-
         for joint in project["jointnames"]:
             AXIS_NAME = joint.get("axis", axis_names[num])
 
@@ -771,7 +767,11 @@ def generate_rio_ini(project):
             SCALE = 80.0
             MIN_LIMIT = -110
             MAX_LIMIT = 110
+            MAX_VELOCITY = 40
+            MAX_ACCELERATION = 70
         else:
+            MAX_VELOCITY = 40
+            MAX_ACCELERATION = 70
             if AXIS_NAME in "ACBUVW":
                 SCALE = 223.0
                 MIN_LIMIT = -360
@@ -781,17 +781,12 @@ def generate_rio_ini(project):
                 MIN_LIMIT = -1300
                 MAX_LIMIT = 1300
 
+        AXIS_NAME = joint.get("axis", axis_names[num])
         OUTPUT_SCALE = joint.get("scale", SCALE)
         INPUT_SCALE = joint.get("enc_scale", OUTPUT_SCALE)
-        MIN_LIMIT = joint.get("min_limit", MIN_LIMIT)
-        MAX_LIMIT = joint.get("max_limit", MAX_LIMIT)
-        MAX_VELOCITY = joint.get("max_velocity", 40)
-        MAX_ACCELERATION = joint.get("max_acceleration", 70)
-        AXIS_NAME = joint.get("axis", axis_names[num])
-
-        cfgini_data.append(f"[JOINT_{num}]")
         scales = f"SCALE = {OUTPUT_SCALE}"
 
+        cfgini_data.append(f"[JOINT_{num}]")
         if joint.get("cl", False):
             for key, default in {
                 "P": "1",
@@ -808,84 +803,51 @@ def generate_rio_ini(project):
 
             scales = f"OUTPUT_SCALE = {OUTPUT_SCALE}\nINPUT_SCALE = {INPUT_SCALE}"
 
+        joint_options = {
+            "TYPE": joint.get("axis_type", "LINEAR"),
+            "MIN_LIMIT": joint.get("min_limit", MIN_LIMIT),
+            "MAX_LIMIT": joint.get("max_limit", MAX_LIMIT),
+            "MAX_VELOCITY": joint.get("max_velocity", MAX_VELOCITY),
+            "MAX_ACCELERATION": joint.get("max_acceleration", MAX_ACCELERATION),
+            "STEPGEN_MAXACCEL": joint.get("stepgen_maxaccel", 4000.0),
+            "FERROR": joint.get("ferror", 1.0),
+            "MIN_FERROR": joint.get("min_ferror", 0.5),
+        }
+
         if AXIS_NAME in "ACBUVW":
             # rotary axis
-            cfgini_data.append(
-                f"""TYPE = ANGULAR
-MIN_LIMIT = {MIN_LIMIT}
-MAX_LIMIT = {MAX_LIMIT}
-MAX_VELOCITY = {MAX_VELOCITY}
-MAX_ACCELERATION = {MAX_ACCELERATION}
-STEPGEN_MAXACCEL = 4000.0
-{scales}
-FERROR = 1.0
-MIN_FERROR = 0.5
+            joint_options["TYPE"] = joint.get("axis_type", "ANGULAR")
 
-HOME_OFFSET = 0.0
-HOME_SEARCH_VEL = 0
-HOME_LATCH_VEL = 0
-HOME_SEQUENCE = 0
+        for key, value in joint_options.items():
+            cfgini_data.append(f"{key} = {value}")
+        cfgini_data.append(scales)
+        cfgini_data.append("")
 
-#HOME_SEARCH_VEL = 20.0
-#HOME_LATCH_VEL = 3.0
-#HOME_FINAL_VEL = -20
-#HOME_IGNORE_LIMITS = YES
-#HOME_USE_INDEX = NO
-#HOME_OFFSET = 6.5
-#HOME = 0.0
-#HOME_SEQUENCE = 4
 
-"""
-            )
-        else:
-            cfgini_data.append(
-                f"""TYPE = LINEAR
-MIN_LIMIT = {MIN_LIMIT}
-MAX_LIMIT = {MAX_LIMIT}
-MAX_VELOCITY = {MAX_VELOCITY}
-MAX_ACCELERATION = {MAX_ACCELERATION}
-STEPGEN_MAXACCEL = 4000.0
-{scales}
-FERROR = 1.0
-MIN_FERROR = 0.5
-"""
-            )
+        HOME_SEQUENCE = 1
+        if AXIS_NAME == "Z":
+            HOME_SEQUENCE = 0
 
-            HOME_SEQUENCE = 1
-            if num == 2:
-                HOME_SEQUENCE = 0
+        REV = 1.0
+        if OUTPUT_SCALE < 0:
+            REV = -1.0
 
-            if f"joint.{num}.home-sw-in" in netlist:
-                REV = 1.0
-                if OUTPUT_SCALE < 0:
-                    REV = -1.0
+        home_options = {
+            "HOME_SEQUENCE": joint.get("home_sequence", 10),
+            "HOME_SEARCH_VEL": joint.get("home_search_vel", 10.0 * REV),
+            "HOME_LATCH_VEL": joint.get("home_latch_vel", 3.0 * REV),
+            "HOME_FINAL_VEL": joint.get("home_final_vel", -5.0 * REV),
+            "HOME_IGNORE_LIMITS": "YES",
+            "HOME_USE_INDEX": "NO",
+            "HOME_OFFSET": joint.get("home_offset", 0.0),
+            "HOME": 0.0,
+        }
+        if f"joint.{num}.home-sw-in" in netlist:
+            home_options["HOME_SEQUENCE"] = joint.get("home_sequence", HOME_SEQUENCE)
 
-                options = {
-                    "HOME_SEQUENCE": joint.get("home_sequence", HOME_SEQUENCE),
-                    "HOME_SEARCH_VEL": joint.get("home_search_vel", 10.0 * REV),
-                    "HOME_LATCH_VEL": joint.get("home_latch_vel", 3.0 * REV),
-                    "HOME_FINAL_VEL": joint.get("home_final_vel", -5.0 * REV),
-                    "HOME_IGNORE_LIMITS": "YES",
-                    "HOME_USE_INDEX": "NO",
-                    "HOME_OFFSET": joint.get("home_offset", 0.0),
-                    "HOME": 0.0,
-                }
-            else:
-                options = {
-                    "HOME_SEQUENCE": joint.get("home_sequence", 4),
-                    "HOME_SEARCH_VEL": joint.get("home_search_vel", 10.0 * REV),
-                    "HOME_LATCH_VEL": joint.get("home_latch_vel", 3.0 * REV),
-                    "HOME_FINAL_VEL": joint.get("home_final_vel", -5.0 * REV),
-                    "HOME_IGNORE_LIMITS": "YES",
-                    "HOME_USE_INDEX": "NO",
-                    "HOME_OFFSET": 0.0,
-                    "HOME": 0.0,
-                }
-
-            for key, value in options.items():
-                cfgini_data.append(f"{key} = {value}")
-
-            cfgini_data.append("")
+        for key, value in home_options.items():
+            cfgini_data.append(f"{key} = {value}")
+        cfgini_data.append("")
 
     open(f"{project['LINUXCNC_PATH']}/ConfigSamples/rio/rio.ini", "w").write(
         "\n".join(cfgini_data)

@@ -491,17 +491,34 @@ class axis():
 def generate_rio_ini(project):
     global netlist
     gui = project["jdata"].get("gui", "axis")
-    limit_joints = int(project["jdata"].get("axis", 9))
-    num_joints = min(project['joints'], limit_joints)
+    limit_axis = int(project["jdata"].get("axis", 9))
+    num_axis = min(project['joints'], limit_axis)
+    num_joints = min(project['joints'], 9)
 
     axis_str = ""
-    axis_str2 = ""
+    traj_axis_list = []
     for num in range(min(project["joints"], len(axis_names))):
+        # limit axis configurations
+        if num >= num_axis:
+            continue
+        axis_str += axis_names[num]
+        traj_axis_list.append(axis_names[num])
+
+
+    for num, joint in enumerate(project["jointnames"]):
         # limit axis configurations
         if num >= num_joints:
             continue
-        axis_str += axis_names[num]
-        axis_str2 += " " + axis_names[num]
+        AXIS_NAME = joint.get("axis", axis_names[num])
+        if AXIS_NAME not in axis_str:
+            continue
+        if num >= len(traj_axis_list):
+            print("append")
+            traj_axis_list.append(AXIS_NAME)
+        else:
+            traj_axis_list[num] = AXIS_NAME
+
+
 
     if gui == "qtdragon":
         basic_setup = {
@@ -561,7 +578,7 @@ def generate_rio_ini(project):
 
             "KINS": {
                 "JOINTS": num_joints,
-                "KINEMATICS": f"trivkins coordinates={axis_str}",
+                "KINEMATICS": f"trivkins coordinates={''.join(traj_axis_list)}",
             },
             "TASK": {
                 "TASK": "milltask",
@@ -592,7 +609,7 @@ def generate_rio_ini(project):
                 "USE_PROBE": "basicprobe",
             },
             "TRAJ": {
-                "COORDINATES": axis_str2,
+                "COORDINATES": " ".join(traj_axis_list),
                 "LINEAR_UNITS": "mm",
                 "ANGULAR_UNITS": "degree",
                 "CYCLE_TIME": 0.010,
@@ -644,7 +661,7 @@ def generate_rio_ini(project):
             },
             "KINS": {
                 "JOINTS": num_joints,
-                "KINEMATICS": f"trivkins coordinates={axis_str}",
+                "KINEMATICS": f"trivkins coordinates={''.join(traj_axis_list)}",
             },
             "FILTER": {
                 "PROGRAM_EXTENSION": ".py Python Script",
@@ -679,7 +696,7 @@ def generate_rio_ini(project):
                 ],
             },
             "TRAJ": {
-                "COORDINATES": axis_str2,
+                "COORDINATES": " ".join(traj_axis_list),
                 "LINEAR_UNITS": "mm",
                 "ANGULAR_UNITS": "degree",
                 "CYCLE_TIME": 0.010,
@@ -709,6 +726,42 @@ def generate_rio_ini(project):
         cfgini_data.append("")
 
 
+
+    for num, axis in enumerate(axis_str):
+        print("##", num, axis)
+
+        for joint in project["jointnames"]:
+            AXIS_NAME = joint.get("axis", axis_names[num])
+
+            if AXIS_NAME == axis:
+                if joint.get("type") == "rcservo":
+                    SCALE = 80.0
+                    MIN_LIMIT = -110
+                    MAX_LIMIT = 110
+                else:
+                    if AXIS_NAME in "ACBUVW":
+                        SCALE = 223.0
+                        MIN_LIMIT = -360
+                        MAX_LIMIT = 360
+                    else:
+                        SCALE = 800.0
+                        MIN_LIMIT = -1300
+                        MAX_LIMIT = 1300
+
+                MIN_LIMIT = joint.get("min_limit", MIN_LIMIT)
+                MAX_LIMIT = joint.get("max_limit", MAX_LIMIT)
+                MAX_VELOCITY = joint.get("max_velocity", 40)
+                MAX_ACCELERATION = joint.get("max_acceleration", 70)
+
+                cfgini_data.append(f"[AXIS_{AXIS_NAME}]")
+                cfgini_data.append(f"MAX_VELOCITY = {MAX_VELOCITY}")
+                cfgini_data.append(f"MAX_ACCELERATION = {MAX_ACCELERATION}")
+                cfgini_data.append(f"MIN_LIMIT = {MIN_LIMIT}")
+                cfgini_data.append(f"MAX_LIMIT = {MAX_LIMIT}")
+                cfgini_data.append("")
+                break
+
+
     for num, joint in enumerate(project["jointnames"]):
         # limit axis configurations
         if num >= num_joints:
@@ -719,7 +772,7 @@ def generate_rio_ini(project):
             MIN_LIMIT = -110
             MAX_LIMIT = 110
         else:
-            if num > 2:
+            if AXIS_NAME in "ACBUVW":
                 SCALE = 223.0
                 MIN_LIMIT = -360
                 MAX_LIMIT = 360
@@ -734,24 +787,7 @@ def generate_rio_ini(project):
         MAX_LIMIT = joint.get("max_limit", MAX_LIMIT)
         MAX_VELOCITY = joint.get("max_velocity", 40)
         MAX_ACCELERATION = joint.get("max_acceleration", 70)
-        cfgini_data.append(f"[AXIS_{axis_names[num]}]")
-
-        if num > 2:
-            cfgini_data.append(
-                f"""MAX_VELOCITY = {MAX_VELOCITY}
-MAX_ACCELERATION = {MAX_ACCELERATION}
-MIN_LIMIT = {MIN_LIMIT}
-MAX_LIMIT = {MAX_LIMIT}
-"""
-            )
-        else:
-            cfgini_data.append(
-                f"""MAX_VELOCITY = {MAX_VELOCITY}
-MAX_ACCELERATION = {MAX_ACCELERATION}
-MIN_LIMIT = {MIN_LIMIT}
-MAX_LIMIT = {MAX_LIMIT}
-"""
-            )
+        AXIS_NAME = joint.get("axis", axis_names[num])
 
         cfgini_data.append(f"[JOINT_{num}]")
         scales = f"SCALE = {OUTPUT_SCALE}"
@@ -772,7 +808,7 @@ MAX_LIMIT = {MAX_LIMIT}
 
             scales = f"OUTPUT_SCALE = {OUTPUT_SCALE}\nINPUT_SCALE = {INPUT_SCALE}"
 
-        if num > 2:
+        if AXIS_NAME in "ACBUVW":
             # rotary axis
             cfgini_data.append(
                 f"""TYPE = ANGULAR
@@ -864,17 +900,15 @@ def generate_rio_hal(project):
             netlist.append(din_net)
 
     gui = project["jdata"].get("gui", "axis")
-    limit_joints = int(project["jdata"].get("axis", 9))
-    num_joints = min(project['joints'], limit_joints)
+    limit_axis = int(project["jdata"].get("axis", 9))
+    num_joints = min(project['joints'], 9)
 
     axis_str = ""
-    axis_str2 = ""
     for num in range(min(project["joints"], len(axis_names))):
         # limit axis configurations
         if num >= num_joints:
             continue
         axis_str += axis_names[num]
-        axis_str2 += " " + axis_names[num]
 
     cfghal_data = []
     ctrl_types = []

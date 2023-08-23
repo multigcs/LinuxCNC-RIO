@@ -493,7 +493,7 @@ def generate_rio_ini(project):
     gui = project["jdata"].get("gui", "axis")
     limit_axis = int(project["jdata"].get("axis", 9))
     num_axis = min(project['joints'], limit_axis)
-    num_joints = min(project['joints'], 9)
+    num_joints = min(project['joints'], limit_axis)
 
     axis_str = ""
     traj_axis_list = []
@@ -863,7 +863,7 @@ def generate_rio_hal(project):
 
     gui = project["jdata"].get("gui", "axis")
     limit_axis = int(project["jdata"].get("axis", 9))
-    num_joints = min(project['joints'], 9)
+    num_joints = min(project['joints'], limit_axis)
 
     axis_str = ""
     for num in range(min(project["joints"], len(axis_names))):

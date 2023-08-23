@@ -823,33 +823,27 @@ MIN_FERROR = 0.5
                 REV = 1.0
                 if OUTPUT_SCALE < 0:
                     REV = -1.0
-                #if num == 2:
-                #    REV *= -1.0
 
                 options = {
-                    "HOME_SEARCH_VEL": 10.0 * REV,
-                    "HOME_LATCH_VEL": 3.0 * REV,
-                    "HOME_FINAL_VEL": -5.0 * REV,
+                    "HOME_SEQUENCE": joint.get("home_sequence", HOME_SEQUENCE),
+                    "HOME_SEARCH_VEL": joint.get("home_search_vel", 10.0 * REV),
+                    "HOME_LATCH_VEL": joint.get("home_latch_vel", 3.0 * REV),
+                    "HOME_FINAL_VEL": joint.get("home_final_vel", -5.0 * REV),
+                    "HOME_IGNORE_LIMITS": "YES",
+                    "HOME_USE_INDEX": "NO",
+                    "HOME_OFFSET": joint.get("home_offset", 0.0),
+                    "HOME": 0.0,
+                }
+            else:
+                options = {
+                    "HOME_SEQUENCE": joint.get("home_sequence", 4),
+                    "HOME_SEARCH_VEL": joint.get("home_search_vel", 10.0 * REV),
+                    "HOME_LATCH_VEL": joint.get("home_latch_vel", 3.0 * REV),
+                    "HOME_FINAL_VEL": joint.get("home_final_vel", -5.0 * REV),
                     "HOME_IGNORE_LIMITS": "YES",
                     "HOME_USE_INDEX": "NO",
                     "HOME_OFFSET": 0.0,
                     "HOME": 0.0,
-                    "HOME_SEQUENCE": HOME_SEQUENCE,
-                }
-            else:
-                options = {
-                    "HOME_OFFSET": "0.0",
-                    "HOME_SEARCH_VEL": "0",
-                    "HOME_LATCH_VEL": "0",
-                    "HOME_SEQUENCE": "0",
-                    "#HOME_SEARCH_VEL": 10.0,
-                    "#HOME_LATCH_VEL": 3.0,
-                    "#HOME_FINAL_VEL": -5.0,
-                    "#HOME_IGNORE_LIMITS": "YES",
-                    "#HOME_USE_INDEX": "NO",
-                    "#HOME_OFFSET": 0.0,
-                    "#HOME": 0.0,
-                    "#HOME_SEQUENCE": 4,
                 }
 
             for key, value in options.items():

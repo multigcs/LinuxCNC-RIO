@@ -493,7 +493,7 @@ def generate_rio_ini(project):
     gui = project["jdata"].get("gui", "axis")
     limit_axis = int(project["jdata"].get("axis", 9))
     num_axis = min(project['joints'], limit_axis)
-    num_joints = min(project['joints'], limit_axis)
+    num_joints = min(project['joints'], 9)
 
     axis_str = ""
     traj_axis_list = []
@@ -518,6 +518,7 @@ def generate_rio_ini(project):
         else:
             traj_axis_list[num] = AXIS_NAME
 
+    num_joints = len(traj_axis_list)
 
 
     if gui == "qtdragon":
@@ -863,14 +864,33 @@ def generate_rio_hal(project):
 
     gui = project["jdata"].get("gui", "axis")
     limit_axis = int(project["jdata"].get("axis", 9))
-    num_joints = min(project['joints'], limit_axis)
+    num_axis = min(project['joints'], limit_axis)
+    num_joints = min(project['joints'], 9)
 
     axis_str = ""
+    traj_axis_list = []
     for num in range(min(project["joints"], len(axis_names))):
+        # limit axis configurations
+        if num >= num_axis:
+            continue
+        axis_str += axis_names[num]
+        traj_axis_list.append(axis_names[num])
+
+
+    for num, joint in enumerate(project["jointnames"]):
         # limit axis configurations
         if num >= num_joints:
             continue
-        axis_str += axis_names[num]
+        AXIS_NAME = joint.get("axis", axis_names[num])
+        if AXIS_NAME not in axis_str:
+            continue
+        if num >= len(traj_axis_list):
+            print("append")
+            traj_axis_list.append(AXIS_NAME)
+        else:
+            traj_axis_list[num] = AXIS_NAME
+
+    num_joints = len(traj_axis_list)
 
     cfghal_data = []
     ctrl_types = []

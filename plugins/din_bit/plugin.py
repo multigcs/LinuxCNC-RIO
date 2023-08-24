@@ -77,7 +77,7 @@ class Plugin:
                 debounce = data.get("debounce", False)
                 debounce_val = 16
                 if debounce:
-                    if isinstance(debounce, int):
+                    if debounce is not True:
                         debounce_val = debounce
                     ret.append(f"    wire {nameIntern};")
                     ret.append(f"    debouncer #({debounce_val}) din_debouncer{num} (")

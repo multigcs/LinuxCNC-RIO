@@ -78,7 +78,11 @@ class Plugin:
                 name = data.get("name", f"DIN.{num}")
                 nameIntern = name.replace(".", "").replace("-", "_").upper()
                 invert = data.get("invert", False)
-                debounce = data.get("debounce", True)
+                debounce = data.get("debounce", False)
+                debounce_val = 16
+                if debounce:
+                    if debounce is not True:
+                        debounce_val = debounce
 
                 if invert:
                     ret.append(f"    wire TOGGLE{num}_INVERTED;")
@@ -86,7 +90,7 @@ class Plugin:
 
                 if debounce:
                     ret.append(f"    wire TOGGLE{num}_DEBOUNCED;")
-                    ret.append(f"    debouncer #(16) din_debouncer{num} (")
+                    ret.append(f"    debouncer #({debounce_val}) din_debouncer{num} (")
                     ret.append("        .clk (sysclk),")
                     if invert:
                         ret.append(f"        .SIGNAL (TOGGLE{num}_INVERTED),")

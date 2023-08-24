@@ -1,0 +1,87 @@
+o<hole_center> sub
+
+#1000=20 ; max radius
+#1001=200 ; G32.2 speed
+#1002=20 ; G32.4 speed
+
+G21 ; mm and speed
+G92.2 ; clear offset
+
+(save X start coord)
+#1010=#5420
+
+(search X+)
+G91 G38.2 X#1000 F#1001
+G91 G38.4 X-2 F#1002
+#1011=#5420
+
+(back to start)
+G90 G0 X#1010
+
+(search X-)
+G91 G38.2 X-#1000 F#1001
+G91 G38.4 X2 F#1002
+#1012=#5420
+
+(calc x center)
+#1013 = [[#1012-#1011] / 2 + #1011] ;x-center
+
+(go to x center)
+G90 G0 X#1013
+
+
+
+(save Y start coord)
+#1020=#5421
+
+(search Y+)
+G91 G38.2 Y#1000 F#1001
+G91 G38.4 Y-2 F#1002
+#1021=#5421
+
+(back to start)
+G90 G0 Y#1020
+
+(search Y-)
+G91 G38.2 Y-#1000 F#1001
+G91 G38.4 Y2 F#1002
+#1022=#5421
+
+(calc Y center)
+#1023 = [[#1022-#1021] / 2 + #1021]
+
+(go to Y center)
+G90 G0 Y#1023
+
+
+(2. run for X)
+
+(save X start coord)
+#1010=#5420
+
+(search X+)
+G91 G38.2 X#1000 F#1001
+G91 G38.4 X-2 F#1002
+#1011=#5420
+
+(back to start)
+G90 G0 X#1010
+
+(search X-)
+G91 G38.2 X-#1000 F#1001
+G91 G38.4 X2 F#1002
+#1012=#5420
+
+(calc x center)
+#1013 = [[#1012-#1011] / 2 + #1011] ;x-center
+
+(go to x center)
+G90 G0 X#1013
+
+
+
+(set pos as zero)
+G92 X0 Y0
+
+
+o<hole_center> endsub

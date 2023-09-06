@@ -43,12 +43,6 @@ to generate/update all needed files in Output/Tangoboard/:
 ```
 python3 buildtool.py configs/Tangoboard/config-mycnc.json
 ```
-or if you want to use the optional Ethernet-Board:
-```
-python3 buildtool.py configs/Tangoboard/config-udp.json
-```
-in this case, please first flash the ethernet-board, check the IP and edit the json-file
-
 
 ## build and load the FPGA-Bitstream
 

@@ -14,10 +14,10 @@
         {
             "type": "spi",
             "pins": {
-                "MOSI": "G13",
-                "MISO": "B11",
-                "SCK": "A11",
-                "SEL": "D12"
+                "MOSI": "D13",
+                "MISO": "B18",
+                "SCK": "A18",
+                "SEL": "K16"
             }
         }
     ],

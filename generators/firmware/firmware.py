@@ -715,6 +715,83 @@ def generate(project):
 
         open(f"{project['FIRMWARE_PATH']}/Makefile", "w").write("\n".join(makefile_data))
 
+    elif project['jdata'].get("toolchain") == "vivado":
+        # pins.xdc (vivado)
+        xdc_data = []
+        for pname, pins in project['pinlists'].items():
+            xdc_data.append(f"### {pname} ###")
+            for pin in pins:
+                if pin[1].startswith("EXPANSION"):
+                    continue
+                options = ""
+                #if len(pin) > 3 and pin[3]:
+                #    options += " -pullup yes"
+
+                xdc_data.append(f"set_property LOC {pin[1]} [get_ports {pin[0]}]")
+                xdc_data.append(f"set_property IOSTANDARD LVCMOS33 [get_ports {pin[0]}]")
+
+            xdc_data.append("")
+
+        open(f"{project['PINS_PATH']}/pins.xdc", "w").write("\n".join(xdc_data))
+
+        verilogs = " ".join(project['verilog_files'])
+        makefile_data = []
+        makefile_data.append("")
+        makefile_data.append("all: build/rio.bit")
+        makefile_data.append("")
+        makefile_data.append(f"build/rio.bit: rio.tcl pins.xdc {verilogs}")
+        makefile_data.append("	vivado -mode tcl -source rio.tcl")
+        makefile_data.append("")
+        makefile_data.append("clean:")
+        makefile_data.append("	rm -rf build")
+        makefile_data.append("")
+        makefile_data.append("xc3sprog: build/rio.bit")
+        makefile_data.append("	xc3sprog -c nexys4 build/rio.bit")
+        makefile_data.append("")
+        makefile_data.append("")
+        open(f"{project['FIRMWARE_PATH']}/Makefile", "w").write("\n".join(makefile_data))
+
+        tcl_data = []
+        tcl_data.append("")
+        tcl_data.append("set outputDir ./build")
+        tcl_data.append("file mkdir $outputDir")
+        tcl_data.append("")
+        for verilog in project['verilog_files']:
+            tcl_data.append(f"read_verilog {verilog}")
+        tcl_data.append("read_xdc pins.xdc")
+        tcl_data.append("")
+        tcl_data.append(f"synth_design -top rio -part {project['jdata']['type']}")
+        tcl_data.append("write_checkpoint -force $outputDir/post_synth.dcp")
+        tcl_data.append("report_timing_summary -file $outputDir/post_synth_timing_summary.rpt")
+        tcl_data.append("report_utilization -file $outputDir/post_synth_util.rpt")
+        tcl_data.append("")
+        tcl_data.append("opt_design")
+        tcl_data.append("place_design")
+        tcl_data.append("report_clock_utilization -file $outputDir/clock_util.rpt")
+        tcl_data.append("")
+        tcl_data.append("# Optionally run optimization if there are timing violations after placement")
+        tcl_data.append("#if {[get_property SLACK [get_timing_paths -max_paths 1 -nworst 1 -setup]] < 0} {")
+        tcl_data.append("#    puts \"Found setup timing violations => running physical optimization\"")
+        tcl_data.append("#    phys_opt_design")
+        tcl_data.append("#}")
+        tcl_data.append("write_checkpoint -force $outputDir/post_place.dcp")
+        tcl_data.append("report_utilization -file $outputDir/post_place_util.rpt")
+        tcl_data.append("report_timing_summary -file $outputDir/post_place_timing_summary.rpt")
+        tcl_data.append("")
+        tcl_data.append("route_design")
+        tcl_data.append("write_checkpoint -force $outputDir/post_route.dcp")
+        tcl_data.append("report_route_status -file $outputDir/post_route_status.rpt")
+        tcl_data.append("report_timing_summary -file $outputDir/post_route_timing_summary.rpt")
+        tcl_data.append("report_power -file $outputDir/post_route_power.rpt")
+        tcl_data.append("report_drc -file $outputDir/post_imp_drc.rpt")
+        tcl_data.append("")
+        tcl_data.append("write_verilog -force $outputDir/impl_netlist.v -mode timesim -sdf_anno true")
+        tcl_data.append("")
+        tcl_data.append("write_bitstream -force $outputDir/rio.bit")
+        tcl_data.append("")
+        tcl_data.append("exit")
+        tcl_data.append("")
+        open(f"{project['FIRMWARE_PATH']}/rio.tcl", "w").write("\n".join(tcl_data))
 
     elif project['jdata'].get("toolchain") == "diamond":
         os.system(f"cp files/pif21.sty {project['FIRMWARE_PATH']}/")

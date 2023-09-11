@@ -91,6 +91,10 @@ if project["jdata"].get("toolchain") == "icestorm":
         project["pinlists"]["main"] = (
             ("sysclk", project["jdata"]["clock"]["pin"], "INPUT", True),
         )
+else:
+    project["pinlists"]["main"] = (
+        ("sysclk", project["jdata"]["clock"]["pin"], "INPUT", True),
+    )
 
 if "blink" in project["jdata"]:
     project["pinlists"]["blink"] = (

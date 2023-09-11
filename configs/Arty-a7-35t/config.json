@@ -1,0 +1,86 @@
+{
+    "name": "arty-a7-35t",
+    "description": "Arty a7-35t - testing",
+    "toolchain": "vivado",
+    "family": "xc7",
+    "type": "xc7a35ticsg324-1l",
+    "package": "csg324",
+    "flashcmd": "xc3sprog -c nexys4 rio.bit",
+    "clock": {
+        "speed": "100000000",
+        "pin": "E3"
+    },
+    "interface": [
+        {
+            "type": "spi",
+            "pins": {
+                "MOSI": "G13",
+                "MISO": "B11",
+                "SCK": "A11",
+                "SEL": "D12"
+            }
+        }
+    ],
+    "blink": {
+        "pin": "H5"
+    },
+    "plugins": [
+        {
+            "debounce": true,
+            "pin": "A8",
+            "name": "DIN0",
+            "type": "din_bit"
+        },
+        {
+            "debounce": true,
+            "pin": "C11",
+            "name": "DIN1",
+            "type": "din_bit"
+        },
+        {
+            "debounce": true,
+            "pin": "C10",
+            "name": "DIN2",
+            "type": "din_bit"
+        },
+        {
+            "debounce": true,
+            "pin": "A10",
+            "name": "DIN3",
+            "type": "din_bit"
+        },
+
+        {
+            "pin": "E1",
+            "name": "DOUT0",
+            "type": "dout_bit"
+        },
+        {
+            "pin": "F6",
+            "name": "DOUT1",
+            "type": "dout_bit"
+        },
+        {
+            "pin": "G6",
+            "name": "DOUT2",
+            "type": "dout_bit"
+        },
+        {
+            "pin": "G4",
+            "name": "DOUT3",
+            "type": "dout_bit"
+        },
+
+        {
+            "comment": "J9.1+3+4",
+            "type": "joint_stepper",
+            "cl": false,
+            "pins": {
+                "dir": "J4",
+                "step": "G3",
+                "enable": "H4"
+            },
+            "name": "JOINT0"
+        }
+    ]
+}

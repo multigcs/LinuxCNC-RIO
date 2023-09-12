@@ -1,323 +1,19 @@
-
 import sys
 import os
+from .pins import *
 
-def generate(project):
-    print("generating firmware")
 
+def testbench(project):
+    # experimental/uncompleted testbench generator
     top_arguments = []
 
-    for pname in sorted(list(project['pinlists'])):
-        pins = project['pinlists'][pname]
+    for pname in sorted(list(project["pinlists"])):
+        pins = project["pinlists"][pname]
         for pin in pins:
             if pin[1].startswith("EXPANSION"):
                 continue
             top_arguments.append(f"{pin[2].lower()} {pin[0]}")
 
-    top_data = []
-    top_data.append("/*")
-    top_data.append(f"    ######### {project['jdata']['name']} #########")
-    top_data.append("*/")
-    top_data.append("")
-
-    # general verilog-files
-    project['verilog_files'].append("debouncer.v")
-    os.system(f"cp -a generators/firmware/debouncer.v* {project['SOURCE_PATH']}/debouncer.v")
-
-    if project["internal_clock"]:
-        pass
-    elif project['osc_clock']:
-        if project['jdata']['family'] == "ecp5":
-            os.system(
-                f"ecppll -f '{project['SOURCE_PATH']}/pll.v' -i {float(project['osc_clock']) / 1000000} -o {float(project['jdata']['clock']['speed']) / 1000000}"
-            )
-        elif project['jdata']['type'] == "up5k":
-            os.system(
-                f"icepll -p -m -f '{project['SOURCE_PATH']}/pll.v' -i {float(project['osc_clock']) / 1000000} -o {float(project['jdata']['clock']['speed']) / 1000000}"
-            )
-        elif project['jdata']['family'] == "GW1N-9C":
-            os.system(
-                f"python3 files/gowin-pll.py -d 'GW1NR-9 C6/I5' -f '{project['SOURCE_PATH']}/pll.v' -i {float(project['osc_clock']) / 1000000} -o {float(project['jdata']['clock']['speed']) / 1000000}"
-            )
-        else:
-            os.system(
-                f"icepll -q -m -f '{project['SOURCE_PATH']}/pll.v' -i {float(project['osc_clock']) / 1000000} -o {float(project['jdata']['clock']['speed']) / 1000000}"
-            )
-        project['verilog_files'].append("pll.v")
-
-    top_data.append("")
-    argsstr = ",\n        ".join(top_arguments)
-    top_data.append(f"module rio (\n        {argsstr}")
-    top_data.append("    );")
-    top_data.append("")
-    top_data.append("")
-
-    if project["internal_clock"]:
-        top_data.append("    // using internal oscillator")
-        top_data.append("    wire sysclk;")
-        top_data.append("    OSC osc(")
-        top_data.append("    	.OSCOUT(sysclk)")
-        top_data.append("    );")
-        top_data.append("    defparam osc.FREQ_DIV=10;")
-        top_data.append("")
-
-    top_data.append("    reg ESTOP = 0;")
-    top_data.append("    wire ERROR;")
-    top_data.append("    wire INTERFACE_TIMEOUT;")
-    top_data.append("    assign ERROR = (INTERFACE_TIMEOUT | ESTOP);")
-
-    if project['osc_clock']:
-        top_data.append("    wire sysclk;")
-        top_data.append("    wire locked;")
-        top_data.append("    pll mypll(sysclk_in, sysclk, locked);")
-        top_data.append("")
-
-
-    if project['jdata'].get("toolchain") == "diamond":
-        top_data.append("    // Internal Oscillator")
-        top_data.append('    defparam OSCH_inst.NOM_FREQ = "133.00";')
-        top_data.append("    OSCH OSCH_inst ( ")
-        top_data.append("        .STDBY(1'b0),")
-        top_data.append("        .OSC(sysclk),")
-        top_data.append("        .SEDSTDBY()")
-        top_data.append("    );")
-        top_data.append("")
-
-
-    if "blink" in project['jdata']:
-        top_data.append(f"    blink #({int(project['jdata']['clock']['speed']) // 1 // 2}) blink1 (")
-        top_data.append("        .clk (sysclk),")
-        top_data.append("        .led (BLINK_LED)")
-        top_data.append("    );")
-        top_data.append("")
-        project['verilog_files'].append("blink.v")
-        os.system(f"cp -a generators/firmware/blink.v* {project['SOURCE_PATH']}/blink.v")
-
-    if "error" in project['jdata']:
-        if project['jdata']["error"].get("invert"):
-            top_data.append("    assign ERROR_OUT = ~ERROR;")
-        else:
-            top_data.append("    assign ERROR_OUT = ERROR;")
-        top_data.append("")
-
-
-    top_data.append(f"    parameter BUFFER_SIZE = {project['data_size']};")
-    top_data.append("")
-
-    top_data.append(f"    wire[{project['data_size'] - 1}:0] rx_data;")
-    top_data.append(f"    wire[{project['data_size'] - 1}:0] tx_data;")
-    top_data.append("")
-
-    top_data.append("    reg signed [31:0] header_tx;")
-    top_data.append("    always @(posedge sysclk) begin")
-    top_data.append("        if (ESTOP) begin")
-    top_data.append("            header_tx <= 32'h65737470;")
-    top_data.append("        end else begin")
-    top_data.append("            header_tx <= 32'h64617461;")
-    top_data.append("        end")
-    top_data.append("    end")
-    top_data.append("")
-
-
-
-
-    # plugins wire/register definitions
-    for plugin in project['plugins']:
-        if hasattr(project['plugins'][plugin], "defs"):
-            defs = project['plugins'][plugin].defs()
-            top_data.append("\n".join(defs))
-            top_data.append("")
-
-
-    # expansion wires
-    expansion_size = {}
-    for expansions in project["expansions"].values():
-        for enum, size in expansions.items():
-            expansion_size[enum] = size
-    expansion_ports = {}
-    for pname, pins in project['pinlists'].items():
-        for pin in pins:
-            if pin[1].startswith("EXPANSION"):
-                port = pin[1].split("[")[0]
-                pnum = int(pin[1].split("[")[1].split("]")[0])
-                size = expansion_size[port]
-                if port.endswith("_OUTPUT"):
-                    if port not in expansion_ports:
-                        expansion_ports[port] = {}
-                        for n in range(size):
-                            expansion_ports[port][n] = "1'd0"
-                if pin[2] == "OUTPUT":
-                    if "_OUTPUT" not in pin[1]:
-                        print("ERROR: pin-direction do not match:", pin)
-                        exit(1)
-                    expansion_ports[port][pnum] = pin[0]
-                else:
-                    if "_INPUT" not in pin[1]:
-                        print("ERROR: pin-direction do not match:", pin)
-                        exit(1)
-    top_data.append("    // expansion I/O's (wire)")
-    for pname, pins in project['pinlists'].items():
-        for pin in pins:
-            if pin[1].startswith("EXPANSION"):
-                if pin[2] == "OUTPUT":
-                    top_data.append(f"    wire {pin[0]};")
-                else:
-                    top_data.append(f"    wire {pin[0]};")
-    top_data.append("")
-
-
-
-    jointEnables = []
-    for num, joint in enumerate(project['jointnames']):
-        top_data.append(f"    wire {joint['_prefix']}Enable;")
-        jointEnables.append(f"{joint['_prefix']}Enable")
-    top_data.append("")
-
-    if "enable" in project['jdata']:
-        jointEnablesStr = " || ".join(jointEnables)
-        if project['jdata']["enable"].get("invert", False):
-            top_data.append(f"    wire ENA_INV;")
-            top_data.append(f"    assign ENA = ~ENA_INV;")
-            top_data.append(f"    assign ENA_INV = ({jointEnablesStr}) && ~ERROR;")
-        else:
-            top_data.append(f"    assign ENA = ({jointEnablesStr}) && ~ERROR;")
-        top_data.append("")
-
-
-    top_data.append(f"    // vouts {project['vouts']}")
-    for num, vout in enumerate(project["voutnames"]):
-        top_data.append(f"    wire signed [31:0] {vout['_prefix']};")
-    top_data.append("")
-
-    top_data.append(f"    // vins {project['vins']}")
-    for num, vin in enumerate(project["vinnames"]):
-        top_data.append(f"    wire signed [31:0] {vin['_prefix']};")
-    top_data.append("")
-
-    top_data.append(f"    // joints {project['joints']}")
-    for num, joint in enumerate(project['jointnames']):
-        top_data.append(f"    wire signed [31:0] {joint['_prefix']}FreqCmd;")
-    for num, joint in enumerate(project['jointnames']):
-        top_data.append(f"    wire signed [31:0] {joint['_prefix']}Feedback;")
-    top_data.append("")
-
-
-    top_data.append(f"    // rx_data {project['rx_data_size']}")
-    pos = project['data_size']
-
-    top_data.append("    wire [31:0] header_rx;")
-    top_data.append(
-        f"    assign header_rx = {{rx_data[{pos-3*8-1}:{pos-3*8-8}], rx_data[{pos-2*8-1}:{pos-2*8-8}], rx_data[{pos-1*8-1}:{pos-1*8-8}], rx_data[{pos-1}:{pos-8}]}};"
-    )
-    pos -= 32
-
-    for num, joint in enumerate(project['jointnames']):
-        top_data.append(
-            f"    assign {joint['_prefix']}FreqCmd = {{rx_data[{pos-3*8-1}:{pos-3*8-8}], rx_data[{pos-2*8-1}:{pos-2*8-8}], rx_data[{pos-1*8-1}:{pos-1*8-8}], rx_data[{pos-1}:{pos-8}]}};"
-        )
-        pos -= 32
-
-    for num, vout in enumerate(project["voutnames"]):
-        top_data.append(
-            f"    assign {vout['_prefix']} = {{rx_data[{pos-3*8-1}:{pos-3*8-8}], rx_data[{pos-2*8-1}:{pos-2*8-8}], rx_data[{pos-1*8-1}:{pos-1*8-8}], rx_data[{pos-1}:{pos-8}]}};"
-        )
-        pos -= 32
-
-
-    for dbyte in range(project['joints_en_total'] // 8):
-        for num in range(8):
-            bitnum = dbyte * 8 + (7 - num)
-            if bitnum < project['joints']:
-                jname = project['jointnames'][bitnum]["_prefix"]
-                top_data.append(f"    assign {jname}Enable = rx_data[{pos-1}];")
-            pos -= 1
-
-    for dbyte in range(project['douts_total'] // 8):
-        for num in range(8):
-            bitnum = num + (dbyte * 8)
-            if bitnum < project['douts']:
-                dname = project['doutnames'][bitnum]["_prefix"]
-                if project['doutnames'][bitnum].get("invert", False):
-                    top_data.append(f"    assign {dname} = ~rx_data[{pos-1}];")
-                else:
-                    top_data.append(f"    assign {dname} = rx_data[{pos-1}];")
-            else:
-                top_data.append(
-                    f"    // assign DOUTx = rx_data[{pos-1}];"
-                )
-            pos -= 1
-
-
-    top_data.append("")
-    top_data.append(f"    // tx_data {project['tx_data_size']}")
-    top_data.append("    assign tx_data = {")
-    top_data.append(
-        "        header_tx[7:0], header_tx[15:8], header_tx[23:16], header_tx[31:24],"
-    )
-
-    for num, joint in enumerate(project['jointnames']):
-        top_data.append(
-            f"        {joint['_prefix']}Feedback[7:0], {joint['_prefix']}Feedback[15:8], {joint['_prefix']}Feedback[23:16], {joint['_prefix']}Feedback[31:24],"
-        )
-
-    for num, vin in enumerate(project["vinnames"]):
-        top_data.append(f"        {vin['_prefix']}[7:0], {vin['_prefix']}[15:8], {vin['_prefix']}[23:16], {vin['_prefix']}[31:24],")
-
-    tdins = []
-    ldin = project['dins']
-    for dbyte in range(project['dins_total'] // 8):
-        for num in range(8):
-            bitnum = num + (dbyte * 8)
-            if bitnum < project['dins']:
-                dname = project['dinnames'][bitnum]["_prefix"]
-                din_data = project['dinnames'][bitnum]
-                if bitnum < ldin and din_data.get("invert", False):
-                    tdins.append(f"~{dname}")
-                else:
-                    tdins.append(f"{dname}")
-            else:
-                tdins.append(f"1'd0")
-
-    fill = project['data_size'] - project['tx_data_size']
-
-    if fill > 0:
-        top_data.append(f"        {', '.join(tdins)},")
-        top_data.append(f"        {fill}'d0")
-    else:
-        top_data.append(f"        {', '.join(tdins)}")
-    top_data.append("    };")
-    top_data.append("")
-
-
-
-
-    top_data.append("    // expansion I/O's (assigne)")
-    for pname, pins in project['pinlists'].items():
-        for pin in pins:
-            if pin[1].startswith("EXPANSION"):
-                if pin[2] == "INPUT":
-                    top_data.append(f"    assign {pin[0]} = {pin[1]};")
-    for port, pins in expansion_ports.items():
-        assign_list = []
-        size = expansion_size[port]
-        for n in range(size):
-            assign_list.append(f"{pins[size - 1 - n]}")
-        top_data.append(f"    assign {port} = {{{', '.join(assign_list)}}};")
-    top_data.append("")
-
-
-    for plugin in project['plugins']:
-        if hasattr(project['plugins'][plugin], "funcs"):
-            funcs = project['plugins'][plugin].funcs()
-            top_data.append("\n".join(funcs))
-            top_data.append("")
-
-    top_data.append("endmodule")
-    top_data.append("")
-    open(f"{project['SOURCE_PATH']}/rio.v", "w").write("\n".join(top_data))
-    project['verilog_files'].append("rio.v")
-
-    # testbench
     testb_data = []
     testb_data.append("`timescale 1ns/100ps")
     testb_data.append("")
@@ -341,7 +37,7 @@ def generate(project):
     testb_data.append("    always #2 sysclk = !sysclk;")
     testb_data.append("")
     testb_data.append("    initial begin")
-    testb_data.append("        $dumpfile(\"testb.vcd\");")
+    testb_data.append('        $dumpfile("testb.vcd");')
 
     for anum, arg in enumerate(top_arguments):
         arg_dir = arg.split()[0]
@@ -359,7 +55,7 @@ def generate(project):
     for anum, arg in enumerate(top_arguments):
         arg_dir = arg.split()[0]
         arg_name = arg.split()[1]
-        if anum == alen-1:
+        if anum == alen - 1:
             testb_data.append(f"        .{arg_name} ({arg_name})")
         else:
             testb_data.append(f"        .{arg_name} ({arg_name}),")
@@ -370,36 +66,327 @@ def generate(project):
 
     open(f"{project['SOURCE_PATH']}/testb.v", "w").write("\n".join(testb_data))
 
-    board = project['jdata'].get("board")
+
+def verilog_top(project):
+    top_arguments = []
+    for pname in sorted(list(project["pinlists"])):
+        pins = project["pinlists"][pname]
+        for pin in pins:
+            if pin[1].startswith("EXPANSION"):
+                continue
+            top_arguments.append(f"{pin[2].lower()} {pin[0]}")
+
+    top_data = []
+    top_data.append("/*")
+    top_data.append(f"    ######### {project['jdata']['name']} #########")
+    top_data.append("*/")
+    top_data.append("")
+    argsstr = ",\n        ".join(top_arguments)
+    top_data.append(f"module rio (\n        {argsstr}")
+    top_data.append("    );")
+    top_data.append("")
+    top_data.append("")
+
+    if project["internal_clock"]:
+        top_data.append("    // using internal oscillator")
+        top_data.append("    wire sysclk;")
+        top_data.append("    OSC osc(")
+        top_data.append("    	.OSCOUT(sysclk)")
+        top_data.append("    );")
+        top_data.append("    defparam osc.FREQ_DIV=10;")
+        top_data.append("")
+
+    top_data.append("    reg ESTOP = 0;")
+    top_data.append("    wire ERROR;")
+    top_data.append("    wire INTERFACE_TIMEOUT;")
+    top_data.append("    assign ERROR = (INTERFACE_TIMEOUT | ESTOP);")
+
+    if project["osc_clock"]:
+        top_data.append("    wire sysclk;")
+        top_data.append("    wire locked;")
+        top_data.append("    pll mypll(sysclk_in, sysclk, locked);")
+        top_data.append("")
+
+    if project["jdata"].get("toolchain") == "diamond":
+        top_data.append("    // Internal Oscillator")
+        top_data.append('    defparam OSCH_inst.NOM_FREQ = "133.00";')
+        top_data.append("    OSCH OSCH_inst ( ")
+        top_data.append("        .STDBY(1'b0),")
+        top_data.append("        .OSC(sysclk),")
+        top_data.append("        .SEDSTDBY()")
+        top_data.append("    );")
+        top_data.append("")
+
+    if "blink" in project["jdata"]:
+        top_data.append(
+            f"    blink #({int(project['jdata']['clock']['speed']) // 1 // 2}) blink1 ("
+        )
+        top_data.append("        .clk (sysclk),")
+        top_data.append("        .led (BLINK_LED)")
+        top_data.append("    );")
+        top_data.append("")
+        project["verilog_files"].append("blink.v")
+        os.system(
+            f"cp -a generators/firmware/blink.v* {project['SOURCE_PATH']}/blink.v"
+        )
+
+    if "error" in project["jdata"]:
+        if project["jdata"]["error"].get("invert"):
+            top_data.append("    assign ERROR_OUT = ~ERROR;")
+        else:
+            top_data.append("    assign ERROR_OUT = ERROR;")
+        top_data.append("")
+
+    top_data.append(f"    parameter BUFFER_SIZE = {project['data_size']};")
+    top_data.append("")
+
+    top_data.append(f"    wire[{project['data_size'] - 1}:0] rx_data;")
+    top_data.append(f"    wire[{project['data_size'] - 1}:0] tx_data;")
+    top_data.append("")
+
+    top_data.append("    reg signed [31:0] header_tx;")
+    top_data.append("    always @(posedge sysclk) begin")
+    top_data.append("        if (ESTOP) begin")
+    top_data.append("            header_tx <= 32'h65737470;")
+    top_data.append("        end else begin")
+    top_data.append("            header_tx <= 32'h64617461;")
+    top_data.append("        end")
+    top_data.append("    end")
+    top_data.append("")
+
+    # plugins wire/register definitions
+    for plugin in project["plugins"]:
+        if hasattr(project["plugins"][plugin], "defs"):
+            defs = project["plugins"][plugin].defs()
+            top_data.append("\n".join(defs))
+            top_data.append("")
+
+    # expansion wires
+    expansion_size = {}
+    for expansions in project["expansions"].values():
+        for enum, size in expansions.items():
+            expansion_size[enum] = size
+    expansion_ports = {}
+    for pname, pins in project["pinlists"].items():
+        for pin in pins:
+            if pin[1].startswith("EXPANSION"):
+                port = pin[1].split("[")[0]
+                pnum = int(pin[1].split("[")[1].split("]")[0])
+                size = expansion_size[port]
+                if port.endswith("_OUTPUT"):
+                    if port not in expansion_ports:
+                        expansion_ports[port] = {}
+                        for n in range(size):
+                            expansion_ports[port][n] = "1'd0"
+                if pin[2] == "OUTPUT":
+                    if "_OUTPUT" not in pin[1]:
+                        print("ERROR: pin-direction do not match:", pin)
+                        exit(1)
+                    expansion_ports[port][pnum] = pin[0]
+                else:
+                    if "_INPUT" not in pin[1]:
+                        print("ERROR: pin-direction do not match:", pin)
+                        exit(1)
+    top_data.append("    // expansion I/O's (wire)")
+    for pname, pins in project["pinlists"].items():
+        for pin in pins:
+            if pin[1].startswith("EXPANSION"):
+                if pin[2] == "OUTPUT":
+                    top_data.append(f"    wire {pin[0]};")
+                else:
+                    top_data.append(f"    wire {pin[0]};")
+    top_data.append("")
+
+    jointEnables = []
+    for num, joint in enumerate(project["jointnames"]):
+        top_data.append(f"    wire {joint['_prefix']}Enable;")
+        jointEnables.append(f"{joint['_prefix']}Enable")
+    top_data.append("")
+
+    if "enable" in project["jdata"]:
+        jointEnablesStr = " || ".join(jointEnables)
+        if project["jdata"]["enable"].get("invert", False):
+            top_data.append(f"    wire ENA_INV;")
+            top_data.append(f"    assign ENA = ~ENA_INV;")
+            top_data.append(f"    assign ENA_INV = ({jointEnablesStr}) && ~ERROR;")
+        else:
+            top_data.append(f"    assign ENA = ({jointEnablesStr}) && ~ERROR;")
+        top_data.append("")
+
+    top_data.append(f"    // vouts {project['vouts']}")
+    for num, vout in enumerate(project["voutnames"]):
+        top_data.append(f"    wire signed [31:0] {vout['_prefix']};")
+    top_data.append("")
+
+    top_data.append(f"    // vins {project['vins']}")
+    for num, vin in enumerate(project["vinnames"]):
+        top_data.append(f"    wire signed [31:0] {vin['_prefix']};")
+    top_data.append("")
+
+    top_data.append(f"    // joints {project['joints']}")
+    for num, joint in enumerate(project["jointnames"]):
+        top_data.append(f"    wire signed [31:0] {joint['_prefix']}FreqCmd;")
+    for num, joint in enumerate(project["jointnames"]):
+        top_data.append(f"    wire signed [31:0] {joint['_prefix']}Feedback;")
+    top_data.append("")
+
+    top_data.append(f"    // rx_data {project['rx_data_size']}")
+    pos = project["data_size"]
+
+    top_data.append("    wire [31:0] header_rx;")
+    top_data.append(
+        f"    assign header_rx = {{rx_data[{pos-3*8-1}:{pos-3*8-8}], rx_data[{pos-2*8-1}:{pos-2*8-8}], rx_data[{pos-1*8-1}:{pos-1*8-8}], rx_data[{pos-1}:{pos-8}]}};"
+    )
+    pos -= 32
+
+    for num, joint in enumerate(project["jointnames"]):
+        top_data.append(
+            f"    assign {joint['_prefix']}FreqCmd = {{rx_data[{pos-3*8-1}:{pos-3*8-8}], rx_data[{pos-2*8-1}:{pos-2*8-8}], rx_data[{pos-1*8-1}:{pos-1*8-8}], rx_data[{pos-1}:{pos-8}]}};"
+        )
+        pos -= 32
+
+    for num, vout in enumerate(project["voutnames"]):
+        top_data.append(
+            f"    assign {vout['_prefix']} = {{rx_data[{pos-3*8-1}:{pos-3*8-8}], rx_data[{pos-2*8-1}:{pos-2*8-8}], rx_data[{pos-1*8-1}:{pos-1*8-8}], rx_data[{pos-1}:{pos-8}]}};"
+        )
+        pos -= 32
+
+    for dbyte in range(project["joints_en_total"] // 8):
+        for num in range(8):
+            bitnum = dbyte * 8 + (7 - num)
+            if bitnum < project["joints"]:
+                jname = project["jointnames"][bitnum]["_prefix"]
+                top_data.append(f"    assign {jname}Enable = rx_data[{pos-1}];")
+            pos -= 1
+
+    for dbyte in range(project["douts_total"] // 8):
+        for num in range(8):
+            bitnum = num + (dbyte * 8)
+            if bitnum < project["douts"]:
+                dname = project["doutnames"][bitnum]["_prefix"]
+                if project["doutnames"][bitnum].get("invert", False):
+                    top_data.append(f"    assign {dname} = ~rx_data[{pos-1}];")
+                else:
+                    top_data.append(f"    assign {dname} = rx_data[{pos-1}];")
+            else:
+                top_data.append(f"    // assign DOUTx = rx_data[{pos-1}];")
+            pos -= 1
+
+    top_data.append("")
+    top_data.append(f"    // tx_data {project['tx_data_size']}")
+    top_data.append("    assign tx_data = {")
+    top_data.append(
+        "        header_tx[7:0], header_tx[15:8], header_tx[23:16], header_tx[31:24],"
+    )
+
+    for num, joint in enumerate(project["jointnames"]):
+        top_data.append(
+            f"        {joint['_prefix']}Feedback[7:0], {joint['_prefix']}Feedback[15:8], {joint['_prefix']}Feedback[23:16], {joint['_prefix']}Feedback[31:24],"
+        )
+
+    for num, vin in enumerate(project["vinnames"]):
+        top_data.append(
+            f"        {vin['_prefix']}[7:0], {vin['_prefix']}[15:8], {vin['_prefix']}[23:16], {vin['_prefix']}[31:24],"
+        )
+
+    tdins = []
+    ldin = project["dins"]
+    for dbyte in range(project["dins_total"] // 8):
+        for num in range(8):
+            bitnum = num + (dbyte * 8)
+            if bitnum < project["dins"]:
+                dname = project["dinnames"][bitnum]["_prefix"]
+                din_data = project["dinnames"][bitnum]
+                if bitnum < ldin and din_data.get("invert", False):
+                    tdins.append(f"~{dname}")
+                else:
+                    tdins.append(f"{dname}")
+            else:
+                tdins.append(f"1'd0")
+
+    fill = project["data_size"] - project["tx_data_size"]
+
+    if fill > 0:
+        top_data.append(f"        {', '.join(tdins)},")
+        top_data.append(f"        {fill}'d0")
+    else:
+        top_data.append(f"        {', '.join(tdins)}")
+    top_data.append("    };")
+    top_data.append("")
+
+    top_data.append("    // expansion I/O's (assign)")
+    for pname, pins in project["pinlists"].items():
+        for pin in pins:
+            if pin[1].startswith("EXPANSION"):
+                if pin[2] == "INPUT":
+                    top_data.append(f"    assign {pin[0]} = {pin[1]};")
+    for port, pins in expansion_ports.items():
+        assign_list = []
+        size = expansion_size[port]
+        for n in range(size):
+            assign_list.append(f"{pins[size - 1 - n]}")
+        top_data.append(f"    assign {port} = {{{', '.join(assign_list)}}};")
+    top_data.append("")
+
+    for plugin in project["plugins"]:
+        if hasattr(project["plugins"][plugin], "funcs"):
+            funcs = project["plugins"][plugin].funcs()
+            top_data.append("\n".join(funcs))
+            top_data.append("")
+
+    top_data.append("endmodule")
+    top_data.append("")
+    open(f"{project['SOURCE_PATH']}/rio.v", "w").write("\n".join(top_data))
+    project["verilog_files"].append("rio.v")
+
+
+def generate(project):
+    print("generating firmware")
+
+    # general verilog-files
+    project["verilog_files"].append("debouncer.v")
+    os.system(
+        f"cp -a generators/firmware/debouncer.v* {project['SOURCE_PATH']}/debouncer.v"
+    )
+
+    # system clock (pll setup)
+    if project["internal_clock"]:
+        pass
+    elif project["osc_clock"]:
+        if project["jdata"]["family"] == "ecp5":
+            os.system(
+                f"ecppll -f '{project['SOURCE_PATH']}/pll.v' -i {float(project['osc_clock']) / 1000000} -o {float(project['jdata']['clock']['speed']) / 1000000}"
+            )
+        elif project["jdata"]["type"] == "up5k":
+            os.system(
+                f"icepll -p -m -f '{project['SOURCE_PATH']}/pll.v' -i {float(project['osc_clock']) / 1000000} -o {float(project['jdata']['clock']['speed']) / 1000000}"
+            )
+        elif project["jdata"]["family"] == "GW1N-9C":
+            os.system(
+                f"python3 files/gowin-pll.py -d 'GW1NR-9 C6/I5' -f '{project['SOURCE_PATH']}/pll.v' -i {float(project['osc_clock']) / 1000000} -o {float(project['jdata']['clock']['speed']) / 1000000}"
+            )
+        else:
+            os.system(
+                f"icepll -q -m -f '{project['SOURCE_PATH']}/pll.v' -i {float(project['osc_clock']) / 1000000} -o {float(project['jdata']['clock']['speed']) / 1000000}"
+            )
+        project["verilog_files"].append("pll.v")
+
+    verilog_top(project)
+    testbench(project)
+
+    # build files (makefiles/scripts/projects)
+    board = project["jdata"].get("board")
     if board == "TangNano9K" or board == "TangNano20K":
-        family = project['jdata']["family"]
-        ftype = project['jdata']["type"]
+        family = project["jdata"]["family"]
+        ftype = project["jdata"]["type"]
         if family == "GW1N-9C":
             family_gowin = "GW1NR-9C"
         else:
-            family_gowin = project['jdata']["family"]
+            family_gowin = project["jdata"]["family"]
 
-        lpf_data = []
-        lpf_data.append("")
-        lpf_data.append("")
-        for pname, pins in project['pinlists'].items():
-            lpf_data.append(f"// ### {pname} ###")
-            for pin in pins:
-                if pin[1].startswith("EXPANSION"):
-                    continue
+        pins_cst(project)
 
-                lpf_data.append(f'IO_LOC "{pin[0]}" {pin[1]};')
-                #lpf_data.append(f'IO_PORT "{pin[0]}" IO_TYPE=LVCMOS33;')
-                if len(pin) > 3 and pin[3]:
-                    lpf_data.append(f'IO_PORT "{pin[0]}" IO_TYPE=LVCMOS33 PULL_MODE=UP;')
-                else:
-                    lpf_data.append(f'IO_PORT "{pin[0]}" IO_TYPE=LVCMOS33;')
-
-            lpf_data.append("")
-        lpf_data.append("")
-        open(f"{project['PINS_PATH']}/pins.cst", "w").write("\n".join(lpf_data))
-
-        verilogs = " ".join(project['verilog_files'])
+        verilogs = " ".join(project["verilog_files"])
         makefile_data = []
         makefile_data.append("")
         makefile_data.append(f"FAMILY={family}")
@@ -410,10 +397,14 @@ def generate(project):
             makefile_data.append("all: rio.fs")
             makefile_data.append("")
             makefile_data.append(f"rio.json: {verilogs}")
-            makefile_data.append(f"	yosys -q -l yosys.log -p 'synth_gowin -noalu -nowidelut -top rio -json rio.json' {verilogs}")
+            makefile_data.append(
+                f"	yosys -q -l yosys.log -p 'synth_gowin -noalu -nowidelut -top rio -json rio.json' {verilogs}"
+            )
             makefile_data.append("")
             makefile_data.append("rio_pnr.json: rio.json pins.cst")
-            makefile_data.append(f"	nextpnr-gowin --seed 0 --json rio.json --write rio_pnr.json --freq {float(project['jdata']['clock']['speed']) / 1000000} --enable-globals --enable-auto-longwires --device ${{DEVICE}} --family ${{FAMILY}} --cst pins.cst")
+            makefile_data.append(
+                f"	nextpnr-gowin --seed 0 --json rio.json --write rio_pnr.json --freq {float(project['jdata']['clock']['speed']) / 1000000} --enable-globals --enable-auto-longwires --device ${{DEVICE}} --family ${{FAMILY}} --cst pins.cst"
+            )
             makefile_data.append("")
             makefile_data.append("rio.fs: rio_pnr.json")
             makefile_data.append("	gowin_pack -d ${FAMILY} -o rio.fs rio_pnr.json")
@@ -454,25 +445,33 @@ def generate(project):
             makefile_data.append("	openFPGALoader -b tangnano9k impl/pnr/project.fs -f")
             makefile_data.append("")
 
-        open(f"{project['FIRMWARE_PATH']}/Makefile", "w").write("\n".join(makefile_data))
+        open(f"{project['FIRMWARE_PATH']}/Makefile", "w").write(
+            "\n".join(makefile_data)
+        )
 
         # generating project file for the gowin toolchain
         prj_data = []
-        prj_data.append("<?xml version=\"1\" encoding=\"UTF-8\"?>")
+        prj_data.append('<?xml version="1" encoding="UTF-8"?>')
         prj_data.append("<!DOCTYPE gowin-fpga-project>")
         prj_data.append("<Project>")
         prj_data.append("    <Template>FPGA</Template>")
         prj_data.append("    <Version>5</Version>")
         if family == "GW1N-9C":
-            prj_data.append(f"    <Device name=\"{family_gowin}\" pn=\"{ftype}\">gw1nr9c-004</Device>")
+            prj_data.append(
+                f'    <Device name="{family_gowin}" pn="{ftype}">gw1nr9c-004</Device>'
+            )
         elif family == "GW2AR-18":
-            prj_data.append("    <Device name=\"\" pn=\"\">gw2ar18c-000</Device>")
+            prj_data.append('    <Device name="" pn="">gw2ar18c-000</Device>')
         else:
-            prj_data.append(f"    <Device name=\"{family_gowin}\" pn=\"{ftype}\">gw2ar-18-004</Device>")
+            prj_data.append(
+                f'    <Device name="{family_gowin}" pn="{ftype}">gw2ar-18-004</Device>'
+            )
         prj_data.append("    <FileList>")
         for verilog in verilogs.split():
-            prj_data.append(f"        <File path=\"{verilog}\" type=\"file.verilog\" enable=\"1\"/>")
-        prj_data.append("    <File path=\"pins.cst\" type=\"file.cst\" enable=\"1\"/>")
+            prj_data.append(
+                f'        <File path="{verilog}" type="file.verilog" enable="1"/>'
+            )
+        prj_data.append('    <File path="pins.cst" type="file.cst" enable="1"/>')
         prj_data.append("    </FileList>")
         prj_data.append("</Project>")
         open(f"{project['FIRMWARE_PATH']}/rio.gprj", "w").write("\n".join(prj_data))
@@ -563,7 +562,9 @@ def generate(project):
  "turn_off_bg" : false
 }"""
 
-        open(f"{project['FIRMWARE_PATH']}/impl/project_process_config.json", "w").write(pps_data)
+        open(f"{project['FIRMWARE_PATH']}/impl/project_process_config.json", "w").write(
+            pps_data
+        )
 
         # generating tcl script for the gowin toolchain
         tcl_data = []
@@ -577,25 +578,14 @@ def generate(project):
         tcl_data.append("run all")
         open(f"{project['FIRMWARE_PATH']}/rio.tcl", "w").write("\n".join(tcl_data))
 
-    elif project['jdata'].get("toolchain") == "icestorm" and project['jdata']["family"] == "ecp5":
+    elif (
+        project["jdata"].get("toolchain") == "icestorm"
+        and project["jdata"]["family"] == "ecp5"
+    ):
 
-        lpf_data = []
-        lpf_data.append("")
+        pins_lpf(project)
 
-        lpf_data.append("")
-        for pname, pins in project['pinlists'].items():
-            lpf_data.append(f"### {pname} ###")
-            for pin in pins:
-                if pin[1].startswith("EXPANSION"):
-                    continue
-                lpf_data.append(f'LOCATE COMP "{pin[0]}"           SITE "{pin[1]}";')
-                lpf_data.append(f'IOBUF PORT "{pin[0]}" IO_TYPE=LVCMOS33;')
-
-            lpf_data.append("")
-        lpf_data.append("")
-        open(f"{project['PINS_PATH']}/pins.lpf", "w").write("\n".join(lpf_data))
-
-        verilogs = " ".join(project['verilog_files'])
+        verilogs = " ".join(project["verilog_files"])
         makefile_data = []
         makefile_data.append("")
         makefile_data.append(f"FAMILY  := {project['jdata']['family']}")
@@ -620,9 +610,7 @@ def generate(project):
         makefile_data.append('	@echo ""')
         makefile_data.append("")
         makefile_data.append("rio.bit: rio.config")
-        makefile_data.append(
-            "	ecppack --svf rio.svf rio.config rio.bit"
-        )
+        makefile_data.append("	ecppack --svf rio.svf rio.config rio.bit")
         makefile_data.append("	")
         makefile_data.append("rio.svf: rio.bit")
         makefile_data.append("")
@@ -638,33 +626,21 @@ def generate(project):
         makefile_data.append("	tinyprog -p rio.bin")
         makefile_data.append("")
 
-        flashcmd = project['jdata'].get("flashcmd")
+        flashcmd = project["jdata"].get("flashcmd")
         if flashcmd:
             makefile_data.append("load: rio.bin")
             makefile_data.append(f"	{flashcmd}")
             makefile_data.append("")
         makefile_data.append("")
 
-        open(f"{project['FIRMWARE_PATH']}/Makefile", "w").write("\n".join(makefile_data))
+        open(f"{project['FIRMWARE_PATH']}/Makefile", "w").write(
+            "\n".join(makefile_data)
+        )
 
+    elif project["jdata"].get("toolchain") == "icestorm":
+        pins_pcf(project)
 
-    elif project['jdata'].get("toolchain") == "icestorm":
-        # pins.pcf (icestorm)
-        pcf_data = []
-        for pname, pins in project['pinlists'].items():
-            pcf_data.append(f"### {pname} ###")
-            for pin in pins:
-                if pin[1].startswith("EXPANSION"):
-                    continue
-                options = ""
-                if len(pin) > 3 and pin[3]:
-                    options += " -pullup yes"
-
-                pcf_data.append(f"set_io {options} {pin[0]} {pin[1]}")
-            pcf_data.append("")
-        open(f"{project['PINS_PATH']}/pins.pcf", "w").write("\n".join(pcf_data))
-
-        verilogs = " ".join(project['verilog_files'])
+        verilogs = " ".join(project["verilog_files"])
         makefile_data = []
         makefile_data.append("")
         makefile_data.append(f"FAMILY  := {project['jdata']['family']}")
@@ -693,48 +669,34 @@ def generate(project):
         makefile_data.append("	verilator --top-module rio --lint-only -Wall *.v")
         makefile_data.append("")
         makefile_data.append("clean:")
-        makefile_data.append(
-            "	rm -rf rio.bin rio.asc rio.json yosys.log nextpnr.log"
-        )
+        makefile_data.append("	rm -rf rio.bin rio.asc rio.json yosys.log nextpnr.log")
         makefile_data.append("")
 
         makefile_data.append(f"sim: {verilogs}")
-        makefile_data.append(f"	verilator --cc --exe --build -j 0 -Wall --top-module rio sim_main.cpp {verilogs}")
+        makefile_data.append(
+            f"	verilator --cc --exe --build -j 0 -Wall --top-module rio sim_main.cpp {verilogs}"
+        )
         makefile_data.append("")
 
         makefile_data.append("tinyprog: rio.bin")
         makefile_data.append("	tinyprog -p rio.bin")
         makefile_data.append("")
 
-        flashcmd = project['jdata'].get("flashcmd")
+        flashcmd = project["jdata"].get("flashcmd")
         if flashcmd:
             makefile_data.append("load: rio.bin")
             makefile_data.append(f"	{flashcmd}")
             makefile_data.append("")
         makefile_data.append("")
 
-        open(f"{project['FIRMWARE_PATH']}/Makefile", "w").write("\n".join(makefile_data))
+        open(f"{project['FIRMWARE_PATH']}/Makefile", "w").write(
+            "\n".join(makefile_data)
+        )
 
-    elif project['jdata'].get("toolchain") == "vivado":
-        # pins.xdc (vivado)
-        xdc_data = []
-        for pname, pins in project['pinlists'].items():
-            xdc_data.append(f"### {pname} ###")
-            for pin in pins:
-                if pin[1].startswith("EXPANSION"):
-                    continue
-                options = ""
-                #if len(pin) > 3 and pin[3]:
-                #    options += " -pullup yes"
+    elif project["jdata"].get("toolchain") == "vivado":
+        pins_xdc(project)
 
-                xdc_data.append(f"set_property LOC {pin[1]} [get_ports {pin[0]}]")
-                xdc_data.append(f"set_property IOSTANDARD LVCMOS33 [get_ports {pin[0]}]")
-
-            xdc_data.append("")
-
-        open(f"{project['PINS_PATH']}/pins.xdc", "w").write("\n".join(xdc_data))
-
-        verilogs = " ".join(project['verilog_files'])
+        verilogs = " ".join(project["verilog_files"])
         makefile_data = []
         makefile_data.append("")
         makefile_data.append("all: build/rio.bit")
@@ -749,43 +711,59 @@ def generate(project):
         makefile_data.append("	xc3sprog -c nexys4 build/rio.bit")
         makefile_data.append("")
         makefile_data.append("")
-        open(f"{project['FIRMWARE_PATH']}/Makefile", "w").write("\n".join(makefile_data))
+        open(f"{project['FIRMWARE_PATH']}/Makefile", "w").write(
+            "\n".join(makefile_data)
+        )
 
         tcl_data = []
         tcl_data.append("")
         tcl_data.append("set outputDir ./build")
         tcl_data.append("file mkdir $outputDir")
         tcl_data.append("")
-        for verilog in project['verilog_files']:
+        for verilog in project["verilog_files"]:
             tcl_data.append(f"read_verilog {verilog}")
         tcl_data.append("read_xdc pins.xdc")
         tcl_data.append("")
         tcl_data.append(f"synth_design -top rio -part {project['jdata']['type']}")
         tcl_data.append("write_checkpoint -force $outputDir/post_synth.dcp")
-        tcl_data.append("report_timing_summary -file $outputDir/post_synth_timing_summary.rpt")
+        tcl_data.append(
+            "report_timing_summary -file $outputDir/post_synth_timing_summary.rpt"
+        )
         tcl_data.append("report_utilization -file $outputDir/post_synth_util.rpt")
         tcl_data.append("")
         tcl_data.append("opt_design")
         tcl_data.append("place_design")
         tcl_data.append("report_clock_utilization -file $outputDir/clock_util.rpt")
         tcl_data.append("")
-        tcl_data.append("# Optionally run optimization if there are timing violations after placement")
-        tcl_data.append("#if {[get_property SLACK [get_timing_paths -max_paths 1 -nworst 1 -setup]] < 0} {")
-        tcl_data.append("#    puts \"Found setup timing violations => running physical optimization\"")
+        tcl_data.append(
+            "# Optionally run optimization if there are timing violations after placement"
+        )
+        tcl_data.append(
+            "#if {[get_property SLACK [get_timing_paths -max_paths 1 -nworst 1 -setup]] < 0} {"
+        )
+        tcl_data.append(
+            '#    puts "Found setup timing violations => running physical optimization"'
+        )
         tcl_data.append("#    phys_opt_design")
         tcl_data.append("#}")
         tcl_data.append("write_checkpoint -force $outputDir/post_place.dcp")
         tcl_data.append("report_utilization -file $outputDir/post_place_util.rpt")
-        tcl_data.append("report_timing_summary -file $outputDir/post_place_timing_summary.rpt")
+        tcl_data.append(
+            "report_timing_summary -file $outputDir/post_place_timing_summary.rpt"
+        )
         tcl_data.append("")
         tcl_data.append("route_design")
         tcl_data.append("write_checkpoint -force $outputDir/post_route.dcp")
         tcl_data.append("report_route_status -file $outputDir/post_route_status.rpt")
-        tcl_data.append("report_timing_summary -file $outputDir/post_route_timing_summary.rpt")
+        tcl_data.append(
+            "report_timing_summary -file $outputDir/post_route_timing_summary.rpt"
+        )
         tcl_data.append("report_power -file $outputDir/post_route_power.rpt")
         tcl_data.append("report_drc -file $outputDir/post_imp_drc.rpt")
         tcl_data.append("")
-        tcl_data.append("write_verilog -force $outputDir/impl_netlist.v -mode timesim -sdf_anno true")
+        tcl_data.append(
+            "write_verilog -force $outputDir/impl_netlist.v -mode timesim -sdf_anno true"
+        )
         tcl_data.append("")
         tcl_data.append("write_bitstream -force $outputDir/rio.bit")
         tcl_data.append("")
@@ -793,7 +771,7 @@ def generate(project):
         tcl_data.append("")
         open(f"{project['FIRMWARE_PATH']}/rio.tcl", "w").write("\n".join(tcl_data))
 
-    elif project['jdata'].get("toolchain") == "diamond":
+    elif project["jdata"].get("toolchain") == "diamond":
         os.system(f"cp files/pif21.sty {project['FIRMWARE_PATH']}/")
 
         ldf_data = []
@@ -806,7 +784,7 @@ def generate(project):
             '    <Implementation title="impl1" dir="impl1" description="impl1" synthesis="lse" default_strategy="Strategy1">'
         )
         ldf_data.append('        <Options def_top="rio"/>')
-        for vfile in project['verilog_files']:
+        for vfile in project["verilog_files"]:
             ldf_data.append(
                 f'        <Source name="impl1/source/{vfile}" type="Verilog" type_short="Verilog">'
             )
@@ -859,12 +837,16 @@ def generate(project):
         pcf_data.append('LOCATE COMP "SDA"               SITE "125";')
         pcf_data.append('LOCATE COMP "SCL"               SITE "126";')
         pcf_data.append('IOBUF  PORT "GSRn"              IO_TYPE=LVCMOS33 PULLMODE=UP;')
-        pcf_data.append('IOBUF  PORT "LEDR"              IO_TYPE=LVCMOS33 PULLMODE=DOWN;')
-        pcf_data.append('IOBUF  PORT "LEDG"              IO_TYPE=LVCMOS33 PULLMODE=DOWN;')
+        pcf_data.append(
+            'IOBUF  PORT "LEDR"              IO_TYPE=LVCMOS33 PULLMODE=DOWN;'
+        )
+        pcf_data.append(
+            'IOBUF  PORT "LEDG"              IO_TYPE=LVCMOS33 PULLMODE=DOWN;'
+        )
         pcf_data.append('IOBUF  PORT "SCL"               IO_TYPE=LVCMOS33 PULLMODE=UP;')
         pcf_data.append('IOBUF  PORT "SDA"               IO_TYPE=LVCMOS33 PULLMODE=UP;')
         pcf_data.append("")
-        for pname, pins in project['pinlists'].items():
+        for pname, pins in project["pinlists"].items():
             pcf_data.append(f"### {pname} ###")
             for pin in pins:
                 if pin[1].startswith("EXPANSION"):
@@ -873,4 +855,3 @@ def generate(project):
             pcf_data.append("")
         pcf_data.append("")
         open(f"{project['PINS_PATH']}/pins.lpf", "w").write("\n".join(pcf_data))
-

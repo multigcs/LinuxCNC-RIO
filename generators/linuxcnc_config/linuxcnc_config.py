@@ -520,48 +520,107 @@ def generate_rio_ini(project):
 
     num_joints = len(traj_axis_list)
 
+    basic_setup = {
+        "EMC": {
+            "MACHINE": "Rio",
+            "DEBUG": 0,
+            "VERSION": 1.1,
+        },
+        "DISPLAY": {
+            "DISPLAY": "axis",
+            "TITLE": "LinuxCNC - RIO",
+            "ICON": None,
+            "EDITOR": "gedit",
+            "PYVCP": "rio-gui.xml",
+            "PREFERENCE_FILE_PATH": None,
+            "ARCDIVISION": 64,
+            "GRIDS": "10mm 20mm 50mm 100mm",
+            "INTRO_GRAPHIC": "linuxcnc.gif",
+            "INTRO_TIME": 2,
+            "PROGRAM_PREFIX": "~/linuxcnc/nc_files",
+            "INCREMENTS": "50mm 10mm 5mm 1mm .5mm .1mm .05mm .01mm",
+            "SPINDLES": 1,
+            "MAX_FEED_OVERRIDE": 5.0,
+            "MIN_SPINDLE_0_OVERRIDE": 0.5,
+            "MAX_SPINDLE_0_OVERRIDE": 1.2,
+            "MIN_SPINDLE_0_SPEED": 1000,
+            "DEFAULT_SPINDLE_0_SPEED": 5000,
+            "MAX_SPINDLE_0_SPEED": 20000,
+            "MIN_LINEAR_VELOCITY": 0.0,
+            "DEFAULT_LINEAR_VELOCITY": 10.0,
+            "MAX_LINEAR_VELOCITY": 40.0,
+            "MIN_ANGULAR_VELOCITY": 0.0,
+            "DEFAULT_ANGULAR_VELOCITY": 2.5,
+            "MAX_ANGULAR_VELOCITY": 5.0,
+            "SPINDLE_INCREMENT": 200,
+            "MAX_SPINDLE_POWER": 2000,
+        },
+        "KINS": {
+            "JOINTS": num_joints,
+            "KINEMATICS": f"trivkins coordinates={''.join(traj_axis_list)}",
+        },
+        "FILTER": {
+            "PROGRAM_EXTENSION": ".py Python Script",
+            "py": "python",
+        },
+        "TASK": {
+            "TASK": "milltask",
+            "CYCLE_TIME": 0.010,
+        },
+        "RS274NGC": {
+            "PARAMETER_FILE": "linuxcnc.var",
+            "SUBROUTINE_PATH": "./subroutines/",
+            "USER_M_PATH": "./mcodes/",
+        },
+        "EMCMOT": {
+            "EMCMOT": "motmod",
+            "COMM_TIMEOUT": 1.0,
+            "COMM_WAIT": 0.010,
+            "BASE_PERIOD": 0,
+            "SERVO_PERIOD": 1000000,
+        },
+        "HAL": {
+            "HALFILE": "rio.hal",
+            "POSTGUI_HALFILE": "postgui_call_list.hal",
+            "HALUI": "halui",
+        },
+        "HALUI": {
+            "MDI_COMMAND": [
+                "G92 X0 Y0",
+                "G92 Z0",
+                "o<z_touch> call",
+            ],
+        },
+        "TRAJ": {
+            "COORDINATES": " ".join(traj_axis_list),
+            "LINEAR_UNITS": "mm",
+            "ANGULAR_UNITS": "degree",
+            "CYCLE_TIME": 0.010,
+            "DEFAULT_LINEAR_VELOCITY": 50.00,
+            "MAX_LINEAR_VELOCITY": 50.00,
+            "NO_FORCE_HOMING": 1,
+        },
+        "EMCIO": {
+            "EMCIO": "io",
+            "CYCLE_TIME": 0.100,
+            "TOOL_TABLE": "tool.tbl",
+        },
+    }
 
     if gui == "qtdragon":
-        basic_setup = {
-            "EMC": {
-                "MACHINE": "Rio",
-                "DEBUG": 0,
-                "VERSION": 1.1,
-            },
+        basic_setup.update({
             "DISPLAY": {
                 "DISPLAY": "qtvcp -d rio_hd",
-                "TITLE": "LinuxCNC - RIO",
                 "ICON": "silver_dragon.png",
                 "EDITOR": None,
                 "PYVCP": None,
                 "PREFERENCE_FILE_PATH": "WORKINGFOLDER/qtdragon_hd.pref",
-                "POSITION_OFFSET": "RELATIVE",
-                "POSITION_FEEDBACK": "ACTUAL",
-                "ARCDIVISION": 64,
-                "GRIDS": "10mm 20mm 50mm 100mm",
                 "INTRO_GRAPHIC": "silver_dragon.png",
-                "INTRO_TIME": 2,
                 "CYCLE_TIME": 100,
                 "NGCGUI_SUBFILE_PATH": "../../../nc_files/ngcgui_lib/",
                 "NGCGUI_SUBFILE": "qpocket.ngc",
                 "MDI_HISTORY_FILE": "mdi_history.dat",
                 "LOG_FILE": "qtdragon_hd.log",
-                "PROGRAM_PREFIX": "~/linuxcnc/nc_files",
-                "INCREMENTS": "50mm 10mm 5mm 1mm .5mm .1mm .05mm .01mm",
-                "SPINDLE_INCREMENT": 200,
-                "MAX_SPINDLE_POWER": 2000,
-                "MAX_FEED_OVERRIDE": 5.0,
-                "MIN_SPINDLE_0_OVERRIDE": 0.5,
-                "MAX_SPINDLE_0_OVERRIDE": 1.2,
-                "MIN_SPINDLE_0_SPEED": 1000,
-                "DEFAULT_SPINDLE_0_SPEED": 5000,
-                "MAX_SPINDLE_0_SPEED": 20000,
-                "MIN_LINEAR_VELOCITY": 0.0,
-                "DEFAULT_LINEAR_VELOCITY": 10.0,
-                "MAX_LINEAR_VELOCITY": 40.0,
-                "MIN_ANGULAR_VELOCITY": 0.0,
-                "DEFAULT_ANGULAR_VELOCITY": 2.5,
-                "MAX_ANGULAR_VELOCITY": 5.0,
             },
             "MDI_COMMAND_LIST": {
                 "MDI_COMMAND": "G0 Z25 X0 Y0;Z0,Goto\\nZero",
@@ -576,15 +635,6 @@ def generate_rio_ini(project):
                 "jpg": "image-to-gcode",
                 "py": "python3",
             },
-
-            "KINS": {
-                "JOINTS": num_joints,
-                "KINEMATICS": f"trivkins coordinates={''.join(traj_axis_list)}",
-            },
-            "TASK": {
-                "TASK": "milltask",
-                "CYCLE_TIME": 0.010,
-            },
             "RS274NGC": {
                 "PARAMETER_FILE": "linuxcnc.var",
                 "RS274NGC_STARTUP_CODE": "G17 G21 G40 G43H0 G54 G64P0.0127 G80 G90 G94 G97 M5 M9",
@@ -592,125 +642,12 @@ def generate_rio_ini(project):
                 "USER_M_PATH": "./mcodes/",
                 "ON_ABORT_COMMAND": "O <on_abort> call",
             },
-            "EMCMOT": {
-                "EMCMOT": "motmod",
-                "COMM_TIMEOUT": 1.0,
-                "COMM_WAIT": 0.010,
-                "BASE_PERIOD": 0,
-                "SERVO_PERIOD": 1000000,
-            },
-            "HAL": {
-                "HALFILE": "rio.hal",
-                "POSTGUI_HALFILE": "postgui_call_list.hal",
-                "HALUI": "halui",
-            },
             "HALUI": {
             },
             "PROBE": {
                 "USE_PROBE": "basicprobe",
             },
-            "TRAJ": {
-                "COORDINATES": " ".join(traj_axis_list),
-                "LINEAR_UNITS": "mm",
-                "ANGULAR_UNITS": "degree",
-                "CYCLE_TIME": 0.010,
-                "DEFAULT_LINEAR_VELOCITY": 50.00,
-                "MAX_LINEAR_VELOCITY": 50.00,
-                "SPINDLES": 1,
-                "NO_FORCE_HOMING": 1,
-            },
-            "EMCIO": {
-                "EMCIO": "io",
-                "CYCLE_TIME": 0.100,
-                "TOOL_TABLE": "tool.tbl",
-            },
-        }
-    else:
-        basic_setup = {
-            "EMC": {
-                "MACHINE": "Rio",
-                "DEBUG": 0,
-                "VERSION": 1.1,
-            },
-            "DISPLAY": {
-                "DISPLAY": "axis",
-                "TITLE": "LinuxCNC - RIO",
-                "ICON": None,
-                "EDITOR": "gedit",
-                "PYVCP": "rio-gui.xml",
-                "PREFERENCE_FILE_PATH": None,
-                "POSITION_OFFSET": "RELATIVE",
-                "POSITION_FEEDBACK": "ACTUAL",
-                "ARCDIVISION": 64,
-                "GRIDS": "10mm 20mm 50mm 100mm",
-                "INTRO_GRAPHIC": "linuxcnc.gif",
-                "INTRO_TIME": 2,
-                "PROGRAM_PREFIX": "~/linuxcnc/nc_files",
-                "INCREMENTS": "50mm 10mm 5mm 1mm .5mm .1mm .05mm .01mm",
-                "MAX_FEED_OVERRIDE": 5.0,
-                "MIN_SPINDLE_0_OVERRIDE": 0.5,
-                "MAX_SPINDLE_0_OVERRIDE": 1.2,
-                "MIN_SPINDLE_0_SPEED": 1000,
-                "DEFAULT_SPINDLE_0_SPEED": 5000,
-                "MAX_SPINDLE_0_SPEED": 20000,
-                "MIN_LINEAR_VELOCITY": 0.0,
-                "DEFAULT_LINEAR_VELOCITY": 10.0,
-                "MAX_LINEAR_VELOCITY": 40.0,
-                "MIN_ANGULAR_VELOCITY": 0.0,
-                "DEFAULT_ANGULAR_VELOCITY": 2.5,
-                "MAX_ANGULAR_VELOCITY": 5.0,
-            },
-            "KINS": {
-                "JOINTS": num_joints,
-                "KINEMATICS": f"trivkins coordinates={''.join(traj_axis_list)}",
-            },
-            "FILTER": {
-                "PROGRAM_EXTENSION": ".py Python Script",
-                "py": "python",
-            },
-            "TASK": {
-                "TASK": "milltask",
-                "CYCLE_TIME": 0.010,
-            },
-            "RS274NGC": {
-                "PARAMETER_FILE": "linuxcnc.var",
-                "SUBROUTINE_PATH": "./subroutines/",
-                "USER_M_PATH": "./mcodes/",
-            },
-            "EMCMOT": {
-                "EMCMOT": "motmod",
-                "COMM_TIMEOUT": 1.0,
-                "COMM_WAIT": 0.010,
-                "BASE_PERIOD": 0,
-                "SERVO_PERIOD": 1000000,
-            },
-            "HAL": {
-                "HALFILE": "rio.hal",
-                "POSTGUI_HALFILE": "postgui_call_list.hal",
-                "HALUI": "halui",
-            },
-            "HALUI": {
-                "MDI_COMMAND": [
-                    "G92 X0 Y0",
-                    "G92 Z0",
-                    "o<z_touch> call",
-                ],
-            },
-            "TRAJ": {
-                "COORDINATES": " ".join(traj_axis_list),
-                "LINEAR_UNITS": "mm",
-                "ANGULAR_UNITS": "degree",
-                "CYCLE_TIME": 0.010,
-                "DEFAULT_LINEAR_VELOCITY": 50.00,
-                "MAX_LINEAR_VELOCITY": 50.00,
-                "NO_FORCE_HOMING": 1,
-            },
-            "EMCIO": {
-                "EMCIO": "io",
-                "CYCLE_TIME": 0.100,
-                "TOOL_TABLE": "tool.tbl",
-            },
-        }
+        })
 
 
     cfgini_data = []

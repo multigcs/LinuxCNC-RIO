@@ -830,7 +830,7 @@ def generate_rio_ini(project):
             HOME_SEQUENCE = 0
 
         REV = 1.0
-        if OUTPUT_SCALE < 0:
+        if int(OUTPUT_SCALE) < 0:
             REV = -1.0
 
         home_options = {

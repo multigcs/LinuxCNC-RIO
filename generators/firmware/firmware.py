@@ -158,8 +158,11 @@ def verilog_top(project):
     for plugin in project["plugins"]:
         if hasattr(project["plugins"][plugin], "defs"):
             defs = project["plugins"][plugin].defs()
-            top_data.append("\n".join(defs))
-            top_data.append("")
+            if defs:
+                top_data.append("")
+                top_data.append("")
+                top_data.append(f"    // {plugin}")
+                top_data += defs
 
     # expansion wires
     expansion_size = {}
@@ -187,7 +190,8 @@ def verilog_top(project):
                     if "_INPUT" not in pin[1]:
                         print("ERROR: pin-direction do not match:", pin)
                         exit(1)
-    top_data.append("    // expansion I/O's (wire)")
+    #top_data.append("")
+
     for pname, pins in project["pinlists"].items():
         for pin in pins:
             if pin[1].startswith("EXPANSION"):
@@ -195,13 +199,11 @@ def verilog_top(project):
                     top_data.append(f"    wire {pin[0]};")
                 else:
                     top_data.append(f"    wire {pin[0]};")
-    top_data.append("")
 
     jointEnables = []
     for num, joint in enumerate(project["jointnames"]):
         top_data.append(f"    wire {joint['_prefix']}Enable;")
         jointEnables.append(f"{joint['_prefix']}Enable")
-    top_data.append("")
 
     if "enable" in project["jdata"]:
         jointEnablesStr = " || ".join(jointEnables)
@@ -213,22 +215,25 @@ def verilog_top(project):
             top_data.append(f"    assign ENA = ({jointEnablesStr}) && ~ERROR;")
         top_data.append("")
 
-    top_data.append(f"    // vouts {project['vouts']}")
-    for num, vout in enumerate(project["voutnames"]):
-        top_data.append(f"    wire signed [31:0] {vout['_prefix']};")
-    top_data.append("")
+    if project["voutnames"]:
+        top_data.append(f"    // vouts {project['vouts']}")
+        for num, vout in enumerate(project["voutnames"]):
+            top_data.append(f"    wire signed [31:0] {vout['_prefix']};")
+        top_data.append("")
 
-    top_data.append(f"    // vins {project['vins']}")
-    for num, vin in enumerate(project["vinnames"]):
-        top_data.append(f"    wire signed [31:0] {vin['_prefix']};")
-    top_data.append("")
+    if project["vinnames"]:
+        top_data.append(f"    // vins {project['vins']}")
+        for num, vin in enumerate(project["vinnames"]):
+            top_data.append(f"    wire signed [31:0] {vin['_prefix']};")
+        top_data.append("")
 
-    top_data.append(f"    // joints {project['joints']}")
-    for num, joint in enumerate(project["jointnames"]):
-        top_data.append(f"    wire signed [31:0] {joint['_prefix']}FreqCmd;")
-    for num, joint in enumerate(project["jointnames"]):
-        top_data.append(f"    wire signed [31:0] {joint['_prefix']}Feedback;")
-    top_data.append("")
+    if project["jointnames"]:
+        top_data.append(f"    // joints {project['joints']}")
+        for num, joint in enumerate(project["jointnames"]):
+            top_data.append(f"    wire signed [31:0] {joint['_prefix']}FreqCmd;")
+        for num, joint in enumerate(project["jointnames"]):
+            top_data.append(f"    wire signed [31:0] {joint['_prefix']}Feedback;")
+        top_data.append("")
 
     top_data.append(f"    // rx_data {project['rx_data_size']}")
     pos = project["data_size"]
@@ -272,7 +277,7 @@ def verilog_top(project):
                 top_data.append(f"    // assign DOUTx = rx_data[{pos-1}];")
             pos -= 1
 
-    top_data.append("")
+    #top_data.append("")
     top_data.append(f"    // tx_data {project['tx_data_size']}")
     top_data.append("    assign tx_data = {")
     top_data.append(
@@ -312,9 +317,8 @@ def verilog_top(project):
     else:
         top_data.append(f"        {', '.join(tdins)}")
     top_data.append("    };")
-    top_data.append("")
+    #top_data.append("")
 
-    top_data.append("    // expansion I/O's (assign)")
     for pname, pins in project["pinlists"].items():
         for pin in pins:
             if pin[1].startswith("EXPANSION"):
@@ -326,13 +330,15 @@ def verilog_top(project):
         for n in range(size):
             assign_list.append(f"{pins[size - 1 - n]}")
         top_data.append(f"    assign {port} = {{{', '.join(assign_list)}}};")
-    top_data.append("")
+    #top_data.append("")
 
     for plugin in project["plugins"]:
         if hasattr(project["plugins"][plugin], "funcs"):
             funcs = project["plugins"][plugin].funcs()
-            top_data.append("\n".join(funcs))
-            top_data.append("")
+            if funcs:
+                top_data.append("")
+                top_data.append(f"    // {plugin}")
+                top_data += funcs
 
     top_data.append("endmodule")
     top_data.append("")

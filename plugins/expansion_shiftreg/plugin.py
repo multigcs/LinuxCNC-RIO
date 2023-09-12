@@ -74,7 +74,7 @@ class Plugin:
         return expansions
 
     def defs(self):
-        func_out = ["    // expansion_shiftreg's"]
+        func_out = []
         for num, expansion in enumerate(self.jdata.get("expansion", [])):
             if expansion["type"] == "shiftreg":
                 bits = int(expansion.get("bits", 8))
@@ -110,7 +110,7 @@ class Plugin:
         return func_out
 
     def funcs(self):
-        func_out = ["    // expansion_shiftreg's"]
+        func_out = []
         for num, expansion in enumerate(self.jdata.get("expansion", [])):
             if expansion["type"] == "shiftreg":
                 bits = int(expansion.get("bits", 8))

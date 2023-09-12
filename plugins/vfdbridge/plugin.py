@@ -54,7 +54,7 @@ class Plugin:
         return pinlist_out
 
     def defs(self):
-        ret = ["    // din_toggle's"]
+        ret = []
         for num, data in enumerate(self.jdata["plugins"]):
             if data.get("type") == self.ptype:
                 name = data.get("name", f"VFD.{num}") + "-at-speed"
@@ -96,7 +96,7 @@ class Plugin:
         return ret
 
     def funcs(self):
-        func_out = ["    // vfdbridge's"]
+        func_out = []
         for num, data in enumerate(self.jdata["plugins"]):
             if data.get("type") == self.ptype:
                 name_out = data.get("name", f"VFD.{num}")

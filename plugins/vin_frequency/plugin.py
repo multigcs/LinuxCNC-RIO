@@ -61,7 +61,7 @@ class Plugin:
         return ret
 
     def funcs(self):
-        ret = ["    // vin_frequency's"]
+        ret = []
         for num, data in enumerate(self.jdata["plugins"]):
             if data.get("type") == self.ptype:
                 name = data.get("name", f"PV.{num}")

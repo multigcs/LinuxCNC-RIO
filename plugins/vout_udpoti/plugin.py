@@ -73,7 +73,7 @@ class Plugin:
         return ret
 
     def funcs(self):
-        func_out = ["    // vout_udpoti's"]
+        func_out = []
         for num, data in enumerate(self.jdata["plugins"]):
             if data["type"] in self.ptype:
                 name = data.get("name", f"SP.{num}")

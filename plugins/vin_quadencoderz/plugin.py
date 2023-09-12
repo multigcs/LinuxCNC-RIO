@@ -109,7 +109,7 @@ class Plugin:
         return ret
 
     def defs(self):
-        ret = ["    // vin_quadencoderz's"]
+        ret = []
         for num, data in enumerate(self.jdata["plugins"]):
             if data.get("type") == self.ptype:
                 name = data.get("name", f"PV.{num}")
@@ -119,7 +119,7 @@ class Plugin:
         return ret
 
     def funcs(self):
-        ret = ["    // vin_quadencoderz's"]
+        ret = []
         for num, data in enumerate(self.jdata["plugins"]):
             if data.get("type") == self.ptype:
                 name = data.get("name", f"PV.{num}")

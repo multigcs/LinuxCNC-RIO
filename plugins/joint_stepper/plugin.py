@@ -120,7 +120,7 @@ class Plugin:
         return ret
 
     def funcs(self):
-        func_out = ["    // joint_stepper's"]
+        func_out = []
         for num, joint in enumerate(self.jdata["plugins"]):
             if joint["type"] == "joint_stepper":
                 name = joint.get("name", f"JOINT.{num}")

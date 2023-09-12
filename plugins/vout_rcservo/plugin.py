@@ -62,7 +62,7 @@ class Plugin:
         return ret
 
     def defs(self):
-        func_out = ["    // vout_rcservo's"]
+        func_out = []
         for num, data in enumerate(self.jdata["plugins"]):
             if data["type"] == self.ptype:
                 if "dir" not in data:
@@ -78,7 +78,7 @@ class Plugin:
 
 
     def funcs(self):
-        func_out = ["    // vout_rcservo's"]
+        func_out = []
         for num, data in enumerate(self.jdata["plugins"]):
             if data["type"] == self.ptype:
                 name = data.get("name", f"SP.{num}")

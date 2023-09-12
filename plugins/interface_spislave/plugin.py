@@ -59,7 +59,7 @@ class Plugin:
         return pinlist_out
 
     def funcs(self):
-        func_out = ["    // interface_spislave"]
+        func_out = []
         for num, interface in enumerate(self.jdata.get("interface", [])):
             func_out.append(
                 f"    interface_spislave #(BUFFER_SIZE, 32'h74697277, 32'd{int(self.jdata['clock']['speed']) // 4}) spi1 ("

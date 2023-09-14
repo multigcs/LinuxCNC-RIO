@@ -748,8 +748,9 @@ def generate_rio_ini(project):
             "MAX_VELOCITY": joint.get("max_velocity", MAX_VELOCITY),
             "MAX_ACCELERATION": joint.get("max_acceleration", MAX_ACCELERATION),
             "STEPGEN_MAXACCEL": joint.get("stepgen_maxaccel", 4000.0),
-            "FERROR": joint.get("ferror", 1.0),
-            "MIN_FERROR": joint.get("min_ferror", 0.5),
+            "STEPGEN_DEADBAND": joint.get("stepgen_deadband", 1.0 / abs(OUTPUT_SCALE) * 100.0),
+            "FERROR": joint.get("ferror", 0.5),
+            "MIN_FERROR": joint.get("min_ferror", 0.1),
         }
 
         if AXIS_NAME in "ACBUVW":
@@ -1115,6 +1116,7 @@ setp pid.{pidn}.deadband [JOINT_{num}]DEADBAND
 setp rio.joint.{num}.scale 		[JOINT_{num}]OUTPUT_SCALE
 setp rio.joint.{num}.fb-scale 	[JOINT_{num}]INPUT_SCALE
 setp rio.joint.{num}.maxaccel 	[JOINT_{num}]STEPGEN_MAXACCEL
+setp rio.joint.{num}.deadband 	[JOINT_{num}]STEPGEN_DEADBAND
 
 net {axis_names[num]}vel-cmd 		<= pid.{pidn}.output 	=> rio.joint.{num}.vel-cmd  
 net {axis_names[num]}pos-cmd 		<= joint.{num}.motor-pos-cmd 	=> pid.{pidn}.command
@@ -1135,6 +1137,7 @@ net j{num}enable 		=> pid.{pidn}.enable
 
 setp rio.joint.{num}.scale 		[JOINT_{num}]SCALE
 setp rio.joint.{num}.maxaccel 	[JOINT_{num}]STEPGEN_MAXACCEL
+setp rio.joint.{num}.deadband 	[JOINT_{num}]STEPGEN_DEADBAND
 
 net {axis_names[num]}pos-cmd 		<= joint.{num}.motor-pos-cmd 	=> rio.joint.{num}.pos-cmd  
 net j{num}pos-fb 		<= rio.joint.{num}.pos-fb 	=> joint.{num}.motor-pos-fb

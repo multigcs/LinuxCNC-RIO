@@ -546,7 +546,7 @@ def generate_rio_ini(project):
             "MIN_SPINDLE_0_OVERRIDE": 0.5,
             "MAX_SPINDLE_0_OVERRIDE": 1.2,
             "MIN_SPINDLE_0_SPEED": 1000,
-            "DEFAULT_SPINDLE_0_SPEED": 5000,
+            "DEFAULT_SPINDLE_0_SPEED": 6000,
             "MAX_SPINDLE_0_SPEED": 20000,
             "MIN_LINEAR_VELOCITY": 0.0,
             "DEFAULT_LINEAR_VELOCITY": 10.0,
@@ -562,7 +562,7 @@ def generate_rio_ini(project):
             "KINEMATICS": f"trivkins coordinates={''.join(traj_axis_list)}",
         },
         "FILTER": {
-            "PROGRAM_EXTENSION": ".py Python Script",
+            "PROGRAM_EXTENSION": [".ngc,.nc,.tap G-Code File (*.ngc,*.nc,*.tap)", ".py Python Script"],
             "py": "python",
         },
         "TASK": {
@@ -610,7 +610,7 @@ def generate_rio_ini(project):
     }
 
     if gui == "qtdragon":
-        basic_setup.update({
+        qtdragon_setup = {
             "DISPLAY": {
                 "DISPLAY": "qtvcp -d rio_hd",
                 "ICON": "silver_dragon.png",
@@ -625,13 +625,10 @@ def generate_rio_ini(project):
                 "LOG_FILE": "qtdragon_hd.log",
             },
             "MDI_COMMAND_LIST": {
-                "MDI_COMMAND": "G0 Z25 X0 Y0;Z0,Goto\\nZero",
-                "MDI_COMMAND": "G53 G0 Z0;G53 G0 X0 Y0,Goto\\nMach\\nZero",
+                "MDI_COMMAND": ["G0 Z25 X0 Y0;Z0,Goto\\nZero", "G53 G0 Z0;G53 G0 X0 Y0,Goto\\nMach\\nZero"],
             },
             "FILTER": {
-                "PROGRAM_EXTENSION": ".ngc,.nc,.tap G-Code File (*.ngc,*.nc,*.tap)",
-                "PROGRAM_EXTENSION": ".png,.gif,.jpg Greyscale Depth Image",
-                "PROGRAM_EXTENSION": ".py Python Script",
+                "PROGRAM_EXTENSION": [".ngc,.nc,.tap G-Code File (*.ngc,*.nc,*.tap)", ".png,.gif,.jpg Greyscale Depth Image", ".py Python Script"],
                 "png": "image-to-gcode",
                 "gif": "image-to-gcode",
                 "jpg": "image-to-gcode",
@@ -649,7 +646,13 @@ def generate_rio_ini(project):
             "PROBE": {
                 "USE_PROBE": "basicprobe",
             },
-        })
+        }
+        for section, sdata in qtdragon_setup.items():
+            if section not in basic_setup:
+                basic_setup[section] = {}
+            for key, value in sdata.items():
+                basic_setup[section][key] = value
+
 
 
     cfgini_data = []
@@ -1201,7 +1204,12 @@ def generate_custom_postgui_hal(project):
         vout_name = vout.get("name", f"vout{num}")
         vout_net = vout.get("net")
         if vout_net:
-            customhal_data.append(f"net {vname} => {prefix}.{vname}")
+            if vout_net == "spindle.0.speed-out" and gui == "qtdragon" and vout['type'] == "vfdbridge":
+                customhal_data.append(f"# scale rpm display for qtdragon: rpm -> hz")
+                customhal_data.append(f"setp qtdragon.spindle-rpm-scale 0.016666666666")
+            else:
+                customhal_data.append(f"net {vname} => {prefix}.{vname}")
+
         elif vout_net != "spindle.0.speed-out":
             customhal_data.append(f"net {vname} rio.{vname} => {prefix}.{vname}-f")
 
@@ -1265,7 +1273,9 @@ def generate_custom_postgui_hal(project):
             if offset is not None and float(offset) != float(0.0):
                 customhal_data.append(f"setp rio.{vname}-offset {offset}")
 
-            if display_type == "meter" and gui == "qtdragon":
+            if vin_net == "spindle.0.speed-out" and gui == "qtdragon":
+                pass
+            elif display_type == "meter" and gui == "qtdragon":
                 customhal_data.append(f"net {vname} rio.{vname} {prefix}.{vname}_value")
             else:
                 if vin_net:
@@ -1363,7 +1373,8 @@ def generate_rio_gui(project):
             cfgxml_data += gui_gen.draw_number(f"RPM - {vname}", f"{vname}-rpm")
 
         elif vin_net == "spindle.0.speed-out":
-            cfgxml_data += gui_gen.draw_number(f"{vname}", f"{vname}")
+            if gui != "qtdragon":
+                cfgxml_data += gui_gen.draw_number(f"{vname}", f"{vname}")
     
         elif function:
             pass
@@ -1440,6 +1451,8 @@ def generate_rio_gui(project):
                 vmax = vout.get('max', 100)
             if vout.get("type") == "pwm":
                 cfgxml_data += gui_gen.draw_bar(vout_name, vname, vmin=vmin, vmax=vmax)
+            elif vin_net == "spindle.0.speed-out" and gui == "qtdragon":
+                pass
             else:
                 cfgxml_data += gui_gen.draw_number(vout_name, vname)
 

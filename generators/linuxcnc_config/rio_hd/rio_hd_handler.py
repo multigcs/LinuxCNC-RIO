@@ -218,6 +218,7 @@ class HandlerClass:
         QHAL.newpin("spindle-inhibit", QHAL.HAL_BIT, QHAL.HAL_OUT)
         pin = QHAL.newpin("spindle-modbus-connection", QHAL.HAL_BIT, QHAL.HAL_IN)
         pin.value_changed.connect(self.mb_connection_changed)
+        pin = QHAL.newpin("spindle-rpm-scale", QHAL.HAL_FLOAT, QHAL.HAL_IN)
 
         # external offset control pins
         QHAL.newpin("eoffset-enable", QHAL.HAL_BIT, QHAL.HAL_OUT)
@@ -479,7 +480,10 @@ class HandlerClass:
     #########################
 
     def update_spindle(self,w,data):
-        self.w.gauge_spindle.update_value(abs(data))
+        scale = self.h['spindle-rpm-scale']
+        if scale == 0.0:
+            scale = 1.0
+        self.w.gauge_spindle.update_value(abs(data) * scale)
 
     def update_spindle_requested(self,w,data):
         self.w.gauge_spindle.set_setpoint(abs(data))

@@ -88,7 +88,7 @@ class Plugin:
                 pinlist_out.append(
                     (f"JOINT{num}_STEPPER_DIR", joint["pins"]["dir"], "OUTPUT")
                 )
-                if joint.get("cl"):
+                if joint.get("cl") and "enc_a" in joint["pins"]:
                     pullup = joint["pins"].get("pullup", False)
                     pinlist_out.append(
                         (
@@ -135,7 +135,7 @@ class Plugin:
                     func_out.append(f"    wire JOINT{num}_STEPPER_DIR_INVERTED; // inverted dir wire")
                     func_out.append(f"    assign JOINT{num}_STEPPER_DIR = !JOINT{num}_STEPPER_DIR_INVERTED; // invert dir output")
 
-                if joint.get("cl"):
+                if joint.get("cl") and "enc_a" in joint["pins"]:
                     func_out.append(f"    quad_encoder quad{num} (")
                     func_out.append("        .clk (sysclk),")
                     func_out.append(f"        .quadA (JOINT{num}_STEPPER_ENCA),")

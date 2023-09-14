@@ -531,6 +531,8 @@ def generate_rio_ini(project):
             "TITLE": "LinuxCNC - RIO",
             "ICON": None,
             "EDITOR": "gedit",
+            "POSITION_OFFSET": "RELATIVE",
+            "POSITION_FEEDBACK": "ACTUAL",
             "PYVCP": "rio-gui.xml",
             "PREFERENCE_FILE_PATH": None,
             "ARCDIVISION": 64,
@@ -727,14 +729,14 @@ def generate_rio_ini(project):
         cfgini_data.append(f"[JOINT_{num}]")
         if joint.get("cl", False):
             for key, default in {
-                "P": "1",
+                "P": "1.0",
                 "I": "0.0",
                 "D": "0.0",
                 "FF0": "0.0",
-                "FF1": "1.00025",
+                "FF1": "1.0",
                 "FF2": "0.01",
                 "BIAS": "0.0",
-                "DEADBAND": "2.0",
+                "DEADBAND": 2.0,
             }.items():
                 value = joint.get("pid", {}).get(key, default)
                 cfgini_data.append(f"{key} = {value}")
@@ -748,9 +750,9 @@ def generate_rio_ini(project):
             "MAX_VELOCITY": joint.get("max_velocity", MAX_VELOCITY),
             "MAX_ACCELERATION": joint.get("max_acceleration", MAX_ACCELERATION),
             "STEPGEN_MAXACCEL": joint.get("stepgen_maxaccel", 4000.0),
-            "STEPGEN_DEADBAND": joint.get("stepgen_deadband", 1.0 / abs(OUTPUT_SCALE) * 100.0),
-            "FERROR": joint.get("ferror", 0.5),
-            "MIN_FERROR": joint.get("min_ferror", 0.1),
+            "STEPGEN_DEADBAND": joint.get("stepgen_deadband", 1.0 / abs(OUTPUT_SCALE) * 10.0),
+            "FERROR": joint.get("ferror", 1.0),
+            "MIN_FERROR": joint.get("min_ferror", 0.5),
         }
 
         if AXIS_NAME in "ACBUVW":

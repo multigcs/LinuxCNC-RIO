@@ -1,28 +1,7 @@
 o<z_touch> sub
-    ; Cancel all Z offsets
-    G92.1
-    G49
-    G10 L20 P0 Z[#<_hal[axis.z.pos-cmd]>]
-    ; Set incremental mode
-    G91
-    ; Force LinuxCNC to refresh hal pin states prior to reading HAL pin
-    M66 E0 L0
-    ; Check if probe is already tripped
-    O10 if [#<_hal[motion.probe-input]> EQ 1]
-        O10 return [-1]
-    O10 endif
-    G38.2 Z-20 F50	(probe down using a fast feedrate)
-    G0 Z0.5		(move up by 0.5mm)
-    ; Allow a half second for the probe input to clear
-    G4 P0.5
-    ; Force LinuxCNC to refresh hal pin states prior to reading HAL pin
-    M66 E0 L0
-    ; Check if probe is already tripped
-    O21 if [#<_hal[motion.probe-input]> EQ 1]
-        O21 return [-1]
-    O21 endif
-    G38.2 Z-1 F10	(probe down using a slow feedrate to get better accuracy)
-    G10 L20 P0 Z14	(set current WCS Z value = plate thickness)
-    G0 Z2		(move up 10mm above work piece)
-    G90
+	G21 ; mm and speed
+    G91 G38.2 Z-20 F50	(probe down using a fast feedrate)
+    G91 G38.4 Z5 F10	(probe up using a slow feedrate)
+    G10 L20 P0 Z14	    (set current WCS Z value = plate thickness)
+    G91 G1 Z1 F100		(move up by 1mm)
 o<z_touch> endsub

@@ -68,9 +68,9 @@ def pins_xdc(project):
             if pin[1].startswith("EXPANSION"):
                 continue
             options = ""
-            # if len(pin) > 3 and pin[3]:
-            #    options += " -pullup yes"
             data.append(f"set_property LOC {pin[1]} [get_ports {pin[0]}]")
             data.append(f"set_property IOSTANDARD LVCMOS33 [get_ports {pin[0]}]")
+            if len(pin) > 3 and pin[3]:
+                data.append(f"set_property PULLUP TRUE [get_ports {pin[0]}]")
         data.append("")
     open(f"{project['PINS_PATH']}/pins.xdc", "w").write("\n".join(data))

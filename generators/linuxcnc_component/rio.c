@@ -43,9 +43,8 @@
 #include <arpa/inet.h>
 #include <netinet/in.h>
 #endif
-#ifdef TRANSPORT_USB
+#ifdef TRANSPORT_SERIAL
 #include <fcntl.h> 
-#include <string.h>
 #include <termios.h>
 #endif
 #ifdef TRANSPORT_SPI
@@ -154,7 +153,7 @@ static int UDP_init(void);
 #endif
 
 
-#ifdef TRANSPORT_USB
+#ifdef TRANSPORT_SERIAL
 int serial_fd = -1;
 #endif
 
@@ -173,7 +172,7 @@ static CONTROL parse_ctrl_type(const char *ctrl);
 ************************************************************************/
 
 
-#ifdef TRANSPORT_USB
+#ifdef TRANSPORT_SERIAL
 
 int set_interface_attribs (int fd, int speed, int parity) {
         struct termios tty;
@@ -188,7 +187,7 @@ int set_interface_attribs (int fd, int speed, int parity) {
         tty.c_lflag = 0;                // no signaling chars, no echo,
         tty.c_oflag = 0;                // no remapping, no delays
         tty.c_cc[VMIN]  = 0;            // read doesn't block
-        tty.c_cc[VTIME] = 5;            // 0.5 seconds read timeout
+        tty.c_cc[VTIME] = 0;            // 0.5 seconds read timeout
         tty.c_iflag &= ~(IXON | IXOFF | IXANY); // shut off xon/xoff ctrl
         tty.c_cflag |= (CLOCAL | CREAD);// ignore modem controls, enable reading
         tty.c_cflag &= ~(PARENB | PARODD);      // shut off parity
@@ -201,21 +200,6 @@ int set_interface_attribs (int fd, int speed, int parity) {
             return errno;
         }
         return 0;
-}
-
-int set_blocking (int fd, int should_block) {
-        struct termios tty;
-        memset (&tty, 0, sizeof tty);
-        if (tcgetattr (fd, &tty) != 0) {
-            rtapi_print("ERROR: can't setup usb: %s\n", strerror(errno));
-            return errno;
-        }
-        tty.c_cc[VMIN]  = should_block ? 1 : 0;
-        tty.c_cc[VTIME] = 5;            // 0.5 seconds read timeout
-        if (tcsetattr (fd, TCSANOW, &tty) != 0) {
-            rtapi_print("ERROR: can't setup usb: %s\n", strerror(errno));
-            return errno;
-        }
 }
 
 #endif
@@ -271,7 +255,6 @@ int rtapi_app_main(void)
         return errno;
     }
     set_interface_attribs (serial_fd, SERIAL_SPEED, 0);
-    set_blocking (serial_fd, 100);
 #endif
 
 #ifdef TRANSPORT_SPI
@@ -1112,10 +1095,10 @@ void rio_readwrite()
                 // we have received a BAD payload from the PRU
                 *(data->SPIstatus) = 0;
 
-                rtapi_print("Bad SPI payload = %x\n", rxData.header);
-                //for (i = 0; i < SPIBUFSIZE; i++) {
-                //	rtapi_print("%d\n",rxData.rxBuffer[i]);
-                //}
+                rtapi_print("Bad interface payload = %x\n", rxData.header);
+                for (i = 0; i < SPIBUFSIZE; i++) {
+                	rtapi_print("%d\n",rxData.rxBuffer[i]);
+                }
                 break;
             }
         }
@@ -1162,10 +1145,26 @@ void rio_transfer()
     }
 #endif
 
-#ifdef TRANSPORT_USB
+#ifdef TRANSPORT_SERIAL
 
-    write (serial_fd, txData.txBuffer, SPIBUFSIZE);
+    uint8_t rxBufferTmp[SPIBUFSIZE];
+
+    tcflush(serial_fd, TCIOFLUSH);
+    write(serial_fd, txData.txBuffer, SPIBUFSIZE);
+    tcdrain(serial_fd);
+    int cnt = 0;
+    int rec = 0;
+    while((rec = read(serial_fd, rxBufferTmp, SPIBUFSIZE)) != SPIBUFSIZE && cnt++ < 190) {
+        usleep(100);
+    }
+    if (rec == SPIBUFSIZE) {
+        memcpy(rxData.rxBuffer, rxBufferTmp, SPIBUFSIZE);
+    }
+
+    /*
+    write(serial_fd, txData.txBuffer, SPIBUFSIZE);
     read(serial_fd, rxData.rxBuffer, SPIBUFSIZE);
+    */
 
 #endif
 

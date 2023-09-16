@@ -293,6 +293,9 @@ def buildsys_vivado(project):
     makefile_data.append("xc3sprog: build/rio.bit")
     makefile_data.append("	xc3sprog -c nexys4 build/rio.bit")
     makefile_data.append("")
+    makefile_data.append("load: build/rio.bit")
+    makefile_data.append("	openFPGALoader -b arty -f build/rio.bit")
+    makefile_data.append("")
     makefile_data.append("")
     open(f"{project['FIRMWARE_PATH']}/Makefile", "w").write(
         "\n".join(makefile_data)

@@ -15,8 +15,8 @@ def generate(project):
         rio_data.append(f"#define UDP_IP \"{project['jdata'].get('ip', '192.168.10.132')}\"")
     elif transport == 'SERIAL':
         rio_data.append("#define TRANSPORT_SERIAL")
-        rio_data.append("#define SERIAL_PORT \"/dev/ttyUSB0\"")
-        rio_data.append("#define SERIAL_SPEED B2000000")
+        rio_data.append(f"#define SERIAL_PORT \"{project['jdata'].get('tty', '/dev/ttyUSB1')}\"")
+        rio_data.append(f"#define SERIAL_SPEED B{project['jdata']['interface'][0].get('baud', '1000000')}")
     elif transport == 'SPI':
         rio_data.append("#define TRANSPORT_SPI")
         #rio_data.append("#define SPI_SPEED BCM2835_SPI_CLOCK_DIVIDER_128")

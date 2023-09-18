@@ -36,13 +36,11 @@ def main(configfile, outputdir=None):
         f"cp -a files/subroutines/* {project['LINUXCNC_PATH']}/ConfigSamples/rio/subroutines"
     )
 
-
     if project["jdata"].get("toolchain") == "diamond":
         project["SOURCE_PATH"] = f"{project['FIRMWARE_PATH']}/impl1/source"
         project["PINS_PATH"] = f"{project['FIRMWARE_PATH']}/impl1/source"
         os.system(f"mkdir -p {project['SOURCE_PATH']}")
         os.system(f"mkdir -p {project['PINS_PATH']}")
-
 
     for plugin in project["plugins"]:
         if hasattr(project["plugins"][plugin], "ips"):
@@ -52,16 +50,17 @@ def main(configfile, outputdir=None):
                 os.system(
                     f"which verilator >/dev/null && verilator --lint-only plugins/{plugin}/{ipv}"
                 )
-                os.system(f"cp -a plugins/{plugin}/{ipv} {project['SOURCE_PATH']}/{ipv}")
+                os.system(
+                    f"cp -a plugins/{plugin}/{ipv} {project['SOURCE_PATH']}/{ipv}"
+                )
 
     print(f"generating files in {project['OUTPUT_PATH']}")
-
 
     for generator in project["generators"].values():
         generator.generate(project)
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
 
     parser = argparse.ArgumentParser()
     parser.add_argument(

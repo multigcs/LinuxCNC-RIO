@@ -58,7 +58,7 @@ class Plugin:
             if data["type"] == self.ptype:
                 name = data.get("name", f"SP.{num}")
                 nameIntern = name.replace(".", "").replace("-", "_").upper()
-                frequency = int(data.get("frequency", 100000))
+                # frequency = int(data.get("frequency", 100000))
                 # divider = int(self.jdata["clock"]["speed"]) // frequency // 2
                 divider = 255
                 if "pins" in data:

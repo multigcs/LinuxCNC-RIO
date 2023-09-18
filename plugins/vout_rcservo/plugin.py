@@ -95,7 +95,7 @@ class Plugin:
                 func_out.append(f"    vout_rcservo #({divider}) vout_rcservo{num} (")
                 func_out.append("        .clk (sysclk),")
                 func_out.append(f"        .dty ({nameIntern}),")
-                func_out.append(f"        .disabled (ERROR),")
+                func_out.append("        .disabled (ERROR),")
                 func_out.append(f"        .dir (VOUT{num}_PWM_DIR),")
                 if invert_pwm:
                     func_out.append(f"        .pwm (VOUT{num}_PWM_PWM_INVERTED)")

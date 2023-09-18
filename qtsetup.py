@@ -34,7 +34,7 @@ from PyQt5.QtWidgets import (
 
 parser = argparse.ArgumentParser()
 parser.add_argument(
-    "configfile", help="json config file", type=str, nargs="?", default=None
+    "configfile", help="json config file", type=str, default=None
 )
 
 args = parser.parse_args()

@@ -1,3 +1,5 @@
+/* verilator lint_off WIDTHTRUNC */
+/* verilator lint_off WIDTHEXPAND */
 
 module interface_uart
     #(parameter BUFFER_SIZE=80, parameter MSGID=32'h74697277, parameter TIMEOUT=32'd4800000, parameter ClkFrequency=12000000, parameter Baud=2000000)

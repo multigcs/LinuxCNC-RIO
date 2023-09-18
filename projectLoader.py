@@ -116,45 +116,23 @@ def load(configfile):
         print("")
         exit(1)
 
-    project["vinnames"] = []
-    for plugin in project["plugins"]:
-        if hasattr(project["plugins"][plugin], "vinnames"):
-            project["vinnames"] += project["plugins"][plugin].vinnames()
-    project["vins"] = len(project["vinnames"])
+    for dtype in ("vin", "vout", "din", "dout", "joint"):
+        tname = f"{dtype}names"
+        if tname not in project:
+            project[tname] = []
+        for plugin in project["plugins"]:
+            if hasattr(project["plugins"][plugin], tname):
+                func = getattr(project["plugins"][plugin], tname)
+                project[tname] += func()
 
-    project["voutnames"] = []
-    for plugin in project["plugins"]:
-        if hasattr(project["plugins"][plugin], "voutnames"):
-            project["voutnames"] += project["plugins"][plugin].voutnames()
-    project["vouts"] = len(project["voutnames"])
-
-    project["dinnames"] = []
-    for plugin in project["plugins"]:
-        if hasattr(project["plugins"][plugin], "dinnames"):
-            project["dinnames"] += project["plugins"][plugin].dinnames()
-    project["dins"] = len(project["dinnames"])
-
-    project["doutnames"] = []
-    for plugin in project["plugins"]:
-        if hasattr(project["plugins"][plugin], "doutnames"):
-            project["doutnames"] += project["plugins"][plugin].doutnames()
-    project["douts"] = len(project["doutnames"])
-
-    project["jointnames"] = []
-    for plugin in project["plugins"]:
-        if hasattr(project["plugins"][plugin], "jointnames"):
-            project["jointnames"] += project["plugins"][plugin].jointnames()
-    project["joints"] = len(project["jointnames"])
+        project[f"{dtype}s"] = len(project[tname])
+        project[f"{dtype}s_total"] = max((len(project[tname]) + 7) // 8 * 8, 8)
 
     project["jointtypes"] = []
     for joint in project["jointnames"]:
         project["jointtypes"].append(joint["type"])
 
     project["joints_en_total"] = (project["joints"] + 7) // 8 * 8
-    project["douts_total"] = (project["douts"] + 7) // 8 * 8
-    project["dins_total"] = (project["dins"] + 7) // 8 * 8
-    project["douts_total"] = max(project["douts_total"], 8)
-    project["dins_total"] = max(project["dins_total"], 8)
 
     project["tx_data_size"] = 32
     project["tx_data_size"] += project["joints"] * 32

@@ -15,13 +15,13 @@ class Plugin:
                         "type": "str",
                         "name": "pin name",
                         "comment": "the name of the pin",
-                        "default": '',
+                        "default": "",
                     },
                     "net": {
                         "type": "vtarget",
                         "name": "net target",
                         "comment": "the target net of the pin in the hal",
-                        "default": '',
+                        "default": "",
                     },
                     "debounce": {
                         "type": "bool",
@@ -59,12 +59,8 @@ class Plugin:
                 pins = data.get("pins", {})
                 pin_a = pins.get("a", data.get("pin_a"))
                 pin_b = pins.get("b", data.get("pin_b"))
-                pinlist_out.append(
-                    (f"VIN{num}_ENCODER_A", pin_a, "INPUT", pullup)
-                )
-                pinlist_out.append(
-                    (f"VIN{num}_ENCODER_B", pin_b, "INPUT", pullup)
-                )
+                pinlist_out.append((f"VIN{num}_ENCODER_A", pin_a, "INPUT", pullup))
+                pinlist_out.append((f"VIN{num}_ENCODER_B", pin_b, "INPUT", pullup))
         return pinlist_out
 
     def vinnames(self):
@@ -93,15 +89,21 @@ class Plugin:
                     func_out.append(f"    debouncer #(16) vin_debouncer{num}_A (")
                     func_out.append("        .clk (sysclk),")
                     func_out.append(f"        .SIGNAL (VIN{num}_ENCODER_A),")
-                    func_out.append(f"        .SIGNAL_state (VIN{num}_ENCODER_A_DEBOUNCED)")
+                    func_out.append(
+                        f"        .SIGNAL_state (VIN{num}_ENCODER_A_DEBOUNCED)"
+                    )
                     func_out.append("    );")
                     func_out.append(f"    debouncer #(16) vin_debouncer{num}_B (")
                     func_out.append("        .clk (sysclk),")
                     func_out.append(f"        .SIGNAL (VIN{num}_ENCODER_B),")
-                    func_out.append(f"        .SIGNAL_state (VIN{num}_ENCODER_B_DEBOUNCED)")
+                    func_out.append(
+                        f"        .SIGNAL_state (VIN{num}_ENCODER_B_DEBOUNCED)"
+                    )
                     func_out.append("    );")
 
-                func_out.append(f"    vin_quadencoder #(32, {quadType}) vin_quadencoder{num} (")
+                func_out.append(
+                    f"    vin_quadencoder #(32, {quadType}) vin_quadencoder{num} ("
+                )
                 func_out.append("        .clk (sysclk),")
                 if debounce:
                     func_out.append(f"        .quadA (VIN{num}_ENCODER_A_DEBOUNCED),")

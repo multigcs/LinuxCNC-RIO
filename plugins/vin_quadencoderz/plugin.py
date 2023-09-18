@@ -15,13 +15,13 @@ class Plugin:
                         "type": "str",
                         "name": "pin name",
                         "comment": "the name of the pin",
-                        "default": '',
+                        "default": "",
                     },
                     "net": {
                         "type": "vtarget",
                         "name": "net target",
                         "comment": "the target net of the pin in the hal",
-                        "default": '',
+                        "default": "",
                     },
                     "debounce": {
                         "type": "bool",
@@ -64,15 +64,9 @@ class Plugin:
                 pin_a = pins.get("a", data.get("pin_a"))
                 pin_b = pins.get("b", data.get("pin_b"))
                 pin_z = pins.get("z", data.get("pin_z"))
-                pinlist_out.append(
-                    (f"VIN{num}_ENCODER_A", pin_a, "INPUT", pullup)
-                )
-                pinlist_out.append(
-                    (f"VIN{num}_ENCODER_B", pin_b, "INPUT", pullup)
-                )
-                pinlist_out.append(
-                    (f"VIN{num}_ENCODER_Z", pin_z, "INPUT", pullup)
-                )
+                pinlist_out.append((f"VIN{num}_ENCODER_A", pin_a, "INPUT", pullup))
+                pinlist_out.append((f"VIN{num}_ENCODER_B", pin_b, "INPUT", pullup))
+                pinlist_out.append((f"VIN{num}_ENCODER_Z", pin_z, "INPUT", pullup))
         return pinlist_out
 
     def vinnames(self):
@@ -146,7 +140,9 @@ class Plugin:
                     ret.append(f"        .SIGNAL_state (VIN{num}_ENCODER_Z_DEBOUNCED)")
                     ret.append("    );")
 
-                ret.append(f"    vin_quadencoderz #(32, {quadType}) vin_quadencoderz{num} (")
+                ret.append(
+                    f"    vin_quadencoderz #(32, {quadType}) vin_quadencoderz{num} ("
+                )
                 ret.append("        .clk (sysclk),")
                 if debounce:
                     ret.append(f"        .quadA (VIN{num}_ENCODER_A_DEBOUNCED),")

@@ -15,13 +15,13 @@ class Plugin:
                         "type": "str",
                         "name": "pin name",
                         "comment": "the name of the pin",
-                        "default": '',
+                        "default": "",
                     },
                     "net": {
                         "type": "vtarget",
                         "name": "net target",
                         "comment": "the target net of the pin in the hal",
-                        "default": '',
+                        "default": "",
                     },
                     "pins": {
                         "type": "dict",
@@ -53,7 +53,6 @@ class Plugin:
                 )
         return pinlist_out
 
-
     def vinnames(self):
         ret = []
         for num, data in enumerate(self.jdata["plugins"]):
@@ -84,7 +83,9 @@ class Plugin:
                         data_copy["offset"] = offsets[vnum]
                     if isinstance(names, list):
                         data_copy["name"] = names[vnum] or f"PV.{num}.{vnum}"
-                        data_copy["_prefix"] = data_copy["name"].replace(".", "").replace("-", "_").upper()
+                        data_copy["_prefix"] = (
+                            data_copy["name"].replace(".", "").replace("-", "_").upper()
+                        )
                     ret.append(data_copy)
 
         return ret
@@ -111,6 +112,3 @@ class Plugin:
             if data["type"] == self.ptype:
                 return ["vin_ads1115.v"]
         return []
-
-
-

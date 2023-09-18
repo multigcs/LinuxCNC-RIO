@@ -15,13 +15,13 @@ class Plugin:
                         "type": "str",
                         "name": "pin name",
                         "comment": "the name of the pin",
-                        "default": '',
+                        "default": "",
                     },
                     "net": {
                         "type": "vtarget",
                         "name": "net target",
                         "comment": "the target net of the pin in the hal",
-                        "default": '',
+                        "default": "",
                     },
                     "pins": {
                         "type": "dict",
@@ -45,8 +45,17 @@ class Plugin:
         for num, data in enumerate(self.jdata["plugins"]):
             if data.get("type") == self.ptype:
                 pullup = data.get("pullup", False)
-                pinlist_out.append((f"VIN{num}_SONAR_TRIGGER", data["pins"]["trigger"], "OUTPUT", False))
-                pinlist_out.append((f"VIN{num}_SONAR_ECHO", data["pins"]["echo"], "INPUT", pullup))
+                pinlist_out.append(
+                    (
+                        f"VIN{num}_SONAR_TRIGGER",
+                        data["pins"]["trigger"],
+                        "OUTPUT",
+                        False,
+                    )
+                )
+                pinlist_out.append(
+                    (f"VIN{num}_SONAR_ECHO", data["pins"]["echo"], "INPUT", pullup)
+                )
         return pinlist_out
 
     def vinnames(self):
@@ -66,7 +75,7 @@ class Plugin:
             if data.get("type") == self.ptype:
                 name = data.get("name", f"PV.{num}")
                 nameIntern = name.replace(".", "").replace("-", "_").upper()
-                osc = int(self.jdata['clock']['speed'])
+                osc = int(self.jdata["clock"]["speed"])
                 func_out.append(
                     f"    vin_sonar #({osc // 50000}, {osc // 13}, {osc // 5}) vin_sonar{num} ("
                 )

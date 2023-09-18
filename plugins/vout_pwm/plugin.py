@@ -14,13 +14,13 @@ class Plugin:
                         "type": "str",
                         "name": "pin name",
                         "comment": "the name of the pin",
-                        "default": '',
+                        "default": "",
                     },
                     "net": {
                         "type": "vtarget",
                         "name": "net target",
                         "comment": "the target net of the pin in the hal",
-                        "default": '',
+                        "default": "",
                     },
                     "frequency": {
                         "type": "int",
@@ -61,7 +61,9 @@ class Plugin:
                     }
                     if "dir" in data:
                         data["pins"]["dir"] = data["dir"]
-                    print(f"WARNING: {data['type']}: please use new format for pins: '\"pins\": {data['pins']}'")
+                    print(
+                        f"WARNING: {data['type']}: please use new format for pins: '\"pins\": {data['pins']}'"
+                    )
                 pins = data["pins"]
                 if "dir" in pins:
                     pinlist_out.append((f"VOUT{num}_PWM_DIR", pins["dir"], "OUTPUT"))
@@ -94,7 +96,6 @@ class Plugin:
                         f"    wire VOUT{num}_PWM_PWM_INVERTED; // inverted pwm wire"
                     )
         return func_out
-
 
     def funcs(self):
         func_out = []

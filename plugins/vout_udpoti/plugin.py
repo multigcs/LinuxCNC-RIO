@@ -14,13 +14,13 @@ class Plugin:
                         "type": "str",
                         "name": "pin name",
                         "comment": "the name of the pin",
-                        "default": '',
+                        "default": "",
                     },
                     "net": {
                         "type": "vtarget",
                         "name": "net target",
                         "comment": "the target net of the pin in the hal",
-                        "default": '',
+                        "default": "",
                     },
                     "resolution": {
                         "type": "int",
@@ -57,8 +57,12 @@ class Plugin:
         pinlist_out = []
         for num, data in enumerate(self.jdata["plugins"]):
             if data["type"] == self.ptype:
-                pinlist_out.append((f"VOUT{num}_UDPOTI_UPDOWN", data["pins"]["updown"], "OUTPUT"))
-                pinlist_out.append((f"VOUT{num}_UDPOTI_INCR", data["pins"]["incr"], "OUTPUT"))
+                pinlist_out.append(
+                    (f"VOUT{num}_UDPOTI_UPDOWN", data["pins"]["updown"], "OUTPUT")
+                )
+                pinlist_out.append(
+                    (f"VOUT{num}_UDPOTI_INCR", data["pins"]["incr"], "OUTPUT")
+                )
         return pinlist_out
 
     def voutnames(self):
@@ -81,7 +85,9 @@ class Plugin:
                 resolution = int(data.get("resolution", 100))
                 speed = int(data.get("speed", 100000))
                 divider = int(self.jdata["clock"]["speed"]) // speed
-                func_out.append(f"    vout_udpoti #({resolution}, {divider}) vout_udpoti{num} (")
+                func_out.append(
+                    f"    vout_udpoti #({resolution}, {divider}) vout_udpoti{num} ("
+                )
                 func_out.append("        .clk (sysclk),")
                 func_out.append(f"        .value ({nameIntern}),")
                 func_out.append(f"        .UPDOWN (VOUT{num}_UDPOTI_UPDOWN),")
@@ -95,5 +101,3 @@ class Plugin:
             if data["type"] in self.ptype:
                 return ["vout_udpoti.v"]
         return []
-
-

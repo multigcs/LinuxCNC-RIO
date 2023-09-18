@@ -15,13 +15,13 @@ class Plugin:
                         "type": "str",
                         "name": "pin name",
                         "comment": "the name of the pin",
-                        "default": '',
+                        "default": "",
                     },
                     "net": {
                         "type": "vtarget",
                         "name": "net target",
                         "comment": "the target net of the pin in the hal",
-                        "default": 'spindle.0.speed-out',
+                        "default": "spindle.0.speed-out",
                     },
                     "pins": {
                         "type": "dict",
@@ -105,10 +105,10 @@ class Plugin:
                 nameIntern_in = name_in.replace(".", "").replace("-", "_").upper()
                 name_on = data.get("name", f"VFD.{num}") + "-at-speed"
                 nameIntern_on = name_on.replace(".", "").replace("-", "_").upper()
-                
+
                 i2c_clock = 50000
                 divider = int(self.jdata["clock"]["speed"]) // i2c_clock // 256 - 1
-                
+
                 func_out.append(f"    vfdbridge #({divider}) vfdbridge{num} (")
                 func_out.append("        .clk (sysclk),")
                 func_out.append(f"        .i2cSda (VIN{num}_SDA),")
@@ -124,6 +124,3 @@ class Plugin:
             if data["type"] == self.ptype:
                 return ["vfdbridge.v"]
         return []
-
-
-

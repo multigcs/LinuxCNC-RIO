@@ -15,13 +15,13 @@ class Plugin:
                         "type": "str",
                         "name": "pin name",
                         "comment": "the name of the pin",
-                        "default": '',
+                        "default": "",
                     },
                     "net": {
                         "type": "vtarget",
                         "name": "net target",
                         "comment": "the target net of the pin in the hal",
-                        "default": '',
+                        "default": "",
                     },
                     "pins": {
                         "type": "dict",
@@ -52,7 +52,6 @@ class Plugin:
                     (f"VIN{num}_SCL", data["pins"]["scl"], "OUTPUT", pullup)
                 )
         return pinlist_out
-
 
     def vinnames(self):
         ret = []

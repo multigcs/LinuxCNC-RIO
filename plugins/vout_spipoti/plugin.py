@@ -15,13 +15,13 @@ class Plugin:
                         "type": "str",
                         "name": "pin name",
                         "comment": "the name of the pin",
-                        "default": '',
+                        "default": "",
                     },
                     "net": {
                         "type": "vtarget",
                         "name": "net target",
                         "comment": "the target net of the pin in the hal",
-                        "default": '',
+                        "default": "",
                     },
                     "bits": {
                         "type": "int",
@@ -61,9 +61,15 @@ class Plugin:
         pinlist_out = []
         for num, data in enumerate(self.jdata["plugins"]):
             if data["type"] == self.ptype:
-                pinlist_out.append((f"VOUT{num}_SPIPOTI_MOSI", data["pins"]["MOSI"], "OUTPUT"))
-                pinlist_out.append((f"VOUT{num}_SPIPOTI_SCLK", data["pins"]["SCLK"], "OUTPUT"))
-                pinlist_out.append((f"VOUT{num}_SPIPOTI_CS", data["pins"]["CS"], "OUTPUT"))
+                pinlist_out.append(
+                    (f"VOUT{num}_SPIPOTI_MOSI", data["pins"]["MOSI"], "OUTPUT")
+                )
+                pinlist_out.append(
+                    (f"VOUT{num}_SPIPOTI_SCLK", data["pins"]["SCLK"], "OUTPUT")
+                )
+                pinlist_out.append(
+                    (f"VOUT{num}_SPIPOTI_CS", data["pins"]["CS"], "OUTPUT")
+                )
         return pinlist_out
 
     def voutnames(self):
@@ -86,7 +92,9 @@ class Plugin:
                 bits = int(data.get("bits", 8))
                 speed = int(data.get("speed", 100000))
                 divider = int(self.jdata["clock"]["speed"]) // speed
-                func_out.append(f"    vout_spipoti #({bits}, {divider}) vout_spipoti{num} (")
+                func_out.append(
+                    f"    vout_spipoti #({bits}, {divider}) vout_spipoti{num} ("
+                )
                 func_out.append("        .clk (sysclk),")
                 func_out.append(f"        .value ({nameIntern}),")
                 func_out.append(f"        .MOSI (VOUT{num}_SPIPOTI_MOSI),")
@@ -101,5 +109,3 @@ class Plugin:
             if data["type"] == self.ptype:
                 return ["vout_spipoti.v"]
         return []
-
-

@@ -15,13 +15,13 @@ class Plugin:
                         "type": "str",
                         "name": "pin name",
                         "comment": "the name of the pin",
-                        "default": '',
+                        "default": "",
                     },
                     "net": {
                         "type": "dsource",
                         "name": "net source",
                         "comment": "the source net of the pin in the hal",
-                        "default": '',
+                        "default": "",
                     },
                     "pin": {
                         "type": "output",

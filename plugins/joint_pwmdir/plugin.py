@@ -99,7 +99,7 @@ class Plugin:
                         f"        .jointEnable (jointEnable{num} && !ERROR),"
                     )
                     func_out.append(f"        .jointFreqCmd ({nameIntern}FreqCmd),")
-                    func_out.append(f"        .jointFeedback (jointFeedbackFake),")
+                    func_out.append("        .jointFeedback (jointFeedbackFake),")
                     func_out.append(f"        .DIR (JOINT{num}_PWMDIR_DIR),")
                     func_out.append(f"        .PWM (JOINT{num}_PWMDIR_PWM)")
                     func_out.append("    );")

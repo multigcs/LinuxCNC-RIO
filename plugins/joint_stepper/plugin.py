@@ -58,7 +58,9 @@ class Plugin:
         ]
 
     def types(self):
-        return ["stepper", ]
+        return [
+            "stepper",
+        ]
 
     def entry_info(self, joint):
         info = ""
@@ -72,7 +74,6 @@ class Plugin:
                     info += f" {ptype}:{pname}"
             info += ")"
         return info
-
 
     def pinlist(self):
         pinlist_out = []
@@ -132,8 +133,12 @@ class Plugin:
                         f"    assign JOINT{num}_EN = {nameIntern}Enable && ~ERROR;"
                     )
                 if invert_dir:
-                    func_out.append(f"    wire JOINT{num}_STEPPER_DIR_INVERTED; // inverted dir wire")
-                    func_out.append(f"    assign JOINT{num}_STEPPER_DIR = !JOINT{num}_STEPPER_DIR_INVERTED; // invert dir output")
+                    func_out.append(
+                        f"    wire JOINT{num}_STEPPER_DIR_INVERTED; // inverted dir wire"
+                    )
+                    func_out.append(
+                        f"    assign JOINT{num}_STEPPER_DIR = !JOINT{num}_STEPPER_DIR_INVERTED; // invert dir output"
+                    )
 
                 if joint.get("cl") and "enc_a" in joint["pins"]:
                     func_out.append(f"    quad_encoder quad{num} (")
@@ -164,7 +169,6 @@ class Plugin:
                     func_out.append(f"        .DIR (JOINT{num}_STEPPER_DIR),")
                 func_out.append(f"        .STP (JOINT{num}_STEPPER_STP)")
                 func_out.append("    );")
-
 
         return func_out
 

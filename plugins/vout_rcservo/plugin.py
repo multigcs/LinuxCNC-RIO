@@ -14,13 +14,13 @@ class Plugin:
                         "type": "str",
                         "name": "pin name",
                         "comment": "the name of the pin",
-                        "default": '',
+                        "default": "",
                     },
                     "net": {
                         "type": "vtarget",
                         "name": "net target",
                         "comment": "the target net of the pin in the hal",
-                        "default": '',
+                        "default": "",
                     },
                     "frequency": {
                         "type": "int",
@@ -75,7 +75,6 @@ class Plugin:
                         f"    wire VOUT{num}_PWM_PWM_INVERTED; // inverted pwm wire"
                     )
         return func_out
-
 
     def funcs(self):
         func_out = []

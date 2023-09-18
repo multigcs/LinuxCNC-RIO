@@ -49,3 +49,6 @@ verilator: plugins/*/*_*.v
 
 verilatorWall: plugins/*/*_*.v
 	@for file in $^ ; do verilator --lint-only -Wall $${file}; done
+
+unittest:
+	python3.9 -m pytest -vv -v tests/test_generator.py

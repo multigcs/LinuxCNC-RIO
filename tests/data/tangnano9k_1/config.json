@@ -1,0 +1,306 @@
+{
+    "name": "TangNano9K",
+    "description": "TangNano9K with 5Axis BOB over SPI",
+    "board": "TangNano9K",
+    "type": "GW1NR-LV9QN88PC6/I5",
+    "family": "GW1N-9C",
+    "toolchain": "icestorm",
+    "package": "",
+    "clock": {
+        "speed": "27000000",
+        "pin": "52"
+    },
+    "transport": "SPI",
+    "axis": 9,
+    "interface": [
+        {
+            "type": "spi",
+            "pins": {
+                "MOSI": "48",
+                "MISO": "49",
+                "SCK": "31",
+                "SEL": "32"
+            }
+        }
+    ],
+    "blink": {
+        "pin": "10"
+    },
+    "error": {
+        "invert": true,
+        "pin": "11"
+    },
+    "enable": {
+        "pin": "69"
+    },
+    "expansion": [
+        {
+            "type": "shiftreg",
+            "bits": 8,
+            "invert": true,
+            "pullup": true,
+            "pins": {
+                "out": "73",
+                "in": "72",
+                "clock": "71",
+                "load": "70"
+            }
+        }
+    ],
+    "plugins": [
+        {
+            "pullup": true,
+            "pin": "33",
+            "name": "DIN0",
+            "type": "din_bit"
+        },
+        {
+            "pullup": true,
+            "pin": "30",
+            "name": "DIN1",
+            "type": "din_bit"
+        },
+        {
+            "pullup": true,
+            "pin": "29",
+            "name": "DIN2",
+            "type": "din_bit"
+        },
+        {
+            "pullup": true,
+            "pin": "28",
+            "name": "DIN3",
+            "type": "din_bit"
+        },
+        {
+            "pullup": true,
+            "pin": "68",
+            "name": "DIN4",
+            "type": "din_bit"
+        },
+        {
+            "pullup": true,
+            "pin": "79",
+            "name": "DIN5",
+            "type": "din_bit"
+        },
+        {
+            "pullup": true,
+            "pin": "80",
+            "name": "DIN6",
+            "type": "din_bit"
+        },
+        {
+            "pullup": true,
+            "pin": "81",
+            "name": "DIN7",
+            "type": "din_bit"
+        },
+        {
+            "pullup": true,
+            "pin": "82",
+            "name": "DIN8",
+            "type": "din_bit"
+        },
+        {
+            "pullup": true,
+            "pin": "83",
+            "name": "DIN9",
+            "type": "din_bit"
+        },
+        {
+            "pullup": true,
+            "pin": "84",
+            "name": "DIN10",
+            "type": "din_bit"
+        },
+        {
+            "pullup": true,
+            "pin": "85",
+            "name": "DIN11",
+            "type": "din_bit"
+        },
+        {
+            "pullup": true,
+            "pin": "86",
+            "name": "DIN12",
+            "type": "din_bit"
+        },
+        {
+            "pin": "EXPANSION0_INPUT[0]",
+            "name": "DIN13",
+            "type": "din_bit"
+        },
+        {
+            "pin": "EXPANSION0_INPUT[1]",
+            "name": "DIN14",
+            "type": "din_bit"
+        },
+        {
+            "pin": "EXPANSION0_INPUT[2]",
+            "name": "DIN15",
+            "type": "din_bit"
+        },
+        {
+            "pin": "EXPANSION0_INPUT[3]",
+            "name": "DIN16",
+            "type": "din_bit"
+        },
+        {
+            "pin": "EXPANSION0_INPUT[4]",
+            "name": "DIN17",
+            "type": "din_bit"
+        },
+        {
+            "pin": "EXPANSION0_INPUT[5]",
+            "name": "DIN18",
+            "type": "din_bit"
+        },
+        {
+            "pin": "EXPANSION0_INPUT[6]",
+            "name": "DIN19",
+            "type": "din_bit"
+        },
+        {
+            "pin": "EXPANSION0_INPUT[7]",
+            "name": "DIN20",
+            "type": "din_bit"
+        },
+        {
+            "invert": true,
+            "pin": "13",
+            "name": "DOUT0",
+            "type": "dout_bit"
+        },
+        {
+            "invert": true,
+            "pin": "14",
+            "name": "DOUT1",
+            "type": "dout_bit"
+        },
+        {
+            "invert": true,
+            "pin": "15",
+            "name": "DOUT2",
+            "type": "dout_bit"
+        },
+        {
+            "invert": true,
+            "pin": "16",
+            "name": "DOUT3",
+            "type": "dout_bit"
+        },
+        {
+            "invert": true,
+            "pin": "EXPANSION0_OUTPUT[0]",
+            "name": "DOUT4",
+            "type": "dout_bit"
+        },
+        {
+            "invert": true,
+            "pin": "EXPANSION0_OUTPUT[1]",
+            "name": "DOUT5",
+            "type": "dout_bit"
+        },
+        {
+            "invert": true,
+            "pin": "EXPANSION0_OUTPUT[2]",
+            "name": "DOUT6",
+            "type": "dout_bit"
+        },
+        {
+            "invert": true,
+            "pin": "EXPANSION0_OUTPUT[3]",
+            "name": "DOUT7",
+            "type": "dout_bit"
+        },
+        {
+            "invert": true,
+            "pin": "EXPANSION0_OUTPUT[4]",
+            "name": "DOUT8",
+            "type": "dout_bit"
+        },
+        {
+            "invert": true,
+            "pin": "EXPANSION0_OUTPUT[5]",
+            "name": "DOUT9",
+            "type": "dout_bit"
+        },
+        {
+            "invert": true,
+            "pin": "EXPANSION0_OUTPUT[6]",
+            "name": "DOUT10",
+            "type": "dout_bit"
+        },
+        {
+            "invert": true,
+            "pin": "EXPANSION0_OUTPUT[7]",
+            "name": "DOUT11",
+            "type": "dout_bit"
+        },
+        {
+            "type": "vin_counter",
+            "pullup": true,
+            "pins": {
+                "up": "3",
+                "down": "4"
+            },
+            "name": "VIN0"
+        },
+        {
+            "type": "vout_pwm",
+            "pins": {
+                "pwm": "55"
+            },
+            "name": "VOUT0"
+        },
+        {
+            "type": "joint_stepper",
+            "cl": false,
+            "scale": 800,
+            "pins": {
+                "step": "54",
+                "dir": "53"
+            },
+            "name": "JOINT0"
+        },
+        {
+            "type": "joint_stepper",
+            "cl": false,
+            "scale": 800,
+            "pins": {
+                "step": "51",
+                "dir": "42"
+            },
+            "name": "JOINT1"
+        },
+        {
+            "type": "joint_stepper",
+            "cl": false,
+            "scale": 800,
+            "pins": {
+                "step": "41",
+                "dir": "35"
+            },
+            "name": "JOINT2"
+        },
+        {
+            "type": "joint_stepper",
+            "cl": false,
+            "pins": {
+                "step": "40",
+                "dir": "34"
+            },
+            "name": "JOINT3"
+        },
+        {
+            "type": "joint_stepper",
+            "cl": false,
+            "pins": {
+                "step": "57",
+                "dir": "56"
+            },
+            "name": "JOINT4"
+        }
+    ]
+}

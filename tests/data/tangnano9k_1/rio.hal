@@ -1,0 +1,81 @@
+
+# load the realtime components
+loadrt [KINS]KINEMATICS
+loadrt [EMCMOT]EMCMOT base_period_nsec=[EMCMOT]BASE_PERIOD servo_period_nsec=[EMCMOT]SERVO_PERIOD num_joints=[KINS]JOINTS
+
+# set joint modes (p=postion, v=velocity)
+loadrt rio ctrl_type=p,p,p,p,p
+
+# add the rio and motion functions to threads
+addf motion-command-handler servo-thread
+addf motion-controller servo-thread
+addf rio.update-freq servo-thread
+addf rio.readwrite servo-thread
+
+# estop loopback, SPI comms enable and feedback
+net user-enable-out 	<= iocontrol.0.user-enable-out		=> rio.SPI-enable
+net user-request-enable <= iocontrol.0.user-request-enable	=> rio.SPI-reset
+
+loadusr -W hal_manualtoolchange
+net tool-change      hal_manualtoolchange.change   <=  iocontrol.0.tool-change
+net tool-changed     hal_manualtoolchange.changed  <=  iocontrol.0.tool-changed
+net tool-prep-number hal_manualtoolchange.number   <=  iocontrol.0.tool-prep-number
+net tool-prepare-loopback iocontrol.0.tool-prepare => iocontrol.0.tool-prepared
+
+net rio-status <= rio.SPI-status => iocontrol.0.emc-enable-in
+
+
+# Joint 0 setup
+
+setp rio.joint.0.scale 		[JOINT_0]SCALE
+setp rio.joint.0.maxaccel 	[JOINT_0]STEPGEN_MAXACCEL
+setp rio.joint.0.deadband 	[JOINT_0]STEPGEN_DEADBAND
+
+net Xpos-cmd 		<= joint.0.motor-pos-cmd 	=> rio.joint.0.pos-cmd  
+net j0pos-fb 		<= rio.joint.0.pos-fb 	=> joint.0.motor-pos-fb
+net j0enable 		<= joint.0.amp-enable-out 	=> rio.joint.0.enable
+
+
+# Joint 1 setup
+
+setp rio.joint.1.scale 		[JOINT_1]SCALE
+setp rio.joint.1.maxaccel 	[JOINT_1]STEPGEN_MAXACCEL
+setp rio.joint.1.deadband 	[JOINT_1]STEPGEN_DEADBAND
+
+net Ypos-cmd 		<= joint.1.motor-pos-cmd 	=> rio.joint.1.pos-cmd  
+net j1pos-fb 		<= rio.joint.1.pos-fb 	=> joint.1.motor-pos-fb
+net j1enable 		<= joint.1.amp-enable-out 	=> rio.joint.1.enable
+
+
+# Joint 2 setup
+
+setp rio.joint.2.scale 		[JOINT_2]SCALE
+setp rio.joint.2.maxaccel 	[JOINT_2]STEPGEN_MAXACCEL
+setp rio.joint.2.deadband 	[JOINT_2]STEPGEN_DEADBAND
+
+net Zpos-cmd 		<= joint.2.motor-pos-cmd 	=> rio.joint.2.pos-cmd  
+net j2pos-fb 		<= rio.joint.2.pos-fb 	=> joint.2.motor-pos-fb
+net j2enable 		<= joint.2.amp-enable-out 	=> rio.joint.2.enable
+
+
+# Joint 3 setup
+
+setp rio.joint.3.scale 		[JOINT_3]SCALE
+setp rio.joint.3.maxaccel 	[JOINT_3]STEPGEN_MAXACCEL
+setp rio.joint.3.deadband 	[JOINT_3]STEPGEN_DEADBAND
+
+net Apos-cmd 		<= joint.3.motor-pos-cmd 	=> rio.joint.3.pos-cmd  
+net j3pos-fb 		<= rio.joint.3.pos-fb 	=> joint.3.motor-pos-fb
+net j3enable 		<= joint.3.amp-enable-out 	=> rio.joint.3.enable
+
+
+# Joint 4 setup
+
+setp rio.joint.4.scale 		[JOINT_4]SCALE
+setp rio.joint.4.maxaccel 	[JOINT_4]STEPGEN_MAXACCEL
+setp rio.joint.4.deadband 	[JOINT_4]STEPGEN_DEADBAND
+
+net Cpos-cmd 		<= joint.4.motor-pos-cmd 	=> rio.joint.4.pos-cmd  
+net j4pos-fb 		<= rio.joint.4.pos-fb 	=> joint.4.motor-pos-fb
+net j4enable 		<= joint.4.amp-enable-out 	=> rio.joint.4.enable
+

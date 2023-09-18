@@ -177,3 +177,5 @@ Output/
 plugins/*/*.json
 plugins/*/*.html
 plugins/*/*.js
+tests/Output/
+

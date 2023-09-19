@@ -1451,7 +1451,7 @@ def generate_rio_gui(project):
                 vmax = vout.get('max', 100)
             if vout.get("type") == "pwm":
                 cfgxml_data += gui_gen.draw_bar(vout_name, vname, vmin=vmin, vmax=vmax)
-            elif vin_net == "spindle.0.speed-out" and gui == "qtdragon":
+            elif vout_net == "spindle.0.speed-out" and gui == "qtdragon":
                 pass
             else:
                 cfgxml_data += gui_gen.draw_number(vout_name, vname)

@@ -62,5 +62,7 @@ class Plugin:
         return func_out
 
     def ips(self):
-        files = ["interface_uart.v"]
-        return files
+        for num, interface in enumerate(self.jdata.get("interface", [])):
+            if interface["type"] == "uart":
+                return ["interface_uart.v"]
+        return []

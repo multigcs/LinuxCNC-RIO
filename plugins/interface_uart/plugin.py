@@ -64,5 +64,5 @@ class Plugin:
     def ips(self):
         for num, interface in enumerate(self.jdata.get("interface", [])):
             if interface["type"] == "uart":
-                return ["interface_uart.v"]
+                return ["interface_uart.v", "uart.v"]
         return []

@@ -46,12 +46,14 @@ def main(configfile, outputdir=None):
         if hasattr(project["plugins"][plugin], "ips"):
             for ipv in project["plugins"][plugin].ips():
                 project["verilog_files"].append(ipv)
-                # os.system(f"verilator --lint-only -Wall plugins/{plugin}/{ipv}")
+                ipv_path = f"plugins/{plugin}/{ipv}"
+                if not os.path.isfile(ipv_path):
+                    ipv_path = f"generators/firmware/{ipv}"
                 os.system(
-                    f"which verilator >/dev/null && verilator --lint-only plugins/{plugin}/{ipv}"
+                    f"which verilator >/dev/null && verilator --lint-only {ipv_path}"
                 )
                 os.system(
-                    f"cp -a plugins/{plugin}/{ipv} {project['SOURCE_PATH']}/{ipv}"
+                    f"cp -a {ipv_path} {project['SOURCE_PATH']}/{ipv}"
                 )
 
     print(f"generating files in {project['OUTPUT_PATH']}")

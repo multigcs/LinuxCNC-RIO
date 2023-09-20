@@ -50,10 +50,10 @@ def main(configfile, outputdir=None):
                 if not os.path.isfile(ipv_path):
                     ipv_path = f"generators/firmware/{ipv}"
                 os.system(
-                    f"which verilator >/dev/null && verilator --lint-only {ipv_path}"
+                    f"cp -a {ipv_path} {project['SOURCE_PATH']}/{ipv}"
                 )
                 os.system(
-                    f"cp -a {ipv_path} {project['SOURCE_PATH']}/{ipv}"
+                    f"which verilator >/dev/null && cd {project['SOURCE_PATH']} && verilator --lint-only {ipv}"
                 )
 
     print(f"generating files in {project['OUTPUT_PATH']}")

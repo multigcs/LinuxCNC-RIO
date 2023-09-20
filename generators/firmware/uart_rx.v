@@ -1,57 +1,6 @@
 /* verilator lint_off WIDTHTRUNC */
 /* verilator lint_off WIDTHEXPAND */
 
-module uart_tx(
-	input clk,
-	input TxD_start,
-	input [7:0] TxD_data,
-	output TxD,
-	output TxD_busy
-);
-
-    // Assert TxD_start for (at least) one clock cycle to start transmission of TxD_data
-    // TxD_data is latched so that it doesn't have to stay valid while it is being sent
-
-    parameter ClkFrequency = 12000000;
-    parameter Baud = 2000000;
-
-    wire BitTick;
-    BaudTickGen #(ClkFrequency, Baud) tickgen(.clk(clk), .enable(TxD_busy), .tick(BitTick));
-
-    reg [3:0] TxD_state = 0;
-    wire TxD_ready = (TxD_state==0);
-    assign TxD_busy = ~TxD_ready;
-
-    reg [7:0] TxD_shift = 0;
-    always @(posedge clk)
-    begin
-        if(TxD_ready & TxD_start)
-            TxD_shift <= TxD_data;
-        else
-        if(TxD_state[3] & BitTick)
-            TxD_shift <= (TxD_shift >> 1);
-
-        case(TxD_state)
-            4'b0000: if(TxD_start) TxD_state <= 4'b0100;
-            4'b0100: if(BitTick) TxD_state <= 4'b1000;  // start bit
-            4'b1000: if(BitTick) TxD_state <= 4'b1001;  // bit 0
-            4'b1001: if(BitTick) TxD_state <= 4'b1010;  // bit 1
-            4'b1010: if(BitTick) TxD_state <= 4'b1011;  // bit 2
-            4'b1011: if(BitTick) TxD_state <= 4'b1100;  // bit 3
-            4'b1100: if(BitTick) TxD_state <= 4'b1101;  // bit 4
-            4'b1101: if(BitTick) TxD_state <= 4'b1110;  // bit 5
-            4'b1110: if(BitTick) TxD_state <= 4'b1111;  // bit 6
-            4'b1111: if(BitTick) TxD_state <= 4'b0010;  // bit 7
-            4'b0010: if(BitTick) TxD_state <= 4'b0011;  // stop1
-            4'b0011: if(BitTick) TxD_state <= 4'b0000;  // stop2
-            default: if(BitTick) TxD_state <= 4'b0000;
-        endcase
-    end
-
-    assign TxD = (TxD_state<4) | (TxD_state[3] & TxD_shift[0]);  // put together the start, data and stop bits
-endmodule
-
-
 module uart_rx(
 	input clk,
 	input RxD,
@@ -74,7 +23,7 @@ module uart_rx(
     reg [3:0] RxD_state = 0;
 
     wire OversamplingTick;
-    BaudTickGen #(ClkFrequency, Baud, Oversampling) tickgen(.clk(clk), .enable(1'b1), .tick(OversamplingTick));
+    uart_baud #(ClkFrequency, Baud, Oversampling) tickgen(.clk(clk), .enable(1'b1), .tick(OversamplingTick));
 
     // synchronize RxD to our clk domain
     reg [1:0] RxD_sync = 2'b11;
@@ -135,21 +84,4 @@ module uart_rx(
     assign RxD_idle = GapCnt[l2o+1];
     always @(posedge clk) RxD_endofpacket <= OversamplingTick & ~GapCnt[l2o+1] & &GapCnt[l2o:0];
 
-endmodule
-
-module BaudTickGen(
-	input clk, enable,
-	output tick  // generate a tick at the specified baud rate * oversampling
-);
-    parameter ClkFrequency = 12000000;
-    parameter Baud = 2000000;
-    parameter Oversampling = 1;
-
-    function integer log2(input integer v); begin log2=0; while(v>>log2) log2=log2+1; end endfunction
-    localparam AccWidth = log2(ClkFrequency/Baud)+8;  // +/- 2% max timing error over a byte
-    reg [AccWidth:0] Acc = 0;
-    localparam ShiftLimiter = log2(Baud*Oversampling >> (31-AccWidth));  // this makes sure Inc calculation doesn't overflow
-    localparam Inc = ((Baud*Oversampling << (AccWidth-ShiftLimiter))+(ClkFrequency>>(ShiftLimiter+1)))/(ClkFrequency>>ShiftLimiter);
-    always @(posedge clk) if(enable) Acc <= Acc[AccWidth-1:0] + Inc[AccWidth:0]; else Acc <= Inc[AccWidth:0];
-    assign tick = Acc[AccWidth];
 endmodule

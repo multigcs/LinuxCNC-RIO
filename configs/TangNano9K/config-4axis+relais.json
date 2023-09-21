@@ -79,6 +79,7 @@
             "name": "tool-probe",
             "net": "motion.probe-input",
             "comment": "BOB DIN3",
+            "debounce": true,
             "_invert": true,
             "pullup": true,
             "pin": "28",

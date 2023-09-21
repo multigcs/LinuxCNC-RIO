@@ -725,8 +725,8 @@ def generate_rio_ini(project):
                 MAX_LIMIT = 1300
 
         AXIS_NAME = joint.get("axis", axis_names[num])
-        OUTPUT_SCALE = joint.get("scale", SCALE)
-        INPUT_SCALE = joint.get("enc_scale", OUTPUT_SCALE)
+        OUTPUT_SCALE = float(joint.get("scale", SCALE))
+        INPUT_SCALE = float(joint.get("enc_scale", OUTPUT_SCALE))
         scales = f"SCALE = {OUTPUT_SCALE}"
 
         cfgini_data.append(f"[JOINT_{num}]")

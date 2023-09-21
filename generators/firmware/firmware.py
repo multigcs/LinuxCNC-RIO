@@ -172,6 +172,19 @@ def verilog_top(project):
             top_data.append(f"    wire signed [31:0] {joint['_prefix']}Feedback;")
         top_data.append("")
 
+    if project["binnames"]:
+        top_data.append(f"    // bins {project['bins']}")
+        for num, bins in enumerate(project["binnames"]):
+            top_data.append(f"    wire signed [{bins['size'] - 1}:0] {bins['_prefix']};")
+        top_data.append("")
+
+    if project["boutnames"]:
+        top_data.append(f"    // bouts {project['bouts']}")
+        for num, bout in enumerate(project["boutnames"]):
+            top_data.append(f"    wire signed [{bout['size'] - 1}:0] {bout['_prefix']};")
+        top_data.append("")
+
+
     top_data.append(f"    // rx_data {project['rx_data_size']}")
     pos = project["data_size"]
 
@@ -192,6 +205,19 @@ def verilog_top(project):
             f"    assign {vout['_prefix']} = {{rx_data[{pos-3*8-1}:{pos-3*8-8}], rx_data[{pos-2*8-1}:{pos-2*8-8}], rx_data[{pos-1*8-1}:{pos-1*8-8}], rx_data[{pos-1}:{pos-8}]}};"
         )
         pos -= 32
+
+
+    for num, bout in enumerate(project["boutnames"]):
+        boutsize = bout['size']
+        pack = []
+        for bn in range(boutsize // 8):
+            pack.append(f"rx_data[{pos-1}:{pos-8}]")
+            pos -= 8
+        pack.reverse()
+        top_data.append(
+            f"    assign {bout['_prefix']} = {{{', '.join(pack)}}};"
+        )
+
 
     for dbyte in range(project["joints_en_total"] // 8):
         for num in range(8):
@@ -229,6 +255,15 @@ def verilog_top(project):
     for num, vin in enumerate(project["vinnames"]):
         top_data.append(
             f"        {vin['_prefix']}[7:0], {vin['_prefix']}[15:8], {vin['_prefix']}[23:16], {vin['_prefix']}[31:24],"
+        )
+
+    for num, bins in enumerate(project["binnames"]):
+        binsize = bins['size']
+        pack = []
+        for bn in range(binsize // 8):
+            pack.append(f"{bins['_prefix']}[{(bn * 8)+7}:{(bn * 8)}]")
+        top_data.append(
+            f"        {', '.join(pack)},"
         )
 
     tdins = []

@@ -172,6 +172,9 @@ def generate(project):
     rio_data.append("        int32_t header;")
     rio_data.append("        int32_t jointFreqCmd[JOINTS];")
     rio_data.append("        int32_t setPoint[VARIABLE_OUTPUTS];")
+    for num, bout in enumerate(project["boutnames"]):
+        boutsize = bout['size']
+        rio_data.append(f"        uint8_t {bout['_prefix']}[{bout['size'] // 8}];")
     rio_data.append("        uint8_t jointEnable[JOINT_ENABLE_BYTES];")
     rio_data.append("        uint8_t outputs[DIGITAL_OUTPUT_BYTES];")
     rio_data.append("    };")
@@ -186,6 +189,9 @@ def generate(project):
     rio_data.append("        int32_t header;")
     rio_data.append("        int32_t jointFeedback[JOINTS];")
     rio_data.append("        int32_t processVariable[VARIABLE_INPUTS];")
+    for num, bins in enumerate(project["binnames"]):
+        binsize = bins['size']
+        rio_data.append(f"        uint8_t {bins['_prefix']}[{bins['size'] // 8}];")
     rio_data.append("        uint8_t inputs[DIGITAL_INPUT_BYTES];")
     rio_data.append("    };")
     rio_data.append("} rxData_t;")

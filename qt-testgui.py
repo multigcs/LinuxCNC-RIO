@@ -9,7 +9,6 @@ import projectLoader
 
 project = projectLoader.load(sys.argv[1])
 
-
 SERIAL = ''
 NET_IP = ''
 if len(sys.argv) > 2 and sys.argv[2].startswith('/dev/tty'):
@@ -32,7 +31,7 @@ else:
     spi.mode = 0
     spi.lsbfirst = False
 
-INTERVAL = 100
+INTERVAL = 50
 
 data = [0] * (project['data_size'] // 8)
 data[0] = 0x74
@@ -106,9 +105,208 @@ for num, vout in enumerate(project["voutnames"]):
     DIGITAL_OUTPUT_BYTES = project['douts_total'] // 8
     DIGITAL_INPUT_BYTES = project['dins_total'] // 8
 
+
+
+
+
+
+class modbus_vfd():
+    FUNCTION_READ       =    0x01
+    FUNCTION_WRITE      =    0x02
+    WRITE_CONTROL_DATA  =    0x03
+    READ_CONTROL_STATUS =    0x04
+    WRITE_FREQ_DATA     =    0x05
+    LOOP_TEST           =    0x08
+    FUNCTION_PD005      =    5
+    FUNCTION_PD011      =    11
+    FUNCTION_PD144      =    144
+    CONTROL_Run_Fwd     =    0x01
+    CONTROL_Run_Rev     =    0x11
+    CONTROL_Stop        =    0x08
+    CONTROL_Run         =    0x01
+    CONTROL_Jog         =    0x02
+    CONTROL_Command_rf  =    0x04
+    CONTROL_Running     =    0x08
+    CONTROL_Jogging     =    0x10
+    CONTROL_Running_rf  =    0x20
+    CONTROL_Bracking    =    0x40
+    CONTROL_Track_Start =    0x80
+
+    rpm = 0
+    direction = 1
+    modbus_interval = 1
+    modbus_counter = 0
+    cmd_counter = 0
+    maxFrequency = 0
+    minFrequency = 0
+    min_rpm = 0
+    max_rpm = 0
+    maxRpmAt50Hz = 0
+    frq_set = 0
+    frq_get = 0
+    ampere = 0
+    srpm = 0
+    dc_volt = 0
+    ac_volt = 0
+    condition = 0
+    temp = 0
+
+    def __init__(self):
+        self.spindle_start_fwd        = [0x01, self.WRITE_CONTROL_DATA, 0x01, self.CONTROL_Run_Fwd]
+        self.spindle_start_rev        = [0x01, self.WRITE_CONTROL_DATA, 0x01, self.CONTROL_Run_Rev]
+        self.spindle_stop             = [0x01, self.WRITE_CONTROL_DATA, 0x01, self.CONTROL_Stop]
+        self.spindle_speed            = [0x01, self.WRITE_FREQ_DATA, 0x02, 0x0, 0x0]
+        self.spindle_PD005            = [0x01, self.FUNCTION_READ, 0x03, 5, 0x00, 0x00]
+        self.spindle_PD011            = [0x01, self.FUNCTION_READ, 0x03, 11, 0x00, 0x00]
+        self.spindle_PD144            = [0x01, self.FUNCTION_READ, 0x03, 144, 0x00, 0x00]
+        self.spindle_status_frq_set   = [0x01, self.READ_CONTROL_STATUS, 0x03, 0x00, 0x00, 0x00]
+        self.spindle_status_frq_get   = [0x01, self.READ_CONTROL_STATUS, 0x03, 0x01, 0x00, 0x00]
+        self.spindle_status_ampere    = [0x01, self.READ_CONTROL_STATUS, 0x03, 0x02, 0x00, 0x00]
+        self.spindle_status_rpm       = [0x01, self.READ_CONTROL_STATUS, 0x03, 0x03, 0x00, 0x00]
+        self.spindle_status_dc_volt   = [0x01, self.READ_CONTROL_STATUS, 0x03, 0x04, 0x00, 0x00]
+        self.spindle_status_ac_volt   = [0x01, self.READ_CONTROL_STATUS, 0x03, 0x05, 0x00, 0x00]
+        self.spindle_status_condition = [0x01, self.READ_CONTROL_STATUS, 0x03, 0x06, 0x00, 0x00]
+        self.spindle_status_temp      = [0x01, self.READ_CONTROL_STATUS, 0x03, 0x07, 0x00, 0x00]
+        self.run_cmd = self.spindle_stop
+
+    def crc16(self, data : bytearray, offset, length):
+        if data is None or offset < 0 or offset > len(data) - 1 and offset + length > len(data):
+            return 0
+        crc = 0xFFFF
+        for i in range(length):
+            crc ^= data[offset + i]
+            for j in range(8):
+                if ((crc & 0x1) == 1):
+                    crc = int((crc / 2)) ^ 40961
+                else:
+                    crc = int(crc / 2)
+        return crc & 0xFFFF
+
+    def set_speed(self, rpm):
+        self.rpm = abs(rpm)
+        if rpm > 0:
+            self.run_cmd = self.spindle_start_fwd
+        elif rpm < 0:
+            self.run_cmd = self.spindle_start_rev
+        else:
+            self.run_cmd = self.spindle_stop
+
+    def transmit(self, addr):
+        data = [0] * 9
+        if self.modbus_counter > self.modbus_interval:
+            self.modbus_counter = 0
+
+            cmds = [
+                self.spindle_PD005,
+                self.spindle_PD011,
+                self.spindle_PD144,
+
+                self.spindle_speed,
+                self.run_cmd,
+
+                self.spindle_status_ampere,
+                self.spindle_status_rpm,
+                self.spindle_status_frq_set,
+                self.spindle_status_frq_get,
+
+                self.spindle_speed,
+                self.run_cmd,
+
+                self.spindle_status_ac_volt,
+                self.spindle_status_dc_volt,
+                self.spindle_status_condition,
+                self.spindle_status_temp,
+
+                self.spindle_speed,
+                self.run_cmd,
+
+            ]
+            cmd = cmds[self.cmd_counter]
+            cmd[0] = addr
+
+            if cmd == self.spindle_speed and self.maxRpmAt50Hz > 0:
+                print("########################### set speed")
+                self.rpm = 6000;
+                value = self.rpm * 5000 // self.maxRpmAt50Hz;
+                cmd[3] = (value >> 8) & 0xFF;
+                cmd[4] = (value & 0xFF);
+
+            if self.cmd_counter < len(cmds) - 1:
+                self.cmd_counter += 1
+            else:
+                self.cmd_counter = 0
+
+            crc = self.crc16(cmd, 0, len(cmd))
+            crcH = crc & 0xFF
+            crcL = crc>>8 & 0xFF
+            print("#########", cmd, crcH, crcL, len(cmd) + 2)
+
+            data[0] = len(cmd) + 2
+            for n in range(len(cmd)):
+                data[n+1] = cmd[n]
+            data[n+2] = crcH
+            data[n+3] = crcL
+        else:
+            self.modbus_counter += 1
+        return data
+
+    def receive(self, addr, data):
+        pkglen = data[0]
+        if addr != data[1]:
+            print("WRONG ADDR: ", addr, data[1])
+            return
+        crc = self.crc16(data[1:pkglen-1], 0, pkglen-2)
+        crcH = crc & 0xFF
+        crcL = crc>>8 & 0xFF
+        if data[pkglen-1] != crcH or data[pkglen] != crcL:
+            print("CSUM ERROR")
+            return
+
+        if data[2] == self.READ_CONTROL_STATUS and data[3] == 0x03:
+            value = (data[5] << 8) | data[6]
+            print(value)
+            if data[4] == 0x00:
+                self.frq_set = value
+            elif data[4] == 0x01:
+                self.frq_get = value
+            elif data[4] == 0x02:
+                self.ampere = value
+            elif data[4] == 0x03:
+                self.srpm = value
+            elif data[4] == 0x04:
+                self.dc_volt = value
+            elif data[4] == 0x05:
+                self.ac_volt = value
+            elif data[4] == 0x06:
+                self.condition = value
+            elif data[4] == 0x07:
+                self.temp = value
+
+        elif data[2] == self.FUNCTION_READ and data[3] == 0x03:
+            value = (data[5] << 8) | data[6];
+            if data[4] == self.FUNCTION_PD005:
+                self.maxFrequency = value
+            elif data[4] == self.FUNCTION_PD011:
+                self.minFrequency = value
+            elif data[4] == self.FUNCTION_PD144:
+                self.maxRpmAt50Hz = value
+            if self.minFrequency > self.maxFrequency:
+                self.minFrequency = self.maxFrequency
+            self.min_rpm = self.minFrequency * self.maxRpmAt50Hz / 5000
+            self.max_rpm = self.maxFrequency * self.maxRpmAt50Hz / 5000
+
+        print("maxFrequency", self.maxFrequency)
+        print("minFrequency", self.minFrequency)
+        print("min_rpm", self.min_rpm)
+        print("max_rpm", self.max_rpm)
+        print("maxRpmAt50Hz", self.maxRpmAt50Hz)
+
+
+
     
 
 class WinForm(QWidget):
+
     def __init__(self,parent=None):
         super(WinForm, self).__init__(parent)
         self.setWindowTitle('SPI-Test')
@@ -120,6 +318,15 @@ class WinForm(QWidget):
         self.error_counter_spi = 0
         self.error_counter_net = 0
         self.time_trx = 0
+        
+        # boutnames
+        for num, bout in enumerate(project["boutnames"]):
+            boutsize = bout['size']
+            if bout["type"] == "modbus":
+                name = bout["name"]
+                for protocol in bout["protocols"]:
+                    if protocol["type"] == "hyvfd":
+                        self.vfd = modbus_vfd()
 
         gpy = 0
 
@@ -202,22 +409,22 @@ class WinForm(QWidget):
         layout.addWidget(QLabel(''), gpy, 1)
         gpy += 1
 
-
-        for dbyte in range(DIGITAL_OUTPUT_BYTES):
-            if dbyte == 0:
-                layout.addWidget(QLabel(f'DOUT:'), gpy, 0)
-                self.widgets["dout_auto"] = QCheckBox()
-                layout.addWidget(self.widgets["dout_auto"], gpy, 2)
-            for dn in range(8):
-                key = f'doc{dbyte}{dn}'
-                self.widgets[key] = QCheckBox(DOUT_NAMES[dbyte * 8 + dn]['_name'])
-                self.widgets[key].setChecked(False)
-                layout.addWidget(self.widgets[key], gpy, dn + 3)
-                if dbyte * 8 + dn == DOUTS - 1:
-                    break
+        if project['douts']:
+            for dbyte in range(DIGITAL_OUTPUT_BYTES):
+                if dbyte == 0:
+                    layout.addWidget(QLabel(f'DOUT:'), gpy, 0)
+                    self.widgets["dout_auto"] = QCheckBox()
+                    layout.addWidget(self.widgets["dout_auto"], gpy, 2)
+                for dn in range(8):
+                    key = f'doc{dbyte}{dn}'
+                    self.widgets[key] = QCheckBox(DOUT_NAMES[dbyte * 8 + dn]['_name'])
+                    self.widgets[key].setChecked(False)
+                    layout.addWidget(self.widgets[key], gpy, dn + 3)
+                    if dbyte * 8 + dn == DOUTS - 1:
+                        break
+                gpy += 1
+            layout.addWidget(QLabel(''), gpy, 1)
             gpy += 1
-        layout.addWidget(QLabel(''), gpy, 1)
-        gpy += 1
 
 
         for dbyte in range(DIGITAL_INPUT_BYTES):
@@ -235,6 +442,26 @@ class WinForm(QWidget):
                 if dbyte * 8 + dn == DINS - 1:
                     break
             gpy += 1
+
+
+        # boutnames
+        for num, bout in enumerate(project["boutnames"]):
+            boutsize = bout['size']
+            if bout["type"] == "modbus":
+                name = bout["name"]
+                for protocol in bout["protocols"]:
+                    if protocol["type"] == "hyvfd":
+
+                        layout.addWidget(QLabel(f'HYVFD:'), gpy, 0)
+
+                        self.widgets[f"{name}-hyvfd"] = QSlider(Qt.Horizontal)
+                        self.widgets[f"{name}-hyvfd"].setMinimum(-20000)
+                        self.widgets[f"{name}-hyvfd"].setMaximum(20000)
+                        self.widgets[f"{name}-hyvfd"].setValue(0)
+                        layout.addWidget(self.widgets[f"{name}-hyvfd"], gpy, 3)
+
+                        gpy += 1
+
 
         layout.addWidget(QLabel(''), gpy, 0)
         gpy += 1
@@ -260,8 +487,6 @@ class WinForm(QWidget):
         self.timer.start(INTERVAL)
 
     def runTimer(self):
-
-        #data = [0] * {project['data_size'] // 8}
         data[0] = 0x74
         data[1] = 0x69
         data[2] = 0x72
@@ -282,34 +507,33 @@ class WinForm(QWidget):
                 key = f"vo{vn}"
                 self.widgets[key].setText(str(vouts[vn]))
 
-            if self.widgets["dout_auto"].isChecked():
+            douts = []
+            if project['douts']:
+                if self.widgets["dout_auto"].isChecked():
+                    for dbyte in range(DIGITAL_OUTPUT_BYTES):
+                        for dn in range(8):
+                            key = f"doc{dbyte}{dn}"
+                            stat = (self.animation - 1) == dbyte * 8 + dn
+                            self.widgets[key].setChecked(stat)
+                            if dbyte * 8 + dn == DOUTS - 1:
+                                break
+                    if self.doutcounter > 3:
+                        self.doutcounter = 0
+                        if self.animation >= DOUTS:
+                            self.animation = 0
+                        else:
+                            self.animation += 1
+                    else:
+                        self.doutcounter += 1
+
                 for dbyte in range(DIGITAL_OUTPUT_BYTES):
+                    douts.append(0)
                     for dn in range(8):
                         key = f"doc{dbyte}{dn}"
-                        stat = (self.animation - 1) == dbyte * 8 + dn
-                        self.widgets[key].setChecked(stat)
+                        if self.widgets[key].isChecked():
+                            douts[dbyte] |= (1<<(7-dn))
                         if dbyte * 8 + dn == DOUTS - 1:
                             break
-
-                if self.doutcounter > 3:
-                    self.doutcounter = 0
-                    if self.animation >= DOUTS:
-                        self.animation = 0
-                    else:
-                        self.animation += 1
-                else:
-                    self.doutcounter += 1
-
-            douts = []
-            for dbyte in range(DIGITAL_OUTPUT_BYTES):
-                douts.append(0)
-                for dn in range(8):
-                    key = f"doc{dbyte}{dn}"
-                    if self.widgets[key].isChecked():
-                        douts[dbyte] |= (1<<(7-dn))
-                    if dbyte * 8 + dn == DOUTS - 1:
-                        break
-
 
             bn = 4
             for jn, value in enumerate(joints):
@@ -354,6 +578,20 @@ class WinForm(QWidget):
                     data[bn + byte] = vout[byte]
                 bn += 4
 
+            # boutnames
+            for num, bout in enumerate(project["boutnames"]):
+                boutsize = bout['size']
+                if bout["type"] == "modbus":
+                    name = bout["name"]
+                    for protocol in bout["protocols"]:
+                        if protocol["type"] == "hyvfd":
+                            speed = self.widgets[f"{name}-hyvfd"].value()
+                            self.vfd.set_speed(speed)
+                            addr = protocol["addr"]
+                            package = self.vfd.transmit(addr)
+                            for boutn in range(boutsize // 8):
+                                data[bn] = package[boutn]
+                                bn += 1
 
             # jointEnable and dout (TODO: split in bits)
             for dbyte in range(JOINT_ENABLE_BYTES):
@@ -361,9 +599,10 @@ class WinForm(QWidget):
                 bn += 1
 
             # dout
-            for dbyte in range(DIGITAL_OUTPUT_BYTES):
-                data[bn] = douts[dbyte]
-                bn += 1
+            if project['douts']:
+                for dbyte in range(DIGITAL_OUTPUT_BYTES):
+                    data[bn] = douts[dbyte]
+                    bn += 1
 
             print("")
             print("tx:", data)
@@ -399,6 +638,21 @@ class WinForm(QWidget):
             for num in range(VINS):
                 processVariable[num] = unpack('<i', bytes(rec[pos:pos+4]))[0]
                 pos += 4
+
+            # binnames
+            binValues = {}
+            for num, bins in enumerate(project["binnames"]):
+                binValues[num] = []
+                binsize = bins['size']
+                for binn in range(binsize // 8):
+                    binValues[num].append(unpack('<B', bytes(rec[pos:pos+1]))[0])
+                    pos += 1
+                if bins["type"] == "modbus":
+                    name = bins["name"]
+                    for protocol in bins["protocols"]:
+                        if protocol["type"] == "hyvfd":
+                            addr = protocol["addr"]
+                            self.vfd.receive(addr, binValues[num])
 
             inputs = []
             for dbyte in range(DIGITAL_INPUT_BYTES):

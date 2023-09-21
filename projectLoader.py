@@ -116,7 +116,7 @@ def load(configfile):
         print("")
         exit(1)
 
-    for dtype in ("vin", "vout", "din", "dout", "joint"):
+    for dtype in ("vin", "vout", "din", "dout", "joint", "bin", "bout"):
         tname = f"{dtype}names"
         if tname not in project:
             project[tname] = []
@@ -138,11 +138,19 @@ def load(configfile):
     project["tx_data_size"] += project["joints"] * 32
     project["tx_data_size"] += project["vins"] * 32
     project["tx_data_size"] += project["dins_total"]
+    if "binnames" in project:
+        for binpart in project["binnames"]:
+            project["tx_data_size"] += binpart["size"]
+
     project["rx_data_size"] = 32
     project["rx_data_size"] += project["joints"] * 32
     project["rx_data_size"] += project["vouts"] * 32
     project["rx_data_size"] += project["joints_en_total"]
     project["rx_data_size"] += project["douts_total"]
+    if "boutnames" in project:
+        for binpart in project["boutnames"]:
+            project["rx_data_size"] += binpart["size"]
+
     project["data_size"] = max(project["tx_data_size"], project["rx_data_size"])
 
     return project

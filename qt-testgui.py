@@ -55,7 +55,7 @@ joints = [0] * project['joints']
 vouts = [0] * project['vouts']
 douts = [0] * project['douts']
 
-PRU_OSC = project['jdata']['clock']['speed']
+PRU_OSC = int(project['jdata']['clock']['speed'])
 
 vinminmax = []
 for num, vin in enumerate(project["vinnames"]):
@@ -492,7 +492,7 @@ class WinForm(QWidget):
         data[2] = 0x72
         data[3] = 0x77
 
-        try:
+        if True:
 
             for jn in range(JOINTS):
                 key = f"jcs{jn}"
@@ -541,7 +541,10 @@ class WinForm(QWidget):
                 if value == 0:
                     value = 0
                 else:
-                    value = int(PRU_OSC / value)
+                    if JOINT_TYPES[jn] == 'joint_pwmdir':
+                        value = value
+                    else:
+                        value = int(PRU_OSC / value)
 
                 key = f"jc{jn}"
                 self.widgets[key].setText(str(value))
@@ -709,9 +712,9 @@ class WinForm(QWidget):
                     if dbyte * 8 + dn == DINS - 1:
                         break
 
-        except Exception as e:
-            print("ERROR", e)
-            self.error_counter_net += 1
+        #except Exception as e:
+        #    print("ERROR", e)
+        #    self.error_counter_net += 1
 
         self.widgets["errors_spi"].setText(str(self.error_counter_spi))
         self.widgets["errors_net"].setText(str(self.error_counter_net))

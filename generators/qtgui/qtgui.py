@@ -339,7 +339,10 @@ class WinForm(QWidget):
                 if value == 0:
                     value = 0
                 else:
-                    value = int(PRU_OSC / value)
+                    if JOINT_TYPES[jn] == 'joint_pwmdir':
+                        value = value
+                    else:
+                        value = int(PRU_OSC / value)
 
                 key = f"jc{jn}"
                 self.widgets[key].setText(str(value))

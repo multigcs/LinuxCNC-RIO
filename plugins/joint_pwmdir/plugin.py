@@ -81,7 +81,7 @@ class Plugin:
                 pwm_freq = joint.get("frequency", 100000)
                 if "enable" in joint["pins"]:
                     func_out.append(
-                        f"    assign JOINT{num}_EN = jointEnable{num} && ~ERROR;"
+                        f"    assign JOINT{num}_EN = {nameIntern}Enable && ~ERROR;"
                     )
                 if joint.get("cl"):
                     func_out.append(f"    quad_encoder_pwm quad_encoder_pwm{num} (")
@@ -96,7 +96,7 @@ class Plugin:
                     )
                     func_out.append("        .clk (sysclk),")
                     func_out.append(
-                        f"        .jointEnable (jointEnable{num} && !ERROR),"
+                        f"        .jointEnable ({nameIntern}Enable && !ERROR),"
                     )
                     func_out.append(f"        .jointFreqCmd ({nameIntern}FreqCmd),")
                     func_out.append("        .jointFeedback (jointFeedbackFake),")
@@ -109,7 +109,7 @@ class Plugin:
                     )
                     func_out.append("        .clk (sysclk),")
                     func_out.append(
-                        f"        .jointEnable (jointEnable{num} && !ERROR),"
+                        f"        .jointEnable ({nameIntern}Enable && !ERROR),"
                     )
                     func_out.append(f"        .jointFreqCmd ({nameIntern}FreqCmd),")
                     func_out.append(f"        .jointFeedback ({nameIntern}Feedback),")

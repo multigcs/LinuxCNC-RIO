@@ -133,7 +133,6 @@ class modbus_vfd():
     CONTROL_Track_Start =    0x80
 
     rpm = 0
-    direction = 1
     modbus_interval = 1
     modbus_counter = 0
     cmd_counter = 0
@@ -150,8 +149,9 @@ class modbus_vfd():
     ac_volt = 0
     condition = 0
     temp = 0
+    addr = 1
 
-    def __init__(self):
+    def __init__(self, addr):
         self.spindle_start_fwd        = [0x01, self.WRITE_CONTROL_DATA, 0x01, self.CONTROL_Run_Fwd]
         self.spindle_start_rev        = [0x01, self.WRITE_CONTROL_DATA, 0x01, self.CONTROL_Run_Rev]
         self.spindle_stop             = [0x01, self.WRITE_CONTROL_DATA, 0x01, self.CONTROL_Stop]
@@ -168,6 +168,7 @@ class modbus_vfd():
         self.spindle_status_condition = [0x01, self.READ_CONTROL_STATUS, 0x03, 0x06, 0x00, 0x00]
         self.spindle_status_temp      = [0x01, self.READ_CONTROL_STATUS, 0x03, 0x07, 0x00, 0x00]
         self.run_cmd = self.spindle_stop
+        self.addr = addr
 
     def crc16(self, data : bytearray, offset, length):
         if data is None or offset < 0 or offset > len(data) - 1 and offset + length > len(data):
@@ -191,7 +192,7 @@ class modbus_vfd():
         else:
             self.run_cmd = self.spindle_stop
 
-    def transmit(self, addr):
+    def transmit(self):
         data = [0] * 9
         if self.modbus_counter > self.modbus_interval:
             self.modbus_counter = 0
@@ -222,11 +223,9 @@ class modbus_vfd():
 
             ]
             cmd = cmds[self.cmd_counter]
-            cmd[0] = addr
+            cmd[0] = self.addr
 
             if cmd == self.spindle_speed and self.maxRpmAt50Hz > 0:
-                print("########################### set speed")
-                self.rpm = 6000;
                 value = self.rpm * 5000 // self.maxRpmAt50Hz;
                 cmd[3] = (value >> 8) & 0xFF;
                 cmd[4] = (value & 0xFF);
@@ -239,7 +238,7 @@ class modbus_vfd():
             crc = self.crc16(cmd, 0, len(cmd))
             crcH = crc & 0xFF
             crcL = crc>>8 & 0xFF
-            print("#########", cmd, crcH, crcL, len(cmd) + 2)
+            #print("#########", cmd, crcH, crcL, len(cmd) + 2)
 
             data[0] = len(cmd) + 2
             for n in range(len(cmd)):
@@ -250,10 +249,30 @@ class modbus_vfd():
             self.modbus_counter += 1
         return data
 
-    def receive(self, addr, data):
+    def feedback(self):
+        feedback = {
+            "rpm": self.rpm,
+            "maxFrequency": self.maxFrequency,
+            "minFrequency": self.minFrequency,
+            "min_rpm": self.min_rpm,
+            "max_rpm": self.max_rpm,
+            "maxRpmAt50Hz": self.maxRpmAt50Hz,
+            "frq_set": self.frq_set,
+            "frq_get": self.frq_get,
+            "ampere": self.ampere,
+            "srpm": self.srpm,
+            "dc_volt": self.dc_volt,
+            "ac_volt": self.ac_volt,
+            "condition": self.condition,
+            "temp": self.temp,
+            "addr": self.addr,
+        }
+        return feedback
+
+    def receive(self, data):
         pkglen = data[0]
-        if addr != data[1]:
-            print("WRONG ADDR: ", addr, data[1])
+        if self.addr != data[1]:
+            print("WRONG ADDR: ", self.addr, data[1])
             return
         crc = self.crc16(data[1:pkglen-1], 0, pkglen-2)
         crcH = crc & 0xFF
@@ -294,15 +313,6 @@ class modbus_vfd():
                 self.minFrequency = self.maxFrequency
             self.min_rpm = self.minFrequency * self.maxRpmAt50Hz / 5000
             self.max_rpm = self.maxFrequency * self.maxRpmAt50Hz / 5000
-
-        print("maxFrequency", self.maxFrequency)
-        print("minFrequency", self.minFrequency)
-        print("min_rpm", self.min_rpm)
-        print("max_rpm", self.max_rpm)
-        print("maxRpmAt50Hz", self.maxRpmAt50Hz)
-
-
-
     
 
 class WinForm(QWidget):
@@ -318,6 +328,7 @@ class WinForm(QWidget):
         self.error_counter_spi = 0
         self.error_counter_net = 0
         self.time_trx = 0
+        self.vfd = {}
         
         # boutnames
         for num, bout in enumerate(project["boutnames"]):
@@ -326,7 +337,8 @@ class WinForm(QWidget):
                 name = bout["name"]
                 for protocol in bout["protocols"]:
                     if protocol["type"] == "hyvfd":
-                        self.vfd = modbus_vfd()
+                        addr = protocol["addr"]
+                        self.vfd[addr] = modbus_vfd(addr)
 
         gpy = 0
 
@@ -451,16 +463,19 @@ class WinForm(QWidget):
                 name = bout["name"]
                 for protocol in bout["protocols"]:
                     if protocol["type"] == "hyvfd":
-
                         layout.addWidget(QLabel(f'HYVFD:'), gpy, 0)
-
                         self.widgets[f"{name}-hyvfd"] = QSlider(Qt.Horizontal)
                         self.widgets[f"{name}-hyvfd"].setMinimum(-20000)
                         self.widgets[f"{name}-hyvfd"].setMaximum(20000)
                         self.widgets[f"{name}-hyvfd"].setValue(0)
                         layout.addWidget(self.widgets[f"{name}-hyvfd"], gpy, 3)
-
                         gpy += 1
+
+                        for vn, vname in enumerate(["rpm","maxFrequency","minFrequency","min_rpm","max_rpm","maxRpmAt50Hz","frq_set","frq_get","ampere","srpm","dc_volt","ac_volt","condition","temp","addr"]):
+                            layout.addWidget(QLabel(vname), gpy, 3)
+                            self.widgets[f"{name}-hyvfd-{vname}"] = QLabel(vname)
+                            layout.addWidget(self.widgets[f"{name}-hyvfd-{vname}"], gpy, 4)
+                            gpy += 1
 
 
         layout.addWidget(QLabel(''), gpy, 0)
@@ -492,6 +507,7 @@ class WinForm(QWidget):
         data[2] = 0x72
         data[3] = 0x77
 
+        # try:
         if True:
 
             for jn in range(JOINTS):
@@ -589,9 +605,9 @@ class WinForm(QWidget):
                     for protocol in bout["protocols"]:
                         if protocol["type"] == "hyvfd":
                             speed = self.widgets[f"{name}-hyvfd"].value()
-                            self.vfd.set_speed(speed)
                             addr = protocol["addr"]
-                            package = self.vfd.transmit(addr)
+                            self.vfd[addr].set_speed(speed)
+                            package = self.vfd[addr].transmit()
                             for boutn in range(boutsize // 8):
                                 data[bn] = package[boutn]
                                 bn += 1
@@ -655,7 +671,12 @@ class WinForm(QWidget):
                     for protocol in bins["protocols"]:
                         if protocol["type"] == "hyvfd":
                             addr = protocol["addr"]
-                            self.vfd.receive(addr, binValues[num])
+                            self.vfd[addr].receive(binValues[num])
+                            fbdata = self.vfd[addr].feedback()
+                            for vname, vvalue in fbdata.items():
+                                if f"{name}-hyvfd-{vname}" in self.widgets:
+                                    self.widgets[f"{name}-hyvfd-{vname}"].setText(str(vvalue))
+
 
             inputs = []
             for dbyte in range(DIGITAL_INPUT_BYTES):

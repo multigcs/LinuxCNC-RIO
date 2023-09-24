@@ -81,6 +81,15 @@
                 "enable": "H4"
             },
             "name": "JOINT0"
+        },
+        {
+            "type": "picosoc",
+            "baud": 460800,
+            "pins": {
+                "rx": "A9",
+                "tx": "D10"
+            },
+            "name": "PICOSOC"
         }
     ]
 }

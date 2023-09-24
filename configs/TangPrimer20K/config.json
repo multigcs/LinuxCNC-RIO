@@ -1,0 +1,84 @@
+{
+    "name": "TangPrimer20K",
+    "description": "TangPrimer20K with 3 stepper Axis SPI",
+    "board": "TangPrimer20K",
+    "type": "GW2A-LV18PG256C8/I7",
+    "family": "GW2A-18C",
+    "toolchain": "gowin",
+    "package": "PG256",
+    "clock": {
+        "speed": "27000000",
+        "pin": "H11"
+    },
+    "transport": "SPI",
+    "axis": 3,
+    "interface": [
+        {
+            "type": "uart",
+            "pins": {
+                "RX": "T13",
+                "TX": "M11"
+            }
+        }
+    ],
+    "blink": {
+        "pin": "N14"
+    },
+    "error": {
+        "invert": true,
+        "pin": "N15"
+    },
+    "enable": {
+        "pin": "P15"
+    },
+    "plugins": [
+        {
+            "pullup": true,
+            "pin": "D7",
+            "name": "DIN0",
+            "type": "din_bit"
+        },
+        {
+            "invert": true,
+            "pin": "C7",
+            "name": "DOUT0",
+            "type": "dout_bit"
+        },
+        {
+            "type": "vin_counter",
+            "pullup": true,
+            "pins": {
+                "up": "T2",
+                "down": "T10"
+            },
+            "name": "VIN0"
+        },
+        {
+            "type": "vout_pwm",
+            "pins": {
+                "pwm": "L14"
+            },
+            "name": "VOUT0"
+        },
+        {
+            "type": "joint_stepper",
+            "cl": false,
+            "scale": 800,
+            "pins": {
+                "step": "L16",
+                "dir": "N16"
+            },
+            "name": "JOINT0"
+        },
+        {
+            "type": "joint_stepper",
+            "cl": false,
+            "scale": 800,
+            "pins": {
+                "step": "P16",
+                "dir": "R16"
+            },
+            "name": "JOINT1"
+        }
+    ]
+}

@@ -321,7 +321,7 @@ def generate(project):
     # build files (makefiles/scripts/projects)
     board = project["jdata"].get("board")
 
-    if board == "TangNano9K" or board == "TangNano20K":
+    if board in {"TangNano9K", "TangNano20K", "TangPrimer20K"}:
         buildsys_gowin(project)
 
     elif project["jdata"].get("toolchain") == "icestorm":

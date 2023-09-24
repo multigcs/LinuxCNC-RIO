@@ -48,7 +48,7 @@ def buildsys_gowin(project):
         makefile_data.append("	vvp testb.out")
         makefile_data.append("	gtkwave testb.vcd")
         makefile_data.append("")
-    elif board == "TangNano20K":
+    elif board in {"TangNano20K", "TangPrimer20K"}:
         makefile_data.append("all: impl/pnr/project.fs")
         makefile_data.append("")
         makefile_data.append("clean:")
@@ -63,7 +63,7 @@ def buildsys_gowin(project):
     makefile_data.append("	gw_sh rio.tcl")
     makefile_data.append("")
     makefile_data.append("gowin_load: impl/pnr/project.fs")
-    makefile_data.append("	openFPGALoader -b tangnano9k impl/pnr/project.fs -f")
+    makefile_data.append(f"	openFPGALoader -b {board.lower()} impl/pnr/project.fs -f")
     makefile_data.append("")
 
     open(f"{project['FIRMWARE_PATH']}/Makefile", "w").write(

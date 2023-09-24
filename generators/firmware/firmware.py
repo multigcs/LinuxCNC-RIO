@@ -149,7 +149,10 @@ def verilog_top(project):
             top_data.append(f"    assign ENA = ~ENA_INV;")
             top_data.append(f"    assign ENA_INV = ({jointEnablesStr}) && ~ERROR;")
         else:
-            top_data.append(f"    assign ENA = ({jointEnablesStr}) && ~ERROR;")
+            if jointEnablesStr:
+                top_data.append(f"    assign ENA = ({jointEnablesStr}) && ~ERROR;")
+            else:
+                top_data.append(f"    assign ENA = ~ERROR;")
         top_data.append("")
 
     if project["voutnames"]:

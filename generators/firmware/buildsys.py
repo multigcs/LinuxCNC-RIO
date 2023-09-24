@@ -83,6 +83,8 @@ def buildsys_gowin(project):
         )
     elif family == "GW2AR-18":
         prj_data.append('    <Device name="" pn="">gw2ar18c-000</Device>')
+    elif family == "GW2A-18C":
+        prj_data.append('    <Device name="" pn="">gw2a18c-011</Device>')
     else:
         prj_data.append(
             f'    <Device name="{family_gowin}" pn="{ftype}">gw2ar-18-004</Device>'

@@ -68,7 +68,6 @@ def load(configfile):
                                 if len(ssetup_data) > jn:
                                     msetup.update(ssetup_data[jn])
                             # rewrite pins
-                            print("----", msetup)
                             if "pin" in msetup:
                                 realpin = spins[msetup["pin"]]
                                 msetup["pin"] = realpin

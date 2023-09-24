@@ -1,4 +1,5 @@
 
+import argparse
 import time
 from struct import *
 import sys
@@ -7,19 +8,36 @@ from PyQt5.QtCore import QTimer,QDateTime, Qt
 
 import projectLoader
 
-project = projectLoader.load(sys.argv[1])
 
+parser = argparse.ArgumentParser()
+parser.add_argument(
+    "json", help="json config", type=str, default=None
+)
+parser.add_argument(
+    "--baud", "-b", help="baudrate", type=int, default=2000000
+)
+parser.add_argument(
+    "--port", "-p", help="udp port", type=int, default=2390
+)
+parser.add_argument(
+    "device", help="device like: /dev/ttyUSB0 | 192.168.10.13", nargs="?", type=str, default=None
+)
+args = parser.parse_args()
+
+
+project = projectLoader.load(args.json)
+print(args.baud)
 
 SERIAL = ''
 NET_IP = ''
-if len(sys.argv) > 2 and sys.argv[2].startswith('/dev/tty'):
+if args.device and args.device.startswith('/dev/tty'):
     import serial
-    SERIAL = sys.argv[2]
-    BAUD = 2000000
+    SERIAL = args.device
+    BAUD = args.baud
     ser = serial.Serial(SERIAL, BAUD, timeout=0.001)
-elif len(sys.argv) > 2 and sys.argv[2] != '':
-    NET_IP = sys.argv[2]
-    NET_PORT = 2390
+elif args.device and args.device != '':
+    NET_IP = args.device
+    NET_PORT = args.port
     print('IP:', NET_IP)
     import socket
 else:
@@ -28,7 +46,7 @@ else:
     device = 1
     spi = spidev.SpiDev()
     spi.open(bus, device)
-    spi.max_speed_hz = project['jdata']['interface'][0].get('max', 2000000)
+    spi.max_speed_hz = project['jdata']['interface'][0].get('max', args.baud)
     spi.mode = 0
     spi.lsbfirst = False
 
@@ -267,8 +285,7 @@ class WinForm(QWidget):
         data[2] = 0x72
         data[3] = 0x77
 
-        if True:
-
+        try:
             for jn in range(JOINTS):
                 key = f"jcs{jn}"
                 joints[jn] = int(self.widgets[key].value())
@@ -458,9 +475,9 @@ class WinForm(QWidget):
                     if dbyte * 8 + dn == DINS - 1:
                         break
 
-        #except Exception as e:
-        #    print("ERROR", e)
-        #    self.error_counter_net += 1
+        except Exception as e:
+            print("ERROR", e)
+            self.error_counter_net += 1
 
         self.widgets["errors_spi"].setText(str(self.error_counter_spi))
         self.widgets["errors_net"].setText(str(self.error_counter_net))

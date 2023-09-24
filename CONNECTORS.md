@@ -68,6 +68,16 @@ Please use these connectors for new hardware to have some kind of standard
 
     FPGA is in slave mode
 
+## PMOD (8IO's)
+Pin | Pin | Pin | Pin
+--- | --- | --- | ---
+P1 | IO1 | IO5 | P7
+P2 | IO2 | IO6 | P8
+P3 | IO3 | IO7 | P9
+P4 | IO4 | IO8 | P10
+P5 | GND | GND | P11
+P6 | 3V3 | 3V3 | P12
+
 
 ## Images
 

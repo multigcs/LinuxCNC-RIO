@@ -1,0 +1,12 @@
+{
+    "comment": "4 Analog-In",
+    "plugins": [
+        {
+            "type": "vin_ads1115",
+            "pins": {
+                "sda": "A3",
+                "scl": "A4"
+            }
+        }
+    ]
+}

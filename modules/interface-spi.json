@@ -1,0 +1,15 @@
+{
+    "comment": "SPI - Interface",
+    "interface": [
+        {
+            "type": "spi",
+            "pullup": true,
+            "pins": {
+                "MOSI": "P7",
+                "MISO": "P8",
+                "SCK": "P9",
+                "SEL": "P10"
+            }
+        }
+    ]
+}

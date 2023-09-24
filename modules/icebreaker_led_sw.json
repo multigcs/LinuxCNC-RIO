@@ -1,0 +1,48 @@
+{
+    "comment": "Icebreaker-PMOD: 5 LED + 3SW",
+    "plugins": [
+        {
+            "type": "dout_bit",
+            "name": "LED1",
+            "pin": "P7"
+        },
+        {
+            "type": "dout_bit",
+            "name": "LED2",
+            "pin": "P1"
+        },
+        {
+            "type": "dout_bit",
+            "name": "LED3",
+            "pin": "P2"
+        },
+        {
+            "type": "dout_bit",
+            "name": "LED4",
+            "pin": "P8"
+        },
+        {
+            "type": "dout_bit",
+            "name": "LED5",
+            "pin": "P3"
+        },
+        {
+            "type": "din_bit",
+            "name": "BUTTON1",
+            "invert": true,
+            "pin": "P9"
+        },
+        {
+            "type": "din_bit",
+            "name": "BUTTON2",
+            "invert": true,
+            "pin": "P4"
+        },
+        {
+            "type": "din_bit",
+            "name": "BUTTON3",
+            "invert": true,
+            "pin": "P10"
+        }
+    ]
+}

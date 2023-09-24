@@ -102,9 +102,9 @@ for num, vout in enumerate(project["voutnames"]):
     else:
         voutminmax.append((vout.get('min', 0), vout.get('max', 10), 'scale', 1))
 
-    JOINT_ENABLE_BYTES = project['joints_en_total'] // 8
-    DIGITAL_OUTPUT_BYTES = project['douts_total'] // 8
-    DIGITAL_INPUT_BYTES = project['dins_total'] // 8
+JOINT_ENABLE_BYTES = project['joints_en_total'] // 8
+DIGITAL_OUTPUT_BYTES = project['douts_total'] // 8
+DIGITAL_INPUT_BYTES = project['dins_total'] // 8
 
     
 

@@ -141,6 +141,12 @@ class WinForm(QWidget):
 
         gpy = 0
 
+
+        self.widgets["connection"] = QLabel(f'CONNECTION:')
+        layout.addWidget(self.widgets["connection"], gpy, 0)
+        gpy += 1
+
+
         layout.addWidget(QLabel(f'JOINTS:'), gpy, 0)
         for jn in range(JOINTS):
             layout.addWidget(QLabel(f'JOINT{jn}'), gpy, jn + 3)
@@ -432,9 +438,13 @@ class WinForm(QWidget):
                 #for num in range(VINS):
                 #    print(f' Var({num}): {processVariable[num]}')
                 #print(f'inputs {inputs:08b}')
+                self.widgets["connection"].setText("CONNECTED")
+                self.widgets["connection"].setStyleSheet("background-color: green")
             else:
                 print(f'ERROR: Unknown Header: 0x{header:x}')
                 self.error_counter_spi += 1
+                self.widgets["connection"].setText(f'ERROR: 0x{header:x}')
+                self.widgets["connection"].setStyleSheet("background-color: red")
 
             for jn, value in enumerate(joints):
                 key = f"jf{jn}"
@@ -478,6 +488,8 @@ class WinForm(QWidget):
         except Exception as e:
             print("ERROR", e)
             self.error_counter_net += 1
+            self.widgets["connection"].setText(f'ERROR: {e}')
+            self.widgets["connection"].setStyleSheet("background-color: red")
 
         self.widgets["errors_spi"].setText(str(self.error_counter_spi))
         self.widgets["errors_net"].setText(str(self.error_counter_net))

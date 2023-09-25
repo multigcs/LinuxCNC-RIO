@@ -12,6 +12,6 @@ openFPGALoader -c usb-blaster -r -f --unprotect-flash rio.bit
 
 ### via Raspberry-GPIO's
 ```
-openFPGALoader -c libgpiod --pins=21:26:16:20 --detect
+openFPGALoader -c libgpiod --pins=21:26:16:20 -r -f --unprotect-flash rio.bit
 ```
 

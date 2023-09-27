@@ -3,7 +3,7 @@
     "description": "TangPrimer20K with 3 stepper Axis SPI",
     "board": "TangPrimer20K",
     "type": "GW2A-LV18PG256C8/I7",
-    "family": "GW2A-18C",
+    "family": "GW2A-18",
     "toolchain": "gowin",
     "package": "PG256",
     "clock": {

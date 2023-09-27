@@ -20,7 +20,7 @@ def buildsys_gowin(project):
     makefile_data.append(f"DEVICE={ftype}")
     makefile_data.append("")
 
-    if board in {"TangNano9K", "TangNano20K", "TangPrimer20K"}:
+    if board in {"TangNano9K", "TangPrimer20K"}:
         makefile_data.append("all: rio.fs")
         makefile_data.append("")
         makefile_data.append(f"rio.json: {verilogs}")
@@ -49,7 +49,7 @@ def buildsys_gowin(project):
         makefile_data.append("	vvp testb.out")
         makefile_data.append("	gtkwave testb.vcd")
         makefile_data.append("")
-    elif board in {"TangNano20K", "TangPrimer20K"}:
+    elif board in {"TangNano20K"}:
         makefile_data.append("all: impl/pnr/project.fs")
         makefile_data.append("")
         makefile_data.append("clean:")

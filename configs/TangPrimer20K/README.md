@@ -9,3 +9,10 @@ https://wiki.sipeed.com/hardware/en/tang/tang-primer-20k/primer-20k.html
 ```
 export PATH=$PATH:/opt/gowin/IDE/bin/
 ```
+
+The Primer20K is now supported by yosys/nextpnr but it's buggy, plese use the gowin toolchain
+```
+make gowin_build
+```
+
+

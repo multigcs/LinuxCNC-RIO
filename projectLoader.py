@@ -42,7 +42,6 @@ def load(configfile):
     project["modules"] = {}
     for path in glob.glob("modules/*.json"):
         module = path.split("/")[1].split(".")[0]
-        print(module)
         mdata = open(path, "r").read()
         project["modules"][module] = json.loads(mdata)
 

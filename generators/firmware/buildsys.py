@@ -201,7 +201,7 @@ def buildsys_gowin(project):
     tcl_data.append("")
     tcl_data.append(f"set_option -verilog_std {project['jdata'].get('verilog_std', verilog_std)}")
     tcl_data.append(f"set_option -vhdl_std {project['jdata'].get('vhdl_std', 'vhd2008')}")
-    set_options = project["jdata"].get("set_options", ("use_sspi_as_gpio", "use_mspi_as_gpio", "use_ready_as_gpio", "use_ready_as_gpio", "use_reconfign_as_gpio", "use_i2c_as_gpio"))
+    set_options = project["jdata"].get("set_options", ("use_sspi_as_gpio", "use_mspi_as_gpio", "use_done_as_gpio", "use_ready_as_gpio", "use_reconfign_as_gpio", "use_i2c_as_gpio"))
     for set_option in set_options:
         tcl_data.append(f"set_option -{set_option} 1")
     tcl_data.append("")

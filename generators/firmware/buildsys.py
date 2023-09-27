@@ -30,7 +30,7 @@ def buildsys_gowin(project):
         makefile_data.append("")
         makefile_data.append("rio_pnr.json: rio.json pins.cst")
         makefile_data.append(
-            f"	nextpnr-gowin --seed 0 --json rio.json --write rio_pnr.json --freq {float(project['jdata']['clock']['speed']) / 1000000} --enable-globals --enable-auto-longwires --family ${{FAMILY}} --cst pins.cst"
+            f"	nextpnr-gowin --seed 0 --json rio.json --write rio_pnr.json --freq {float(project['jdata']['clock']['speed']) / 1000000} --enable-globals --enable-auto-longwires --device ${{DEVICE}} --cst pins.cst"
         )
         makefile_data.append("")
         makefile_data.append("rio.fs: rio_pnr.json")

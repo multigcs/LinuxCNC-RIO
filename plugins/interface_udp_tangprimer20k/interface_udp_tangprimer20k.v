@@ -31,30 +31,27 @@ module interface_udp_tangprimer20k
     reg [BUFFER_SIZE-1:0] tx_data_buffer;
     reg [BUFFER_SIZE-1:0] rx_data_buffer;
 
-    logic clk1m;
-    logic clk6m;
-    PLL_6M PLL6m(
-        .clkout(clk6m),
-        .clkoutd(clk1m),
-        .clkin(sysclk)
-    );
-
-    logic clk50m;
-    logic ready;
-
-    logic eth_rx_head_av;
-    logic[31:0] eth_rx_head;
-    logic eth_rx_data_av;
-    logic[7:0] eth_rx_data;
-    logic eth_rx_head_rdy;
-
-    logic [31:0] eth_tx_ip;
-    logic [15:0] eth_tx_dst_port;
-    logic eth_tx_req;
-    logic [7:0] eth_tx_data;
-    logic eth_tx_data_av;
-    logic eth_tx_req_rdy;
-    logic eth_tx_data_rdy;
+	wire clk1m;
+	wire clk6m;
+	PLL_6M PLL6m(
+		.clkout(clk6m),
+		.clkoutd(clk1m),
+		.clkin(sysclk)
+	);
+	wire clk50m;
+	wire ready;
+	wire eth_rx_head_av;
+	wire [31:0] eth_rx_head;
+	wire eth_rx_data_av;
+	wire [7:0] eth_rx_data;
+	reg eth_rx_head_rdy;
+	reg [31:0] eth_tx_ip;
+	reg [15:0] eth_tx_dst_port;
+	reg eth_tx_req;
+	reg [7:0] eth_tx_data;
+	reg eth_tx_data_av;
+	wire eth_tx_req_rdy;
+	wire eth_tx_data_rdy;
 
     udp #(
         .ip_adr(IP),
@@ -93,15 +90,15 @@ module interface_udp_tangprimer20k
         .tx_data_rdy_o(eth_tx_data_rdy)
     );
 
-    reg [7:0] eth_rx_state = 0;
-    reg [7:0] eth_tx_state = 0;
-    reg [7:0] eth_rx_counter = 0;
-    reg [7:0] eth_tx_counter = 0;
+    reg [3:0] eth_rx_state = 4'd0;
+    reg [3:0] eth_tx_state = 4'd0;
+    reg [7:0] eth_rx_counter = 8'd0;
+    reg [7:0] eth_tx_counter = 8'd0;
 
-    always_ff@(posedge clk50m or negedge ready)begin
+	always @(posedge clk50m or negedge ready) begin
         if (ready == 0) begin
-            eth_tx_state <= 0;
-            eth_rx_state <= 0;
+            eth_tx_state <= 4'd0;
+            eth_rx_state <= 4'd0;
             eth_tx_req <= 0;
         end else begin
 
@@ -111,8 +108,8 @@ module interface_udp_tangprimer20k
                     // wait for header
                     if (eth_rx_head_av) begin
                         eth_rx_head_rdy <= 1'b1;
-                        eth_rx_counter <= 0;
-                        eth_rx_state <= eth_rx_state + 1;
+                        eth_rx_counter <= 8'd0;
+                        eth_rx_state <= 4'd1;
                     end else begin
                         eth_rx_head_rdy <= 1'b0;
                     end
@@ -120,43 +117,43 @@ module interface_udp_tangprimer20k
                 1:begin
                     // read ip from header
                     eth_tx_ip <= eth_rx_head;
-                    eth_rx_state <= eth_rx_state + 1;
+                    eth_rx_state <= 4'd2;
                 end
                 2:begin
                     // read ??? from header
-                    eth_rx_state <= eth_rx_state + 1;
+                    eth_rx_state <= 4'd3;
                 end
                 3:begin
                     // read port from header
                     if (eth_rx_head[15:0] == 16'd2390) begin
                         eth_tx_dst_port <= eth_rx_head[31:16];
-                        eth_rx_state <= eth_rx_state + 1;
+                        eth_rx_state <= 4'd4;
                     end else begin
-                        eth_rx_state <= 0;
+                        eth_rx_state <= 4'd0;
                     end
                 end
                 4:begin
                     if (eth_rx_data_av) begin
                         // receive data
                         rx_data_buffer <= {rx_data_buffer[BUFFER_SIZE-1-8:0], eth_rx_data};
-                        eth_rx_counter <= eth_rx_counter + 1;
+                        eth_rx_counter <= eth_rx_counter + 8'd1;
                     end else begin
                         // check and save data
                         // if (eth_rx_counter == BUFFER_SIZE && header) begin
                         
                         // if (rx_data_buffer[BUFFER_SIZE-1:BUFFER_SIZE-32] == MSGID) begin
                         //     rx_data <= rx_data_buffer;
-                        //     eth_rx_state <= eth_rx_state + 1;
+                        //     eth_rx_state <= 4'd5;
                         // end
 
                         rx_data <= rx_data_buffer;
-                        eth_rx_state <= eth_rx_state + 1;
+                        eth_rx_state <= 4'd5;
  
                     end
                 end
                 5:begin
                     // receive done
-                    eth_rx_state <= 0;
+                    eth_rx_state <= 4'd0;
                 end
             endcase
 
@@ -167,11 +164,11 @@ module interface_udp_tangprimer20k
                     // wait for tx ready
                     if (eth_tx_req_rdy) begin
                         // wait for rx received
-                        if (eth_rx_state == 5) begin
+                        if (eth_rx_state == 4'd5) begin
                             // set data to transmit
-                            eth_tx_counter <= 0;
+                            eth_tx_counter <= 8'd0;
                             tx_data_buffer <= tx_data;
-                            eth_tx_state <= eth_tx_state + 1;
+                            eth_tx_state <= 4'd1;
                         end
                     end
                 end
@@ -181,26 +178,23 @@ module interface_udp_tangprimer20k
                         eth_tx_data_av <= 1;
                         eth_tx_data <= tx_data_buffer[BUFFER_SIZE-1:BUFFER_SIZE-1-7];
                         tx_data_buffer <= {tx_data_buffer[BUFFER_SIZE-1-8:0], 8'd0};
-                        eth_tx_counter = eth_tx_counter + 1;
+                        eth_tx_counter = eth_tx_counter + 8'd1;
                     end else begin
                         eth_tx_data_av <= 0;
-                        eth_tx_state <= eth_tx_state + 1;
+                        eth_tx_state <= 4'd2;
                     end
                 end
                 2:begin
                     // start transmit
                     if (eth_tx_req_rdy) begin
                         eth_tx_req <= 1'b1;
-                        eth_tx_state <= eth_tx_state + 1;
+                        eth_tx_state <= 4'd3;
                     end
                 end
                 3:begin
                     // transmit done
                     eth_tx_req <= 1'b0;
-                    eth_tx_state <= 0;
-                end
-                default:begin
-                    eth_tx_state <= eth_tx_state + 1;
+                    eth_tx_state <= 4'd0;
                 end
             endcase
         end

@@ -86,7 +86,7 @@ module interface_udp_tangprimer20k
         .rx_data_o(eth_rx_data),
 
         .tx_ip_i(eth_tx_ip),
-        .tx_src_port_i(16'd11451),
+        .tx_src_port_i(16'd2390),
         .tx_dst_port_i(eth_tx_dst_port),
         .tx_req_i(eth_tx_req),
         .tx_data_i(eth_tx_data),

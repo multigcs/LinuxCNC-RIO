@@ -50,13 +50,13 @@ class Plugin:
                 IP_STR = interface.get("ip", "192.168.10.14")
                 IP = ",".join([f"8'd{part}" for part in IP_STR.split(".")])
 
-                func_out.append("    assign INTERFACE_TIMEOUT = 0;")
                 func_out.append(
-                    f"    interface_udp_tangprimer20k #(BUFFER_SIZE, 32'h74697277, {{{MAC}}}, {{{IP}}}) udp1 ("
+                    f"    interface_udp_tangprimer20k #(BUFFER_SIZE, 32'h74697277, {{{MAC}}}, {{{IP}}}, 32'd{50000000 // 4}) udp1 ("
                 )
                 func_out.append("        .sysclk (sysclk),")
                 func_out.append("        .rx_data (rx_data),")
                 func_out.append("        .tx_data (tx_data),")
+                func_out.append("        .pkg_timeout (INTERFACE_TIMEOUT),")
                 func_out.append("        .phyrst (phyrst),")
                 func_out.append("        .netrmii_clk50m (netrmii_clk50m),")
                 func_out.append("        .netrmii_rx_crs (netrmii_rx_crs),")

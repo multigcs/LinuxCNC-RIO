@@ -40,6 +40,7 @@ elif args.device and args.device != '':
     NET_PORT = args.port
     print('IP:', NET_IP)
     import socket
+    UDPClientSocket = socket.socket(family=socket.AF_INET, type=socket.SOCK_DGRAM)
 else:
     import spidev
     bus = 0
@@ -395,7 +396,6 @@ class WinForm(QWidget):
             print("tx:", data)
             start = time.time()
             if NET_IP:
-                UDPClientSocket = socket.socket(family=socket.AF_INET, type=socket.SOCK_DGRAM)
                 UDPClientSocket.sendto(bytes(data), (NET_IP, NET_PORT))
                 UDPClientSocket.settimeout(0.2)
                 msgFromServer = UDPClientSocket.recvfrom(len(data))

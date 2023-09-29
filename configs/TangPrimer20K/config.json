@@ -1,5 +1,5 @@
 {
-    "name": "TangPrimer20K",
+    "name": "TangPrimer20K_udp",
     "description": "TangPrimer20K",
     "board": "TangPrimer20K",
     "type": "GW2A-LV18PG256C8/I7",
@@ -10,15 +10,25 @@
         "speed": "27000000",
         "pin": "H11"
     },
-    "transport": "SPI",
+    "transport": "UDP",
+    "ip": "192.168.10.15",
     "axis": 3,
     "interface": [
         {
-            "type": "uart",
-            "baud": 115200,
+            "type": "udp_tangprimer20k",
+            "mac": "06:00:AA:BB:0C:DE",
+            "ip": "192.168.10.15",
             "pins": {
-                "RX": "T13",
-                "TX": "M11"
+                "phyrst": "F10",
+                "netrmii_txd_1": "E14",
+                "netrmii_txd_0": "D16",
+                "netrmii_txen": "E16",
+                "netrmii_mdc": "F14",
+                "netrmii_rxd_1": "C9",
+                "netrmii_rxd_0": "F15",
+                "netrmii_rx_crs": "M6",
+                "netrmii_clk50m": "A9",
+                "netrmii_mdio": "F16"
             }
         }
     ],

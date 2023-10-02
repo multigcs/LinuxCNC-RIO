@@ -4,6 +4,7 @@ module interface_udp_tangprimer20k
     #(parameter BUFFER_SIZE=80, parameter MSGID=32'h74697277, parameter MAC={8'h06,8'h00,8'hAA,8'hBB,8'h0C,8'hDD}, parameter IP={8'd192,8'd168,8'd10,8'd14}, parameter TIMEOUT=32'd4800000)
     (
         input sysclk,
+        input clk1m,
         output reg [BUFFER_SIZE-1:0] rx_data,
         input [BUFFER_SIZE-1:0] tx_data,
         output pkg_timeout,
@@ -36,13 +37,6 @@ module interface_udp_tangprimer20k
     reg [BUFFER_SIZE-1:0] tx_data_buffer;
     reg [BUFFER_SIZE-1:0] rx_data_buffer;
 
-	wire clk1m;
-	wire clk6m;
-	PLL_6M PLL6m(
-		.clkout(clk6m),
-		.clkoutd(clk1m),
-		.clkin(sysclk)
-	);
 	wire clk50m;
 	wire ready;
 	wire eth_rx_head_av;
@@ -114,7 +108,7 @@ module interface_udp_tangprimer20k
                 timeout_counter <= timeout_counter + 1;
                 timeout <= 0;
             end else begin
-                timeout <= 1;
+                //timeout <= 1;
             end
 
             // rx data

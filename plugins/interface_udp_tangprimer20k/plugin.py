@@ -50,10 +50,20 @@ class Plugin:
                 IP_STR = interface.get("ip", "192.168.10.14")
                 IP = ",".join([f"8'd{part}" for part in IP_STR.split(".")])
 
+
+                func_out.append("    wire clk1m;")
+                func_out.append("    wire clk6m;")
+                func_out.append("    PLL_6M PLL6m(")
+                func_out.append("        .clkout(clk6m),")
+                func_out.append("        .clkoutd(clk1m),")
+                func_out.append("        .clkin(sysclk)")
+                func_out.append("    );")
+                func_out.append("")
                 func_out.append(
                     f"    interface_udp_tangprimer20k #(BUFFER_SIZE, 32'h74697277, {{{MAC}}}, {{{IP}}}, 32'd{50000000 // 4}) udp1 ("
                 )
                 func_out.append("        .sysclk (sysclk),")
+                func_out.append("        .clk1m (clk1m),")
                 func_out.append("        .rx_data (rx_data),")
                 func_out.append("        .tx_data (tx_data),")
                 func_out.append("        .pkg_timeout (INTERFACE_TIMEOUT),")

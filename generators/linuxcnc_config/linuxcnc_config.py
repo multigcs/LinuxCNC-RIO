@@ -683,7 +683,7 @@ def generate_rio_ini(project):
                         MIN_LIMIT = -360
                         MAX_LIMIT = 360
                     else:
-                        SCALE = 800.0
+                        SCALE = 400.0
                         MIN_LIMIT = -1300
                         MAX_LIMIT = 1300
 
@@ -720,7 +720,7 @@ def generate_rio_ini(project):
                 MIN_LIMIT = -360
                 MAX_LIMIT = 360
             else:
-                SCALE = 800.0
+                SCALE = 400.0
                 MIN_LIMIT = -1300
                 MAX_LIMIT = 1300
 
@@ -754,8 +754,8 @@ def generate_rio_ini(project):
             "MAX_ACCELERATION": joint.get("max_acceleration", MAX_ACCELERATION),
             "STEPGEN_MAXACCEL": joint.get("stepgen_maxaccel", 4000.0),
             "STEPGEN_DEADBAND": joint.get("stepgen_deadband", 1.0 / abs(OUTPUT_SCALE) * 10.0),
-            "FERROR": joint.get("ferror", 1.0),
-            "MIN_FERROR": joint.get("min_ferror", 0.5),
+            "FERROR": joint.get("ferror", 2.0),
+            "MIN_FERROR": joint.get("min_ferror", 1.5),
         }
 
         if AXIS_NAME in "ACBUVW":

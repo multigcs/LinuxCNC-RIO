@@ -57,6 +57,9 @@ def load(configfile):
             if module in project["modules"]:
                 ssetup = slot.get("setup")
                 module_data = copy.deepcopy(project["modules"][module])
+                if "enable" in module_data:
+                    project["jdata"]["enable"] = module_data["enable"]
+                    project["jdata"]["enable"]["pin"] = slot["pins"][module_data["enable"]["pin"]]
                 for ftype in ("interface", "expansion", "joints", "plugins"):
                     if ftype in module_data:
                         for jn, msetup in enumerate(module_data.get(ftype, [])):

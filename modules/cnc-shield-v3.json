@@ -1,0 +1,83 @@
+{
+    "comment": "Arduino CNC-Shield v3",
+    "enable": {
+        "invert": true,
+        "pin": "D8"
+    },
+    "plugins": [
+        {
+            "type": "din_bit",
+            "name": "home-x",
+            "net": "joint.0.home-sw-in",
+            "invert": false,
+            "pullup": true,
+            "pin": "D9"
+        },
+        {
+            "type": "din_bit",
+            "name": "home-y",
+            "net": "joint.1.home-sw-in",
+            "invert": false,
+            "pullup": true,
+            "pin": "D10"
+        },
+        {
+            "type": "din_bit",
+            "name": "home-z",
+            "net": "joint.2.home-sw-in",
+            "invert": false,
+            "pullup": true,
+            "pin": "D11"
+        },
+
+
+        {
+            "type": "dout_bit",
+            "name": "spindle-enable",
+            "net": "spindle.0.on",
+            "invert": true,
+            "pin": "D12"
+        },
+
+        {
+            "type": "dout_bit",
+            "name": "coolant",
+            "invert": true,
+            "pin": "A3"
+        },
+
+        {
+            "type": "din_bit",
+            "name": "e-stop",
+            "invert": false,
+            "pullup": true,
+            "pin": "RST"
+        },
+
+        {
+            "comment": "X",
+            "type": "joint_stepper",
+            "pins": {
+                "step": "D2",
+                "dir": "D5"
+            }
+        },
+        {
+            "comment": "Y",
+            "type": "joint_stepper",
+            "pins": {
+                "step": "D3",
+                "dir": "D6"
+            }
+        },
+        {
+            "comment": "Z",
+            "type": "joint_stepper",
+            "pins": {
+                "step": "D4",
+                "dir": "D7"
+            }
+        }
+
+    ]
+}

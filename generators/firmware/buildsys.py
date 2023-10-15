@@ -37,7 +37,7 @@ def buildsys_gowin(project):
         makefile_data.append("	gowin_pack -d ${FAMILY} -o rio.fs rio_pnr.json")
         makefile_data.append("")
         makefile_data.append("load: rio.fs")
-        makefile_data.append("	openFPGALoader -b {board.lower()} rio.fs -f")
+        makefile_data.append(f"	openFPGALoader -b {board.lower()} rio.fs -f")
         makefile_data.append("")
         makefile_data.append("")
         makefile_data.append("clean:")

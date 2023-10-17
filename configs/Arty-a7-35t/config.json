@@ -5,91 +5,231 @@
     "family": "xc7",
     "type": "xc7a35ticsg324-1l",
     "package": "csg324",
-    "flashcmd": "xc3sprog -c nexys4 rio.bit",
     "clock": {
         "speed": "100000000",
         "pin": "E3"
     },
-    "interface": [
+    "blink": {
+        "pin": "T9"
+    },
+    "error": {
+        "pin": "T10"
+    },
+    "slots": [
         {
-            "type": "spi",
+            "comment": "ChipKit/Arduino Header",
             "pins": {
-                "MOSI": "D13",
-                "MISO": "B18",
-                "SCK": "A18",
-                "SEL": "K16"
+
+                "D0": "V15",
+                "D1": "U16",
+                "D2": "P14",
+                "D3": "T11",
+                "D4": "R12",
+                "D5": "T14",
+                "D6": "T15",
+                "D7": "T16",
+                "D8": "N15",
+                "D9": "M16",
+                "D10": "V17",
+                "D11": "U18",
+                "D12": "R17",
+                "D13": "P17",
+                "A0": "F5",
+                "A1": "D8",
+                "A2": "C7",
+                "A3": "E7",
+                "A4": "D7",
+                "A5": "D5",
+                "RST": "C2"
+            },
+            "module": "cnc-shield-v3"
+        },
+        {
+            "comment": "PMOD JA",
+            "pins": {
+                "P1": "G13",
+                "P2": "B11",
+                "P3": "A11",
+                "P4": "D12",
+                "P7": "D13",
+                "P8": "B18",
+                "P9": "A18",
+                "P10": "K16"
+            },
+            "module": "interface-spi"
+        },
+        {
+            "comment": "PMOD JB",
+            "pins": {
+                "P1": "E15",
+                "P2": "E16",
+                "P3": "D15",
+                "P4": "C15",
+                "P7": "J17",
+                "P8": "J18",
+                "P9": "K15",
+                "P10": "J15"
+            }
+        },
+        {
+            "comment": "PMOD JC",
+            "pins": {
+                "P1": "U12",
+                "P2": "V12",
+                "P3": "V10",
+                "P4": "V11",
+                "P7": "U14",
+                "P8": "V14",
+                "P9": "T13",
+                "P10": "U13"
+            }
+        },
+        {
+            "comment": "PMOD JD",
+            "pins": {
+                "P1": "D4",
+                "P2": "D3",
+                "P3": "F4",
+                "P4": "F3",
+                "P7": "E2",
+                "P8": "D2",
+                "P9": "H2",
+                "P10": "G2"
             }
         }
     ],
-    "blink": {
-        "pin": "H5"
-    },
     "plugins": [
         {
             "debounce": true,
             "pin": "A8",
-            "name": "DIN0",
+            "name": "SW0",
             "type": "din_bit"
         },
         {
             "debounce": true,
             "pin": "C11",
-            "name": "DIN1",
+            "name": "SW1",
             "type": "din_bit"
         },
         {
             "debounce": true,
             "pin": "C10",
-            "name": "DIN2",
+            "name": "SW2",
             "type": "din_bit"
         },
         {
             "debounce": true,
             "pin": "A10",
-            "name": "DIN3",
+            "name": "SW3",
+            "type": "din_bit"
+        },
+        {
+            "debounce": true,
+            "pin": "D9",
+            "name": "BTN0",
+            "type": "din_bit"
+        },
+        {
+            "debounce": true,
+            "pin": "C9",
+            "name": "BTN1",
+            "type": "din_bit"
+        },
+        {
+            "debounce": true,
+            "pin": "B9",
+            "name": "BTN2",
+            "type": "din_bit"
+        },
+        {
+            "debounce": true,
+            "pin": "B8",
+            "name": "BTN3",
             "type": "din_bit"
         },
 
-        {
-            "pin": "E1",
-            "name": "DOUT0",
-            "type": "dout_bit"
-        },
-        {
-            "pin": "F6",
-            "name": "DOUT1",
-            "type": "dout_bit"
-        },
-        {
-            "pin": "G6",
-            "name": "DOUT2",
-            "type": "dout_bit"
-        },
-        {
-            "pin": "G4",
-            "name": "DOUT3",
-            "type": "dout_bit"
-        },
+
 
         {
-            "comment": "J9.1+3+4",
-            "type": "joint_stepper",
-            "cl": false,
-            "pins": {
-                "dir": "J4",
-                "step": "G3",
-                "enable": "H4"
-            },
-            "name": "JOINT0"
+            "type": "dout_bit",
+            "name": "LD0_R",
+            "pin": "G6"
         },
         {
-            "type": "picosoc",
-            "baud": 460800,
-            "pins": {
-                "rx": "A9",
-                "tx": "D10"
-            },
-            "name": "PICOSOC"
+            "type": "dout_bit",
+            "name": "LD0_G",
+            "pin": "F6"
+        },
+        {
+            "type": "dout_bit",
+            "name": "LD0_B",
+            "pin": "E1"
+        },
+
+
+        {
+            "type": "dout_bit",
+            "name": "LD1_R",
+            "pin": "G3"
+        },
+        {
+            "type": "dout_bit",
+            "name": "LD1_G",
+            "pin": "J4"
+        },
+        {
+            "type": "dout_bit",
+            "name": "LD1_B",
+            "pin": "G4"
+        },
+
+
+        {
+            "type": "dout_bit",
+            "name": "LD2_R",
+            "pin": "J3"
+        },
+        {
+            "type": "dout_bit",
+            "name": "LD2_G",
+            "pin": "J2"
+        },
+        {
+            "type": "dout_bit",
+            "name": "LD2_B",
+            "pin": "H4"
+        },
+
+
+        {
+            "type": "dout_bit",
+            "name": "LD3_R",
+            "pin": "K1"
+        },
+        {
+            "type": "dout_bit",
+            "name": "LD3_G",
+            "pin": "H6"
+        },
+        {
+            "type": "dout_bit",
+            "name": "LD3_B",
+            "pin": "K2"
+        },
+
+
+
+        {
+            "type": "dout_bit",
+            "name": "LD4",
+            "pin": "H5"
+        },
+        {
+            "type": "dout_bit",
+            "name": "LD5",
+            "pin": "J5"
         }
+
+
     ]
 }

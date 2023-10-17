@@ -1,4 +1,5 @@
 
+import argparse
 import time
 from struct import *
 import sys
@@ -7,28 +8,46 @@ from PyQt5.QtCore import QTimer,QDateTime, Qt
 
 import projectLoader
 
-project = projectLoader.load(sys.argv[1])
 
+parser = argparse.ArgumentParser()
+parser.add_argument(
+    "json", help="json config", type=str, default=None
+)
+parser.add_argument(
+    "--baud", "-b", help="baudrate", type=int, default=2000000
+)
+parser.add_argument(
+    "--port", "-p", help="udp port", type=int, default=2390
+)
+parser.add_argument(
+    "device", help="device like: /dev/ttyUSB0 | 192.168.10.13", nargs="?", type=str, default=None
+)
+args = parser.parse_args()
+
+
+project = projectLoader.load(args.json)
+print(args.baud)
 
 SERIAL = ''
 NET_IP = ''
-if len(sys.argv) > 2 and sys.argv[2].startswith('/dev/tty'):
+if args.device and args.device.startswith('/dev/tty'):
     import serial
-    SERIAL = sys.argv[2]
-    BAUD = 2000000
+    SERIAL = args.device
+    BAUD = args.baud
     ser = serial.Serial(SERIAL, BAUD, timeout=0.001)
-elif len(sys.argv) > 2 and sys.argv[2] != '':
-    NET_IP = sys.argv[2]
-    NET_PORT = 2390
+elif args.device and args.device != '':
+    NET_IP = args.device
+    NET_PORT = args.port
     print('IP:', NET_IP)
     import socket
+    UDPClientSocket = socket.socket(family=socket.AF_INET, type=socket.SOCK_DGRAM)
 else:
     import spidev
     bus = 0
     device = 1
     spi = spidev.SpiDev()
     spi.open(bus, device)
-    spi.max_speed_hz = project['jdata']['interface'][0].get('max', 2000000)
+    spi.max_speed_hz = project['jdata']['interface'][0].get('max', args.baud)
     spi.mode = 0
     spi.lsbfirst = False
 
@@ -102,9 +121,9 @@ for num, vout in enumerate(project["voutnames"]):
     else:
         voutminmax.append((vout.get('min', 0), vout.get('max', 10), 'scale', 1))
 
-    JOINT_ENABLE_BYTES = project['joints_en_total'] // 8
-    DIGITAL_OUTPUT_BYTES = project['douts_total'] // 8
-    DIGITAL_INPUT_BYTES = project['dins_total'] // 8
+JOINT_ENABLE_BYTES = project['joints_en_total'] // 8
+DIGITAL_OUTPUT_BYTES = project['douts_total'] // 8
+DIGITAL_INPUT_BYTES = project['dins_total'] // 8
 
     
 
@@ -122,6 +141,12 @@ class WinForm(QWidget):
         self.time_trx = 0
 
         gpy = 0
+
+
+        self.widgets["connection"] = QLabel(f'CONNECTION:')
+        layout.addWidget(self.widgets["connection"], gpy, 0)
+        gpy += 1
+
 
         layout.addWidget(QLabel(f'JOINTS:'), gpy, 0)
         for jn in range(JOINTS):
@@ -267,8 +292,7 @@ class WinForm(QWidget):
         data[2] = 0x72
         data[3] = 0x77
 
-        if True:
-
+        try:
             for jn in range(JOINTS):
                 key = f"jcs{jn}"
                 joints[jn] = int(self.widgets[key].value())
@@ -372,7 +396,6 @@ class WinForm(QWidget):
             print("tx:", data)
             start = time.time()
             if NET_IP:
-                UDPClientSocket = socket.socket(family=socket.AF_INET, type=socket.SOCK_DGRAM)
                 UDPClientSocket.sendto(bytes(data), (NET_IP, NET_PORT))
                 UDPClientSocket.settimeout(0.2)
                 msgFromServer = UDPClientSocket.recvfrom(len(data))
@@ -415,9 +438,13 @@ class WinForm(QWidget):
                 #for num in range(VINS):
                 #    print(f' Var({num}): {processVariable[num]}')
                 #print(f'inputs {inputs:08b}')
+                self.widgets["connection"].setText("CONNECTED")
+                self.widgets["connection"].setStyleSheet("background-color: green")
             else:
                 print(f'ERROR: Unknown Header: 0x{header:x}')
                 self.error_counter_spi += 1
+                self.widgets["connection"].setText(f'ERROR: 0x{header:x}')
+                self.widgets["connection"].setStyleSheet("background-color: red")
 
             for jn, value in enumerate(joints):
                 key = f"jf{jn}"
@@ -458,9 +485,11 @@ class WinForm(QWidget):
                     if dbyte * 8 + dn == DINS - 1:
                         break
 
-        #except Exception as e:
-        #    print("ERROR", e)
-        #    self.error_counter_net += 1
+        except Exception as e:
+            print("ERROR", e)
+            self.error_counter_net += 1
+            self.widgets["connection"].setText(f'ERROR: {e}')
+            self.widgets["connection"].setStyleSheet("background-color: red")
 
         self.widgets["errors_spi"].setText(str(self.error_counter_spi))
         self.widgets["errors_net"].setText(str(self.error_counter_net))

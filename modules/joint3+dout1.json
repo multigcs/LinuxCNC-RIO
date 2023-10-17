@@ -1,0 +1,34 @@
+{
+    "comment": "3 Stepper + 1 Digital-Out",
+    "enable": {
+        "pin": "P9"
+    },
+    "plugins": [
+        {
+            "type": "joint_stepper",
+            "pins": {
+                "dir": "P1",
+                "step": "P2"
+            }
+        },
+        {
+            "type": "joint_stepper",
+            "pins": {
+                "dir": "P3",
+                "step": "P4"
+            }
+        },
+        {
+            "type": "joint_stepper",
+            "pins": {
+                "dir": "P7",
+                "step": "P8"
+            }
+        },
+        {
+            "type": "dout_bit",
+            "invert": true,
+            "pin": "P10"
+        }
+    ]
+}

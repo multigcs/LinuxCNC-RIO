@@ -52,9 +52,10 @@ def main(configfile, outputdir=None):
                 os.system(
                     f"cp -a {ipv_path} {project['SOURCE_PATH']}/{ipv}"
                 )
-                os.system(
-                    f"which verilator >/dev/null && cd {project['SOURCE_PATH']} && verilator --lint-only {ipv}"
-                )
+                if ipv.endswith(".v") and not ipv.startswith("PLL_"):
+                    os.system(
+                        f"which verilator >/dev/null && cd {project['SOURCE_PATH']} && verilator --lint-only {ipv}"
+                    )
 
     print(f"generating files in {project['OUTPUT_PATH']}")
 

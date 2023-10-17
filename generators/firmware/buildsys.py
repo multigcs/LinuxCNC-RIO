@@ -20,7 +20,7 @@ def buildsys_gowin(project):
     makefile_data.append(f"DEVICE={ftype}")
     makefile_data.append("")
 
-    if board == "TangNano9K":
+    if board in {"TangNano9K", "TangPrimer20K"}:
         makefile_data.append("all: rio.fs")
         makefile_data.append("")
         makefile_data.append(f"rio.json: {verilogs}")
@@ -30,14 +30,14 @@ def buildsys_gowin(project):
         makefile_data.append("")
         makefile_data.append("rio_pnr.json: rio.json pins.cst")
         makefile_data.append(
-            f"	nextpnr-gowin --seed 0 --json rio.json --write rio_pnr.json --freq {float(project['jdata']['clock']['speed']) / 1000000} --enable-globals --enable-auto-longwires --device ${{DEVICE}} --family ${{FAMILY}} --cst pins.cst"
+            f"	nextpnr-gowin --seed 0 --json rio.json --write rio_pnr.json --freq {float(project['jdata']['clock']['speed']) / 1000000} --enable-globals --enable-auto-longwires --device ${{DEVICE}} --cst pins.cst"
         )
         makefile_data.append("")
         makefile_data.append("rio.fs: rio_pnr.json")
         makefile_data.append("	gowin_pack -d ${FAMILY} -o rio.fs rio_pnr.json")
         makefile_data.append("")
         makefile_data.append("load: rio.fs")
-        makefile_data.append("	openFPGALoader -b tangnano9k rio.fs -f")
+        makefile_data.append(f"	openFPGALoader -b {board.lower()} rio.fs -f")
         makefile_data.append("")
         makefile_data.append("")
         makefile_data.append("clean:")
@@ -48,7 +48,7 @@ def buildsys_gowin(project):
         makefile_data.append("	vvp testb.out")
         makefile_data.append("	gtkwave testb.vcd")
         makefile_data.append("")
-    elif board == "TangNano20K":
+    elif board in {"TangNano20K"}:
         makefile_data.append("all: impl/pnr/project.fs")
         makefile_data.append("")
         makefile_data.append("clean:")
@@ -63,7 +63,7 @@ def buildsys_gowin(project):
     makefile_data.append("	gw_sh rio.tcl")
     makefile_data.append("")
     makefile_data.append("gowin_load: impl/pnr/project.fs")
-    makefile_data.append("	openFPGALoader -b tangnano9k impl/pnr/project.fs -f")
+    makefile_data.append(f"	openFPGALoader -b {board.lower()} impl/pnr/project.fs -f")
     makefile_data.append("")
 
     open(f"{project['FIRMWARE_PATH']}/Makefile", "w").write(
@@ -83,6 +83,8 @@ def buildsys_gowin(project):
         )
     elif family == "GW2AR-18":
         prj_data.append('    <Device name="" pn="">gw2ar18c-000</Device>')
+    elif family == "GW2A-18C":
+        prj_data.append('    <Device name="" pn="">gw2a18c-011</Device>')
     else:
         prj_data.append(
             f'    <Device name="{family_gowin}" pn="{ftype}">gw2ar-18-004</Device>'
@@ -190,11 +192,19 @@ def buildsys_gowin(project):
     # generating tcl script for the gowin toolchain
     tcl_data = []
     tcl_data.append(f"set_device -name {family_gowin} {ftype}")
+    verilog_std = "v2001"
     for verilog in verilogs.split():
+        if verilog.endswith(".sv"):
+            verilog_std = "sysv2017"
         tcl_data.append(f"add_file {verilog}")
     tcl_data.append("add_file pins.cst")
     tcl_data.append("")
-    tcl_data.append("set_option -use_sspi_as_gpio 1")
+    tcl_data.append("set_option -top_module rio")
+    tcl_data.append(f"set_option -verilog_std {project['jdata'].get('verilog_std', verilog_std)}")
+    tcl_data.append(f"set_option -vhdl_std {project['jdata'].get('vhdl_std', 'vhd2008')}")
+    set_options = project["jdata"].get("set_options", ("use_sspi_as_gpio", "use_mspi_as_gpio", "use_done_as_gpio", "use_ready_as_gpio", "use_reconfign_as_gpio", "use_i2c_as_gpio"))
+    for set_option in set_options:
+        tcl_data.append(f"set_option -{set_option} 1")
     tcl_data.append("")
     tcl_data.append("run all")
     open(f"{project['FIRMWARE_PATH']}/rio.tcl", "w").write("\n".join(tcl_data))

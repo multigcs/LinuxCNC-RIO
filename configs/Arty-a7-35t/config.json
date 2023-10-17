@@ -216,9 +216,6 @@
             "name": "LD3_B",
             "pin": "K2"
         },
-
-
-
         {
             "type": "dout_bit",
             "name": "LD4",
@@ -228,8 +225,16 @@
             "type": "dout_bit",
             "name": "LD5",
             "pin": "J5"
+        },
+        {
+            "type": "picosoc",
+            "baud": 460800,
+            "pins": {
+                "rx": "A9",
+                "tx": "D10"
+            },
+            "name": "PICOSOC"
         }
-
 
     ]
 }

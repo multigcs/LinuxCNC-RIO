@@ -684,8 +684,8 @@ def generate_rio_ini(project):
                         MAX_LIMIT = 360
                     else:
                         SCALE = 400.0
-                        MIN_LIMIT = -1300
-                        MAX_LIMIT = 1300
+                        MIN_LIMIT = -360
+                        MAX_LIMIT = 360
 
                 MIN_LIMIT = joint.get("min_limit", MIN_LIMIT)
                 MAX_LIMIT = joint.get("max_limit", MAX_LIMIT)
@@ -721,8 +721,8 @@ def generate_rio_ini(project):
                 MAX_LIMIT = 360
             else:
                 SCALE = 400.0
-                MIN_LIMIT = -1300
-                MAX_LIMIT = 1300
+                MIN_LIMIT = -360
+                MAX_LIMIT = 360
 
         AXIS_NAME = joint.get("axis", axis_names[num])
         OUTPUT_SCALE = float(joint.get("scale", SCALE))

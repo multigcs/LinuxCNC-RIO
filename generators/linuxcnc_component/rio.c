@@ -62,6 +62,72 @@ MODULE_LICENSE("GPL v2");
 char *ctrl_type[JOINTS] = { "p" };
 RTAPI_MP_ARRAY_STRING(ctrl_type, JOINTS, "control type (pos or vel)");
 
+
+
+// modbus stuff
+
+#define	FUNCTION_READ			0x01
+#define	FUNCTION_WRITE			0x02
+#define	WRITE_CONTROL_DATA		0x03
+#define	READ_CONTROL_STATUS		0x04
+#define	WRITE_FREQ_DATA			0x05
+#define	LOOP_TEST				0x08
+#define	FUNCTION_PD005  		5
+#define	FUNCTION_PD011  		11
+#define	FUNCTION_PD144  		144
+#define CONTROL_Run_Fwd		0x01
+#define CONTROL_Run_Rev		0x11
+#define CONTROL_Stop		0x08
+#define CONTROL_Run			0x01
+#define CONTROL_Jog			0x02
+#define CONTROL_Command_rf	0x04
+#define CONTROL_Running		0x08
+#define CONTROL_Jogging		0x10
+#define CONTROL_Running_rf	0x20
+#define CONTROL_Bracking	0x40
+#define CONTROL_Track_Start	0x80
+
+uint8_t spindle_start_fwd[] = { 0x01, WRITE_CONTROL_DATA, 0x01, CONTROL_Run_Fwd };
+uint8_t spindle_start_rev[] = { 0x01, WRITE_CONTROL_DATA, 0x01, CONTROL_Run_Rev };
+uint8_t spindle_stop[] =  { 0x01, WRITE_CONTROL_DATA, 0x01, CONTROL_Stop };
+uint8_t spindle_speed[] = { 0x01, WRITE_FREQ_DATA, 0x02, 0x0, 0x0 };
+uint8_t spindle_PD005[] = { 0x01, FUNCTION_READ, 0x03, 5, 0x00, 0x00 };
+uint8_t spindle_PD011[] = { 0x01, FUNCTION_READ, 0x03, 11, 0x00, 0x00 };
+uint8_t spindle_PD144[] = { 0x01, FUNCTION_READ, 0x03, 144, 0x00, 0x00 };
+uint8_t spindle_status_frq_set[] = { 0x01, READ_CONTROL_STATUS, 0x03, 0x00, 0x00, 0x00 };
+uint8_t spindle_status_frq_get[] = { 0x01, READ_CONTROL_STATUS, 0x03, 0x01, 0x00, 0x00 };
+uint8_t spindle_status_ampere[] = { 0x01, READ_CONTROL_STATUS, 0x03, 0x02, 0x00, 0x00 };
+uint8_t spindle_status_rpm[] = { 0x01, READ_CONTROL_STATUS, 0x03, 0x03, 0x00, 0x00 };
+uint8_t spindle_status_dc_volt[] = { 0x01, READ_CONTROL_STATUS, 0x03, 0x04, 0x00, 0x00 };
+uint8_t spindle_status_ac_volt[] = { 0x01, READ_CONTROL_STATUS, 0x03, 0x05, 0x00, 0x00 };
+uint8_t spindle_status_condition[] = { 0x01, READ_CONTROL_STATUS, 0x03, 0x06, 0x00, 0x00 };
+uint8_t spindle_status_temp[] = { 0x01, READ_CONTROL_STATUS, 0x03, 0x07, 0x00, 0x00 };
+uint16_t maxFrequency = 0;
+uint16_t minFrequency = 0;
+uint16_t maxRpmAt50Hz = 0;
+uint16_t min_rpm = 0;
+uint16_t max_rpm = 0;
+uint16_t rpm = 6000;
+uint16_t frq_set = 0;
+uint16_t frq_get = 0;
+uint16_t ampere = 0;
+uint16_t srpm = 0;
+uint16_t dc_volt = 0;
+uint16_t ac_volt = 0;
+uint16_t condition = 0;
+uint16_t temp = 0;
+uint8_t waitflag = 0;
+int32_t new_speed = 0;
+int32_t last_speed = 0;
+uint16_t stat_counter = 0;
+int32_t set_speed = 0;
+
+uint16_t modbus_stat_n = 0;
+uint32_t pkg_counter = 0;
+
+
+
+
 /***********************************************************************
 *                STRUCTURES AND GLOBAL VARIABLES                       *
 ************************************************************************/
@@ -166,6 +232,24 @@ static void update_freq(void *arg, long period);
 static void rio_readwrite();
 static void rio_transfer();
 static CONTROL parse_ctrl_type(const char *ctrl);
+
+/***********************************************************************
+*                       HELPER FUNCTIONS                               *
+************************************************************************/
+
+uint16_t crc16_update(uint16_t crc, uint8_t a) {
+	int i;
+
+	crc ^= (uint16_t)a;
+	for (i = 0; i < 8; ++i) {
+		if (crc & 1)
+			crc = (crc >> 1) ^ 0xA001;
+		else
+			crc = (crc >> 1);
+	}
+
+	return crc;
+}
 
 /***********************************************************************
 *                       INIT AND EXIT CODE                             *
@@ -859,6 +943,108 @@ void update_freq(void *arg, long period)
 }
 
 
+
+
+void modbus_rec_msg(uint8_t *rec) {
+
+    /*
+    uint8_t i = 0;
+    for(i = 0; i < 9; i++) {
+        printf("#### REC: 0x%X  %i\n", rec[i], rec[i]);
+    }
+    printf("###################\n");
+    */
+
+    if (rec[2] == READ_CONTROL_STATUS && rec[3] == 0x03) {
+        uint16_t value = (rec[5] << 8) | rec[6];
+        if (rec[4] == 0x00) {
+            frq_set = value;
+        } else if (rec[4] == 0x01) {
+            frq_get = value;
+        } else if (rec[4] == 0x02) {
+            ampere = value;
+        } else if (rec[4] == 0x03) {
+            srpm = value;
+        } else if (rec[4] == 0x04) {
+            dc_volt = value;
+        } else if (rec[4] == 0x05) {
+            ac_volt = value;
+        } else if (rec[4] == 0x06) {
+            condition = value;
+        } else if (rec[4] == 0x07) {
+            temp = value;
+        }
+
+    } else if (rec[2] == FUNCTION_READ && rec[3] == 0x03) {
+        uint16_t value = (rec[5] << 8) | rec[6];
+        if (rec[4] == FUNCTION_PD005) {
+            maxFrequency = value;
+        } else if (rec[4] == FUNCTION_PD011) {
+            minFrequency = value;
+        } else if (rec[4] == FUNCTION_PD144) {
+            maxRpmAt50Hz = value;
+        }
+
+        if (minFrequency > maxFrequency) {
+            minFrequency = maxFrequency;
+        }
+        min_rpm = minFrequency * maxRpmAt50Hz / 5000;
+        max_rpm = maxFrequency * maxRpmAt50Hz / 5000;
+    }
+
+
+
+
+}
+
+void modbus_send_msg(uint8_t *data, uint8_t dlen) {
+
+    uint8_t i = 0;
+    uint16_t crc = 0xFFFF;
+
+    txData.MODBUS_OUT[0] = dlen + 2;
+    for(i = 0; i < dlen; i++) {
+        txData.MODBUS_OUT[i + 1] = data[i];
+        crc = crc16_update(crc, data[i]);
+    }
+    txData.MODBUS_OUT[dlen + 1] = crc & 0xFF;
+    txData.MODBUS_OUT[dlen + 2] = crc>>8 & 0xFF;
+
+    for(i = 0; i < txData.MODBUS_OUT[0]; i++) {
+        printf("#### 0x%X  %i\n", txData.MODBUS_OUT[i+1], txData.MODBUS_OUT[i+1]);
+    }
+    printf("###################\n");
+
+    printf("## frq_set = %i\n", frq_set);
+    printf("## frq_get = %i\n", frq_get);
+    printf("## ampere = %i\n", ampere);
+    printf("## srpm = %i\n", srpm);
+    printf("## dc_volt = %i\n", dc_volt);
+    printf("## ac_volt = %i\n", ac_volt);
+    printf("## condition = %i\n", condition);
+    printf("## temp = %i\n", temp);
+    printf("## maxFrequency = %i\n", maxFrequency);
+    printf("## minFrequency = %i\n", minFrequency);
+    printf("## maxRpmAt50Hz = %i\n", maxRpmAt50Hz);
+
+
+    printf("#### TRANS: ");
+    for(i = 0; i < 9; i++) {
+        printf("%i ", txData.MODBUS_OUT[i], txData.MODBUS_OUT[i]);
+    }
+    printf("\n");
+    printf("###################\n");
+
+    printf("#### REC: ");
+    for(i = 0; i < 9; i++) {
+        printf("%i ", rxData.MODBUS_IN[i], rxData.MODBUS_IN[i]);
+    }
+    printf("\n");
+    printf("###################\n");
+
+}
+
+
 void rio_readwrite()
 {
     int i = 0;
@@ -932,6 +1118,44 @@ void rio_readwrite()
                     txData.setPoint[i] = value;
                 }
             }
+
+            // modbus
+
+            for(i = 0; i < 9; i++) {
+                txData.MODBUS_OUT[i] = 0;
+            }
+
+            if (pkg_counter == 100) {
+                pkg_counter = 0;
+                if (modbus_stat_n == 1) {
+                    modbus_send_msg(spindle_PD005, sizeof(spindle_PD005));
+                } else if (modbus_stat_n == 2) {
+                    modbus_send_msg(spindle_PD011, sizeof(spindle_PD011));
+                } else if (modbus_stat_n == 3) {
+                    modbus_send_msg(spindle_PD144, sizeof(spindle_PD144));
+                } else if (modbus_stat_n == 4) {
+                    modbus_send_msg(spindle_status_ampere, sizeof(spindle_status_ampere));
+                } else if (modbus_stat_n == 5) {
+                    modbus_send_msg(spindle_status_rpm, sizeof(spindle_status_rpm));
+                } else if (modbus_stat_n == 6) {
+                    modbus_send_msg(spindle_status_frq_set, sizeof(spindle_status_frq_set));
+                } else if (modbus_stat_n == 7) {
+                    modbus_send_msg(spindle_status_frq_get, sizeof(spindle_status_frq_get));
+                } else if (modbus_stat_n == 8) {
+                    modbus_send_msg(spindle_status_ac_volt, sizeof(spindle_status_ac_volt));
+                } else if (modbus_stat_n == 9) {
+                    modbus_send_msg(spindle_status_dc_volt, sizeof(spindle_status_dc_volt));
+                } else if (modbus_stat_n == 10) {
+                    modbus_send_msg(spindle_status_condition, sizeof(spindle_status_condition));
+                } else if (modbus_stat_n == 11) {
+                    modbus_send_msg(spindle_status_temp, sizeof(spindle_status_temp));
+                } else {
+                    modbus_stat_n = 0;
+                }
+                modbus_stat_n++;
+            }
+            pkg_counter++;
+
 
             // Outputs
             int byte_out = 0;
@@ -1050,6 +1274,9 @@ void rio_readwrite()
                         *(data->processVariableS32[i]) = (int)value;
                     }
                 }
+
+
+                modbus_rec_msg(rxData.MODBUS_IN);
 
                 // Inputs
                 int index_num = 0;

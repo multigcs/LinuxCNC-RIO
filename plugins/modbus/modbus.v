@@ -50,6 +50,8 @@ module modbus
 
     end
 
+    reg [71:0] data_out_tmp;
+
     reg TxD_start = 0;
     wire TxD_busy;
     reg [7:0] TxD_data = 0;
@@ -57,15 +59,15 @@ module modbus
     wire [3:0] TxD_len;
     wire [7:0] TxD_package [7:0];
     assign tx_en = TxD_busy;
-    assign TxD_len = data_out[3:0];
-    assign TxD_package[0] = data_out[15:8];
-    assign TxD_package[1] = data_out[23:16];
-    assign TxD_package[2] = data_out[31:24];
-    assign TxD_package[3] = data_out[39:32];
-    assign TxD_package[4] = data_out[47:40];
-    assign TxD_package[5] = data_out[55:48];
-    assign TxD_package[6] = data_out[63:56];
-    assign TxD_package[7] = data_out[71:64];
+    assign TxD_len = data_out_tmp[3:0];
+    assign TxD_package[0] = data_out_tmp[15:8];
+    assign TxD_package[1] = data_out_tmp[23:16];
+    assign TxD_package[2] = data_out_tmp[31:24];
+    assign TxD_package[3] = data_out_tmp[39:32];
+    assign TxD_package[4] = data_out_tmp[47:40];
+    assign TxD_package[5] = data_out_tmp[55:48];
+    assign TxD_package[6] = data_out_tmp[63:56];
+    assign TxD_package[7] = data_out_tmp[71:64];
 
     uart_tx #(ClkFrequency, Baud) tx1 (
         .clk (clk),
@@ -76,6 +78,9 @@ module modbus
     );
 
     always @(posedge clk) begin
+        if ( data_out[3:0] > 0) begin
+            data_out_tmp <= data_out;
+        end
         if (TxD_busy == 0) begin
             if (TxD_start == 0) begin
                 if (TxD_counter < TxD_len) begin
@@ -84,6 +89,7 @@ module modbus
                     TxD_counter <= TxD_counter + 1;
                 end else if (TxD_len != 0) begin
                     // wait
+                    data_out_tmp[3:0] <= 0;
                 end else begin
                     // next package
                     TxD_counter <= 0;

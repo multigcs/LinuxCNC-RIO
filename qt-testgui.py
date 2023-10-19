@@ -263,8 +263,12 @@ class modbus_vfd():
             data[0] = len(cmd) + 2
             for n in range(len(cmd)):
                 data[n+1] = cmd[n]
+                print("### ", data[n+1])
             data[n+2] = crcH
+            print("### ", data[n+2])
             data[n+3] = crcL
+            print("### ", data[n+3])
+
         else:
             self.modbus_counter += 1
         return data

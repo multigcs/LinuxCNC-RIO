@@ -4,6 +4,8 @@
     "toolchain": "icestorm",
     "family": "ice40",
     "type": "up5k",
+    "transport": "UDP",
+    "ip": "192.168.10.13",
     "package": "sg48",
     "flashcmd": "openFPGALoader -b ice40_generic rio.bin -f",
     "clock": {

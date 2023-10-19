@@ -57,6 +57,26 @@ class Plugin:
                 pinlist_out.append(
                     (f"PICOSOC{num}_TX", data["pins"]["tx"], "OUTPUT", pullup)
                 )
+                pinlist_out.append(
+                    (f"PICOSOC{num}_FLASH_CLK", data["pins"]["flash_clk"], "OUTPUT", pullup)
+                )
+                pinlist_out.append(
+                    (f"PICOSOC{num}_FLASH_CSB", data["pins"]["flash_csb"], "OUTPUT", pullup)
+                )
+                pinlist_out.append(
+                    (f"PICOSOC{num}_FLASH_IO0", data["pins"]["flash_io0"], "INOUT", pullup)
+                )
+                pinlist_out.append(
+                    (f"PICOSOC{num}_FLASH_IO1", data["pins"]["flash_io1"], "INOUT", pullup)
+                )
+                pinlist_out.append(
+                    (f"PICOSOC{num}_FLASH_IO2", data["pins"]["flash_io2"], "INOUT", pullup)
+                )
+                pinlist_out.append(
+                    (f"PICOSOC{num}_FLASH_IO3", data["pins"]["flash_io3"], "INOUT", pullup)
+                )
+
+
         return pinlist_out
 
     def boutnames(self):
@@ -94,17 +114,22 @@ class Plugin:
 
                 baud = data.get("baud", 9600)
 
-                func_out.append(f"    picosoc picosoc{num} (")
+                func_out.append(f"    picosoc_up5k picosoc{num} (")
                 func_out.append("        .clk (sysclk),")
-                func_out.append(f"        .rx (PICOSOC{num}_RX),")
-                func_out.append(f"        .tx (PICOSOC{num}_TX)")
-                #func_out.append(f"        .data_in ({nameIntern_in}),")
-                #func_out.append(f"        .data_out ({nameIntern_out})")
+                func_out.append(f"        .ser_rx (PICOSOC{num}_RX),")
+                func_out.append(f"        .ser_tx (PICOSOC{num}_TX),")
+                func_out.append(f"        .flash_clk (PICOSOC{num}_FLASH_CLK),")
+                func_out.append(f"        .flash_csb (PICOSOC{num}_FLASH_CSB),")
+                func_out.append(f"        .flash_io0 (PICOSOC{num}_FLASH_IO0),")
+                func_out.append(f"        .flash_io1 (PICOSOC{num}_FLASH_IO1),")
+                func_out.append(f"        .flash_io2 (PICOSOC{num}_FLASH_IO2),")
+                func_out.append(f"        .flash_io3 (PICOSOC{num}_FLASH_IO3)")
+
                 func_out.append("    );")
         return func_out
 
     def ips(self):
         for num, data in enumerate(self.jdata["plugins"]):
             if data["type"] == self.ptype:
-                return ["picosoc_noflash.v", "picorv32.v", "simpleuart.v", "progmem.v", "picosoc.v"]
+                return ["icebreaker.v", "ice40up5k_spram.v", "spimemio.v", "simpleuart.v", "picosoc.v", "picorv32.v"]
         return []

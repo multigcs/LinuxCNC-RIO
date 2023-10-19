@@ -55,18 +55,6 @@
             "type": "din_bit"
         },
         {
-            "type": "vin_frequency",
-            "pin": "10",
-            "name": "VIN0"
-        },
-        {
-            "type": "vout_pwm",
-            "pins": {
-                "pwm": "4"
-            },
-            "name": "VOUT0"
-        },
-        {
             "type": "joint_stepper",
             "cl": false,
             "pins": {
@@ -76,47 +64,17 @@
             "name": "JOINT0"
         },
         {
-            "type": "joint_stepper",
-            "cl": false,
-            "pins": {
-                "step": "45",
-                "dir": "28"
-            },
-            "name": "JOINT1"
-        },
-        {
-            "type": "joint_stepper",
-            "cl": false,
-            "pins": {
-                "step": "32",
-                "dir": "36"
-            },
-            "name": "JOINT2"
-        },
-        {
-            "type": "joint_stepper",
-            "cl": false,
-            "pins": {
-                "step": "42",
-                "dir": "43"
-            },
-            "name": "JOINT3"
-        },
-        {
-            "type": "joint_stepper",
-            "cl": false,
-            "pins": {
-                "step": "46",
-                "dir": "44"
-            },
-            "name": "JOINT4"
-        },
-        {
             "type": "picosoc",
             "baud": 460800,
             "pins": {
                 "rx": "18",
-                "tx": "20"
+                "tx": "20",
+                "flash_clk": "15",
+                "flash_csb": "16",
+                "flash_io0": "14",
+                "flash_io1": "17",
+                "flash_io2": "12",
+                "flash_io3": "13"
             },
             "name": "PICOSOC"
         }

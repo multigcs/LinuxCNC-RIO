@@ -1,0 +1,53 @@
+{
+    "comment": "8 Digital-In",
+    "plugins": [
+        {
+            "type": "din_bit",
+            "invert": true,
+            "pullup": true,
+            "pin": "B1"
+        },
+        {
+            "type": "din_bit",
+            "invert": true,
+            "pullup": true,
+            "pin": "A1"
+        },
+        {
+            "type": "din_bit",
+            "invert": true,
+            "pullup": true,
+            "pin": "B2"
+        },
+        {
+            "type": "din_bit",
+            "invert": true,
+            "pullup": true,
+            "pin": "A2"
+        },
+        {
+            "type": "din_bit",
+            "invert": true,
+            "pullup": true,
+            "pin": "B3"
+        },
+        {
+            "type": "din_bit",
+            "invert": true,
+            "pullup": true,
+            "pin": "A3"
+        },
+        {
+            "type": "din_bit",
+            "invert": true,
+            "pullup": true,
+            "pin": "B4"
+        },
+        {
+            "type": "din_bit",
+            "invert": true,
+            "pullup": true,
+            "pin": "A4"
+        }
+    ]
+}

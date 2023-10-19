@@ -149,7 +149,10 @@ def verilog_top(project):
             top_data.append(f"    assign ENA = ~ENA_INV;")
             top_data.append(f"    assign ENA_INV = ({jointEnablesStr}) && ~ERROR;")
         else:
-            top_data.append(f"    assign ENA = ({jointEnablesStr}) && ~ERROR;")
+            if jointEnablesStr:
+                top_data.append(f"    assign ENA = ({jointEnablesStr}) && ~ERROR;")
+            else:
+                top_data.append(f"    assign ENA = ~ERROR;")
         top_data.append("")
 
     if project["voutnames"]:
@@ -356,7 +359,7 @@ def generate(project):
     # build files (makefiles/scripts/projects)
     board = project["jdata"].get("board")
 
-    if board == "TangNano9K" or board == "TangNano20K":
+    if board in {"TangNano9K", "TangNano20K", "TangPrimer20K"}:
         buildsys_gowin(project)
 
     elif project["jdata"].get("toolchain") == "icestorm":

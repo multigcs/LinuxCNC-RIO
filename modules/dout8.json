@@ -1,0 +1,45 @@
+{
+    "comment": "8 Digital-Out",
+    "plugins": [
+        {
+            "type": "dout_bit",
+            "invert": true,
+            "pin": "B1"
+        },
+        {
+            "type": "dout_bit",
+            "invert": true,
+            "pin": "A1"
+        },
+        {
+            "type": "dout_bit",
+            "invert": true,
+            "pin": "B2"
+        },
+        {
+            "type": "dout_bit",
+            "invert": true,
+            "pin": "A2"
+        },
+        {
+            "type": "dout_bit",
+            "invert": true,
+            "pin": "B3"
+        },
+        {
+            "type": "dout_bit",
+            "invert": true,
+            "pin": "A3"
+        },
+        {
+            "type": "dout_bit",
+            "invert": true,
+            "pin": "B4"
+        },
+        {
+            "type": "dout_bit",
+            "invert": true,
+            "pin": "A4"
+        }
+    ]
+}

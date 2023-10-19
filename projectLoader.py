@@ -1,3 +1,4 @@
+import copy
 import glob
 import importlib
 import json
@@ -32,9 +33,55 @@ def load(configfile):
         print("")
         exit(1)
 
-    if "plugins" not in project["jdata"]:
+    if "plugins" not in project["jdata"] and "slots" not in project["jdata"]:
         print("ERROR: old json config format, please run 'python3 convert-configs.py'")
         sys.exit(1)
+
+
+    # loading modules
+    project["modules"] = {}
+    for path in glob.glob("modules/*.json"):
+        module = path.split("/")[1].split(".")[0]
+        mdata = open(path, "r").read()
+        project["modules"][module] = json.loads(mdata)
+
+    for ftype in ("interface", "expansion", "joints", "plugins"):
+        if ftype not in project["jdata"]:
+            project["jdata"][ftype] = []
+
+    # import module data
+    for slot in project["jdata"].get("slots", []):
+        module = slot.get("module")
+        spins = slot["pins"]
+        if module:
+            if module in project["modules"]:
+                ssetup = slot.get("setup")
+                module_data = copy.deepcopy(project["modules"][module])
+                if "enable" in module_data:
+                    project["jdata"]["enable"] = module_data["enable"]
+                    project["jdata"]["enable"]["pin"] = slot["pins"][module_data["enable"]["pin"]]
+                for ftype in ("interface", "expansion", "joints", "plugins"):
+                    if ftype in module_data:
+                        for jn, msetup in enumerate(module_data.get(ftype, [])):
+                            # overwrite with setup data
+                            if ssetup:
+                                ssetup_data = ssetup.get(ftype, [])
+
+                                if len(ssetup_data) > jn:
+                                    msetup.update(ssetup_data[jn])
+                            # rewrite pins
+                            if "pin" in msetup:
+                                realpin = spins[msetup["pin"]]
+                                msetup["pin"] = realpin
+                            for pname, pin in msetup.get("pins", {}).items():
+                                realpin = spins[pin]
+                                msetup["pins"][pname] = realpin
+                            module_data[ftype][jn] = msetup
+                        # merge into jdata
+                        project["jdata"][ftype] += module_data[ftype]
+            else:
+                print(f"ERROR: module {module} not found")
+                exit(1)
 
     # loading plugins
     project["plugins"] = {}

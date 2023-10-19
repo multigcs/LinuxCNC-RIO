@@ -1,0 +1,34 @@
+{
+    "comment": "3 Stepper + 1 Digital-Out",
+    "plugins": [
+        {
+            "type": "vin_quadencoder",
+            "invert": true,
+            "pullup": true,
+            "pins": {
+                "a": "A1",
+                "b": "B1"
+            }
+        },
+        {
+            "type": "vin_quadencoderz",
+            "invert": true,
+            "pullup": true,
+            "pins": {
+                "a": "A2",
+                "b": "B2",
+                "z": "A3"
+            }
+        },
+        {
+            "type": "vin_quadencoderz",
+            "invert": true,
+            "pullup": true,
+            "pins": {
+                "a": "B3",
+                "b": "A4",
+                "z": "B4"
+            }
+        }
+    ]
+}

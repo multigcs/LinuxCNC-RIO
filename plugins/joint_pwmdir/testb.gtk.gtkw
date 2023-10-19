@@ -1,0 +1,23 @@
+[*]
+[*] GTKWave Analyzer v3.3.104 (w)1999-2020 BSI
+[*] Fri Sep 22 17:07:19 2023
+[*]
+[dumpfile] "/data2/src/ICE40-2023/serial-tx/LinuxCNC-RIO/plugins/joint_pwmdir/testb.vcd"
+[dumpfile_mtime] "Fri Sep 22 17:06:26 2023"
+[dumpfile_size] 38444905
+[savefile] "/data2/src/ICE40-2023/serial-tx/LinuxCNC-RIO/plugins/joint_pwmdir/testb.gtk.gtkw"
+[timestart] 0
+[size] 2040 774
+[pos] -1041 -175
+*-29.553471 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1
+[sst_width] 260
+[signals_width] 210
+[sst_expanded] 1
+[sst_vpaned_height] 212
+@28
+testb.PWM
+testb.clk
+@23
+testb.jointFreqCmd[31:0]
+[pattern_trace] 1
+[pattern_trace] 0

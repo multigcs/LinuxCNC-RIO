@@ -9,6 +9,12 @@ def generate(project):
     rio_data.append("#ifndef RIO_H")
     rio_data.append("#define RIO_H")
     rio_data.append("")
+
+    for component_file in project["component_files"]:
+        if component_file.endswith(".h"):
+            rio_data.append(f"#include \"{component_file}\"")
+
+    rio_data.append("")
     transport = project['jdata'].get('transport', 'SPI')
     if transport == 'UDP':
         rio_data.append("#define TRANSPORT_UDP")
@@ -247,6 +253,36 @@ def generate(project):
             rio_data.append(f"    DTYPE_IO,")
     rio_data.append("};")
     rio_data.append("")
+
+    bout_inits = []
+    for num, bout in enumerate(project["boutnames"]):
+        btype = bout["type"]
+        for callback in bout["inits"]:
+            bout_inits.append(f"    {callback}")
+    if bout_inits:
+        rio_data.append("#define BOUT_INITS \\")
+        rio_data.append(" \\\n".join(bout_inits))
+        rio_data.append("")
+
+    bout_callbacks = []
+    for num, bout in enumerate(project["boutnames"]):
+        btype = bout["type"]
+        for callback in bout["callbacks"]:
+            bout_callbacks.append(f"    {callback}")
+    if bout_callbacks:
+        rio_data.append("#define BOUT_CALLBACKS \\")
+        rio_data.append(" \\\n".join(bout_callbacks))
+        rio_data.append("")
+
+    bin_callbacks = []
+    for num, binname in enumerate(project["binnames"]):
+        btype = binname["type"]
+        for callback in binname["callbacks"]:
+            bin_callbacks.append(f"    {callback}")
+    if bin_callbacks:
+        rio_data.append("#define BIN_CALLBACKS \\")
+        rio_data.append(" \\\n".join(bin_callbacks))
+        rio_data.append("")
 
 
     open(f"{project['LINUXCNC_PATH']}/Components/rio.h", "w").write("\n".join(rio_data))

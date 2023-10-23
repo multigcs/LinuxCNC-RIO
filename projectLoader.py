@@ -100,6 +100,7 @@ def load(configfile):
             )
 
     project["verilog_files"] = []
+    project["component_files"] = []
     project["pinlists"] = {}
     project["expansions"] = {}
     project["internal_clock"] = None

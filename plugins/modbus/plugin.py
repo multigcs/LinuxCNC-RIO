@@ -75,6 +75,18 @@ class Plugin:
                 data["size"] = 72
                 data["_name"] = name
                 data["_prefix"] = nameIntern
+                data["inits"] = []
+                data["callbacks"] = []
+                for pnum, protocol in enumerate(data.get("protocols")):
+                    ptype = protocol["type"]
+                    addr = protocol["addr"]
+                    spindle = protocol["spindle"]
+                    init = f"{self.ptype}_{ptype}_init(comp_id, prefix);"
+                    callback = f"{self.ptype}_{ptype}_send_msg(txData.{data['_prefix']});"
+                    if init not in data["inits"]:
+                        data["inits"].append(init)
+                    if callback not in data["callbacks"]:
+                        data["callbacks"].append(callback)
                 ret.append(data.copy())
         return ret
 
@@ -87,7 +99,18 @@ class Plugin:
                 data["size"] = 72
                 data["_name"] = name
                 data["_prefix"] = nameIntern
+                data["callbacks"] = []
+
+                for pnum, protocol in enumerate(data.get("protocols")):
+                    ptype = protocol["type"]
+                    addr = protocol["addr"]
+                    spindle = protocol["spindle"]
+                    callback = f"{self.ptype}_{ptype}_rec_msg(rxData.{data['_prefix']});"
+                    if callback not in data["callbacks"]:
+                        data["callbacks"].append(callback)
+
                 ret.append(data.copy())
+
         return ret
 
     def funcs(self):
@@ -115,4 +138,18 @@ class Plugin:
         for num, data in enumerate(self.jdata["plugins"]):
             if data["type"] == self.ptype:
                 return ["uart_baud.v", "uart_rx.v", "uart_tx.v", "modbus.v"]
+        return []
+
+    def components(self):
+        for num, data in enumerate(self.jdata["plugins"]):
+            if data["type"] == self.ptype:
+                cfiles = []
+                for pnum, protocol in enumerate(data.get("protocols")):
+                    source = f"{protocol['type']}.h"
+                    header = f"{protocol['type']}.c"
+                    if source not in cfiles:
+                        cfiles.append(source)
+                    if header not in cfiles:
+                        cfiles.append(header)
+                return cfiles
         return []

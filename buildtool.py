@@ -57,6 +57,16 @@ def main(configfile, outputdir=None):
                         f"which verilator >/dev/null && cd {project['SOURCE_PATH']} && verilator --lint-only {ipv}"
                     )
 
+        if hasattr(project["plugins"][plugin], "components"):
+            for component in project["plugins"][plugin].components():
+                project["component_files"].append(component)
+                component_path = f"plugins/{plugin}/{component}"
+                if not os.path.isfile(component_path):
+                    component_path = f"generators/firmware/{component}"
+                os.system(
+                    f"cp -a {component_path} {project['LINUXCNC_PATH']}/Components/{component}"
+                )
+
     print(f"generating files in {project['OUTPUT_PATH']}")
 
     for generator in project["generators"].values():

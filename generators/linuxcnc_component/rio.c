@@ -86,7 +86,6 @@ RTAPI_MP_ARRAY_STRING(ctrl_type, JOINTS, "control type (pos or vel)");
 #define CONTROL_Running_rf	0x20
 #define CONTROL_Bracking	0x40
 #define CONTROL_Track_Start	0x80
-
 uint8_t spindle_start_fwd[] = { 0x01, WRITE_CONTROL_DATA, 0x01, CONTROL_Run_Fwd };
 uint8_t spindle_start_rev[] = { 0x01, WRITE_CONTROL_DATA, 0x01, CONTROL_Run_Rev };
 uint8_t spindle_stop[] =  { 0x01, WRITE_CONTROL_DATA, 0x01, CONTROL_Stop };
@@ -102,6 +101,45 @@ uint8_t spindle_status_dc_volt[] = { 0x01, READ_CONTROL_STATUS, 0x03, 0x04, 0x00
 uint8_t spindle_status_ac_volt[] = { 0x01, READ_CONTROL_STATUS, 0x03, 0x05, 0x00, 0x00 };
 uint8_t spindle_status_condition[] = { 0x01, READ_CONTROL_STATUS, 0x03, 0x06, 0x00, 0x00 };
 uint8_t spindle_status_temp[] = { 0x01, READ_CONTROL_STATUS, 0x03, 0x07, 0x00, 0x00 };
+
+/*
+<name>.SetF (float, out)
+<name>.OutF (float, out)
+<name>.OutA (float, out)
+<name>.Rott (float, out)
+<name>.DCV (float, out)
+<name>.ACV (float, out)
+<name>.Cont (float, out)
+<name>.Tmp (float, out)
+<name>.CNTR (float, out)
+<name>.CNST (float, out)
+<name>.CNST-run (bit, out)
+<name>.CNST-jog (bit, out)
+<name>.CNST-command-rf (bit, out)
+<name>.CNST-running (bit, out)
+<name>.CNST-jogging (bit, out)
+<name>.CNST-running-rf (bit, out)
+<name>.CNST-bracking (bit, out)
+<name>.CNST-track-start (bit, out)
+<name>.spindle-at-speed (bit, out) True when the current spindle speed is within .spindle-at-speed-tolerance of the commanded speed.
+<name>.frequency-command (float, out)
+<name>.max-freq (float, out)
+<name>.base-freq (float, out)
+<name>.freq-lower-limit (float, out)
+<name>.rated-motor-voltage (float, out)
+<name>.rated-motor-current (float, out)
+<name>.rated-motor-rev (float, out)
+<name>.motor-poles (u32, out)
+<name>.hycomm-ok (bit, out)
+<name>.spindle-speed-fb  (float, out) Current spindle speed as reported by Huanyang VFD.
+------------------------
+<name>.enable (bit, in) Enable communication from the hy_vfd driver to the VFD.
+<name>.spindle-forward (bit, in)
+<name>.spindle-reverse (bin, in)
+<name>.spindle-on  (bin, in)
+<name>.speed-command (float, in)
+<name>.spindle-at-speed-tolerance  (float, in) Spindle speed error tolerance. If the actual spindle speed is within .spindle-at-speed-tolerance of the commanded speed, then the .spindle-at-speed pin will go True. The default .spindle-at-speed-tolerance is 0.02, which means the actual speed must be within 2% of the commanded spindle speed.
+*/
 uint16_t maxFrequency = 0;
 uint16_t minFrequency = 0;
 uint16_t maxRpmAt50Hz = 0;

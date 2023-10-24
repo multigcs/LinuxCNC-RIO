@@ -57,6 +57,7 @@ class Plugin:
         ret = []
         for num, data in enumerate(self.jdata["plugins"]):
             if data.get("type") == self.ptype:
+                data['pid'] = f"{self.ptype}_{num}"
                 name = data.get("name", f"PV.{num}")
                 nameIntern = name.replace(".", "").replace("-", "_").upper()
 

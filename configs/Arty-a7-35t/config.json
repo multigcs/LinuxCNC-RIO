@@ -230,6 +230,15 @@
             "type": "dout_bit",
             "name": "LD5",
             "pin": "J5"
+        },
+
+        {
+            "type": "vin_ads1115",
+            "sensors": ["NTC", "NTC", "NTC", "NTC"],
+            "pins": {
+                "sda": "D1",
+                "scl": "D2"
+            }
         }
 
 

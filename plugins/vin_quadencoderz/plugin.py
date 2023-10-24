@@ -73,6 +73,7 @@ class Plugin:
         ret = []
         for num, data in enumerate(self.jdata["plugins"]):
             if data.get("type") == self.ptype:
+                data['pid'] = f"{self.ptype}_{num}"
                 name = data.get("name", f"PV.{num}")
                 nameIntern = name.replace(".", "").replace("-", "_").upper()
                 data["_name"] = name
@@ -84,6 +85,7 @@ class Plugin:
         ret = []
         for num, data in enumerate(self.jdata["plugins"]):
             if data.get("type") == self.ptype:
+                data['pid'] = f"{self.ptype}_{num}"
                 name = data.get("name", f"PV.{num}") + "-index-enable-out"
                 nameIntern = name.replace(".", "").replace("-", "_").upper()
                 data["_name"] = name
@@ -95,6 +97,7 @@ class Plugin:
         ret = []
         for num, data in enumerate(self.jdata["plugins"]):
             if data.get("type") == self.ptype:
+                data['pid'] = f"{self.ptype}_{num}"
                 name = data.get("name", f"PV.{num}") + "-index-enable"
                 nameIntern = name.replace(".", "").replace("-", "_").upper()
                 data["_name"] = name
@@ -106,6 +109,7 @@ class Plugin:
         ret = []
         for num, data in enumerate(self.jdata["plugins"]):
             if data.get("type") == self.ptype:
+                data['pid'] = f"{self.ptype}_{num}"
                 name = data.get("name", f"PV.{num}")
                 nameIntern = name.replace(".", "").replace("-", "_").upper()
                 ret.append(f"    wire {nameIntern}_INDEX_ENABLE_OUT;")

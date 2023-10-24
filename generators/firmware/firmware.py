@@ -3,15 +3,63 @@ import os
 from .buildsys import *
 from .testbench import testbench
 
+try:
+    import graphviz
+    g = graphviz.Digraph('G', filename=f'flow_rio.gv')
+except Exception:
+    g = None
 
 def verilog_top(project):
     top_arguments = []
+
+    if g:
+        label = f"<<table BORDER='0' CELLBORDER='1' CELLSPACING='0'>"
+        label += f"<tr><td>name</td><td>pin</td><td>dir</td></tr>"
+
     for pname in sorted(list(project["pinlists"])):
         pins = project["pinlists"][pname]
         for pin in pins:
+            if g:
+                label += f"<tr><td>{pin[0]}</td><td>{pin[1]}</td><td PORT=\"{pin[1]}\">{pin[2]}</td></tr>"
             if pin[1].startswith("EXPANSION"):
                 continue
             top_arguments.append(f"{pin[2].lower()} {pin[0]}")
+
+    if g:
+        label += f"</table>>"
+        g.node(f"pins", shape='plaintext', label=label)
+
+
+    if g:
+        uniqParts = {}
+        for ptype in {"jointnames", "voutnames", "vinnames", "doutnames", "dinnames"}:
+            if project[ptype]:
+                for data in project[ptype]:
+                    pid = data.get('pid') or data.get('_name')
+                    if pid not in uniqParts:
+                        uniqParts[pid] = []
+                    uniqParts[pid].append(data)
+        for pid, datalist in uniqParts.items():
+            data = datalist[0]
+            label = f"<<table BORDER='0' CELLBORDER='1' CELLSPACING='0'>"
+            label += f"<tr><td>plugin</td><td>{data['type']}</td></tr>"
+            for ndata in datalist:
+                label += f"<tr><td>name</td><td PORT=\"{ndata['_name']}\">{ndata['_name']}</td></tr>"
+                g.edge(f"{pid}:{ndata['_name']}", "hal")
+
+            if "pin" in data:
+                pin = data["pin"]
+                label += f"<tr><td PORT=\"{pin}\">pin</td><td>{pin}</td></tr>"
+                g.edge(f"pins:{pin}", f"{pid}:{pin}")
+            elif "pins" in data:
+                for pname, pin in data["pins"].items():
+                    label += f"<tr><td PORT=\"{pname}\">pin-{pname}</td><td>{pin}</td></tr>"
+                    g.edge(f"pins:{pin}", f"{pid}:{pname}")
+            label += f"</table>>"
+            g.node(pid, shape='plaintext', label=label)
+
+        g.view()
+
 
     top_data = []
     top_data.append("/*")

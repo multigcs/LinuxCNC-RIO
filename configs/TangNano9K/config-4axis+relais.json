@@ -136,20 +136,6 @@
             "type": "din_bit"
         },
         {
-            "comment": "ADPATER DIN6",
-            "pullup": true,
-            "pin": "85",
-            "name": "DIN11",
-            "type": "din_bit"
-        },
-        {
-            "comment": "ADPATER DIN7",
-            "pullup": true,
-            "pin": "86",
-            "name": "DIN12",
-            "type": "din_bit"
-        },
-        {
             "name": "flood-enable",
             "net": "iocontrol.0.coolant-flood",
             "comment": "P16",
@@ -223,6 +209,26 @@
                 "dir": "34"
             },
             "name": "JOINT3"
+        },
+        {
+            "type": "picosoc",
+            "baud": 115200,
+            "mem": 128,
+            "pins": {
+                "rx": "18",
+                "tx": "17",
+                "flash_clk": "59",
+                "flash_csb": "60",
+
+                "miso": "62",
+                "mosi": "61",
+
+                "flash_io0": "62",
+                "flash_io1": "61",
+                "flash_io2": "85",
+                "flash_io3": "86"
+            },
+            "name": "PICOSOC"
         }
     ]
 }

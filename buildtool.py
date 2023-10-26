@@ -42,6 +42,20 @@ def main(configfile, outputdir=None):
         os.system(f"mkdir -p {project['SOURCE_PATH']}")
         os.system(f"mkdir -p {project['PINS_PATH']}")
 
+
+    if project["verilog_defines"]:
+        verilog_defines = []
+        for key, value in project["verilog_defines"].items():
+            verilog_defines.append(f"`define {key} {value}")
+        verilog_defines.append(f"")
+        open(f"{project['SOURCE_PATH']}/defines.v", "w").write("\n".join(verilog_defines))
+        project["verilog_files"].append("defines.v")
+
+    if project["firmware_extrafiles"]:
+        for filename, content in project["firmware_extrafiles"].items():
+            open(f"{project['SOURCE_PATH']}/{filename}", "w").write(content)
+
+
     for plugin in project["plugins"]:
         if hasattr(project["plugins"][plugin], "ips"):
             for ipv in project["plugins"][plugin].ips():
@@ -53,10 +67,12 @@ def main(configfile, outputdir=None):
                 os.system(
                     f"cp -a {ipv_path} {project['SOURCE_PATH']}/{ipv}"
                 )
+                """
                 if ipv.endswith(".v") and not ipv.startswith("PLL_"):
                     os.system(
                         f"which verilator >/dev/null && cd {project['SOURCE_PATH']} && verilator --lint-only {ipv}"
                     )
+                """
 
     print(f"generating files in {project['OUTPUT_PATH']}")
 

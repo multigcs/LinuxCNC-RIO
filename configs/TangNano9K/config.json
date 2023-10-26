@@ -97,6 +97,22 @@
                 "dir": "42"
             },
             "name": "JOINT1"
+        },
+        {
+            "type": "picosoc",
+            "baud": 115200,
+            "mem": 1024,
+            "pins": {
+                "rx": "48",
+                "tx": "49",
+                "flash_clk": "15",
+                "flash_csb": "16",
+                "flash_io0": "14",
+                "flash_io1": "17",
+                "flash_io2": "12",
+                "flash_io3": "13"
+            },
+            "name": "PICOSOC"
         }
     ]
 }

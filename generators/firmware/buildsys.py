@@ -279,7 +279,10 @@ def buildsys_icestorm(project):
     if flashcmd:
         makefile_data.append(f"load: {bitfileName}")
         makefile_data.append(f"	{flashcmd}")
-        makefile_data.append("")
+    else:
+        makefile_data.append(f"load: {bitfileName}")
+        makefile_data.append(f"	 openFPGALoader -b ice40_generic {bitfileName}")
+    makefile_data.append("")
     makefile_data.append("")
 
     open(f"{project['FIRMWARE_PATH']}/Makefile", "w").write(

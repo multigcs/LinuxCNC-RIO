@@ -33,10 +33,41 @@
 // design are read in the correct order.
 `define PICOSOC_V
 
-module picosoc_plugin (
-    input clk,
-    output tx,
-    input  rx
+module picosoc (
+	input clk,
+	input resetn,
+
+	output        iomem_valid,
+	input         iomem_ready,
+	output [ 3:0] iomem_wstrb,
+	output [31:0] iomem_addr,
+	output [31:0] iomem_wdata,
+	input  [31:0] iomem_rdata,
+
+	input  irq_5,
+	input  irq_6,
+	input  irq_7,
+
+	output ser_tx,
+	input  ser_rx,
+
+	output flash_csb,
+	output flash_clk,
+
+	output flash_io0_oe,
+	output flash_io1_oe,
+	output flash_io2_oe,
+	output flash_io3_oe,
+
+	output flash_io0_do,
+	output flash_io1_do,
+	output flash_io2_do,
+	output flash_io3_do,
+
+	input  flash_io0_di,
+	input  flash_io1_di,
+	input  flash_io2_di,
+	input  flash_io3_di
 );
 	parameter [0:0] BARREL_SHIFTER = 1;
 	parameter [0:0] ENABLE_MUL = 1;
@@ -228,4 +259,3 @@ module picosoc_mem #(
 		if (wen[3]) mem[addr][31:24] <= wdata[31:24];
 	end
 endmodule
-

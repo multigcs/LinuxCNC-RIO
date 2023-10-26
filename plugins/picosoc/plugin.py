@@ -57,24 +57,29 @@ class Plugin:
                 pinlist_out.append(
                     (f"PICOSOC{num}_TX", data["pins"]["tx"], "OUTPUT", pullup)
                 )
-                pinlist_out.append(
-                    (f"PICOSOC{num}_FLASH_CLK", data["pins"]["flash_clk"], "OUTPUT", pullup)
-                )
-                pinlist_out.append(
-                    (f"PICOSOC{num}_FLASH_CSB", data["pins"]["flash_csb"], "OUTPUT", pullup)
-                )
-                pinlist_out.append(
-                    (f"PICOSOC{num}_FLASH_IO0", data["pins"]["flash_io0"], "INOUT", pullup)
-                )
-                pinlist_out.append(
-                    (f"PICOSOC{num}_FLASH_IO1", data["pins"]["flash_io1"], "INOUT", pullup)
-                )
-                pinlist_out.append(
-                    (f"PICOSOC{num}_FLASH_IO2", data["pins"]["flash_io2"], "INOUT", pullup)
-                )
-                pinlist_out.append(
-                    (f"PICOSOC{num}_FLASH_IO3", data["pins"]["flash_io3"], "INOUT", pullup)
-                )
+
+                memtype = data.get("memtype", "progmem")
+                
+                if data.get("memtype", "progmem") != "progmem":
+
+                    pinlist_out.append(
+                        (f"PICOSOC{num}_FLASH_CLK", data["pins"]["flash_clk"], "OUTPUT", pullup)
+                    )
+                    pinlist_out.append(
+                        (f"PICOSOC{num}_FLASH_CSB", data["pins"]["flash_csb"], "OUTPUT", pullup)
+                    )
+                    pinlist_out.append(
+                        (f"PICOSOC{num}_FLASH_IO0", data["pins"]["flash_io0"], "INOUT", pullup)
+                    )
+                    pinlist_out.append(
+                        (f"PICOSOC{num}_FLASH_IO1", data["pins"]["flash_io1"], "INOUT", pullup)
+                    )
+                    pinlist_out.append(
+                        (f"PICOSOC{num}_FLASH_IO2", data["pins"]["flash_io2"], "INOUT", pullup)
+                    )
+                    pinlist_out.append(
+                        (f"PICOSOC{num}_FLASH_IO3", data["pins"]["flash_io3"], "INOUT", pullup)
+                    )
 
 
         return pinlist_out
@@ -114,18 +119,23 @@ class Plugin:
 
                 baud = data.get("baud", 9600)
                 memtype = data.get("memtype", "progmem")
-
-                func_out.append(f"    picosoc_plugin picosoc_plugin{num} (")
-                func_out.append("        .clk (sysclk),")
-                func_out.append(f"        .ser_rx (PICOSOC{num}_RX),")
-                func_out.append(f"        .ser_tx (PICOSOC{num}_TX),")
-                func_out.append(f"        .flash_clk (PICOSOC{num}_FLASH_CLK),")
-                func_out.append(f"        .flash_csb (PICOSOC{num}_FLASH_CSB),")
-                func_out.append(f"        .flash_io0 (PICOSOC{num}_FLASH_IO0),")
-                func_out.append(f"        .flash_io1 (PICOSOC{num}_FLASH_IO1),")
-                func_out.append(f"        .flash_io2 (PICOSOC{num}_FLASH_IO2),")
-                func_out.append(f"        .flash_io3 (PICOSOC{num}_FLASH_IO3)")
-
+                
+                if data.get("memtype", "progmem") == "progmem":
+                    func_out.append(f"    picosoc_plugin picosoc_plugin{num} (")
+                    func_out.append("        .clk (sysclk),")
+                    func_out.append(f"        .rx (PICOSOC{num}_RX),")
+                    func_out.append(f"        .tx (PICOSOC{num}_TX)")
+                else:
+                    func_out.append(f"    picosoc_plugin picosoc_plugin{num} (")
+                    func_out.append("        .clk (sysclk),")
+                    func_out.append(f"        .ser_rx (PICOSOC{num}_RX),")
+                    func_out.append(f"        .ser_tx (PICOSOC{num}_TX),")
+                    func_out.append(f"        .flash_clk (PICOSOC{num}_FLASH_CLK),")
+                    func_out.append(f"        .flash_csb (PICOSOC{num}_FLASH_CSB),")
+                    func_out.append(f"        .flash_io0 (PICOSOC{num}_FLASH_IO0),")
+                    func_out.append(f"        .flash_io1 (PICOSOC{num}_FLASH_IO1),")
+                    func_out.append(f"        .flash_io2 (PICOSOC{num}_FLASH_IO2),")
+                    func_out.append(f"        .flash_io3 (PICOSOC{num}_FLASH_IO3)")
                 func_out.append("    );")
         return func_out
 

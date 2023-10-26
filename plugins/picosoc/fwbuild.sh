@@ -4,6 +4,7 @@
 
 CFLAGS="-DMEM_TOTAL=0x80"
 CROSS="/opt/riscv/bin/riscv32-unknown-elf-"
+CROSS="riscv64-unknown-elf-"
 
 
 ${CROSS}cpp -P -DICEBREAKER -o firmware.lds sections.lds

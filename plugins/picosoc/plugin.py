@@ -93,6 +93,7 @@ class Plugin:
                 nameIntern_in = name_in.replace(".", "").replace("-", "_").upper()
 
                 baud = data.get("baud", 9600)
+                memtype = data.get("memtype", "progmem")
 
                 func_out.append(f"    picosoc_plugin picosoc_plugin{num} (")
                 func_out.append("        .clk (sysclk),")
@@ -106,5 +107,8 @@ class Plugin:
     def ips(self):
         for num, data in enumerate(self.jdata["plugins"]):
             if data["type"] == self.ptype:
-                return ["picosoc_noflash.v", "picorv32.v", "simpleuart.v", "progmem.v", "picosoc.v"]
+                if data.get("memtype", "progmem") == "progmem":
+                    return ["progmem.py", "progmem.v", "fwbuild.sh", "start.s", "sections.lds", "firmware.c", "picosoc_noflash.v", "picorv32.v", "simpleuart.v", "picosoc.v"]
+                else:
+                    return ["fwbuild.sh", "start.s", "sections.lds", "firmware.c", "picosoc_spiflash.v", "picorv32.v", "simpleuart.v", "picosoc.v"]
         return []

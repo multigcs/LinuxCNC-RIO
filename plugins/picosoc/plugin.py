@@ -94,7 +94,7 @@ class Plugin:
 
                 baud = data.get("baud", 9600)
 
-                func_out.append(f"    picosoc picosoc{num} (")
+                func_out.append(f"    picosoc_plugin picosoc_plugin{num} (")
                 func_out.append("        .clk (sysclk),")
                 func_out.append(f"        .rx (PICOSOC{num}_RX),")
                 func_out.append(f"        .tx (PICOSOC{num}_TX)")

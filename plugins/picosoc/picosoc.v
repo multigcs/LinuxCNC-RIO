@@ -18,7 +18,7 @@
  */
 
 
-module picosoc (
+module picosoc_plugin (
     input clk,
     output tx,
     input  rx

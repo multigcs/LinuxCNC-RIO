@@ -298,7 +298,7 @@ def buildsys_vivado(project):
     makefile_data.append("all: build/rio.bit")
     makefile_data.append("")
     makefile_data.append(f"build/rio.bit: rio.tcl pins.xdc {verilogs}")
-    makefile_data.append("	vivado -mode tcl -source rio.tcl")
+    makefile_data.append("	vivado -mode batch -source rio.tcl")
     makefile_data.append("")
     makefile_data.append("clean:")
     makefile_data.append("	rm -rf build")

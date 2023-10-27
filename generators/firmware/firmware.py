@@ -299,7 +299,30 @@ def generate(project):
     if project["internal_clock"]:
         pass
     elif project["osc_clock"]:
-        if project["jdata"]["family"] == "ecp5":
+        if int(project['jdata']['clock']['speed']) < int(project['osc_clock']):
+            divider_val = int(project['osc_clock']) // int(project['jdata']['clock']['speed'])
+            divider = []
+            divider.append("")
+            divider.append("module pll(")
+            divider.append("        input sysclk_in,")
+            divider.append("        output reg sysclk,")
+            divider.append("        output reg locked")
+            divider.append("    );")
+            divider.append("")
+            divider.append("    reg[27:0] counter=28'd0;")
+            divider.append(f"    parameter DIVISOR = 28'd{divider_val};")
+            divider.append("    always @(posedge sysclk_in) begin")
+            divider.append("        counter <= counter + 28'd1;")
+            divider.append("        if(counter>=(DIVISOR-1)) begin")
+            divider.append("            counter <= 28'd0;")
+            divider.append("        end")
+            divider.append("        sysclk <= (counter<DIVISOR/2)?1'b1:1'b0;")
+            divider.append("    end")
+            divider.append("endmodule")
+            divider.append("")
+            divider.append("")
+            open(f"{project['SOURCE_PATH']}/pll.v", "w").write("\n".join(divider))
+        elif project["jdata"]["family"] == "ecp5":
             os.system(
                 f"ecppll -f '{project['SOURCE_PATH']}/pll.v' -i {float(project['osc_clock']) / 1000000} -o {float(project['jdata']['clock']['speed']) / 1000000}"
             )

@@ -219,14 +219,8 @@
                 "tx": "17",
                 "flash_clk": "59",
                 "flash_csb": "60",
-
-                "miso": "62",
-                "mosi": "61",
-
                 "flash_io0": "62",
-                "flash_io1": "61",
-                "flash_io2": "85",
-                "flash_io3": "86"
+                "flash_io1": "61"
             },
             "name": "PICOSOC"
         }

@@ -106,20 +106,14 @@ def load(configfile):
     project["expansions"] = {}
     project["internal_clock"] = None
 
-    project["osc_clock"] = False
-    if project["jdata"].get("toolchain") == "icestorm":
-        project["osc_clock"] = project["jdata"]["clock"].get("osc")
-        project["internal_clock"] = project["jdata"]["clock"].get("internal")
-        if project["internal_clock"]:
-            pass
-        elif project["osc_clock"]:
-            project["pinlists"]["main"] = (
-                ("sysclk_in", project["jdata"]["clock"]["pin"], "INPUT", True),
-            )
-        else:
-            project["pinlists"]["main"] = (
-                ("sysclk", project["jdata"]["clock"]["pin"], "INPUT", True),
-            )
+    project["osc_clock"] = project["jdata"]["clock"].get("osc", False)
+    project["internal_clock"] = project["jdata"]["clock"].get("internal")
+    if project["internal_clock"]:
+        pass
+    elif project["osc_clock"]:
+        project["pinlists"]["main"] = (
+            ("sysclk_in", project["jdata"]["clock"]["pin"], "INPUT", True),
+        )
     else:
         project["pinlists"]["main"] = (
             ("sysclk", project["jdata"]["clock"]["pin"], "INPUT", True),

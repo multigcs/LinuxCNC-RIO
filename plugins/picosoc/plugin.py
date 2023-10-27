@@ -123,6 +123,7 @@ class Plugin:
                 prog_addr = data.get("prog_addr", "32'h00100000")
                 if self.jdata.get("type") == "xc7a35ticsg324-1l":
                     prog_addr = data.get("prog_addr", "32'h00400000")
+                prog_addr = prog_addr.replace("0x", "32'h")
 
                 func_out.append(f"    picosoc_plugin #({mem_words}, {prog_addr}) picosoc_plugin{num} (")
                 func_out.append("        .clk (sysclk),")
@@ -184,6 +185,7 @@ class Plugin:
                 prog_addr = data.get("prog_addr", "0x00100000")
                 if self.jdata.get("type") == "xc7a35ticsg324-1l":
                     prog_addr = data.get("prog_addr", "0x00400000")
+                prog_addr = prog_addr.replace("32'h", "0x")
 
                 makefile = []
                 makefile.append("")
@@ -208,7 +210,10 @@ class Plugin:
                 makefile.append("	$(CROSS)objcopy -O verilog firmware.elf firmware.hex")
                 makefile.append("")
                 makefile.append("load: firmware.bin")
-                makefile.append("	openFPGALoader -b ice40_generic -o 1048576 firmware.bin")
+                if self.jdata.get("type") == "xc7a35ticsg324-1l":
+                    makefile.append(f"	openFPGALoader -b arty -o {int(prog_addr, 16)} -f firmware.bin")
+                else:
+                    makefile.append(f"	openFPGALoader -b ice40_generic -o {int(prog_addr, 16)} -f firmware.bin")
                 makefile.append("	#minicom -D /dev/ttyUSB1 -b 115200")
                 makefile.append("")
                 return {

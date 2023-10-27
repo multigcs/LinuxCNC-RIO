@@ -7,9 +7,9 @@
     "package": "sg48",
     "flashcmd": "openFPGALoader -b ice40_generic rio.bin -f",
     "clock": {
-        "_osc": "12000000",
-        "_speed": "50250000",
-        "speed": "12000000",
+        "osc": "12000000",
+        "speed": "6000000",
+        "_speed": "12000000",
         "pin": "35"
     },
     "interface": [
@@ -68,6 +68,7 @@
             "type": "picosoc",
             "baud": 115200,
             "mem": 1024,
+            "prog_addr": "0x00200000",
             "pins": {
                 "rx": "6",
                 "tx": "9",

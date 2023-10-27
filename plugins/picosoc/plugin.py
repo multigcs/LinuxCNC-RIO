@@ -77,6 +77,12 @@ class Plugin:
                         (f"PICOSOC{num}_FLASH_IO3", data["pins"]["flash_io3"], "INOUT", pullup)
                     )
 
+                if "gpio" in data["pins"]:
+                    for pn, pin in enumerate(data["pins"]["gpio"]):
+                        pinlist_out.append(
+                            (f"PICOSOC{num}_GPIO_{pn}", pin, "INOUT")
+                        )
+
 
         return pinlist_out
 
@@ -125,10 +131,31 @@ class Plugin:
                     prog_addr = data.get("prog_addr", "32'h00400000")
                 prog_addr = prog_addr.replace("0x", "32'h")
 
+
+                if "gpio" in data["pins"]:
+                    """
+                    gpios = []
+                    gpio_len = len(data['pins']['gpio'])
+                    if gpio_len < 32:
+                        gpios.append(f"{32 - gpio_len}'d0")
+                    for pn, pin in enumerate(data["pins"]["gpio"]):
+                        gpios.append(f"PICOSOC{num}_GPIO_{pn}")
+                    func_out.append(f"    reg [31:0] PICOSOC{num}_GPIO = {{{', '.join(gpios)}}};")
+                    """
+
+                    func_out.append(f"    wire [31:0] PICOSOC{num}_GPIO;")
+                    for pn, pin in enumerate(data["pins"]["gpio"]):
+                        func_out.append(f"    assign PICOSOC{num}_GPIO_{pn} = PICOSOC{num}_GPIO[{pn}];")
+
+
+
+
                 func_out.append(f"    picosoc_plugin #({mem_words}, {prog_addr}) picosoc_plugin{num} (")
                 func_out.append("        .clk (sysclk),")
                 func_out.append(f"        .ser_rx (PICOSOC{num}_RX),")
                 func_out.append(f"        .ser_tx (PICOSOC{num}_TX),")
+                if "gpio" in data["pins"]:
+                    func_out.append(f"        .gpio (PICOSOC{num}_GPIO),")
                 func_out.append(f"        .flash_clk (PICOSOC{num}_FLASH_CLK),")
                 func_out.append(f"        .flash_csb (PICOSOC{num}_FLASH_CSB),")
                 if "flash_io2" in data["pins"] and "flash_io3" in data["pins"]:

@@ -100,6 +100,8 @@ def load(configfile):
             )
 
     project["verilog_files"] = []
+    project["verilog_defines"] = {}
+    project["firmware_extrafiles"] = {}
     project["pinlists"] = {}
     project["expansions"] = {}
     project["internal_clock"] = None
@@ -143,6 +145,10 @@ def load(configfile):
             project["pinlists"][plugin] = project["plugins"][plugin].pinlist()
         if hasattr(project["plugins"][plugin], "expansions"):
             project["expansions"][plugin] = project["plugins"][plugin].expansions()
+        if hasattr(project["plugins"][plugin], "ipdefs"):
+            project["verilog_defines"].update(project["plugins"][plugin].ipdefs())
+        if hasattr(project["plugins"][plugin], "firmware_extrafiles"):
+            project["firmware_extrafiles"].update(project["plugins"][plugin].firmware_extrafiles())
 
     # check for double assigned pins
     double_pins = False

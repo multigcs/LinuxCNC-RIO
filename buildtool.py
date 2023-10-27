@@ -42,10 +42,25 @@ def main(configfile, outputdir=None):
         os.system(f"mkdir -p {project['SOURCE_PATH']}")
         os.system(f"mkdir -p {project['PINS_PATH']}")
 
+
+    if project["verilog_defines"]:
+        verilog_defines = []
+        for key, value in project["verilog_defines"].items():
+            verilog_defines.append(f"`define {key} {value}")
+        verilog_defines.append(f"")
+        open(f"{project['SOURCE_PATH']}/defines.v", "w").write("\n".join(verilog_defines))
+        project["verilog_files"].append("defines.v")
+
+    if project["firmware_extrafiles"]:
+        for filename, content in project["firmware_extrafiles"].items():
+            open(f"{project['SOURCE_PATH']}/{filename}", "w").write(content)
+
+
     for plugin in project["plugins"]:
         if hasattr(project["plugins"][plugin], "ips"):
             for ipv in project["plugins"][plugin].ips():
-                project["verilog_files"].append(ipv)
+                if ipv.endswith((".v", ".sv")):
+                    project["verilog_files"].append(ipv)
                 ipv_path = f"plugins/{plugin}/{ipv}"
                 if not os.path.isfile(ipv_path):
                     ipv_path = f"generators/firmware/{ipv}"

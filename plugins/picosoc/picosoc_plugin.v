@@ -36,7 +36,7 @@ module picosoc_plugin (
 	inout  flash_io3
 );
 	parameter integer MEM_WORDS = 256;
-	parameter [31:0] PROGADDR_RESET = 32'h 0040_0000;
+	parameter [31:0] PROGADDR_RESET = 32'h 0010_0000;
 
 	reg [5:0] reset_cnt = 0;
 	wire resetn = &reset_cnt;

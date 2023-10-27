@@ -147,9 +147,6 @@ class Plugin:
                     for pn, pin in enumerate(data["pins"]["gpio"]):
                         func_out.append(f"    assign PICOSOC{num}_GPIO_{pn} = PICOSOC{num}_GPIO[{pn}];")
 
-
-
-
                 func_out.append(f"    picosoc_plugin #({mem_words}, {prog_addr}) picosoc_plugin{num} (")
                 func_out.append("        .clk (sysclk),")
                 func_out.append(f"        .ser_rx (PICOSOC{num}_RX),")
@@ -169,7 +166,7 @@ class Plugin:
     def ips(self):
         for num, data in enumerate(self.jdata["plugins"]):
             if data["type"] == self.ptype:
-                ret = ["firmware.c", "sections.lds", "start.s", "picosoc_plugin.v", "spimemio.v", "simpleuart.v", "picosoc.v", "picorv32.v"]
+                ret = ["firmware.c", "sections.lds", "start.s", "picosoc_plugin.v", "spimemio.v", "simpleuart.v", "picosoc.v", "picorv32.v", "peripheral_gpio.v", "peripheral_counter.v", "peripheral.v"]
                 if self.jdata.get("type") == "up5k":
                     ret.append("ice40up5k_spram.v")
                 return ret

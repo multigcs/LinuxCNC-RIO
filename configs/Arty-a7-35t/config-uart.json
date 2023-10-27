@@ -15,6 +15,15 @@
     "error": {
         "pin": "T10"
     },
+    "interface": [
+        {
+            "type": "uart",
+            "pins": {
+                "RX": "A9",
+                "TX": "D10"
+            }
+        }
+    ],
     "slots": [
         {
             "comment": "ChipKit/Arduino Header",
@@ -56,7 +65,7 @@
                 "P9": "A18",
                 "P10": "K16"
             },
-            "module": "interface-spi"
+            "_module": "interface-spi"
         },
         {
             "comment": "PMOD JB",
@@ -227,15 +236,15 @@
             "pin": "J5"
         },
         {
-            "type": "picosoc",
+            "type": "picosoc_",
             "baud": 115200,
             "pins": {
                 "rx": "A9",
                 "tx": "D10",
                 "flash_clk": "L16",
                 "flash_csb": "L13",
-                "flash_io0": "K17",
-                "flash_io1": "K18",
+                "flash_io0": "K18",
+                "flash_io1": "K17",
                 "flash_io2": "L14",
                 "flash_io3": "M14"
             },

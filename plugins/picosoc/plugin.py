@@ -119,7 +119,11 @@ class Plugin:
                     mem = 128 * 1024  # 128kByte
                 mem_words = data.get("mem", mem) // 4
 
-                func_out.append(f"    picosoc_plugin #({mem_words}) picosoc_plugin{num} (")
+                prog_addr = data.get("prog_addr", "32'h00100000")
+                if self.jdata.get("type") == "xc7a35ticsg324-1l":
+                    prog_addr = data.get("prog_addr", "32'h00400000")
+
+                func_out.append(f"    picosoc_plugin #({mem_words}, {prog_addr}) picosoc_plugin{num} (")
                 func_out.append("        .clk (sysclk),")
                 func_out.append(f"        .ser_rx (PICOSOC{num}_RX),")
                 func_out.append(f"        .ser_tx (PICOSOC{num}_TX),")
@@ -136,7 +140,7 @@ class Plugin:
     def ips(self):
         for num, data in enumerate(self.jdata["plugins"]):
             if data["type"] == self.ptype:
-                ret = ["Makefile.picosoc_plugin", "firmware.c", "sections.lds", "start.s", "picosoc_plugin.v", "spimemio.v", "simpleuart.v", "picosoc.v", "picorv32.v"]
+                ret = ["firmware.c", "sections.lds", "start.s", "picosoc_plugin.v", "spimemio.v", "simpleuart.v", "picosoc.v", "picorv32.v"]
                 if self.jdata.get("type") == "up5k":
                     ret.append("ice40up5k_spram.v")
                 return ret
@@ -145,7 +149,12 @@ class Plugin:
     def ipdefs(self):
         for num, data in enumerate(self.jdata["plugins"]):
             if data["type"] == self.ptype:
-                if self.jdata.get("type") == "up5k":
+                if self.jdata.get("type") == "xc7a35ticsg324-1l":
+                    return {
+                        "PICOSOC_REGS_DISTRIBUTED": "1",
+                        "PICOSOC_MEM_DISTRIBUTED": "1",
+                    }
+                elif self.jdata.get("type") == "up5k":
                     return {
                         "PICOSOC_MEM": "ice40up5k_spram",
                         "PICOSOC_SB_IO": "1",
@@ -155,15 +164,22 @@ class Plugin:
     def firmware_extrafiles(self):
         for num, data in enumerate(self.jdata["plugins"]):
             if data["type"] == self.ptype:
-
                 mem = 1024  # 1kByte
                 if self.jdata.get("type") == "up5k":
                     mem = 128 * 1024  # 128kByte
                 mem_total = data.get("mem", mem)
 
+                baud = data.get("baud", 11520)
+                fpga_speed = int(self.jdata.get("clock", {}).get("speed", 12000000))
+                uart_clock_div = fpga_speed // baud
+
+                prog_addr = data.get("prog_addr", "0x00100000")
+                if self.jdata.get("type") == "xc7a35ticsg324-1l":
+                    prog_addr = data.get("prog_addr", "0x00400000")
+
                 makefile = []
                 makefile.append("")
-                makefile.append(f"CFLAGS=-DMEM_TOTAL=0x{mem_total:x}")
+                makefile.append(f"CFLAGS=-DMEM_TOTAL=0x{mem_total:x} -DUART_CLOCK_DIV={uart_clock_div} -DPROGADDR={prog_addr}")
                 makefile.append("CROSS=riscv32-unknown-elf-")
                 makefile.append("")
                 makefile.append("all: firmware.bin")

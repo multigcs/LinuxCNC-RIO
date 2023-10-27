@@ -14,7 +14,7 @@ parser.add_argument(
     "json", help="json config", type=str, default=None
 )
 parser.add_argument(
-    "--baud", "-b", help="baudrate", type=int, default=2000000
+    "--baud", "-b", help="baudrate", type=int, default=1000000
 )
 parser.add_argument(
     "--port", "-p", help="udp port", type=int, default=2390

@@ -231,7 +231,11 @@ module picosoc_regs (
 	output [31:0] rdata1,
 	output [31:0] rdata2
 );
+`ifdef PICOSOC_REGS_DISTRIBUTED
+    (* ram_style = "distributed" *) reg [31:0] regs [0:31];
+`else
 	reg [31:0] regs [0:31];
+`endif
 
 	always @(posedge clk)
 		if (wen) regs[waddr[4:0]] <= wdata;
@@ -249,7 +253,11 @@ module picosoc_mem #(
 	input [31:0] wdata,
 	output reg [31:0] rdata
 );
+`ifdef PICOSOC_MEM_DISTRIBUTED
+    (* ram_style = "distributed" *) reg [31:0] mem [0:WORDS-1];
+`else
 	reg [31:0] mem [0:WORDS-1];
+`endif
 
 	always @(posedge clk) begin
 		rdata <= mem[addr];

@@ -67,7 +67,7 @@ void cmd_echo()
 
 void main()
 {
-	reg_uart_clkdiv = 104;
+	reg_uart_clkdiv = UART_CLOCK_DIV;
 	print("Booting..\n");
 
 	while (getchar_prompt("Press ENTER to continue..\n") != '\r') { /* wait */ }

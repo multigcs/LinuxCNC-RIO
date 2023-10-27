@@ -1,12 +1,7 @@
 
 #include <stdint.h>
 #include <stdbool.h>
-
-#define reg_spictrl (*(volatile uint32_t*)0x02000000)
-#define reg_uart_clkdiv (*(volatile uint32_t*)0x02000004)
-#define reg_uart_data (*(volatile uint32_t*)0x02000008)
-#define reg_gpio (*(volatile uint32_t*)0x03000000)
-#define reg_counter (*(volatile uint32_t*)0x04000000)
+#include <registers.h>
 
 // --------------------------------------------------------
 
@@ -136,6 +131,9 @@ void main() {
             reg_gpio = ~reg_gpio;
 
             print_dec(reg_counter);
+            print("\n");
+
+            print_dec(reg_sysclock);
             print("\n");
 
 			print("Command> ");

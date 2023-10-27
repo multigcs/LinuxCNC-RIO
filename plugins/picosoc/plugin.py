@@ -166,7 +166,7 @@ class Plugin:
     def ips(self):
         for num, data in enumerate(self.jdata["plugins"]):
             if data["type"] == self.ptype:
-                ret = ["firmware.c", "sections.lds", "start.s", "picosoc_plugin.v", "spimemio.v", "simpleuart.v", "picosoc.v", "picorv32.v", "peripheral_gpio.v", "peripheral_counter.v", "peripheral.v"]
+                ret = ["firmware.c", "sections.lds", "start.s", "picosoc_plugin.v", "spimemio.v", "simpleuart.v", "picosoc.v", "picorv32.v", "peripheral_gpio.v", "peripheral_counter.v", "peripheral_sysclock.v", "peripheral.v"]
                 if self.jdata.get("type") == "up5k":
                     ret.append("ice40up5k_spram.v")
                 return ret
@@ -176,6 +176,13 @@ class Plugin:
         for num, data in enumerate(self.jdata["plugins"]):
             if data["type"] == self.ptype:
                 ret = {}
+
+                fpga_speed = int(self.jdata.get("clock", {}).get("speed", 12000000))
+                ret.update({
+                    "PICOSOC_CLOCK": str(fpga_speed),
+                    "PICOSOC_CLOCK_HALF": str(fpga_speed // 2),
+                })
+
                 if "flash_io2" not in data["pins"] or "flash_io3" not in data["pins"]:
                     ret.update({
                         "PICOSOC_NO_QUADFLASH": "1",
@@ -225,7 +232,7 @@ class Plugin:
                 makefile.append("	$(CROSS)cpp -P $(CFLAGS) -o firmware.lds sections.lds")
                 makefile.append("")
                 makefile.append("firmware.elf: firmware.lds start.s firmware.c ")
-                makefile.append("	$(CROSS)gcc $(CFLAGS) -mabi=ilp32 -march=rv32ic -Wl,-Bstatic,-T,firmware.lds,--strip-debug -ffreestanding -nostdlib -o firmware.elf start.s firmware.c")
+                makefile.append("	$(CROSS)gcc $(CFLAGS) -mabi=ilp32 -march=rv32ic -Wl,-Bstatic,-T,firmware.lds,--strip-debug -ffreestanding -nostdlib -I. -o firmware.elf start.s firmware.c")
                 makefile.append("")
                 makefile.append("firmware.bin: firmware.elf")
                 makefile.append("	$(CROSS)objcopy -O binary firmware.elf firmware.bin")
@@ -240,8 +247,79 @@ class Plugin:
                     makefile.append(f"	openFPGALoader -b ice40_generic -o {int(prog_addr, 16)} -f firmware.bin")
                 makefile.append("	#minicom -D /dev/ttyUSB1 -b 115200")
                 makefile.append("")
+
+
+                peripheral = []
+                peripheral.append("")
+                peripheral.append("module peripheral (")
+                peripheral.append("        input resetn,")
+                peripheral.append("        input clk,")
+                peripheral.append("        input iomem_valid,")
+                peripheral.append("        input [3:0]  iomem_wstrb,")
+                peripheral.append("        input [31:0] iomem_addr,")
+                peripheral.append("        output [31:0] iomem_rdata,")
+                peripheral.append("        output iomem_ready,")
+                peripheral.append("        input [31:0] iomem_wdata,")
+                peripheral.append("        output [31:0] gpio")
+                peripheral.append("    );")
+                peripheral.append("")
+
+                peripherals = {"gpio": "gpio", "counter": "", "sysclock": ""}
+
+                paddr = 3;
+                for name, pins in peripherals.items():
+                    peripheral.append(f"    // {name.upper()} mapped to 0x0{paddr}xx_xxxx")
+                    peripheral.append(f"    wire {name}_en = (iomem_addr[31:24] == 8'h{paddr});")
+                    peripheral.append(f"    wire [31:0] {name}_iomem_rdata;")
+                    peripheral.append(f"    wire {name}_iomem_ready;")
+                    peripheral.append(f"    peripheral_{name} {name}1 (")
+                    peripheral.append("        .clk(clk),")
+                    peripheral.append("        .resetn(resetn),")
+                    peripheral.append(f"        .iomem_ready({name}_iomem_ready),")
+                    peripheral.append(f"        .iomem_rdata({name}_iomem_rdata),")
+                    peripheral.append(f"        .iomem_valid(iomem_valid && {name}_en),")
+                    if pins:
+                        peripheral.append(f"        .{pins}({pins}),")
+                    peripheral.append("        .iomem_wstrb(iomem_wstrb),")
+                    peripheral.append("        .iomem_addr(iomem_addr),")
+                    peripheral.append("        .iomem_wdata(iomem_wdata)")
+                    peripheral.append("    );")
+                    peripheral.append("")
+                    paddr += 1
+
+
+                iomem_ready = "    assign iomem_ready = "
+                iomem_rdata = "    assign iomem_rdata = "
+                for name, pins in peripherals.items():
+                    iomem_ready += f"{name}_en ? {name}_iomem_ready : "
+                    iomem_rdata += f"{name}_iomem_ready ? {name}_iomem_rdata : "
+                iomem_ready += "1'b0;"
+                iomem_rdata += "32'h0;"
+                peripheral.append(iomem_ready)
+                peripheral.append(iomem_rdata)
+                peripheral.append("")
+                peripheral.append("endmodule")
+
+                registers = []
+                registers.append("")
+                registers.append("#define reg_spictrl (*(volatile uint32_t*)0x02000000)")
+                registers.append("#define reg_uart_clkdiv (*(volatile uint32_t*)0x02000004)")
+                registers.append("#define reg_uart_data (*(volatile uint32_t*)0x02000008)")
+                registers.append("")
+                paddr = 3;
+                for name, pins in peripherals.items():
+                    registers.append(f"#define reg_{name} (*(volatile uint32_t*)0x{paddr}000000)")
+                    paddr += 1
+                registers.append("")
+                registers.append("")
+
                 return {
                     f"Makefile.{self.ptype}": "\n".join(makefile),
+                    f"peripheral.v": "\n".join(peripheral),
+                    f"registers.h": "\n".join(registers),
                 }
+
+
+
         return {}
 

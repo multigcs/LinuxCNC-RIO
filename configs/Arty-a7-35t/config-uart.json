@@ -234,21 +234,6 @@
             "type": "dout_bit",
             "name": "LD5",
             "pin": "J5"
-        },
-        {
-            "type": "picosoc_",
-            "baud": 115200,
-            "pins": {
-                "rx": "A9",
-                "tx": "D10",
-                "flash_clk": "L16",
-                "flash_csb": "L13",
-                "flash_io0": "K18",
-                "flash_io1": "K17",
-                "flash_io2": "L14",
-                "flash_io3": "M14"
-            },
-            "name": "PICOSOC"
         }
 
     ]

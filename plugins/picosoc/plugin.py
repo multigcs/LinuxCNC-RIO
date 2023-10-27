@@ -69,12 +69,13 @@ class Plugin:
                 pinlist_out.append(
                     (f"PICOSOC{num}_FLASH_IO1", data["pins"]["flash_io1"], "INOUT", pullup)
                 )
-                pinlist_out.append(
-                    (f"PICOSOC{num}_FLASH_IO2", data["pins"]["flash_io2"], "INOUT", pullup)
-                )
-                pinlist_out.append(
-                    (f"PICOSOC{num}_FLASH_IO3", data["pins"]["flash_io3"], "INOUT", pullup)
-                )
+                if "flash_io2" in data["pins"] and "flash_io3" in data["pins"]:
+                    pinlist_out.append(
+                        (f"PICOSOC{num}_FLASH_IO2", data["pins"]["flash_io2"], "INOUT", pullup)
+                    )
+                    pinlist_out.append(
+                        (f"PICOSOC{num}_FLASH_IO3", data["pins"]["flash_io3"], "INOUT", pullup)
+                    )
 
 
         return pinlist_out
@@ -129,11 +130,11 @@ class Plugin:
                 func_out.append(f"        .ser_tx (PICOSOC{num}_TX),")
                 func_out.append(f"        .flash_clk (PICOSOC{num}_FLASH_CLK),")
                 func_out.append(f"        .flash_csb (PICOSOC{num}_FLASH_CSB),")
+                if "flash_io2" in data["pins"] and "flash_io3" in data["pins"]:
+                    func_out.append(f"        .flash_io2 (PICOSOC{num}_FLASH_IO2),")
+                    func_out.append(f"        .flash_io3 (PICOSOC{num}_FLASH_IO3),")
                 func_out.append(f"        .flash_io0 (PICOSOC{num}_FLASH_IO0),")
-                func_out.append(f"        .flash_io1 (PICOSOC{num}_FLASH_IO1),")
-                func_out.append(f"        .flash_io2 (PICOSOC{num}_FLASH_IO2),")
-                func_out.append(f"        .flash_io3 (PICOSOC{num}_FLASH_IO3)")
-
+                func_out.append(f"        .flash_io1 (PICOSOC{num}_FLASH_IO1)")
                 func_out.append("    );")
         return func_out
 
@@ -149,16 +150,23 @@ class Plugin:
     def ipdefs(self):
         for num, data in enumerate(self.jdata["plugins"]):
             if data["type"] == self.ptype:
+                ret = {}
+                if "flash_io2" not in data["pins"] or "flash_io3" not in data["pins"]:
+                    ret.update({
+                        "PICOSOC_NO_QUADFLASH": "1",
+                    })
+
                 if self.jdata.get("type") == "xc7a35ticsg324-1l":
-                    return {
+                    ret.update({
                         "PICOSOC_REGS_DISTRIBUTED": "1",
                         "PICOSOC_MEM_DISTRIBUTED": "1",
-                    }
+                    })
                 elif self.jdata.get("type") == "up5k":
-                    return {
+                    ret.update({
                         "PICOSOC_MEM": "ice40up5k_spram",
                         "PICOSOC_SB_IO": "1",
-                    }
+                    })
+                return ret
         return {}
 
     def firmware_extrafiles(self):

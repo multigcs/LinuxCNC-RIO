@@ -30,18 +30,23 @@ module spimemio (
 
 	output flash_io0_oe,
 	output flash_io1_oe,
+`ifndef PICOSOC_NO_QUADFLASH
 	output flash_io2_oe,
 	output flash_io3_oe,
+`endif
 
 	output flash_io0_do,
 	output flash_io1_do,
+`ifndef PICOSOC_NO_QUADFLASH
 	output flash_io2_do,
 	output flash_io3_do,
-
+`endif
 	input  flash_io0_di,
 	input  flash_io1_di,
+`ifndef PICOSOC_NO_QUADFLASH
 	input  flash_io2_di,
 	input  flash_io3_di,
+`endif
 
 	input   [3:0] cfgreg_we,
 	input  [31:0] cfgreg_di,
@@ -90,11 +95,19 @@ module spimemio (
 	assign cfgreg_do[20] = config_cont;
 	assign cfgreg_do[19:16] = config_dummy;
 	assign cfgreg_do[15:12] = 0;
+`ifndef PICOSOC_NO_QUADFLASH
 	assign cfgreg_do[11:8] = {flash_io3_oe, flash_io2_oe, flash_io1_oe, flash_io0_oe};
+`else
+	assign cfgreg_do[11:8] = {1'b0, 1'b0, flash_io1_oe, flash_io0_oe};
+`endif
 	assign cfgreg_do[7:6] = 0;
 	assign cfgreg_do[5] = flash_csb;
 	assign cfgreg_do[4] = flash_clk;
+`ifndef PICOSOC_NO_QUADFLASH
 	assign cfgreg_do[3:0] = {flash_io3_di, flash_io2_di, flash_io1_di, flash_io0_di};
+`else
+	assign cfgreg_do[3:0] = {1'b0, 1'b0, flash_io1_di, flash_io0_di};
+`endif
 
 	always @(posedge clk) begin
 		softreset <= !config_en || cfgreg_we;
@@ -160,13 +173,17 @@ module spimemio (
 
 	assign flash_io0_oe = config_en ? xfer_io0_oe : config_oe[0];
 	assign flash_io1_oe = config_en ? xfer_io1_oe : config_oe[1];
+`ifndef PICOSOC_NO_QUADFLASH
 	assign flash_io2_oe = config_en ? xfer_io2_oe : config_oe[2];
 	assign flash_io3_oe = config_en ? xfer_io3_oe : config_oe[3];
+`endif
 
 	assign flash_io0_do = config_en ? (config_ddr ? xfer_io0_90 : xfer_io0_do) : config_do[0];
 	assign flash_io1_do = config_en ? (config_ddr ? xfer_io1_90 : xfer_io1_do) : config_do[1];
+`ifndef PICOSOC_NO_QUADFLASH
 	assign flash_io2_do = config_en ? (config_ddr ? xfer_io2_90 : xfer_io2_do) : config_do[2];
 	assign flash_io3_do = config_en ? (config_ddr ? xfer_io3_90 : xfer_io3_do) : config_do[3];
+`endif
 
 	wire xfer_dspi = din_ddr && !din_qspi;
 	wire xfer_ddr = din_ddr && din_qspi;
@@ -188,18 +205,20 @@ module spimemio (
 		.dout_tag     (dout_tag    ),
 		.flash_csb    (xfer_csb    ),
 		.flash_clk    (xfer_clk    ),
-		.flash_io0_oe (xfer_io0_oe ),
-		.flash_io1_oe (xfer_io1_oe ),
+`ifndef PICOSOC_NO_QUADFLASH
 		.flash_io2_oe (xfer_io2_oe ),
 		.flash_io3_oe (xfer_io3_oe ),
-		.flash_io0_do (xfer_io0_do ),
-		.flash_io1_do (xfer_io1_do ),
 		.flash_io2_do (xfer_io2_do ),
 		.flash_io3_do (xfer_io3_do ),
-		.flash_io0_di (flash_io0_di),
-		.flash_io1_di (flash_io1_di),
 		.flash_io2_di (flash_io2_di),
-		.flash_io3_di (flash_io3_di)
+		.flash_io3_di (flash_io3_di),
+`endif
+		.flash_io0_oe (xfer_io0_oe ),
+		.flash_io1_oe (xfer_io1_oe ),
+		.flash_io0_do (xfer_io0_do ),
+		.flash_io1_do (xfer_io1_do ),
+		.flash_io0_di (flash_io0_di),
+		.flash_io1_di (flash_io1_di)
 	);
 
 	reg [3:0] state;
@@ -395,20 +414,21 @@ module spimemio_xfer (
 	output reg flash_csb,
 	output reg flash_clk,
 
-	output reg flash_io0_oe,
-	output reg flash_io1_oe,
+`ifndef PICOSOC_NO_QUADFLASH
 	output reg flash_io2_oe,
 	output reg flash_io3_oe,
-
-	output reg flash_io0_do,
-	output reg flash_io1_do,
 	output reg flash_io2_do,
 	output reg flash_io3_do,
-
-	input      flash_io0_di,
-	input      flash_io1_di,
 	input      flash_io2_di,
-	input      flash_io3_di
+	input      flash_io3_di,
+`endif
+
+	output reg flash_io0_oe,
+	output reg flash_io1_oe,
+	output reg flash_io0_do,
+	output reg flash_io1_do,
+	input      flash_io0_di,
+	input      flash_io1_di
 );
 	reg [7:0] obuffer;
 	reg [7:0] ibuffer;
@@ -447,13 +467,15 @@ module spimemio_xfer (
 	always @* begin
 		flash_io0_oe = 0;
 		flash_io1_oe = 0;
-		flash_io2_oe = 0;
-		flash_io3_oe = 0;
-
 		flash_io0_do = 0;
 		flash_io1_do = 0;
+
+`ifndef PICOSOC_NO_QUADFLASH
+		flash_io2_oe = 0;
+		flash_io3_oe = 0;
 		flash_io2_do = 0;
 		flash_io3_do = 0;
+`endif
 
 		next_obuffer = obuffer;
 		next_ibuffer = ibuffer;
@@ -478,19 +500,28 @@ module spimemio_xfer (
 				3'b 01?: begin
 					flash_io0_oe = !xfer_rd;
 					flash_io1_oe = !xfer_rd;
+
+`ifndef PICOSOC_NO_QUADFLASH
 					flash_io2_oe = !xfer_rd;
 					flash_io3_oe = !xfer_rd;
+`endif
 
 					flash_io0_do = obuffer[4];
 					flash_io1_do = obuffer[5];
+`ifndef PICOSOC_NO_QUADFLASH
 					flash_io2_do = obuffer[6];
 					flash_io3_do = obuffer[7];
+`endif
 
 					if (flash_clk) begin
 						next_obuffer = {obuffer[3:0], 4'b 0000};
 						next_count = count - {|count, 2'b00};
 					end else begin
+`ifndef PICOSOC_NO_QUADFLASH
 						next_ibuffer = {ibuffer[3:0], flash_io3_di, flash_io2_di, flash_io1_di, flash_io0_di};
+`else
+						next_ibuffer = {ibuffer[3:0], 1'b0, 1'b0, flash_io1_di, flash_io0_di};
+`endif
 					end
 
 					next_fetch = (next_count == 0);
@@ -498,16 +529,24 @@ module spimemio_xfer (
 				3'b 11?: begin
 					flash_io0_oe = !xfer_rd;
 					flash_io1_oe = !xfer_rd;
+`ifndef PICOSOC_NO_QUADFLASH
 					flash_io2_oe = !xfer_rd;
 					flash_io3_oe = !xfer_rd;
+`endif
 
 					flash_io0_do = obuffer[4];
 					flash_io1_do = obuffer[5];
+`ifndef PICOSOC_NO_QUADFLASH
 					flash_io2_do = obuffer[6];
 					flash_io3_do = obuffer[7];
+`endif
 
 					next_obuffer = {obuffer[3:0], 4'b 0000};
+`ifndef PICOSOC_NO_QUADFLASH
 					next_ibuffer = {ibuffer[3:0], flash_io3_di, flash_io2_di, flash_io1_di, flash_io0_di};
+`else
+					next_ibuffer = {ibuffer[3:0], 1'b0, 1'b0, flash_io1_di, flash_io0_di};
+`endif
 					next_count = count - {|count, 2'b00};
 
 					next_fetch = (next_count == 0);

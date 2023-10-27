@@ -54,20 +54,21 @@ module picosoc (
 	output flash_csb,
 	output flash_clk,
 
-	output flash_io0_oe,
-	output flash_io1_oe,
+`ifndef PICOSOC_NO_QUADFLASH
 	output flash_io2_oe,
 	output flash_io3_oe,
-
-	output flash_io0_do,
-	output flash_io1_do,
 	output flash_io2_do,
 	output flash_io3_do,
-
-	input  flash_io0_di,
-	input  flash_io1_di,
 	input  flash_io2_di,
-	input  flash_io3_di
+	input  flash_io3_di,
+`endif
+
+	output flash_io0_oe,
+	output flash_io1_oe,
+	output flash_io0_do,
+	output flash_io1_do,
+	input  flash_io0_di,
+	input  flash_io1_di
 );
 	parameter [0:0] BARREL_SHIFTER = 1;
 	parameter [0:0] ENABLE_MUL = 1;
@@ -167,20 +168,21 @@ module picosoc (
 		.flash_csb    (flash_csb   ),
 		.flash_clk    (flash_clk   ),
 
-		.flash_io0_oe (flash_io0_oe),
-		.flash_io1_oe (flash_io1_oe),
+`ifndef PICOSOC_NO_QUADFLASH
 		.flash_io2_oe (flash_io2_oe),
 		.flash_io3_oe (flash_io3_oe),
-
-		.flash_io0_do (flash_io0_do),
-		.flash_io1_do (flash_io1_do),
 		.flash_io2_do (flash_io2_do),
 		.flash_io3_do (flash_io3_do),
-
-		.flash_io0_di (flash_io0_di),
-		.flash_io1_di (flash_io1_di),
 		.flash_io2_di (flash_io2_di),
 		.flash_io3_di (flash_io3_di),
+`endif
+
+		.flash_io0_oe (flash_io0_oe),
+		.flash_io1_oe (flash_io1_oe),
+		.flash_io0_do (flash_io0_do),
+		.flash_io1_do (flash_io1_do),
+		.flash_io0_di (flash_io0_di),
+		.flash_io1_di (flash_io1_di),
 
 		.cfgreg_we(spimemio_cfgreg_sel ? mem_wstrb : 4'b 0000),
 		.cfgreg_di(mem_wdata),

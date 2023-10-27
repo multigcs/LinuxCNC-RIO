@@ -30,10 +30,12 @@ module picosoc_plugin (
 
 	output flash_csb,
 	output flash_clk,
-	inout  flash_io0,
-	inout  flash_io1,
+`ifndef PICOSOC_NO_QUADFLASH
 	inout  flash_io2,
-	inout  flash_io3
+	inout  flash_io3,
+`endif
+	inout  flash_io0,
+	inout  flash_io1
 );
 	parameter integer MEM_WORDS = 256;
 	parameter [31:0] PROGADDR_RESET = 32'h 0010_0000;
@@ -47,13 +49,16 @@ module picosoc_plugin (
 
 	wire flash_io0_oe, flash_io0_do, flash_io0_di;
 	wire flash_io1_oe, flash_io1_do, flash_io1_di;
+`ifndef PICOSOC_NO_QUADFLASH
 	wire flash_io2_oe, flash_io2_do, flash_io2_di;
 	wire flash_io3_oe, flash_io3_do, flash_io3_di;
+`endif
 
 `ifdef PICOSOC_SB_IO
 	SB_IO #(
 		.PIN_TYPE(6'b 1010_01),
 		.PULLUP(1'b 0)
+`ifndef PICOSOC_NO_QUADFLASH
 	) flash_io_buf [3:0] (
 		.PACKAGE_PIN({flash_io3, flash_io2, flash_io1, flash_io0}),
 		.OUTPUT_ENABLE({flash_io3_oe, flash_io2_oe, flash_io1_oe, flash_io0_oe}),
@@ -61,17 +66,27 @@ module picosoc_plugin (
 		.D_IN_0({flash_io3_di, flash_io2_di, flash_io1_di, flash_io0_di})
 	);
 `else
+	) flash_io_buf [1:0] (
+		.PACKAGE_PIN({flash_io1, flash_io0}),
+		.OUTPUT_ENABLE({flash_io1_oe, flash_io0_oe}),
+		.D_OUT_0({flash_io1_do, flash_io0_do}),
+		.D_IN_0({flash_io1_di, flash_io0_di})
+	);
+`endif
+`else
     assign flash_io0 = flash_io0_oe ? flash_io0_do : 1'bz;
     assign flash_io0_di = flash_io0;
     
     assign flash_io1 = flash_io1_oe ? flash_io1_do : 1'bz;
     assign flash_io1_di = flash_io1;
     
+`ifndef PICOSOC_NO_QUADFLASH
     assign flash_io2 = flash_io2_oe ? flash_io2_do : 1'bz;
     assign flash_io2_di = flash_io2;
     
     assign flash_io3 = flash_io3_oe ? flash_io3_do : 1'bz;
     assign flash_io3_di = flash_io3;
+`endif
 `endif
 
 	wire        iomem_valid;
@@ -119,20 +134,21 @@ module picosoc_plugin (
 		.flash_csb    (flash_csb   ),
 		.flash_clk    (flash_clk   ),
 
-		.flash_io0_oe (flash_io0_oe),
-		.flash_io1_oe (flash_io1_oe),
+`ifndef PICOSOC_NO_QUADFLASH
 		.flash_io2_oe (flash_io2_oe),
 		.flash_io3_oe (flash_io3_oe),
-
-		.flash_io0_do (flash_io0_do),
-		.flash_io1_do (flash_io1_do),
 		.flash_io2_do (flash_io2_do),
 		.flash_io3_do (flash_io3_do),
-
-		.flash_io0_di (flash_io0_di),
-		.flash_io1_di (flash_io1_di),
 		.flash_io2_di (flash_io2_di),
 		.flash_io3_di (flash_io3_di),
+`endif
+
+		.flash_io0_oe (flash_io0_oe),
+		.flash_io1_oe (flash_io1_oe),
+		.flash_io0_do (flash_io0_do),
+		.flash_io1_do (flash_io1_do),
+		.flash_io0_di (flash_io0_di),
+		.flash_io1_di (flash_io1_di),
 
 		.irq_5        (1'b0        ),
 		.irq_6        (1'b0        ),

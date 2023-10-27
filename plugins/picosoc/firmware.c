@@ -149,6 +149,9 @@ void main() {
                 case 'e':
                     cmd_echo();
                     break;
+                case 'r':
+                    reg_counter = 100;
+                    break;
                 default:
                     continue;
 			}

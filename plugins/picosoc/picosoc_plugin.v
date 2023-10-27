@@ -28,7 +28,7 @@ module picosoc_plugin (
     output ser_tx,
     input ser_rx,
 
-    output reg [31:0] gpio,
+    output [31:0] gpio,
 
     output flash_csb,
     output flash_clk,
@@ -91,28 +91,35 @@ module picosoc_plugin (
 `endif
 `endif
 
+    // Peripheral Bus
     wire        iomem_valid;
-    reg         iomem_ready;
+    wire        iomem_ready;
     wire [3:0]  iomem_wstrb;
     wire [31:0] iomem_addr;
     wire [31:0] iomem_wdata;
-    reg  [31:0] iomem_rdata;
+    wire [31:0] iomem_rdata;
 
-    always @(posedge clk) begin
-        if (!resetn) begin
-            gpio <= 0;
-        end else begin
-            iomem_ready <= 0;
-            if (iomem_valid && !iomem_ready && iomem_addr[31:24] == 8'h 03) begin
-                iomem_ready <= 1;
-                iomem_rdata <= gpio;
-                if (iomem_wstrb[0]) gpio[ 7: 0] <= iomem_wdata[ 7: 0];
-                if (iomem_wstrb[1]) gpio[15: 8] <= iomem_wdata[15: 8];
-                if (iomem_wstrb[2]) gpio[23:16] <= iomem_wdata[23:16];
-                if (iomem_wstrb[3]) gpio[31:24] <= iomem_wdata[31:24];
-            end
-        end
-    end
+
+    // enable signals for each of the peripherals
+    wire gpio_en    = (iomem_addr[31:24] == 8'h03); /* GPIO mapped to 0x03xx_xxxx */
+
+    wire [31:0] gpio_iomem_rdata;
+    wire gpio_iomem_ready;
+    assign iomem_ready = gpio_en ? gpio_iomem_ready : 1'b0;
+    assign iomem_rdata = gpio_iomem_ready ? gpio_iomem_rdata : 32'h0;
+
+
+    gpio gpio_peripheral (
+        .clk(clk),
+        .resetn(resetn),
+        .iomem_ready(gpio_iomem_ready),
+        .iomem_rdata(gpio_iomem_rdata),
+        .iomem_valid(iomem_valid && gpio_en),
+        .iomem_wstrb(iomem_wstrb),
+        .iomem_addr(iomem_addr),
+        .iomem_wdata(iomem_wdata),
+        .gpio(gpio)
+    );
 
     picosoc #(
         .BARREL_SHIFTER(0),
@@ -161,3 +168,34 @@ module picosoc_plugin (
         .iomem_rdata  (iomem_rdata )
     );
 endmodule
+
+
+module gpio (
+        input resetn,
+        input clk,
+        input iomem_valid,
+        input [3:0]  iomem_wstrb,
+        input [31:0] iomem_addr,
+        output reg [31:0] iomem_rdata,
+        output reg iomem_ready,
+        input [31:0] iomem_wdata,
+        output reg [31:0] gpio
+    );
+
+    always @(posedge clk) begin
+        if (!resetn) begin
+            gpio <= 0;
+        end else begin
+            iomem_ready <= 0;
+            if (iomem_valid && !iomem_ready) begin
+                iomem_ready <= 1;
+                iomem_rdata <= gpio;
+                if (iomem_wstrb[0]) gpio[ 7: 0] <= iomem_wdata[ 7: 0];
+                if (iomem_wstrb[1]) gpio[15: 8] <= iomem_wdata[15: 8];
+                if (iomem_wstrb[2]) gpio[23:16] <= iomem_wdata[23:16];
+                if (iomem_wstrb[3]) gpio[31:24] <= iomem_wdata[31:24];
+            end
+        end
+    end
+endmodule
+

@@ -10,58 +10,7 @@
         "speed": "12000000",
         "pin": "35"
     },
-    "interface": [
-        {
-            "type": "spi",
-            "pins": {
-                "MOSI": "27",
-                "MISO": "25",
-                "SCK": "21",
-                "SEL": "19"
-            }
-        }
-    ],
-    "_blink": {
-        "pin": "37"
-    },
-    "_error": {
-        "invert": true,
-        "pin": "11"
-    },
     "plugins": [
-        {
-            "pullup": true,
-            "pin": "38",
-            "name": "DIN0",
-            "type": "din_bit"
-        },
-        {
-            "pullup": true,
-            "pin": "34",
-            "name": "DIN1",
-            "type": "din_bit"
-        },
-        {
-            "pullup": true,
-            "pin": "31",
-            "name": "DIN2",
-            "type": "din_bit"
-        },
-        {
-            "pullup": true,
-            "pin": "48",
-            "name": "DIN3",
-            "type": "din_bit"
-        },
-        {
-            "type": "joint_stepper",
-            "cl": false,
-            "pins": {
-                "step": "2",
-                "dir": "47"
-            },
-            "name": "JOINT0"
-        },
         {
             "type": "picosoc",
             "baud": 115200,

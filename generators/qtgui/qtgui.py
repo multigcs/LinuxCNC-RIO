@@ -1,7 +1,9 @@
 
 def generate(project):
-    print("generating qtgui")
+    if not project["jdata"]["interface"]:
+        return
 
+    print("generating qtgui")
     spitest_data = []
     spitest_data.append("")
     spitest_data.append("import time")

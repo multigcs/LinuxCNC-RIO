@@ -33,10 +33,11 @@ def verilog_top(project):
         top_data.append("    defparam osc.FREQ_DIV=10;")
         top_data.append("")
 
-    top_data.append("    reg ESTOP = 0;")
-    top_data.append("    wire ERROR;")
-    top_data.append("    wire INTERFACE_TIMEOUT;")
-    top_data.append("    assign ERROR = (INTERFACE_TIMEOUT | ESTOP);")
+    if project["jdata"]["interface"]:
+        top_data.append("    reg ESTOP = 0;")
+        top_data.append("    wire ERROR;")
+        top_data.append("    wire INTERFACE_TIMEOUT;")
+        top_data.append("    assign ERROR = (INTERFACE_TIMEOUT | ESTOP);")
 
     if project["osc_clock"]:
         top_data.append("    wire sysclk;")
@@ -74,22 +75,23 @@ def verilog_top(project):
             top_data.append("    assign ERROR_OUT = ERROR;")
         top_data.append("")
 
-    top_data.append(f"    parameter BUFFER_SIZE = {project['data_size']};")
-    top_data.append("")
+    if project["jdata"]["interface"]:
+        top_data.append(f"    parameter BUFFER_SIZE = {project['data_size']};")
+        top_data.append("")
 
-    top_data.append(f"    wire[{project['data_size'] - 1}:0] rx_data;")
-    top_data.append(f"    wire[{project['data_size'] - 1}:0] tx_data;")
-    top_data.append("")
+        top_data.append(f"    wire[{project['data_size'] - 1}:0] rx_data;")
+        top_data.append(f"    wire[{project['data_size'] - 1}:0] tx_data;")
+        top_data.append("")
 
-    top_data.append("    reg signed [31:0] header_tx;")
-    top_data.append("    always @(posedge sysclk) begin")
-    top_data.append("        if (ESTOP) begin")
-    top_data.append("            header_tx <= 32'h65737470;")
-    top_data.append("        end else begin")
-    top_data.append("            header_tx <= 32'h64617461;")
-    top_data.append("        end")
-    top_data.append("    end")
-    top_data.append("")
+        top_data.append("    reg signed [31:0] header_tx;")
+        top_data.append("    always @(posedge sysclk) begin")
+        top_data.append("        if (ESTOP) begin")
+        top_data.append("            header_tx <= 32'h65737470;")
+        top_data.append("        end else begin")
+        top_data.append("            header_tx <= 32'h64617461;")
+        top_data.append("        end")
+        top_data.append("    end")
+        top_data.append("")
 
     # plugins wire/register definitions
     for plugin in project["plugins"]:
@@ -175,102 +177,102 @@ def verilog_top(project):
             top_data.append(f"    wire signed [31:0] {joint['_prefix']}Feedback;")
         top_data.append("")
 
-    top_data.append(f"    // rx_data {project['rx_data_size']}")
-    pos = project["data_size"]
+    if project["jdata"]["interface"]:
+        top_data.append(f"    // rx_data {project['rx_data_size']}")
+        pos = project["data_size"]
 
-    top_data.append("    wire [31:0] header_rx;")
-    top_data.append(
-        f"    assign header_rx = {{rx_data[{pos-3*8-1}:{pos-3*8-8}], rx_data[{pos-2*8-1}:{pos-2*8-8}], rx_data[{pos-1*8-1}:{pos-1*8-8}], rx_data[{pos-1}:{pos-8}]}};"
-    )
-    pos -= 32
-
-    for num, joint in enumerate(project["jointnames"]):
+        top_data.append("    wire [31:0] header_rx;")
         top_data.append(
-            f"    assign {joint['_prefix']}FreqCmd = {{rx_data[{pos-3*8-1}:{pos-3*8-8}], rx_data[{pos-2*8-1}:{pos-2*8-8}], rx_data[{pos-1*8-1}:{pos-1*8-8}], rx_data[{pos-1}:{pos-8}]}};"
+            f"    assign header_rx = {{rx_data[{pos-3*8-1}:{pos-3*8-8}], rx_data[{pos-2*8-1}:{pos-2*8-8}], rx_data[{pos-1*8-1}:{pos-1*8-8}], rx_data[{pos-1}:{pos-8}]}};"
         )
         pos -= 32
 
-    for num, vout in enumerate(project["voutnames"]):
-        top_data.append(
-            f"    assign {vout['_prefix']} = {{rx_data[{pos-3*8-1}:{pos-3*8-8}], rx_data[{pos-2*8-1}:{pos-2*8-8}], rx_data[{pos-1*8-1}:{pos-1*8-8}], rx_data[{pos-1}:{pos-8}]}};"
-        )
-        pos -= 32
+        for num, joint in enumerate(project["jointnames"]):
+            top_data.append(
+                f"    assign {joint['_prefix']}FreqCmd = {{rx_data[{pos-3*8-1}:{pos-3*8-8}], rx_data[{pos-2*8-1}:{pos-2*8-8}], rx_data[{pos-1*8-1}:{pos-1*8-8}], rx_data[{pos-1}:{pos-8}]}};"
+            )
+            pos -= 32
 
-    for dbyte in range(project["joints_en_total"] // 8):
-        for num in range(8):
-            bitnum = dbyte * 8 + (7 - num)
-            if bitnum < project["joints"]:
-                jname = project["jointnames"][bitnum]["_prefix"]
-                top_data.append(f"    assign {jname}Enable = rx_data[{pos-1}];")
-            pos -= 1
+        for num, vout in enumerate(project["voutnames"]):
+            top_data.append(
+                f"    assign {vout['_prefix']} = {{rx_data[{pos-3*8-1}:{pos-3*8-8}], rx_data[{pos-2*8-1}:{pos-2*8-8}], rx_data[{pos-1*8-1}:{pos-1*8-8}], rx_data[{pos-1}:{pos-8}]}};"
+            )
+            pos -= 32
 
-    for dbyte in range(project["douts_total"] // 8):
-        for num in range(8):
-            bitnum = num + (dbyte * 8)
-            if bitnum < project["douts"]:
-                dname = project["doutnames"][bitnum]["_prefix"]
-                if project["doutnames"][bitnum].get("invert", False):
-                    top_data.append(f"    assign {dname} = ~rx_data[{pos-1}];")
+        for dbyte in range(project["joints_en_total"] // 8):
+            for num in range(8):
+                bitnum = dbyte * 8 + (7 - num)
+                if bitnum < project["joints"]:
+                    jname = project["jointnames"][bitnum]["_prefix"]
+                    top_data.append(f"    assign {jname}Enable = rx_data[{pos-1}];")
+                pos -= 1
+
+        for dbyte in range(project["douts_total"] // 8):
+            for num in range(8):
+                bitnum = num + (dbyte * 8)
+                if bitnum < project["douts"]:
+                    dname = project["doutnames"][bitnum]["_prefix"]
+                    if project["doutnames"][bitnum].get("invert", False):
+                        top_data.append(f"    assign {dname} = ~rx_data[{pos-1}];")
+                    else:
+                        top_data.append(f"    assign {dname} = rx_data[{pos-1}];")
                 else:
-                    top_data.append(f"    assign {dname} = rx_data[{pos-1}];")
-            else:
-                top_data.append(f"    // assign DOUTx = rx_data[{pos-1}];")
-            pos -= 1
+                    top_data.append(f"    // assign DOUTx = rx_data[{pos-1}];")
+                pos -= 1
 
-    #top_data.append("")
-    top_data.append(f"    // tx_data {project['tx_data_size']}")
-    top_data.append("    assign tx_data = {")
-    top_data.append(
-        "        header_tx[7:0], header_tx[15:8], header_tx[23:16], header_tx[31:24],"
-    )
-
-    for num, joint in enumerate(project["jointnames"]):
+        #top_data.append("")
+        top_data.append(f"    // tx_data {project['tx_data_size']}")
+        top_data.append("    assign tx_data = {")
         top_data.append(
-            f"        {joint['_prefix']}Feedback[7:0], {joint['_prefix']}Feedback[15:8], {joint['_prefix']}Feedback[23:16], {joint['_prefix']}Feedback[31:24],"
+            "        header_tx[7:0], header_tx[15:8], header_tx[23:16], header_tx[31:24],"
         )
 
-    for num, vin in enumerate(project["vinnames"]):
-        top_data.append(
-            f"        {vin['_prefix']}[7:0], {vin['_prefix']}[15:8], {vin['_prefix']}[23:16], {vin['_prefix']}[31:24],"
-        )
+        for num, joint in enumerate(project["jointnames"]):
+            top_data.append(
+                f"        {joint['_prefix']}Feedback[7:0], {joint['_prefix']}Feedback[15:8], {joint['_prefix']}Feedback[23:16], {joint['_prefix']}Feedback[31:24],"
+            )
 
-    tdins = []
-    ldin = project["dins"]
-    for dbyte in range(project["dins_total"] // 8):
-        for num in range(8):
-            bitnum = num + (dbyte * 8)
-            if bitnum < project["dins"]:
-                dname = project["dinnames"][bitnum]["_prefix"]
-                din_data = project["dinnames"][bitnum]
-                if bitnum < ldin and din_data.get("invert", False):
-                    tdins.append(f"~{dname}")
+        for num, vin in enumerate(project["vinnames"]):
+            top_data.append(
+                f"        {vin['_prefix']}[7:0], {vin['_prefix']}[15:8], {vin['_prefix']}[23:16], {vin['_prefix']}[31:24],"
+            )
+
+        tdins = []
+        ldin = project["dins"]
+        for dbyte in range(project["dins_total"] // 8):
+            for num in range(8):
+                bitnum = num + (dbyte * 8)
+                if bitnum < project["dins"]:
+                    dname = project["dinnames"][bitnum]["_prefix"]
+                    din_data = project["dinnames"][bitnum]
+                    if bitnum < ldin and din_data.get("invert", False):
+                        tdins.append(f"~{dname}")
+                    else:
+                        tdins.append(f"{dname}")
                 else:
-                    tdins.append(f"{dname}")
-            else:
-                tdins.append(f"1'd0")
+                    tdins.append(f"1'd0")
 
-    fill = project["data_size"] - project["tx_data_size"]
+        fill = project["data_size"] - project["tx_data_size"]
 
-    if fill > 0:
-        top_data.append(f"        {', '.join(tdins)},")
-        top_data.append(f"        {fill}'d0")
-    else:
-        top_data.append(f"        {', '.join(tdins)}")
-    top_data.append("    };")
-    #top_data.append("")
+        if fill > 0:
+            top_data.append(f"        {', '.join(tdins)},")
+            top_data.append(f"        {fill}'d0")
+        else:
+            top_data.append(f"        {', '.join(tdins)}")
+        top_data.append("    };")
+        #top_data.append("")
 
-    for pname, pins in project["pinlists"].items():
-        for pin in pins:
-            if pin[1].startswith("EXPANSION"):
-                if pin[2] == "INPUT":
-                    top_data.append(f"    assign {pin[0]} = {pin[1]};")
-    for port, pins in expansion_ports.items():
-        assign_list = []
-        size = expansion_size[port]
-        for n in range(size):
-            assign_list.append(f"{pins[size - 1 - n]}")
-        top_data.append(f"    assign {port} = {{{', '.join(assign_list)}}};")
-    #top_data.append("")
+        for pname, pins in project["pinlists"].items():
+            for pin in pins:
+                if pin[1].startswith("EXPANSION"):
+                    if pin[2] == "INPUT":
+                        top_data.append(f"    assign {pin[0]} = {pin[1]};")
+        for port, pins in expansion_ports.items():
+            assign_list = []
+            size = expansion_size[port]
+            for n in range(size):
+                assign_list.append(f"{pins[size - 1 - n]}")
+            top_data.append(f"    assign {port} = {{{', '.join(assign_list)}}};")
 
     for plugin in project["plugins"]:
         if hasattr(project["plugins"][plugin], "funcs"):

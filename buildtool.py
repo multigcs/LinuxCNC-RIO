@@ -59,13 +59,14 @@ def main(configfile, outputdir=None):
     for plugin in project["plugins"]:
         if hasattr(project["plugins"][plugin], "ips"):
             for ipv in project["plugins"][plugin].ips():
+                ipv_name = ipv.split("/")[-1]
                 if ipv.endswith((".v", ".sv")):
-                    project["verilog_files"].append(ipv)
+                    project["verilog_files"].append(ipv_name)
                 ipv_path = f"plugins/{plugin}/{ipv}"
                 if not os.path.isfile(ipv_path):
                     ipv_path = f"generators/firmware/{ipv}"
                 os.system(
-                    f"cp -a {ipv_path} {project['SOURCE_PATH']}/{ipv}"
+                    f"cp -a {ipv_path} {project['SOURCE_PATH']}/{ipv_name}"
                 )
                 """
                 if ipv.endswith(".v") and not ipv.startswith("PLL_"):

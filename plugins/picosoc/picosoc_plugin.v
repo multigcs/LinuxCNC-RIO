@@ -26,6 +26,15 @@ module picosoc_plugin (
     input clk,
     output ser_tx,
     input ser_rx,
+
+    output        resetn,
+	output        iomem_valid,
+	input         iomem_ready,
+	output [ 3:0] iomem_wstrb,
+	output [31:0] iomem_addr,
+	output [31:0] iomem_wdata,
+	input  [31:0] iomem_rdata,
+
     output [31:0] gpio,
     output flash_csb,
     output flash_clk,
@@ -83,26 +92,6 @@ module picosoc_plugin (
     assign flash_io3_di = flash_io3;
 `endif
 `endif
-
-    // Peripheral Bus
-    wire        iomem_valid;
-    wire        iomem_ready;
-    wire [3:0]  iomem_wstrb;
-    wire [31:0] iomem_addr;
-    wire [31:0] iomem_wdata;
-    wire [31:0] iomem_rdata;
-
-    peripheral peripheral1 (
-        .clk(clk),
-        .resetn(resetn),
-        .iomem_ready(iomem_ready),
-        .iomem_rdata(iomem_rdata),
-        .iomem_valid(iomem_valid),
-        .iomem_wstrb(iomem_wstrb),
-        .iomem_addr(iomem_addr),
-        .iomem_wdata(iomem_wdata),
-        .gpio(gpio)
-    );
 
     picosoc #(
         .BARREL_SHIFTER(0),

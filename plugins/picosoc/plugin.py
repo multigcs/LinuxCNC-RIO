@@ -77,11 +77,19 @@ class Plugin:
                         (f"PICOSOC{num}_FLASH_IO3", data["pins"]["flash_io3"], "INOUT", pullup)
                     )
 
-                if "gpio" in data["pins"]:
-                    for pn, pin in enumerate(data["pins"]["gpio"]):
-                        pinlist_out.append(
-                            (f"PICOSOC{num}_GPIO_{pn}", pin, "INOUT")
-                        )
+
+                peripherals = data.get("peripherals", [])
+                paddr = 3;
+                for peripheral in peripherals:
+                    name = peripheral["type"]
+                    pins = peripheral.get("pins", [])
+                    if pins:
+                        for pin_name, pin in pins.items():
+
+                            pinlist_out.append((f"PICOSOC_P{paddr}_{pin_name.upper()}", pin[0], pin[1]))
+
+                    paddr += 1
+
 
 
         return pinlist_out
@@ -131,28 +139,26 @@ class Plugin:
                     prog_addr = data.get("prog_addr", "32'h00400000")
                 prog_addr = prog_addr.replace("0x", "32'h")
 
-
-                if "gpio" in data["pins"]:
-                    """
-                    gpios = []
-                    gpio_len = len(data['pins']['gpio'])
-                    if gpio_len < 32:
-                        gpios.append(f"{32 - gpio_len}'d0")
-                    for pn, pin in enumerate(data["pins"]["gpio"]):
-                        gpios.append(f"PICOSOC{num}_GPIO_{pn}")
-                    func_out.append(f"    reg [31:0] PICOSOC{num}_GPIO = {{{', '.join(gpios)}}};")
-                    """
-
-                    func_out.append(f"    wire [31:0] PICOSOC{num}_GPIO;")
-                    for pn, pin in enumerate(data["pins"]["gpio"]):
-                        func_out.append(f"    assign PICOSOC{num}_GPIO_{pn} = PICOSOC{num}_GPIO[{pn}];")
+                func_out.append("    wire        resetn;")
+                func_out.append("    wire        iomem_valid;")
+                func_out.append("    wire        iomem_ready;")
+                func_out.append("    wire [3:0]  iomem_wstrb;")
+                func_out.append("    wire [31:0] iomem_addr;")
+                func_out.append("    wire [31:0] iomem_wdata;")
+                func_out.append("    wire [31:0] iomem_rdata;")
+                func_out.append("")
 
                 func_out.append(f"    picosoc_plugin #({mem_words}, {prog_addr}) picosoc_plugin{num} (")
                 func_out.append("        .clk (sysclk),")
                 func_out.append(f"        .ser_rx (PICOSOC{num}_RX),")
                 func_out.append(f"        .ser_tx (PICOSOC{num}_TX),")
-                if "gpio" in data["pins"]:
-                    func_out.append(f"        .gpio (PICOSOC{num}_GPIO),")
+                func_out.append("        .resetn(resetn),")
+                func_out.append("        .iomem_ready(iomem_ready),")
+                func_out.append("        .iomem_rdata(iomem_rdata),")
+                func_out.append("        .iomem_valid(iomem_valid),")
+                func_out.append("        .iomem_wstrb(iomem_wstrb),")
+                func_out.append("        .iomem_addr(iomem_addr),")
+                func_out.append("        .iomem_wdata(iomem_wdata),")
                 func_out.append(f"        .flash_clk (PICOSOC{num}_FLASH_CLK),")
                 func_out.append(f"        .flash_csb (PICOSOC{num}_FLASH_CSB),")
                 if "flash_io2" in data["pins"] and "flash_io3" in data["pins"]:
@@ -161,12 +167,47 @@ class Plugin:
                 func_out.append(f"        .flash_io0 (PICOSOC{num}_FLASH_IO0),")
                 func_out.append(f"        .flash_io1 (PICOSOC{num}_FLASH_IO1)")
                 func_out.append("    );")
+                func_out.append("")
+
+
+                func_out.append("    peripheral peripheral1 (")
+                func_out.append("        .clk(sysclk),")
+                peripherals = data.get("peripherals", [])
+                paddr = 3;
+                for peripheral in peripherals:
+                    name = peripheral["type"]
+                    pins = peripheral.get("pins", [])
+                    if pins:
+                        for pin_name, pin in pins.items():
+                            func_out.append(f"        .PICOSOC_P{paddr}_{pin_name.upper()} (PICOSOC_P{paddr}_{pin_name.upper()}),")
+                    paddr += 1
+                func_out.append("        .resetn(resetn),")
+                func_out.append("        .iomem_ready(iomem_ready),")
+                func_out.append("        .iomem_rdata(iomem_rdata),")
+                func_out.append("        .iomem_valid(iomem_valid),")
+                func_out.append("        .iomem_wstrb(iomem_wstrb),")
+                func_out.append("        .iomem_addr(iomem_addr),")
+                func_out.append("        .iomem_wdata(iomem_wdata)")
+                func_out.append("    );")
+                func_out.append("")
+
+
+
+
         return func_out
 
     def ips(self):
         for num, data in enumerate(self.jdata["plugins"]):
             if data["type"] == self.ptype:
-                ret = ["firmware.c", "sections.lds", "start.s", "picosoc_plugin.v", "spimemio.v", "simpleuart.v", "picosoc.v", "picorv32.v", "peripheral_gpio.v", "peripheral_counter.v", "peripheral_sysclock.v", "peripheral.v"]
+                ret = ["firmware.c", "sections.lds", "start.s", "picosoc_plugin.v", "spimemio.v", "simpleuart.v", "picosoc.v", "picorv32.v", "peripheral.v"]
+
+                peripherals = data.get("peripherals", [])
+                paddr = 3;
+                for peripheral in peripherals:
+                    name = peripheral["type"]
+                    pins = peripheral.get("pins", [])
+                    ret.append(f"peripherals/peripheral_{name}/peripheral_{name}.v")
+
                 if self.jdata.get("type") == "up5k":
                     ret.append("ice40up5k_spram.v")
                 return ret
@@ -249,56 +290,73 @@ class Plugin:
                 makefile.append("")
 
 
-                peripheral = []
-                peripheral.append("")
-                peripheral.append("module peripheral (")
-                peripheral.append("        input resetn,")
-                peripheral.append("        input clk,")
-                peripheral.append("        input iomem_valid,")
-                peripheral.append("        input [3:0]  iomem_wstrb,")
-                peripheral.append("        input [31:0] iomem_addr,")
-                peripheral.append("        output [31:0] iomem_rdata,")
-                peripheral.append("        output iomem_ready,")
-                peripheral.append("        input [31:0] iomem_wdata,")
-                peripheral.append("        output [31:0] gpio")
-                peripheral.append("    );")
-                peripheral.append("")
+                peripherals = data.get("peripherals", [])
 
-                peripherals = {"gpio": "gpio", "counter": "", "sysclock": ""}
+                peripheral_data = []
+                peripheral_data.append("")
+                peripheral_data.append("module peripheral (")
+                peripheral_data.append("        input resetn,")
+                peripheral_data.append("        input clk,")
 
                 paddr = 3;
-                for name, pins in peripherals.items():
-                    peripheral.append(f"    // {name.upper()} mapped to 0x0{paddr}xx_xxxx")
-                    peripheral.append(f"    wire {name}_en = (iomem_addr[31:24] == 8'h{paddr});")
-                    peripheral.append(f"    wire [31:0] {name}_iomem_rdata;")
-                    peripheral.append(f"    wire {name}_iomem_ready;")
-                    peripheral.append(f"    peripheral_{name} {name}1 (")
-                    peripheral.append("        .clk(clk),")
-                    peripheral.append("        .resetn(resetn),")
-                    peripheral.append(f"        .iomem_ready({name}_iomem_ready),")
-                    peripheral.append(f"        .iomem_rdata({name}_iomem_rdata),")
-                    peripheral.append(f"        .iomem_valid(iomem_valid && {name}_en),")
+                for peripheral in peripherals:
+                    name = peripheral["type"]
+                    pins = peripheral.get("pins", [])
                     if pins:
-                        peripheral.append(f"        .{pins}({pins}),")
-                    peripheral.append("        .iomem_wstrb(iomem_wstrb),")
-                    peripheral.append("        .iomem_addr(iomem_addr),")
-                    peripheral.append("        .iomem_wdata(iomem_wdata)")
-                    peripheral.append("    );")
-                    peripheral.append("")
+                        for pin_name, pin in pins.items():
+                            peripheral_data.append(f"        {pin[1].lower()} PICOSOC_P{paddr}_{pin_name.upper()},")
+                    paddr += 1
+
+
+                peripheral_data.append("        input iomem_valid,")
+                peripheral_data.append("        input [3:0]  iomem_wstrb,")
+                peripheral_data.append("        input [31:0] iomem_addr,")
+                peripheral_data.append("        output [31:0] iomem_rdata,")
+                peripheral_data.append("        output iomem_ready,")
+                peripheral_data.append("        input [31:0] iomem_wdata,")
+                peripheral_data.append("    );")
+                peripheral_data.append("")
+
+                
+                paddr = 3;
+                for peripheral in peripherals:
+                    name = peripheral["type"]
+                    pins = peripheral.get("pins", [])
+                
+                    peripheral_data.append(f"    // {name.upper()} mapped to 0x0{paddr}xx_xxxx")
+                    peripheral_data.append(f"    wire {name}_en = (iomem_addr[31:24] == 8'h{paddr});")
+                    peripheral_data.append(f"    wire [31:0] {name}_iomem_rdata;")
+                    peripheral_data.append(f"    wire {name}_iomem_ready;")
+                    peripheral_data.append(f"    peripheral_{name} {name}1 (")
+                    peripheral_data.append("        .clk(clk),")
+                    peripheral_data.append("        .resetn(resetn),")
+                    peripheral_data.append(f"        .iomem_ready({name}_iomem_ready),")
+                    peripheral_data.append(f"        .iomem_rdata({name}_iomem_rdata),")
+                    peripheral_data.append(f"        .iomem_valid(iomem_valid && {name}_en),")
+                    if pins:
+                        for pin_name, pin in pins.items():
+                            peripheral_data.append(f"        .{pin_name} (PICOSOC_P{paddr}_{pin_name.upper()}),")
+                    peripheral_data.append("        .iomem_wstrb(iomem_wstrb),")
+                    peripheral_data.append("        .iomem_addr(iomem_addr),")
+                    peripheral_data.append("        .iomem_wdata(iomem_wdata)")
+                    peripheral_data.append("    );")
+                    peripheral_data.append("")
                     paddr += 1
 
 
                 iomem_ready = "    assign iomem_ready = "
                 iomem_rdata = "    assign iomem_rdata = "
-                for name, pins in peripherals.items():
+                for peripheral in peripherals:
+                    name = peripheral["type"]
+                    pins = peripheral.get("pins", [])
                     iomem_ready += f"{name}_en ? {name}_iomem_ready : "
                     iomem_rdata += f"{name}_iomem_ready ? {name}_iomem_rdata : "
                 iomem_ready += "1'b0;"
                 iomem_rdata += "32'h0;"
-                peripheral.append(iomem_ready)
-                peripheral.append(iomem_rdata)
-                peripheral.append("")
-                peripheral.append("endmodule")
+                peripheral_data.append(iomem_ready)
+                peripheral_data.append(iomem_rdata)
+                peripheral_data.append("")
+                peripheral_data.append("endmodule")
 
                 registers = []
                 registers.append("")
@@ -307,7 +365,9 @@ class Plugin:
                 registers.append("#define reg_uart_data (*(volatile uint32_t*)0x02000008)")
                 registers.append("")
                 paddr = 3;
-                for name, pins in peripherals.items():
+                for peripheral in peripherals:
+                    name = peripheral["type"]
+                    pins = peripheral.get("pins", [])
                     registers.append(f"#define reg_{name} (*(volatile uint32_t*)0x{paddr}000000)")
                     paddr += 1
                 registers.append("")
@@ -315,8 +375,8 @@ class Plugin:
 
                 return {
                     f"Makefile.{self.ptype}": "\n".join(makefile),
-                    f"peripheral.v": "\n".join(peripheral),
-                    f"registers.h": "\n".join(registers),
+                    "peripheral.v": "\n".join(peripheral_data),
+                    "registers.h": "\n".join(registers),
                 }
 
 

@@ -8,8 +8,12 @@ module peripheral_gpio (
         output reg [31:0] iomem_rdata,
         output reg iomem_ready,
         input [31:0] iomem_wdata,
-        output reg [31:0] gpio
+        output gpio0,
+        output gpio1
     );
+    reg [31:0] gpio;
+    assign gpio0 = gpio[0];
+    assign gpio1 = gpio[1];
 
     always @(posedge clk) begin
         if (!resetn) begin

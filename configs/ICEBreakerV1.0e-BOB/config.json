@@ -16,6 +16,18 @@
             "baud": 115200,
             "mem": 1024,
             "prog_addr": "0x00200000",
+            "peripherals": [
+                {
+                    "type": "gpio",
+                    "pins": {"gpio0": ["11", "OUTPUT"], "gpio1": ["37", "OUTPUT"]}
+                },
+                {
+                    "type": "counter"
+                },
+                {
+                    "type": "sysclock"
+                }
+            ],
             "pins": {
                 "rx": "6",
                 "tx": "9",
@@ -24,8 +36,7 @@
                 "flash_io0": "14",
                 "flash_io1": "17",
                 "flash_io2": "12",
-                "flash_io3": "13",
-                "gpio": ["11", "37"]
+                "flash_io3": "13"
             },
             "name": "PICOSOC"
         }

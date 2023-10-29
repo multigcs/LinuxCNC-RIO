@@ -1,7 +1,10 @@
 
+#include <stdlib.h>
+#include <math.h>
 #include <stdint.h>
 #include <stdbool.h>
 #include <registers.h>
+
 
 // --------------------------------------------------------
 
@@ -61,48 +64,77 @@ void cmd_echo() {
     }
 }
 
-void print_dec(uint32_t v)
+
+// Funktion zum Austauschen zweier Zahlen
+void swap(char *x, char *y) {
+    char t = *x; *x = *y; *y = t;
+}
+ 
+// Funktion zum Umkehren von `buffer[i…j]`
+char* reverse(char *buffer, int i, int j)
 {
-	if (v >= 1000) {
-		print(">=1000");
-		return;
-	}
-
-	if      (v >= 900) { putchar('9'); v -= 900; }
-	else if (v >= 800) { putchar('8'); v -= 800; }
-	else if (v >= 700) { putchar('7'); v -= 700; }
-	else if (v >= 600) { putchar('6'); v -= 600; }
-	else if (v >= 500) { putchar('5'); v -= 500; }
-	else if (v >= 400) { putchar('4'); v -= 400; }
-	else if (v >= 300) { putchar('3'); v -= 300; }
-	else if (v >= 200) { putchar('2'); v -= 200; }
-	else if (v >= 100) { putchar('1'); v -= 100; }
-
-	if      (v >= 90) { putchar('9'); v -= 90; }
-	else if (v >= 80) { putchar('8'); v -= 80; }
-	else if (v >= 70) { putchar('7'); v -= 70; }
-	else if (v >= 60) { putchar('6'); v -= 60; }
-	else if (v >= 50) { putchar('5'); v -= 50; }
-	else if (v >= 40) { putchar('4'); v -= 40; }
-	else if (v >= 30) { putchar('3'); v -= 30; }
-	else if (v >= 20) { putchar('2'); v -= 20; }
-	else if (v >= 10) { putchar('1'); v -= 10; }
-
-	if      (v >= 9) { putchar('9'); v -= 9; }
-	else if (v >= 8) { putchar('8'); v -= 8; }
-	else if (v >= 7) { putchar('7'); v -= 7; }
-	else if (v >= 6) { putchar('6'); v -= 6; }
-	else if (v >= 5) { putchar('5'); v -= 5; }
-	else if (v >= 4) { putchar('4'); v -= 4; }
-	else if (v >= 3) { putchar('3'); v -= 3; }
-	else if (v >= 2) { putchar('2'); v -= 2; }
-	else if (v >= 1) { putchar('1'); v -= 1; }
-	else putchar('0');
+    while (i < j) {
+        swap(&buffer[i++], &buffer[j--]);
+    }
+ 
+    return buffer;
+}
+ 
+// Iterative Funktion zum Implementieren der Funktion `itoa()` in C
+char* itoa(int value, char* buffer, int base)
+{
+    // Ungültige Eingabe
+    if (base < 2 || base > 32) {
+        return buffer;
+    }
+ 
+    // berücksichtige den absoluten Wert der Zahl
+    //int n = abs(value);
+    int n = value;
+    if (value < 0) {
+        n = -value;
+    }
+ 
+    int i = 0;
+    while (n)
+    {
+        int r = n % base;
+ 
+        if (r >= 10) {
+            buffer[i++] = 65 + (r - 10);
+        }
+        else {
+            buffer[i++] = 48 + r;
+        }
+ 
+        n = n / base;
+    }
+ 
+    // wenn die Zahl 0 ist
+    if (i == 0) {
+        buffer[i++] = '0';
+    }
+ 
+    // Wenn die Basis 10 ist und der Wert negativ ist, der resultierende String
+    // vorangestellt ist ein Minuszeichen (-)
+    // Bei jeder anderen Basis gilt der Wert immer als unsigned
+    if (value < 0 && base == 10) {
+        buffer[i++] = '-';
+    }
+ 
+    buffer[i] = '\0'; // Null-Terminierungszeichenfolge
+ 
+    // den String umkehren und zurückgeben
+    return reverse(buffer, 0, i - 1);
 }
 
+
 void main() {
+    char buffer[33];
+
 	reg_uart_clkdiv = UART_CLOCK_DIV;
 	print("Booting..\n");
+
 
 	while (getchar_prompt("Press ENTER to continue..\n") != '\r') {
         /* wait */ 
@@ -130,10 +162,11 @@ void main() {
 
             reg_gpio = ~reg_gpio;
 
-            print_dec(reg_counter);
+
+            print(itoa(reg_counter, buffer, 10));
             print("\n");
 
-            print_dec(reg_sysclock);
+            print(itoa(reg_sysclock, buffer, 10));
             print("\n");
 
 			print("Command> ");

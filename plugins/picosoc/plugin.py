@@ -290,7 +290,7 @@ class Plugin:
                 makefile.append("	$(CROSS)cpp -P $(CFLAGS) -o firmware.lds sections.lds")
                 makefile.append("")
                 makefile.append("firmware.elf: firmware.lds start.s firmware.c ")
-                makefile.append("	$(CROSS)gcc $(CFLAGS) -mabi=ilp32 -march=rv32ic -Wl,-Bstatic,-T,firmware.lds,--strip-debug -ffreestanding -nostdlib -I. -o firmware.elf start.s firmware.c")
+                makefile.append("	$(CROSS)gcc $(CFLAGS) -mabi=ilp32 -march=rv32imc -Wl,-Bstatic,-T,firmware.lds,--strip-debug -ffreestanding -nostdlib -I. -o firmware.elf start.s firmware.c")
                 makefile.append("")
                 makefile.append("firmware.bin: firmware.elf")
                 makefile.append("	$(CROSS)objcopy -O binary firmware.elf firmware.bin")

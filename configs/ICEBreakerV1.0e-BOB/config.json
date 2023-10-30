@@ -14,7 +14,7 @@
         {
             "type": "picosoc",
             "baud": 115200,
-            "mem": 1024,
+            "mem": 131072,
             "prog_addr": "0x00200000",
             "peripherals": [
                 {

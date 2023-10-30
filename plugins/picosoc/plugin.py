@@ -1,5 +1,6 @@
 class Plugin:
     ptype = "picosoc"
+    default_mem = 128
 
     def __init__(self, jdata):
         self.jdata = jdata
@@ -130,7 +131,7 @@ class Plugin:
                 peripherals = data.get("peripherals", [])
                 baud = data.get("baud", 11520)
 
-                mem = 1024  # 1kByte
+                mem = self.default_mem
                 if self.jdata.get("type") == "up5k":
                     mem = 128 * 1024  # 128kByte
                 mem_words = data.get("mem", mem) // 4
@@ -262,7 +263,7 @@ class Plugin:
     def firmware_extrafiles(self):
         for num, data in enumerate(self.jdata["plugins"]):
             if data["type"] == self.ptype:
-                mem = 1024  # 1kByte
+                mem = self.default_mem
                 if self.jdata.get("type") == "up5k":
                     mem = 128 * 1024  # 128kByte
                 mem_total = data.get("mem", mem)

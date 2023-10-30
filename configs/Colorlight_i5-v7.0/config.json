@@ -21,7 +21,7 @@
             "peripherals": [
                 {
                     "type": "gpio",
-                    "pins": {"gpio0": ["H5", "OUTPUT"], "gpio1": ["J5", "OUTPUT"]}
+                    "pins": {"gpio0": ["D1", "OUTPUT"], "gpio1": ["E1", "OUTPUT"]}
                 },
                 {
                     "type": "counter"
@@ -31,14 +31,12 @@
                 }
             ],
             "pins": {
-                "rx": "A9",
-                "tx": "D10",
-                "flash_clk": "L16",
-                "flash_csb": "L13",
-                "flash_io0": "K17",
-                "flash_io1": "K18",
-                "flash_io2": "L14",
-                "flash_io3": "M14"
+                "rx": "J17",
+                "tx": "H18",
+                "flash_clk": "U3",
+                "flash_csb": "R2",
+                "flash_mosi": "W2",
+                "flash_miso": "V2"
             },
             "name": "PICOSOC"
         }

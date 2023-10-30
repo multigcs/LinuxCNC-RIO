@@ -4,6 +4,8 @@ https://tomverbeure.github.io/2021/01/22/The-Colorlight-i5-as-FPGA-development-b
 
 https://github.com/wuxx/Colorlight-FPGA-Projects
 
+https://github.com/kazkojima/colorlight-i5-tips
+
 
 ## flash command
 

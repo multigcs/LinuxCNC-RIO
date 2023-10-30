@@ -68,7 +68,7 @@ class Plugin:
                     (f"PICOSOC{num}_FLASH_IO0", data["pins"].get("flash_io0", data["pins"]["flash_mosi"]), "INOUT", pullup)
                 )
                 pinlist_out.append(
-                    (f"PICOSOC{num}_FLASH_IO1", data["pins"]get("flash_io1", data["pins"]["flash_miso"]), "INOUT", pullup)
+                    (f"PICOSOC{num}_FLASH_IO1", data["pins"].get("flash_io1", data["pins"]["flash_miso"]), "INOUT", pullup)
                 )
                 if "flash_io2" in data["pins"] and "flash_io3" in data["pins"]:
                     pinlist_out.append(

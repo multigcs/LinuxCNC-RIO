@@ -11,119 +11,35 @@
         "speed": "100000000",
         "pin": "P6"
     },
-    "interface": [
-        {
-            "type": "spi",
-            "pins": {
-                "MOSI": "H13",
-                "MISO": "G12",
-                "SCK": "G13",
-                "SEL": "G14"
-            }
-        }
-    ],
-    "expansion": [
-        {
-            "type": "shiftreg",
-            "speed": "20000000",
-            "bits": "8",
-            "pins": {
-                "clock": "G2",
-                "load": "G1",
-                "in": "C4",
-                "out": "H2"
-            }
-        }
-    ],
-    "error": {
+    "blink": {
         "pin": "T6"
     },
     "plugins": [
         {
-            "invert": true,
-            "pin": "EXPANSION0_INPUT[0]",
-            "name": "DIN0",
-            "type": "din_bit"
-        },
-        {
-            "pin": "EXPANSION0_INPUT[1]",
-            "name": "DIN1",
-            "type": "din_bit"
-        },
-        {
-            "pin": "EXPANSION0_INPUT[2]",
-            "name": "DIN2",
-            "type": "din_bit"
-        },
-        {
-            "pin": "EXPANSION0_INPUT[3]",
-            "name": "DIN3",
-            "type": "din_bit"
-        },
-        {
-            "invert": true,
-            "pin": "EXPANSION0_OUTPUT[4]",
-            "name": "DOUT0",
-            "type": "dout_bit"
-        },
-        {
-            "type": "vin_frequency",
-            "pin": "J5",
-            "name": "VIN0"
-        },
-        {
-            "comment": "J7.1+2",
-            "type": "vout_udpoti",
-            "resolution": "100",
-            "speed": "100000",
+            "type": "picosoc",
+            "baud": 115200,
+            "peripherals": [
+                {
+                    "type": "gpio",
+                    "pins": {"gpio0": ["H5", "OUTPUT"], "gpio1": ["J5", "OUTPUT"]}
+                },
+                {
+                    "type": "counter"
+                },
+                {
+                    "type": "sysclock"
+                }
+            ],
             "pins": {
-                "updown": "T3",
-                "incr": "R4"
+                "rx": "R0",
+                "tx": "G0",
+                "flash_clk": "N0",
+                "flash_csb": "N8",
+                "flash_mosi": "T8",
+                "flash_miso": "T7"
             },
-            "name": "VOUT0"
-        },
-        {
-            "comment": "J9.1",
-            "type": "joint_stepper",
-            "scale": "800",
-            "pins": {
-                "dir": "P11",
-                "step": "N11"
-            },
-            "name": "JOINT0"
-        },
-        {
-            "comment": "J10.1",
-            "type": "joint_pwmdir",
-            "cl": true,
-            "scale": "10",
-            "enc_scale": "720",
-            "pid": {
-                "P": "10.0",
-                "I": "0.0",
-                "D": "0.0",
-                "FF0": "0.0",
-                "FF1": "8.4",
-                "FF2": "0.0",
-                "BIAS": "0.0",
-                "DEADBAND": "0.0"
-            },
-            "pins": {
-                "dir": "L4",
-                "pwm": "L5",
-                "enc_a": "G5",
-                "enc_b": "H5"
-            },
-            "name": "JOINT1"
-        },
-        {
-            "comment": "J11.1",
-            "type": "joint_rcservo",
-            "cl": false,
-            "pins": {
-                "pwm": "P2"
-            },
-            "name": "JOINT2"
+            "name": "PICOSOC"
         }
+
     ]
 }

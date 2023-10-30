@@ -7,11 +7,11 @@ https://github.com/wuxx/Colorlight-FPGA-Projects
 
 ## flash command
 
-'
+'''
 ecpdap flash scan
-'
-'
+'''
+'''
 ecpdap flash write rio.bit
-'
+'''
 
 

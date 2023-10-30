@@ -33,7 +33,7 @@
             "pins": {
                 "rx": "J17",
                 "tx": "H18",
-                "flash_clk": "U3",
+                "flash_clk": "USRMCLK",
                 "flash_csb": "R2",
                 "flash_mosi": "W2",
                 "flash_miso": "V2"

@@ -11,6 +11,8 @@ def verilog_top(project):
         for pin in pins:
             if pin[1].startswith("EXPANSION"):
                 continue
+            if pin[1] == "USRMCLK":
+                continue
             top_arguments.append(f"{pin[2].lower()} {pin[0]}")
 
     top_data = []
@@ -54,6 +56,16 @@ def verilog_top(project):
         top_data.append("        .SEDSTDBY()")
         top_data.append("    );")
         top_data.append("")
+
+    for pname, pins in project['pinlists'].items():
+        if not pins:
+            continue
+        for pin in pins:
+            if pin[1] == "USRMCLK":
+                top_data.append(f"    wire {pin[0]};")
+                top_data.append("    wire tristate_usrmclk = 1'b0;")
+                top_data.append(f"    USRMCLK u1 (.USRMCLKI({pin[0]}), .USRMCLKTS(tristate_usrmclk));")
+                top_data.append("")
 
     if "blink" in project["jdata"]:
         top_data.append(

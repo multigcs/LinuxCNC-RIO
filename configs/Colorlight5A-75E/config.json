@@ -7,8 +7,8 @@
     "package": "CABGA256",
     "transport": "SPI",
     "clock": {
-        "osc": "25000000",
-        "speed": "100000000",
+        "_osc": "25000000",
+        "speed": "25000000",
         "pin": "P6"
     },
     "blink": {
@@ -31,9 +31,10 @@
                 }
             ],
             "pins": {
-                "rx": "R0",
-                "tx": "G0",
-                "flash_clk": "N0",
+                "rx": "C4",
+                "tx": "D4",
+                "_flash_clk": "N0",
+                "flash_clk": "USRMCLK",
                 "flash_csb": "N8",
                 "flash_mosi": "T8",
                 "flash_miso": "T7"

@@ -9,6 +9,9 @@ def pins_lpf(project):
         for pin in pins:
             if pin[1].startswith("EXPANSION"):
                 continue
+            if pin[1] == "USRMCLK":
+                lpf_data.append(f'# this pin ({pin[0]}) is not available in the lpf file, have to use the USRMCLK primitive in the verilog')
+                continue
             lpf_data.append(f'LOCATE COMP "{pin[0]}"           SITE "{pin[1]}";')
             lpf_data.append(f'IOBUF PORT "{pin[0]}" IO_TYPE=LVCMOS33;')
 

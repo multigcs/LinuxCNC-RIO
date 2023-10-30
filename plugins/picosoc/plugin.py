@@ -1,6 +1,6 @@
 class Plugin:
     ptype = "picosoc"
-    default_mem = 128
+    default_mem = 1024
 
     def __init__(self, jdata):
         self.jdata = jdata
@@ -141,7 +141,13 @@ class Plugin:
                     prog_addr = data.get("prog_addr", "32'h00400000")
                 prog_addr = prog_addr.replace("0x", "32'h")
 
-                func_out.append("    wire        resetn;")
+                func_out.append("    reg [5:0] reset_cnt = 0;")
+                func_out.append("    wire resetn = &reset_cnt;")
+                func_out.append("    always @(posedge sysclk) begin")
+                func_out.append("        reset_cnt <= reset_cnt + !resetn;")
+                func_out.append("    end")
+                func_out.append("")
+
                 func_out.append("    wire        iomem_valid;")
                 func_out.append("    wire        iomem_ready;")
                 func_out.append("    wire [3:0]  iomem_wstrb;")
@@ -155,12 +161,12 @@ class Plugin:
                 func_out.append(f"        .ser_rx (PICOSOC{num}_RX),")
                 func_out.append(f"        .ser_tx (PICOSOC{num}_TX),")
                 func_out.append("        .resetn(resetn),")
-                func_out.append("        .iomem_ready(iomem_ready),")
-                func_out.append("        .iomem_rdata(iomem_rdata),")
                 func_out.append("        .iomem_valid(iomem_valid),")
+                func_out.append("        .iomem_ready(iomem_ready),")
                 func_out.append("        .iomem_wstrb(iomem_wstrb),")
                 func_out.append("        .iomem_addr(iomem_addr),")
                 func_out.append("        .iomem_wdata(iomem_wdata),")
+                func_out.append("        .iomem_rdata(iomem_rdata),")
                 func_out.append(f"        .flash_clk (PICOSOC{num}_FLASH_CLK),")
                 func_out.append(f"        .flash_csb (PICOSOC{num}_FLASH_CSB),")
                 if "flash_io2" in data["pins"] and "flash_io3" in data["pins"]:
@@ -240,6 +246,7 @@ class Plugin:
                 ret.update({
                     "PICOSOC_CLOCK": str(fpga_speed),
                     "PICOSOC_CLOCK_HALF": str(fpga_speed // 2),
+                    "PICOSOC_CLOCK_1000": str(fpga_speed // 1000),
                 })
 
                 if "flash_io2" not in data["pins"] or "flash_io3" not in data["pins"]:

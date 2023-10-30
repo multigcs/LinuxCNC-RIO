@@ -24,18 +24,18 @@
 
 module picosoc_plugin (
     input clk,
-    output ser_tx,
-    input ser_rx,
-
-    output        resetn,
-	output        iomem_valid,
-	input         iomem_ready,
-	output [ 3:0] iomem_wstrb,
-	output [31:0] iomem_addr,
-	output [31:0] iomem_wdata,
-	input  [31:0] iomem_rdata,
-
-    output [31:0] gpio,
+    input         resetn,
+    // uart
+    output        ser_tx,
+    input         ser_rx,
+    // peripheral
+    output        iomem_valid,
+    input         iomem_ready,
+    output [ 3:0] iomem_wstrb,
+    output [31:0] iomem_addr,
+    output [31:0] iomem_wdata,
+    input  [31:0] iomem_rdata,
+    // flash
     output flash_csb,
     output flash_clk,
 `ifndef PICOSOC_NO_QUADFLASH
@@ -47,12 +47,6 @@ module picosoc_plugin (
 );
     parameter integer MEM_WORDS = 256;
     parameter [31:0] PROGADDR_RESET = 32'h 0010_0000;
-
-    reg [5:0] reset_cnt = 0;
-    wire resetn = &reset_cnt;
-    always @(posedge clk) begin
-        reset_cnt <= reset_cnt + !resetn;
-    end
 
     wire flash_io0_oe, flash_io0_do, flash_io0_di;
     wire flash_io1_oe, flash_io1_do, flash_io1_di;

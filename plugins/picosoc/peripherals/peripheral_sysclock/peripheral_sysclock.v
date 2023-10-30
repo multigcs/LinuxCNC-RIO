@@ -18,7 +18,7 @@ module peripheral_sysclock (
             sysclock <= 0;
         end else begin
             if (counter == 0) begin
-                counter <= `PICOSOC_CLOCK;
+                counter <= `PICOSOC_CLOCK_1000;
                 sysclock <= sysclock + 1;
             end else begin
                 counter <= counter - 1;

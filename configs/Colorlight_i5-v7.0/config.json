@@ -31,8 +31,8 @@
                 }
             ],
             "pins": {
-                "rx": "J17",
-                "tx": "H18",
+                "rx": "H18",
+                "tx": "J17",
                 "flash_clk": "USRMCLK",
                 "flash_csb": "R2",
                 "flash_mosi": "W2",

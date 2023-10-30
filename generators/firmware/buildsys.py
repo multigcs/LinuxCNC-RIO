@@ -229,7 +229,10 @@ def buildsys_icestorm(project):
     makefile_data.append(f"all: {bitfileName}")
     makefile_data.append("")
     makefile_data.append(f"rio.json: {verilogs}")
-    makefile_data.append(f"	yosys -q -l yosys.log -p 'synth_${{FAMILY}} -dsp -top rio -json rio.json' {verilogs}")
+    if project["jdata"]["type"] == "up5k":
+        makefile_data.append(f"	yosys -q -l yosys.log -p 'synth_${{FAMILY}} -dsp -top rio -json rio.json' {verilogs}")
+    else:
+        makefile_data.append(f"	yosys -q -l yosys.log -p 'synth_${{FAMILY}} -top rio -json rio.json' {verilogs}")
     makefile_data.append("")
 
     if project["jdata"]["family"] == "ecp5":

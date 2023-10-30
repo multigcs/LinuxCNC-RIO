@@ -218,18 +218,20 @@
             "pin": "K2"
         },
         {
-            "type": "dout_bit",
-            "name": "LD4",
-            "pin": "H5"
-        },
-        {
-            "type": "dout_bit",
-            "name": "LD5",
-            "pin": "J5"
-        },
-        {
             "type": "picosoc",
             "baud": 115200,
+            "peripherals": [
+                {
+                    "type": "gpio",
+                    "pins": {"gpio0": ["H5", "OUTPUT"], "gpio1": ["J5", "OUTPUT"]}
+                },
+                {
+                    "type": "counter"
+                },
+                {
+                    "type": "sysclock"
+                }
+            ],
             "pins": {
                 "rx": "A9",
                 "tx": "D10",

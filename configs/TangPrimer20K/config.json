@@ -13,7 +13,7 @@
     "transport": "UDP",
     "ip": "192.168.10.15",
     "axis": 3,
-    "interface": [
+    "_interface": [
         {
             "type": "udp_tangprimer20k",
             "mac": "06:00:AA:BB:0C:DE",
@@ -36,154 +36,33 @@
         "invert": true,
         "pin": "C13"
     },
-    "error": {
-        "invert": true,
-        "pin": "A13"
-    },
-    "_enable": {
-        "pin": "R13"
-    },
     "plugins": [
         {
-            "type": "din_bit",
-            "name": "SW1",
-            "invert": true,
-            "pin": "B10"
-        },
-        {
-            "type": "din_bit",
-            "name": "SW2",
-            "invert": true,
-            "pin": "E9"
-        },
-        {
-            "type": "din_bit",
-            "name": "SW3",
-            "invert": true,
-            "pin": "E8"
-        },
-        {
-            "type": "din_bit",
-            "name": "SW4",
-            "invert": true,
-            "pin": "T4"
-        },
-        {
-            "type": "din_bit",
-            "name": "SW5",
-            "invert": true,
-            "pin": "T5"
-        },
-        {
-            "type": "din_bit",
-            "name": "KEY1",
-            "invert": true,
-            "pin": "T10"
-        },
-        {
-            "type": "din_bit",
-            "name": "KEY2",
-            "invert": true,
-            "pin": "T3"
-        },
-        {
-            "type": "din_bit",
-            "name": "KEY3",
-            "invert": true,
-            "pin": "T2"
-        },
-        {
-            "type": "din_bit",
-            "name": "KEY4",
-            "invert": true,
-            "pin": "D7"
-        },
-        {
-            "type": "din_bit",
-            "name": "KEY5",
-            "invert": true,
-            "pin": "C7"
-        },
-
-        {
-            "type": "dout_bit",
-            "name": "BLED2",
-            "invert": true,
-            "pin": "N16"
-        },
-        {
-            "type": "dout_bit",
-            "name": "BLED3",
-            "invert": true,
-            "pin": "N14"
-        },
-        {
-            "type": "dout_bit",
-            "name": "BLED4",
-            "invert": true,
-            "pin": "L14"
-        },
-        {
-            "type": "dout_bit",
-            "name": "BLED5",
-            "invert": true,
-            "pin": "L16"
-        }
-    ],
-    "slots": [
-        {
-            "comment": "SLOT1 MIC ARRAY",
+            "type": "picosoc",
+            "baud": 115200,
+            "mem": 1024,
+            "prog_addr": "0x00200000",
+            "peripherals": [
+                {
+                    "type": "gpio",
+                    "pins": {"gpio0": ["N16", "OUTPUT"], "gpio1": ["N14", "OUTPUT"]}
+                },
+                {
+                    "type": "counter"
+                },
+                {
+                    "type": "sysclock"
+                }
+            ],
             "pins": {
-                "P1": "P6",
-                "P2": "R8",
-                "P3": "P8",
-                "P4": "T9",
-                "P7": "T6",
-                "P8": "T7",
-                "P9": "T8",
-                "P10": "P9"
+                "rx": "T13",
+                "tx": "M11",
+                "flash_clk": "L10",
+                "flash_csb": "M9",
+                "flash_io0": "P10",
+                "flash_io1": "R10"
             },
-            "module": "icebreaker_led_sw"
-        },
-        {
-            "comment": "SLOT2 TVP",
-            "pins": {
-                "P1": "P11",
-                "P2": "R11",
-                "P3": "M15",
-                "P4": "J16",
-                "P7": "T11",
-                "P8": "T12",
-                "P9": "M14",
-                "P10": "J14"
-            },
-            "module": "joint3+dout1"
-        },
-        {
-            "comment": "SLOT3 RGB",
-            "pins": {
-                "P1": "E15",
-                "P2": "A15",
-                "P3": "A14",
-                "P4": "C12",
-                "P7": "D14",
-                "P8": "B14",
-                "P9": "B13",
-                "P10": "B12"
-            }
-        },
-        {
-            "comment": "SLOT4 LCD",
-            "pins": {
-                "P1": "B11",
-                "P2": "D11",
-                "P3": "N7",
-                "P4": "N8",
-                "P7": "A11",
-                "P8": "N6",
-                "P9": "N9",
-                "P10": "L9"
-            }
+            "name": "PICOSOC"
         }
     ]
 }

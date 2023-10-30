@@ -7,61 +7,41 @@
     "package": "CABGA381",
     "transport": "SPI",
     "clock": {
-        "osc": "25000000",
-        "speed": "100000000",
+        "_osc": "25000000",
+        "speed": "25000000",
         "pin": "P3"
     },
-    "interface": [
-        {
-            "type": "spi",
-            "pins": {
-                "MOSI": "E18",
-                "MISO": "E17",
-                "SCK": "F16",
-                "SEL": "E16"
-            }
-        }
-    ],
     "blink": {
         "pin": "U16"
     },
     "plugins": [
         {
-            "invert": true,
-            "pin": "R1",
-            "name": "DIN0",
-            "type": "din_bit"
-        },
-        {
-            "invert": true,
-            "pin": "U1",
-            "name": "DOUT0",
-            "type": "dout_bit"
-        },
-        {
-            "type": "vin_frequency",
-            "pin": "T1",
-            "name": "VIN0"
-        },
-        {
-            "type": "vout_udpoti",
-            "resolution": "100",
-            "speed": "100000",
+            "type": "picosoc",
+            "baud": 115200,
+            "peripherals": [
+                {
+                    "type": "gpio",
+                    "pins": {"gpio0": ["H5", "OUTPUT"], "gpio1": ["J5", "OUTPUT"]}
+                },
+                {
+                    "type": "counter"
+                },
+                {
+                    "type": "sysclock"
+                }
+            ],
             "pins": {
-                "updown": "Y2",
-                "incr": "W1"
+                "rx": "A9",
+                "tx": "D10",
+                "flash_clk": "L16",
+                "flash_csb": "L13",
+                "flash_io0": "K17",
+                "flash_io1": "K18",
+                "flash_io2": "L14",
+                "flash_io3": "M14"
             },
-            "name": "VOUT0"
-        },
-        {
-            "comment": "J9.1",
-            "type": "joint_stepper",
-            "scale": "800",
-            "pins": {
-                "dir": "M1",
-                "step": "N2"
-            },
-            "name": "JOINT0"
+            "name": "PICOSOC"
         }
+
     ]
 }

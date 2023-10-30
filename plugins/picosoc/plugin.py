@@ -319,7 +319,9 @@ class Plugin:
 
 
                 registers = []
-                registers.append("")
+                registers.append("// clock")
+                registers.append(f"#define PICOSOC_CLOCK {fpga_speed}")
+                registers.append("// peripherals")
                 registers.append("#define reg_spictrl (*(volatile uint32_t*)0x02000000)")
                 registers.append("#define reg_uart_clkdiv (*(volatile uint32_t*)0x02000004)")
                 registers.append("#define reg_uart_data (*(volatile uint32_t*)0x02000008)")

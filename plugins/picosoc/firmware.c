@@ -36,7 +36,7 @@ char getchar_prompt(char *prompt) {
 	while (c == -1) {
 		__asm__ volatile ("rdcycle %0" : "=r"(cycles_now));
 		cycles = cycles_now - cycles_begin;
-		if (cycles > 12000000) {
+		if (cycles > PICOSOC_CLOCK / 2) {
 			if (prompt) {
 				print(prompt);
             }

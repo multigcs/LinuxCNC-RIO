@@ -5,13 +5,19 @@ import re
 
 patternModule = re.compile(r"module\s+(?P<name>\w+)(?P<params>\s*#\([^\)]*\))?\s\((?P<args>[^\)]*)\)\s*")
 patternParam = re.compile(r"parameter(?P<size>\s*\[.*\])?\s+(?P<name>\w+)\s+(?P<default>=.*)")
-
+patternArg = re.compile(r"(?P<dir>output|input|inout)?(?P<type>\s+reg|wire)?(?P<size>\s\[[^\]]*\])?(?P<name>\s\w+)")
 
 
 verilogData = open("picorv32.v", "r").read()
 
 verilogData = re.sub(
    r"//.*",
+   "",
+   verilogData
+)
+
+verilogData = re.sub(
+   r"`(if|else|end|def).*",
    "",
    verilogData
 )
@@ -31,16 +37,28 @@ for result in patternModule.finditer(verilogData):
     moduleArgs = []
     for arg in result.group("args").split(","):
         moduleArg = {}
-        for part in arg.strip().split():
-            if part in {"input", "output", "inout"}:
-                moduleArg["direction"] = part
-            elif part in {"reg", "wire"}:
-                moduleArg["type"] = part
-            elif part.startswith("["):
-                moduleArg["size"] = part
-            else:
-                moduleArg["name"] = part
-        modules[moduleName]["args"][moduleArg["name"]] = moduleArg
+        if not arg:
+            continue
+
+        arg = re.sub(
+           r"\s+",
+           " ",
+           arg
+        )
+
+
+        argm = patternArg.search(arg.strip())
+        if argm:
+            if argm["dir"]:
+                moduleArg["direction"] = argm["dir"]
+            if argm["type"]:
+                moduleArg["type"] = argm["type"]
+            if argm["size"]:
+                moduleArg["size"] = argm["size"]
+            if argm["name"]:
+                moduleArg["name"] = argm["name"]
+
+            modules[moduleName]["args"][moduleArg["name"]] = moduleArg
 
     if result.group("params"):
         for arg in result.group("params").strip().lstrip("#").lstrip("(").rstrip(")").split(","):
@@ -54,6 +72,8 @@ for result in patternModule.finditer(verilogData):
 
             modules[moduleName]["params"][moduleParam["name"]] = moduleParam
 
+
+#exit(0)
 
 for moduleName, module in modules.items():
     print(f"# {moduleName}")

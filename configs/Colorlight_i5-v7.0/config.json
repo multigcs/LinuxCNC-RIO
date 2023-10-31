@@ -30,6 +30,7 @@
                     "type": "sysclock"
                 }
             ],
+            "mem": 16384,
             "pins": {
                 "rx": "H18",
                 "tx": "J17",

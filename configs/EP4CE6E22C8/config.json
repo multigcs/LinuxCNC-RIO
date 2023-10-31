@@ -1,0 +1,17 @@
+{
+    "name": "EP4CE6E22C8",
+    "description": "EP4CE6E22C8 om china devboard - Cyclone IV E",
+    "toolchain": "quartus",
+    "family": "Cyclone IV E",
+    "type": "EP4CE6E22C8",
+    "package": "128",
+    "clock": {
+        "speed": "15000000",
+        "pin": "PIN_24"
+    },
+    "blink": {
+        "pin": "PIN_1"
+    },
+    "plugins": [
+    ]
+}

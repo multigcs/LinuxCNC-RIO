@@ -30,6 +30,7 @@
         },
         {
             "pin": "PIN_2",
+            "invert": true,
             "name": "DOUT2",
             "type": "dout_bit"
         },

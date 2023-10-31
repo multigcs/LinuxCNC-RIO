@@ -1,5 +1,54 @@
 // https://github.com/wuxx/Colorlight-FPGA-Projects/blob/master/src/i5/hdmi_test_pattern/vgatestsrc.v
 
+/*
+LOCATE COMP "gpdi_dp[0]" SITE "G19"; # Blue +
+LOCATE COMP "gpdi_dn[0]" SITE "H20"; # Blue -
+LOCATE COMP "gpdi_dp[1]" SITE "E20"; # Green +
+LOCATE COMP "gpdi_dn[1]" SITE "F19"; # Green -
+LOCATE COMP "gpdi_dp[2]" SITE "C20"; # Red +
+LOCATE COMP "gpdi_dn[2]" SITE "D19"; # Red -
+LOCATE COMP "gpdi_dp[3]" SITE "J19"; # Clock +
+LOCATE COMP "gpdi_dn[3]" SITE "K19"; # Clock -
+
+IOBUF PORT "gpdi_dp[0]" IO_TYPE=LVCMOS33 DRIVE=4;
+IOBUF PORT "gpdi_dn[0]" IO_TYPE=LVCMOS33 DRIVE=4;
+IOBUF PORT "gpdi_dp[1]" IO_TYPE=LVCMOS33 DRIVE=4;
+IOBUF PORT "gpdi_dn[1]" IO_TYPE=LVCMOS33 DRIVE=4;
+IOBUF PORT "gpdi_dp[2]" IO_TYPE=LVCMOS33 DRIVE=4;
+IOBUF PORT "gpdi_dn[2]" IO_TYPE=LVCMOS33 DRIVE=4;
+IOBUF PORT "gpdi_dp[3]" IO_TYPE=LVCMOS33 DRIVE=4;
+IOBUF PORT "gpdi_dn[3]" IO_TYPE=LVCMOS33 DRIVE=4;
+
+
+
+module rio (
+        output BLINK_LED,
+        input sysclk,
+
+        output [3:0] gpdi_dp, gpdi_dn,
+
+        inout PICOSOC0_RX,
+        output PICOSOC0_TX,
+        output PICOSOC0_FLASH_CSB,
+        inout PICOSOC0_FLASH_IO0,
+        inout PICOSOC0_FLASH_IO1,
+        output PICOSOC_P3_GPIO0,
+        output PICOSOC_P3_GPIO1
+    );
+
+
+wire wifi_gpio0;
+
+ULX3S_25F xx0 (
+	.clk_25mhz(sysclk),
+    .gpdi_dp(gpdi_dp),
+    .gpdi_dn(gpdi_dn),
+	.wifi_gpio0(wifi_gpio0)
+);
+
+
+*/
+
 `default_nettype none
 
 module ULX3S_25F (

@@ -6,7 +6,7 @@
     "type": "EP4CE6E22C8",
     "package": "128",
     "clock": {
-        "speed": "15000000",
+        "speed": "48000000",
         "pin": "PIN_24"
     },
     "blink": {

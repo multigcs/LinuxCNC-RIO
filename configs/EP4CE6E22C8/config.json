@@ -12,11 +12,18 @@
     "blink": {
         "pin": "PIN_1"
     },
-
+    "interface": [
+        {
+            "type": "uart",
+            "pins": {
+                "RX": "PIN_87",
+                "TX": "PIN_86"
+            }
+        }
+    ],
     "plugins": [
         {
             "pin": "PIN_88",
-            "pullup": true,
             "invert": true,
             "name": "DIN0",
             "type": "din_bit"

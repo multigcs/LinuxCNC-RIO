@@ -112,11 +112,11 @@ def load(configfile):
         pass
     elif project["osc_clock"]:
         project["pinlists"]["main"] = (
-            ("sysclk_in", project["jdata"]["clock"]["pin"], "INPUT", True),
+            ("sysclk_in", project["jdata"]["clock"]["pin"], "INPUT", False),
         )
     else:
         project["pinlists"]["main"] = (
-            ("sysclk", project["jdata"]["clock"]["pin"], "INPUT", True),
+            ("sysclk", project["jdata"]["clock"]["pin"], "INPUT", False),
         )
 
     if "blink" in project["jdata"]:

@@ -77,3 +77,21 @@ def pins_xdc(project):
                 data.append(f"set_property PULLUP TRUE [get_ports {pin[0]}]")
         data.append("")
     open(f"{project['PINS_PATH']}/pins.xdc", "w").write("\n".join(data))
+
+def pins_quartus(project):
+    data = []
+    data.append(f"set_global_assignment -name STRATIX_DEVICE_IO_STANDARD \"3.3-V LVTTL\"")
+    for pname, pins in project["pinlists"].items():
+        if not pins:
+            continue
+        data.append(f"### {pname} ###")
+        for pin in pins:
+            if pin[1].startswith("EXPANSION"):
+                continue
+            options = ""
+            #if len(pin) > 3 and pin[3]:
+            #    options += " -pullup yes"
+
+            data.append(f"set_location_assignment {pin[1]} -to {pin[0]}")
+        data.append("")
+    open(f"{project['PINS_PATH']}/pins.quartus", "w").write("\n".join(data))

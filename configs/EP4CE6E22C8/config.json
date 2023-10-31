@@ -25,22 +25,44 @@
         {
             "pin": "PIN_88",
             "invert": true,
-            "name": "DIN0",
+            "name": "SW_S1",
+            "type": "din_bit"
+        },
+        {
+            "pin": "PIN_91",
+            "invert": true,
+            "name": "SW_S2",
+            "type": "din_bit"
+        },
+        {
+            "pin": "PIN_90",
+            "invert": true,
+            "name": "SW_S3",
+            "type": "din_bit"
+        },
+        {
+            "pin": "PIN_89",
+            "invert": true,
+            "name": "SW_S4",
             "type": "din_bit"
         },
         {
             "pin": "PIN_2",
             "invert": true,
-            "name": "DOUT2",
+            "name": "LED2",
             "type": "dout_bit"
         },
         {
-            "type": "vout_pwm",
-            "pins": {
-                "pwm": "PIN_3"
-            },
-            "invert_pwm": true,
-            "name": "VOUT0"
+            "pin": "PIN_3",
+            "invert": true,
+            "name": "LED3",
+            "type": "dout_bit"
+        },
+        {
+            "pin": "PIN_144",
+            "invert": true,
+            "name": "LED4",
+            "type": "dout_bit"
         },
         {
             "type": "joint_stepper",
@@ -48,7 +70,7 @@
             "cl": false,
             "pins": {
                 "step": "PIN_85",
-                "dir": "PIN_144"
+                "dir": "PIN_125"
             },
             "name": "JOINT0"
         }

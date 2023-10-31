@@ -78,7 +78,7 @@ def pins_xdc(project):
         data.append("")
     open(f"{project['PINS_PATH']}/pins.xdc", "w").write("\n".join(data))
 
-def pins_quartus(project):
+def pins_qdf(project):
     data = []
     data.append(f"set_global_assignment -name STRATIX_DEVICE_IO_STANDARD \"3.3-V LVTTL\"")
     for pname, pins in project["pinlists"].items():
@@ -94,4 +94,4 @@ def pins_quartus(project):
                 data.append(f"set_instance_assignment -name WEAK_PULL_UP_RESISTOR ON -to {pin[0]}")
 
         data.append("")
-    open(f"{project['PINS_PATH']}/pins.quartus", "w").write("\n".join(data))
+    open(f"{project['PINS_PATH']}/pins.qdf", "w").write("\n".join(data))

@@ -461,7 +461,7 @@ def buildsys_diamond(project):
     open(f"{project['PINS_PATH']}/pins.lpf", "w").write("\n".join(pcf_data))
 
 def buildsys_quartus(project):
-    pins_quartus(project)
+    pins_qdf(project)
 
     family = project["jdata"]["family"]
     ftype = project["jdata"]["type"]
@@ -473,7 +473,7 @@ def buildsys_quartus(project):
     makefile_data.append(f"PRODUCT   = rio")
     makefile_data.append(f"PART      = {ftype}")
     makefile_data.append(f"FAMILY    = \"{family}\"")
-    makefile_data.append("BOARDFILE = pins.quartus")
+    makefile_data.append("BOARDFILE = pins.qdf")
     makefile_data.append("MOD       = rio")
     makefile_data.append("")
     makefile_data.append("QC   = quartus_sh")

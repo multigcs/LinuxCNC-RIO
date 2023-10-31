@@ -12,6 +12,39 @@
     "blink": {
         "pin": "PIN_1"
     },
+
     "plugins": [
+        {
+            "pin": "PIN_88",
+            "pullup": true,
+            "invert": true,
+            "name": "DIN0",
+            "type": "din_bit"
+        },
+        {
+            "pin": "PIN_2",
+            "name": "DOUT2",
+            "type": "dout_bit"
+        },
+        {
+            "type": "vout_pwm",
+            "pins": {
+                "pwm": "PIN_3"
+            },
+            "invert_pwm": true,
+            "name": "VOUT0"
+        },
+        {
+            "type": "joint_stepper",
+            "scale": 1600,
+            "cl": false,
+            "pins": {
+                "step": "PIN_85",
+                "dir": "PIN_144"
+            },
+            "name": "JOINT0"
+        }
+
+
     ]
 }

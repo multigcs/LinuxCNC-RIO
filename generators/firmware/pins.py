@@ -89,9 +89,9 @@ def pins_quartus(project):
             if pin[1].startswith("EXPANSION"):
                 continue
             options = ""
-            #if len(pin) > 3 and pin[3]:
-            #    options += " -pullup yes"
-
             data.append(f"set_location_assignment {pin[1]} -to {pin[0]}")
+            if len(pin) > 3 and pin[3]:
+                data.append(f"set_instance_assignment -name WEAK_PULL_UP_RESISTOR ON -to {pin[0]}")
+
         data.append("")
     open(f"{project['PINS_PATH']}/pins.quartus", "w").write("\n".join(data))

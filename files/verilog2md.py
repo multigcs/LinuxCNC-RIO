@@ -1,8 +1,10 @@
 
 import argparse
+import graphviz
 
 import pprint
 import re
+
 
 
 patternModule = re.compile(r"module\s+(?P<name>\w+)(?P<params>\s*#\([^\)]*\))?\s*\((?P<args>[^\)]*)\)\s*;(?P<data>[\s\S]*?(?=endmodule))endmodule")
@@ -166,6 +168,10 @@ if output == "markdown":
 
 else:
 
+    gAll = graphviz.Digraph('G', format="svg")
+    gAll.attr(rankdir='LR')
+
+
     print("""
 <style>
 table, th, td {
@@ -187,6 +193,27 @@ table, th, td {
             print(f"<h2 id='{moduleName}'>{moduleName}</h2>")
             print(f"<hr/>")
 
+            print("<h3>flow</h3>")
+            gSub = graphviz.Digraph('G', format="svg")
+            gSub.attr(rankdir='LR')
+            gSub.node(moduleName, shape='box', label=moduleName)
+            for moduleNameFrom, moduleFrom in modules.items():
+                for subFrom in moduleFrom["sub"]:
+                    if subFrom[0] == moduleName:
+                        gSub.edge(moduleNameFrom, moduleName)
+                        gSub.node(moduleNameFrom, shape='plaintext', label=moduleNameFrom, href=f"#{moduleNameFrom}")
+            for sub in module["sub"]:
+                if sub[0] in modules:
+                    gAll.edge(moduleName, sub[0])
+                    gSub.node(sub[0], shape='plaintext', label=sub[0], href=f"#{sub[0]}")
+                    gSub.edge(moduleName, sub[0])
+            print(gSub.pipe().decode())
+            print("<br>")
+
+
+            gAll.node(moduleName, shape='plaintext', label=moduleName, href=f"#{moduleName}")
+
+
             print("<h3>arguments</h3>")
             print("<table>")
             print("<tr><th>direction</th><th>type</th><th>size</th><th>name</th></tr>")
@@ -205,23 +232,24 @@ table, th, td {
                 print("</table>")
                 print("<br>")
 
-            if module["sub"]:
-                print("<h3>sub modules</h3>")
-                print("<table>")
-                print("<tr><th>module</th><th>source</th></tr>")
-                for sub in module["sub"]:
-                    if sub[0] in modules:
-                        
-                        print(f"<tr><td><a href='#{sub[0]}'>{sub[0]}</a></td><td><pre>{sub[1]}</pre></td></tr>")
 
-                print("</table>")
-                print("<br>")
+            #if module["sub"]:
+                #print("<h3>sub modules</h3>")
+                #print("<table>")
+                #print("<tr><th>module</th><th>source</th></tr>")
+                #for sub in module["sub"]:
+                #    if sub[0] in modules:
+                #        print(f"<tr><td><a href='#{sub[0]}'>{sub[0]}</a></td><td><pre>{sub[1]}</pre></td></tr>")
+                #print("</table>")
+
 
 
             #print("<pre>")
             #print(module["data"])
             #print("</pre>")
 
+
+    print(gAll.pipe())
 
 
 

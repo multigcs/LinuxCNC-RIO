@@ -8,7 +8,7 @@ import re
 
 
 patternModule = re.compile(r"module\s+(?P<name>\w+)(?P<params>\s*#\([^\)]*\))?\s*\((?P<args>[^\)]*)\)\s*;(?P<data>[\s\S]*?(?=endmodule))endmodule")
-patternParam = re.compile(r"parameter(?P<type>\s+[a-zA-Z]+)?(?P<size>\s*\[.*\])?(?P<name>\s+\w+)\s+(?P<default>=.*)")
+patternParam = re.compile(r"parameter(?P<type>\s+[a-zA-Z]+)?(?P<size>\s*\[.*\])?(?P<name>\s+\w+)\s*(?P<default>=.*)")
 patternArg = re.compile(r"(?P<dir>output|input|inout)?(?P<type>\s+reg|wire)?(?P<size>\s\[[^\]]*\])?(?P<name>\s\w+)")
 
 
@@ -81,7 +81,7 @@ for verilog_file in sargs.verilog:
                     moduleArg["name"] = arg.strip()
                     modules[moduleName]["args"][moduleArg["name"]] = moduleArg
                 else:
-                    print(f"UNKNOWN ARG ({moduleName}): {arg.strip()}")
+                    print(f"UNKNOWN ARG ({moduleName}): {arg.strip()} <br/>")
 
         if result.group("params"):
             for arg in result.group("params").strip().lstrip("#").lstrip("(").rstrip(")").split(","):
@@ -98,7 +98,7 @@ for verilog_file in sargs.verilog:
 
                     modules[moduleName]["params"][moduleParam["name"]] = moduleParam
                 else:
-                    print(f"UNKNOWN PARAMETER ({moduleName}): {arg.strip()}")
+                    print(f"UNKNOWN PARAMETER ({moduleName}): {arg.strip()} <br/>")
 
 
         data = re.sub(r"`(if|else|end|def).*", "", result.group("data"))
@@ -249,6 +249,7 @@ table, th, td {
             #print("</pre>")
 
 
+    print("<hr/>")
     print(gAll.pipe().decode())
 
 

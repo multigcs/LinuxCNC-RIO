@@ -249,7 +249,7 @@ table, th, td {
             #print("</pre>")
 
 
-    print(gAll.pipe())
+    print(gAll.pipe().decode())
 
 
 

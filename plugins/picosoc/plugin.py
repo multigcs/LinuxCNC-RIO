@@ -86,8 +86,8 @@ class Plugin:
                     pins = peripheral.get("pins", [])
                     if pins:
                         for pin_name, pin in pins.items():
+                            pinlist_out.append([f"PICOSOC_P{paddr}_{pin_name.upper()}"] + pin)
 
-                            pinlist_out.append((f"PICOSOC_P{paddr}_{pin_name.upper()}", pin[0], pin[1]))
 
                     paddr += 1
 

@@ -12,8 +12,13 @@ def pins_lpf(project):
             if pin[1] == "USRMCLK":
                 lpf_data.append(f'# this pin ({pin[0]}) is not available in the lpf file, have to use the USRMCLK primitive in the verilog')
                 continue
+
+            extra = ""
+            if len(pin) > 4:
+                extra += f" {pin[4]}"
+
             lpf_data.append(f'LOCATE COMP "{pin[0]}"           SITE "{pin[1]}";')
-            lpf_data.append(f'IOBUF PORT "{pin[0]}" IO_TYPE=LVCMOS33;')
+            lpf_data.append(f'IOBUF PORT "{pin[0]}" IO_TYPE=LVCMOS33{extra};')
 
         lpf_data.append("")
     lpf_data.append("")
@@ -70,7 +75,6 @@ def pins_xdc(project):
         for pin in pins:
             if pin[1].startswith("EXPANSION"):
                 continue
-            options = ""
             data.append(f"set_property LOC {pin[1]} [get_ports {pin[0]}]")
             data.append(f"set_property IOSTANDARD LVCMOS33 [get_ports {pin[0]}]")
             if len(pin) > 3 and pin[3]:
@@ -88,7 +92,6 @@ def pins_qdf(project):
         for pin in pins:
             if pin[1].startswith("EXPANSION"):
                 continue
-            options = ""
             data.append(f"set_location_assignment {pin[1]} -to {pin[0]}")
             if len(pin) > 3 and pin[3]:
                 data.append(f"set_instance_assignment -name WEAK_PULL_UP_RESISTOR ON -to {pin[0]}")

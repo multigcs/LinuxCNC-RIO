@@ -142,6 +142,53 @@ for verilog_file in sargs.verilog:
 
     #exit(0)
 
+
+
+
+
+
+
+
+
+def mexpand(dependsGraph, module):
+    dependsGraph[module] = {}
+    for sub in modules[module]["sub"]:
+        if sub[0] in modules:
+            mexpand(dependsGraph[module], sub[0])
+    return dependsGraph
+
+
+def dependsGraph2menu(fd, dependsGraph, prefix=""):
+    for module in dependsGraph:
+        filename = modules[module]["filename"]
+        fd.write(f"{prefix}<a target='main' href='{filename.split('/')[-1]}.html#{module}'>{module}</a><br/>\n")
+        dependsGraph2menu(fd, dependsGraph[module], prefix + "|&nbsp;")
+
+
+
+top = "rio"
+outputPath = "Output/arty-a7-35t/Firmware/Documentation"
+
+
+dependsGraph = mexpand({}, top)
+
+filename = modules[top]["filename"]
+fd = open(f"{outputPath}/index.html", "w")
+fd.write("<html>")
+fd.write("  <frameset cols=\"200, *\">")
+fd.write("    <frame src=\"menu.html\" name=\"menu\">")
+fd.write(f"    <frame src=\"{filename.split('/')[-1]}.html\" name=\"main\">")
+fd.write("  </frameset>")
+fd.write("</html>")
+fd.close()
+
+
+fd = open(f"{outputPath}/menu.html", "w")
+dependsGraph2menu(fd, dependsGraph)
+fd.close()
+
+
+
 output = "html"
 
 if output == "markdown":
@@ -172,7 +219,11 @@ else:
     gAll.attr(rankdir='LR')
 
 
-    print("""
+    for verilog_file in sargs.verilog:
+
+        fd = open(f"{outputPath}/{verilog_file.split('/')[-1]}.html", "w")
+
+        fd.write("""
 <style>
 table, th, td {
     border: 1px solid black;
@@ -182,18 +233,17 @@ table, th, td {
 
     """)
 
-    for verilog_file in sargs.verilog:
-        print(f"<h1>{verilog_file.split('/')[-1]}</h1>")
+        fd.write(f"<h1>{verilog_file.split('/')[-1]}</h1>\n")
 
         for moduleName, module in modules.items():
 
             if module["filename"] != verilog_file:
                 continue
 
-            print(f"<h2 id='{moduleName}'>{moduleName}</h2>")
-            print(f"<hr/>")
+            fd.write(f"<h2 id='{moduleName}'>{moduleName}</h2>\n")
+            fd.write(f"<hr/>\n")
 
-            print("<h3>flow</h3>")
+            fd.write("<h3>flow</h3>\n")
             gSub = graphviz.Digraph('G', format="svg")
             gSub.attr(rankdir='LR')
             gSub.node(moduleName, shape='box', label=moduleName)
@@ -201,56 +251,61 @@ table, th, td {
                 for subFrom in moduleFrom["sub"]:
                     if subFrom[0] == moduleName:
                         gSub.edge(moduleNameFrom, moduleName)
-                        gSub.node(moduleNameFrom, shape='plaintext', label=moduleNameFrom, href=f"#{moduleNameFrom}")
+                        filename = modules[moduleNameFrom]["filename"]
+                        gSub.node(moduleNameFrom, shape='plaintext', label=moduleNameFrom, href=f"{filename.split('/')[-1]}.html#{moduleNameFrom}")
             for sub in module["sub"]:
                 if sub[0] in modules:
                     gAll.edge(moduleName, sub[0])
-                    gSub.node(sub[0], shape='plaintext', label=sub[0], href=f"#{sub[0]}")
+                    filename = modules[sub[0]]["filename"]
+                    gSub.node(sub[0], shape='plaintext', label=sub[0], href=f"{filename.split('/')[-1]}.html#{sub[0]}")
                     gSub.edge(moduleName, sub[0])
-            print(gSub.pipe().decode())
-            print("<br>")
+            fd.write(gSub.pipe().decode())
+            fd.write("\n")
+            fd.write("<br>\n")
 
 
-            gAll.node(moduleName, shape='plaintext', label=moduleName, href=f"#{moduleName}")
+            filename = modules[moduleName]["filename"]
+            gAll.node(moduleName, shape='plaintext', label=moduleName, href=f"{filename.split('/')[-1]}.html#{moduleName}")
 
 
-            print("<h3>arguments</h3>")
-            print("<table>")
-            print("<tr><th>direction</th><th>type</th><th>size</th><th>name</th></tr>")
+            fd.write("<h3>arguments</h3>\n")
+            fd.write("<table>\n")
+            fd.write("<tr><th>direction</th><th>type</th><th>size</th><th>name</th></tr>\n")
             for argName, arg in module["args"].items():
-                print(f"<tr><td>{arg.get('direction', '')}</td><td>{arg.get('type', '')}</td><td>{arg.get('size', '')}</td><td>{argName}</td><td>{arg.get('defines') or ''}</td></tr>")
-            print("</table>")
-
-            print("<br>")
+                fd.write(f"<tr><td>{arg.get('direction', '')}</td><td>{arg.get('type', '')}</td><td>{arg.get('size', '')}</td><td>{argName}</td><td>{arg.get('defines') or ''}</td></tr>\n")
+            fd.write("</table>\n")
+            fd.write("<br>\n")
 
             if module["params"]:
-                print("<h3>parameter</h3>")
-                print("<table>")
-                print("<tr><th>size</th><th>name</th><th>default</th></tr>")
+                fd.write("<h3>parameter</h3>\n")
+                fd.write("<table>\n")
+                fd.write("<tr><th>size</th><th>name</th><th>default</th></tr>\n")
                 for argName, arg in module["params"].items():
-                    print(f"<tr><td>{arg.get('size', '')}</td><td>{arg.get('name', '')}</td><td>{arg.get('default', '')}</td></tr>")
-                print("</table>")
-                print("<br>")
+                    fd.write(f"<tr><td>{arg.get('size', '')}</td><td>{arg.get('name', '')}</td><td>{arg.get('default', '')}</td></tr>\n")
+                fd.write("</table>\n")
+                fd.write("<br>\n")
 
 
             #if module["sub"]:
-                #print("<h3>sub modules</h3>")
-                #print("<table>")
-                #print("<tr><th>module</th><th>source</th></tr>")
+                #fd.write("<h3>sub modules</h3>")
+                #fd.write("<table>")
+                #fd.write("<tr><th>module</th><th>source</th></tr>")
                 #for sub in module["sub"]:
                 #    if sub[0] in modules:
-                #        print(f"<tr><td><a href='#{sub[0]}'>{sub[0]}</a></td><td><pre>{sub[1]}</pre></td></tr>")
-                #print("</table>")
+                #        fd.write(f"<tr><td><a href='#{sub[0]}'>{sub[0]}</a></td><td><pre>{sub[1]}</pre></td></tr>")
+                #fd.write("</table>")
 
 
 
-            #print("<pre>")
-            #print(module["data"])
-            #print("</pre>")
+            fd.write("<pre>")
+            fd.write(module["data"])
+            fd.write("</pre>")
+            
+        fd.close()
 
 
-    print("<hr/>")
-    print(gAll.pipe().decode())
+    #print("<hr/>")
+    #print(gAll.pipe().decode())
 
 
 

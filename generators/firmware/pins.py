@@ -115,6 +115,4 @@ def pins_ucf(project):
 
         data.append("")
 
-    print("###", f"{project['PINS_PATH']}/pins.ucf")
-
     open(f"{project['PINS_PATH']}/pins.ucf", "w").write("\n".join(data))

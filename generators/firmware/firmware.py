@@ -26,8 +26,6 @@ def verilog_top(project):
     top_data.append("")
     top_data.append("")
 
-    print("###", project["internal_clock"])
-
     if project["internal_clock"]:
         if project["jdata"].get("toolchain") == "diamond":
             top_data.append("    // Internal Oscillator")

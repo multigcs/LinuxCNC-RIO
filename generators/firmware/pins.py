@@ -98,3 +98,23 @@ def pins_qdf(project):
 
         data.append("")
     open(f"{project['PINS_PATH']}/pins.qdf", "w").write("\n".join(data))
+
+def pins_ucf(project):
+    data = []
+    for pname, pins in project["pinlists"].items():
+        if not pins:
+            continue
+        data.append(f"### {pname} ###")
+        for pin in pins:
+            if pin[1].startswith("EXPANSION"):
+                continue
+            #data.append(f"NET \"{pin[0]}\"       LOC = \"{pin[1]}\"   | IOSTANDARD=LVCMOS33;")
+            data.append(f"NET \"{pin[0]}\"       LOC = \"{pin[1]}\" ;")
+            #if len(pin) > 3 and pin[3]:
+            #    data.append(f"set_instance_assignment -name WEAK_PULL_UP_RESISTOR ON -to {pin[0]}")
+
+        data.append("")
+
+    print("###", f"{project['PINS_PATH']}/pins.ucf")
+
+    open(f"{project['PINS_PATH']}/pins.ucf", "w").write("\n".join(data))

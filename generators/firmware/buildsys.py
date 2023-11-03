@@ -293,6 +293,44 @@ def buildsys_icestorm(project):
         "\n".join(makefile_data)
     )
 
+def buildsys_ise(project):
+    pins_ucf(project)
+
+    verilogs = " ".join(project["verilog_files"])
+    ifns = " -ifn ".join(project["verilog_files"])
+
+    makefile_data = []
+    makefile_data.append("")
+    makefile_data.append("all: rio.bit")
+    makefile_data.append("")
+    makefile_data.append(f"all.v: {verilogs}")
+    makefile_data.append(f"	cat {verilogs} > all.v")
+    makefile_data.append("")
+    makefile_data.append(f"rio.ngc: all.v")
+    makefile_data.append(f"	echo 'run -ifn all.v -ifmt Verilog -ofn rio.ngc -top rio -p {project['jdata']['type']} -opt_mode Speed -opt_level 1' | xst")
+    makefile_data.append("")
+    makefile_data.append("rio.ngd: rio.ngc pins.ucf")
+    makefile_data.append(f"	ngdbuild -p {project['jdata']['type']} -uc pins.ucf rio.ngc")
+    makefile_data.append("")
+    makefile_data.append("rio.ncd: rio.ngd")
+    makefile_data.append(f"	map -detail -pr b rio.ngd")
+    makefile_data.append("")
+    makefile_data.append("parout.ncd: rio.ncd rio.pcf")
+    makefile_data.append(f"	par -w rio.ncd parout.ncd rio.pcf")
+    makefile_data.append("")
+    makefile_data.append("rio.bit: parout.ncd rio.pcf")
+    makefile_data.append(f"	bitgen -w -g StartUpClk:CClk -g CRC:Enable parout.ncd rio.bit rio.pcf")
+    makefile_data.append("")
+    makefile_data.append("clean:")
+    makefile_data.append(f"	rm -rf rio.ngc rio.ngd rio.ncd parout.ncd rio.bit")
+    makefile_data.append("")
+    makefile_data.append("")
+    open(f"{project['FIRMWARE_PATH']}/Makefile", "w").write(
+        "\n".join(makefile_data)
+    )
+
+
+
 def buildsys_vivado(project):
     pins_xdc(project)
 

@@ -1,0 +1,17 @@
+{
+    "name": "xc3s250e",
+    "description": "xc3s250e - testing",
+    "toolchain": "ise",
+    "family": "xc3",
+    "type": "xc3s250e-4-vq100",
+    "package": "vq100",
+    "clock": {
+        "speed": "10000000",
+        "pin": "P39"
+    },
+    "blink": {
+        "pin": "P70"
+    },
+    "plugins": [
+    ]
+}

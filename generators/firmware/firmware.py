@@ -370,6 +370,9 @@ def generate(project):
     elif project["jdata"].get("toolchain") == "vivado":
         buildsys_vivado(project)
 
+    elif project["jdata"].get("toolchain") == "ise":
+        buildsys_ise(project)
+
     elif project["jdata"].get("toolchain") == "quartus":
         buildsys_quartus(project)
 

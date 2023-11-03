@@ -77,8 +77,12 @@ def main(configfile, outputdir=None):
 
     print(f"generating files in {project['OUTPUT_PATH']}")
 
-    for generator in project["generators"].values():
-        generator.generate(project)
+    for generator in project["generators"]:
+        if generator != "documentation":
+            project["generators"][generator].generate(project)
+    for generator in project["generators"]:
+        if generator == "documentation":
+            project["generators"][generator].generate(project)
 
 
 if __name__ == "__main__":

@@ -36,13 +36,6 @@ def main(configfile, outputdir=None):
         f"cp -a files/subroutines/* {project['LINUXCNC_PATH']}/ConfigSamples/rio/subroutines"
     )
 
-    if project["jdata"].get("toolchain") == "diamond":
-        project["SOURCE_PATH"] = f"{project['FIRMWARE_PATH']}/impl1/source"
-        project["PINS_PATH"] = f"{project['FIRMWARE_PATH']}/impl1/source"
-        os.system(f"mkdir -p {project['SOURCE_PATH']}")
-        os.system(f"mkdir -p {project['PINS_PATH']}")
-
-
     if project["verilog_defines"]:
         verilog_defines = []
         for key, value in project["verilog_defines"].items():

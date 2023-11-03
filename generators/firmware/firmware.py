@@ -26,14 +26,26 @@ def verilog_top(project):
     top_data.append("")
     top_data.append("")
 
+    print("###", project["internal_clock"])
+
     if project["internal_clock"]:
-        top_data.append("    // using internal oscillator")
-        top_data.append("    wire sysclk;")
-        top_data.append("    OSC osc(")
-        top_data.append("    	.OSCOUT(sysclk)")
-        top_data.append("    );")
-        top_data.append("    defparam osc.FREQ_DIV=10;")
-        top_data.append("")
+        if project["jdata"].get("toolchain") == "diamond":
+            top_data.append("    // Internal Oscillator")
+            top_data.append('    defparam OSCH_inst.NOM_FREQ = "133.00";')
+            top_data.append("    OSCH OSCH_inst ( ")
+            top_data.append("        .STDBY(1'b0),")
+            top_data.append("        .OSC(sysclk),")
+            top_data.append("        .SEDSTDBY()")
+            top_data.append("    );")
+            top_data.append("")
+        else:
+            top_data.append("    // using internal oscillator")
+            top_data.append("    wire sysclk;")
+            top_data.append("    OSC osc(")
+            top_data.append("    	.OSCOUT(sysclk)")
+            top_data.append("    );")
+            top_data.append("    defparam osc.FREQ_DIV=10;")
+            top_data.append("")
 
     if project["jdata"]["interface"]:
         top_data.append("    reg ESTOP = 0;")
@@ -45,16 +57,6 @@ def verilog_top(project):
         top_data.append("    wire sysclk;")
         top_data.append("    wire locked;")
         top_data.append("    pll mypll(sysclk_in, sysclk, locked);")
-        top_data.append("")
-
-    if project["jdata"].get("toolchain") == "diamond":
-        top_data.append("    // Internal Oscillator")
-        top_data.append('    defparam OSCH_inst.NOM_FREQ = "133.00";')
-        top_data.append("    OSCH OSCH_inst ( ")
-        top_data.append("        .STDBY(1'b0),")
-        top_data.append("        .OSC(sysclk),")
-        top_data.append("        .SEDSTDBY()")
-        top_data.append("    );")
         top_data.append("")
 
     for pname, pins in project['pinlists'].items():
@@ -76,6 +78,7 @@ def verilog_top(project):
         top_data.append("    );")
         top_data.append("")
         project["verilog_files"].append("blink.v")
+        print(f"cp -a generators/firmware/blink.v* {project['SOURCE_PATH']}/blink.v")
         os.system(
             f"cp -a generators/firmware/blink.v* {project['SOURCE_PATH']}/blink.v"
         )

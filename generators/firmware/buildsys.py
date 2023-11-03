@@ -414,89 +414,47 @@ def buildsys_vivado(project):
 
 
 def buildsys_diamond(project):
-    os.system(f"cp files/pif21.sty {project['FIRMWARE_PATH']}/")
+    pins_lpf(project)
 
-    ldf_data = []
-    ldf_data.append('<?xml version="1.0" encoding="UTF-8"?>')
-    ldf_data.append(
-        f'<BaliProject version="3.2" title="rio" device="{project["jdata"]["type"]}" default_implementation="impl1">'
-    )
-    ldf_data.append("    <Options/>")
-    ldf_data.append(
-        '    <Implementation title="impl1" dir="impl1" description="impl1" synthesis="lse" default_strategy="Strategy1">'
-    )
-    ldf_data.append('        <Options def_top="rio"/>')
+    verilogs = " ".join(project["verilog_files"])
+
+    tcl_data = []
+    tcl_data.append(f"prj_project new -name rio -impl build -dev {project['jdata']['type']} -lpf pins.lpf")
     for vfile in project["verilog_files"]:
-        ldf_data.append(
-            f'        <Source name="impl1/source/{vfile}" type="Verilog" type_short="Verilog">'
-        )
-        ldf_data.append("            <Options/>")
-        ldf_data.append("        </Source>")
-    ldf_data.append(
-        '        <Source name="impl1/source/pins.lpf" type="Logic Preference" type_short="LPF">'
-    )
-    ldf_data.append("            <Options/>")
-    ldf_data.append("        </Source>")
-    ldf_data.append("    </Implementation>")
-    ldf_data.append('    <Strategy name="Strategy1" file="pif21.sty"/>')
-    ldf_data.append("</BaliProject>")
-    ldf_data.append("")
-    open(f"{project['FIRMWARE_PATH']}/rio.ldf", "w").write("\n".join(ldf_data))
+        tcl_data.append(f"prj_src add {vfile}")
+    tcl_data.append("prj_impl option top rio")
+    tcl_data.append("prj_project save")
+    tcl_data.append("prj_project close")
+    tcl_data.append("")
+    open(f"{project['FIRMWARE_PATH']}/rio.tcl", "w").write("\n".join(tcl_data))
 
-    # pins.lpf (diamond)
-    pcf_data = []
-    pcf_data.append("")
-    pcf_data.append("BLOCK RESETPATHS;")
-    pcf_data.append("BLOCK ASYNCPATHS;")
-    pcf_data.append("")
-    pcf_data.append("BANK 0 VCCIO 3.3 V;")
-    pcf_data.append("BANK 1 VCCIO 3.3 V;")
-    pcf_data.append("BANK 2 VCCIO 3.3 V;")
-    pcf_data.append("BANK 3 VCCIO 3.3 V;")
-    pcf_data.append("BANK 5 VCCIO 3.3 V;")
-    pcf_data.append("BANK 6 VCCIO 3.3 V;")
-    pcf_data.append("")
-    pcf_data.append('TRACEID "00111100" ;')
-    pcf_data.append("IOBUF ALLPORTS IO_TYPE=LVCMOS33 ;")
-    # pcf_data.append('SYSCONFIG JTAG_PORT=DISABLE  SDM_PORT=PROGRAMN  I2C_PORT=DISABLE  SLAVE_SPI_PORT=ENABLE  MCCLK_FREQ=10.23 ;')
-    pcf_data.append(
-        "SYSCONFIG JTAG_PORT=ENABLE  SDM_PORT=PROGRAMN  I2C_PORT=DISABLE  SLAVE_SPI_PORT=DISABLE  MCCLK_FREQ=10.23 ;"
-    )
-    pcf_data.append('USERCODE ASCII  "PIF2"      ;')
-    pcf_data.append("")
-    pcf_data.append('# LOCATE COMP "FDONE"           SITE "109";')
-    pcf_data.append('# LOCATE COMP "FINITn"          SITE "110";')
-    pcf_data.append('# LOCATE COMP "FPROGn"          SITE "119";')
-    pcf_data.append('# LOCATE COMP "FJTAGn"          SITE "120";')
-    pcf_data.append('# LOCATE COMP "FTMS"            SITE "130";')
-    pcf_data.append('# LOCATE COMP "FTCK"            SITE "131";')
-    pcf_data.append('# LOCATE COMP "FTDI"            SITE "136";')
-    pcf_data.append('# LOCATE COMP "FTDO"            SITE "137";')
-    pcf_data.append("")
-    pcf_data.append('LOCATE COMP "GSRn"              SITE "136";')
-    pcf_data.append('LOCATE COMP "LEDR"              SITE "112";')
-    pcf_data.append('LOCATE COMP "LEDG"              SITE "113";')
-    pcf_data.append('LOCATE COMP "SDA"               SITE "125";')
-    pcf_data.append('LOCATE COMP "SCL"               SITE "126";')
-    pcf_data.append('IOBUF  PORT "GSRn"              IO_TYPE=LVCMOS33 PULLMODE=UP;')
-    pcf_data.append(
-        'IOBUF  PORT "LEDR"              IO_TYPE=LVCMOS33 PULLMODE=DOWN;'
-    )
-    pcf_data.append(
-        'IOBUF  PORT "LEDG"              IO_TYPE=LVCMOS33 PULLMODE=DOWN;'
-    )
-    pcf_data.append('IOBUF  PORT "SCL"               IO_TYPE=LVCMOS33 PULLMODE=UP;')
-    pcf_data.append('IOBUF  PORT "SDA"               IO_TYPE=LVCMOS33 PULLMODE=UP;')
-    pcf_data.append("")
-    for pname, pins in project["pinlists"].items():
-        pcf_data.append(f"### {pname} ###")
-        for pin in pins:
-            if pin[1].startswith("EXPANSION"):
-                continue
-            pcf_data.append(f'LOCATE COMP "{pin[0]}"           SITE "{pin[1]}";')
-        pcf_data.append("")
-    pcf_data.append("")
-    open(f"{project['PINS_PATH']}/pins.lpf", "w").write("\n".join(pcf_data))
+    tcl_data = []
+    tcl_data.append("prj_project open rio.ldf")
+    tcl_data.append("prj_run Synthesis -impl build")
+    tcl_data.append("prj_run Translate -impl build")
+    tcl_data.append("prj_run Map -impl build")
+    tcl_data.append("prj_run PAR -impl build")
+    tcl_data.append("prj_run PAR -impl build -task PARTrace")
+    tcl_data.append("prj_run Export -impl build -task Bitgen")
+    tcl_data.append("prj_project close")
+    tcl_data.append("")
+    open(f"{project['FIRMWARE_PATH']}/syn.tcl", "w").write("\n".join(tcl_data))
+
+    makefile_data = []
+    makefile_data.append("")
+    makefile_data.append("all: build/rio_build.bit")
+    makefile_data.append("")
+    makefile_data.append(f"rio.ldf: rio.tcl {verilogs}")
+    makefile_data.append("	diamondc rio.tcl")
+    makefile_data.append("")
+    makefile_data.append("build/rio_build.bit: rio.ldf")
+    makefile_data.append("	diamondc syn.tcl")
+    makefile_data.append("")
+    makefile_data.append("clean:")
+    makefile_data.append("	rm -rf build rio.ldf")
+    makefile_data.append("")
+    open(f"{project['FIRMWARE_PATH']}/Makefile", "w").write("\n".join(makefile_data))
+
 
 def buildsys_quartus(project):
     pins_qdf(project)

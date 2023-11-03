@@ -5,6 +5,10 @@ import graphviz
 import pprint
 import re
 
+import os
+import zipfile
+
+
 
 
 patternModule = re.compile(r"module\s+(?P<name>\w+)(?P<params>\s*#\([^\)]*\))?\s*\((?P<args>[^\)]*)\)\s*;(?P<data>[\s\S]*?(?=endmodule))endmodule")
@@ -32,6 +36,7 @@ for verilog_file in sargs.verilog:
             "args": {},
             "params": {},
             "data": moduleData,
+            "filedata": verilogData,
             "sub": [],
         }
         
@@ -160,11 +165,19 @@ if sargs.top not in modules:
 
 if sargs.output is None:
     if "/" in modules[sargs.top]["filename"]:
-        sargs.output = "/".join(modules[sargs.top]["filename"].split("/")[0:-1])
+        sargs.output = "/".join(modules[sargs.top]["filename"].split("/")[0:-1]) + "/Documentation"
     else:
-        sargs.output = "./"
+        sargs.output = "./Documentation"
 
     print(f"setting output directory to {sargs.output}")
+    os.makedirs(sargs.output, exist_ok=True)
+
+
+
+zip_obj = zipfile.ZipFile("files/highlight.zip", 'r')
+zip_obj.extractall(sargs.output)
+zip_obj.close()
+
 
 
 
@@ -237,6 +250,11 @@ else:
 
         fd = open(f"{sargs.output}/{verilog_file.split('/')[-1]}.html", "w")
 
+        fd.write("<link rel='stylesheet' href='styles/default.min.css'>\n")
+        fd.write("<script src='highlight.min.js'></script>\n")
+        fd.write("<script src='languages/verilog.min.js'></script>\n")
+
+
         fd.write("""
 <style>
 table, th, td {
@@ -306,15 +324,24 @@ table, th, td {
                 #fd.write("<tr><th>module</th><th>source</th></tr>")
                 #for sub in module["sub"]:
                 #    if sub[0] in modules:
-                #        fd.write(f"<tr><td><a href='#{sub[0]}'>{sub[0]}</a></td><td><pre>{sub[1]}</pre></td></tr>")
+                #        fd.write(f"<tr><td><a href='#{sub[0]}'>{sub[0]}</a></td><td><pre><code>{sub[1]}</code></pre></td></tr>")
                 #fd.write("</table>")
 
 
 
-            fd.write("<pre>")
-            fd.write(module["data"])
-            fd.write("</pre>")
+            fd.write("<h3>source</h3>\n")
+            fd.write("<pre><code class='language-verilog'>")
+            fd.write(module["filedata"])
+            fd.write("</code></pre>")
+            fd.write(f"<hr/>\n")
+
+
+            fd.write(f"<hr/>\n")
+
             
+        fd.write("<script>hljs.highlightAll();</script>\n")
+
+
         fd.close()
 
 

@@ -11,10 +11,12 @@ patternModule = re.compile(r"module\s+(?P<name>\w+)(?P<params>\s*#\([^\)]*\))?\s
 patternParam = re.compile(r"parameter(?P<type>\s+[a-zA-Z]+)?(?P<size>\s*\[.*\])?(?P<name>\s+\w+)\s*(?P<default>=.*)")
 patternArg = re.compile(r"(?P<dir>output|input|inout)?(?P<type>\s+reg|wire)?(?P<size>\s\[[^\]]*\])?(?P<name>\s\w+)")
 
-
 parser = argparse.ArgumentParser()
 parser.add_argument('verilog', type=str, nargs='+')
+parser.add_argument("--output", "-o", help="output directory", type=str, default=None)
+parser.add_argument("--top", "-t", help="top module", type=str, default="top")
 sargs = parser.parse_args()
+
 
 modules = {}
 for verilog_file in sargs.verilog:
@@ -140,13 +142,29 @@ for verilog_file in sargs.verilog:
                 if arg and "(" in arg and splitted[0] not in known and len(splitted) > 2 and splitted[1] != "=" and splitted[1] != "<=":
                     modules[moduleName]["sub"].append([splitted[0], arg])
 
-    #exit(0)
 
 
+if sargs.top not in modules:
+    
+    if "rio" in modules:
+        sargs.top = "rio"
+        print(f"FALLBACK: setting top module to '{sargs.top}'")
+    elif "top" in modules:
+        sargs.top = "top"
+        print(f"FALLBACK: setting top module to '{sargs.top}'")
+    else:
+        print(f"ERROR: top '{sargs.top}' module not found")
+        print(f"Modules: {', '.join(modules.keys())}")
+        exit(1)
 
 
+if sargs.output is None:
+    if "/" in modules[sargs.top]["filename"]:
+        sargs.output = "/".join(modules[sargs.top]["filename"].split("/")[0:-1])
+    else:
+        sargs.output = "./"
 
-
+    print(f"setting output directory to {sargs.output}")
 
 
 
@@ -166,14 +184,10 @@ def dependsGraph2menu(fd, dependsGraph, prefix=""):
 
 
 
-top = "rio"
-outputPath = "Output/arty-a7-35t/Firmware/Documentation"
+dependsGraph = mexpand({}, sargs.top)
 
-
-dependsGraph = mexpand({}, top)
-
-filename = modules[top]["filename"]
-fd = open(f"{outputPath}/index.html", "w")
+filename = modules[sargs.top]["filename"]
+fd = open(f"{sargs.output}/index.html", "w")
 fd.write("<html>")
 fd.write("  <frameset cols=\"200, *\">")
 fd.write("    <frame src=\"menu.html\" name=\"menu\">")
@@ -183,7 +197,7 @@ fd.write("</html>")
 fd.close()
 
 
-fd = open(f"{outputPath}/menu.html", "w")
+fd = open(f"{sargs.output}/menu.html", "w")
 dependsGraph2menu(fd, dependsGraph)
 fd.close()
 
@@ -221,7 +235,7 @@ else:
 
     for verilog_file in sargs.verilog:
 
-        fd = open(f"{outputPath}/{verilog_file.split('/')[-1]}.html", "w")
+        fd = open(f"{sargs.output}/{verilog_file.split('/')[-1]}.html", "w")
 
         fd.write("""
 <style>

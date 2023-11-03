@@ -9,7 +9,7 @@ RealtimeIO for LinuxCNC based on an FPGA
 * communication via SPI (with Raspberry PI 4 or Ethernet-Bridge)
 * generated verilog-code / setup via json files (free pin-selection)
 * using free FPGA-Toolchain
-* tested on ICE40UP5K, ICE40LP8K, ICE40HX8K, ECP5 and TangNano9K boards
+* tested on ICE40UP5K, ICE40LP8K, ICE40HX8K, ECP5, TangNano9K boards and more
 
 ![tango](./files/tango.jpg)
 
@@ -49,6 +49,23 @@ RealtimeIO for LinuxCNC based on an FPGA
 | dout | [bit](plugins/dout_bit) | Digital Output Pin (1bit) |
 | expansion | [shiftreg](plugins/expansion_shiftreg) | Expansion to add I/O's via shiftregister's |
 | interface | [spislave](plugins/interface_spislave) | communication interface ( RPI(Master) <-SPI-> FPGA(Slave) ) |
+
+
+## known working FPGA's:
+| Vendor | Type | Toolchain |
+| --- | --- | --- |
+| Gowin | GW2AR-LV18QN88C8/I7 | yosys/nextpnr and gowin |
+| Gowin | GW1NR-LV9QN88PC6/I5 | yosys/nextpnr and gowin |
+| Gowin | GW2A-LV18PG256C8/I7 | yosys/nextpnr and gowin |
+| Intel | EP4CE6E22C8 | quartus |
+| Lattice | ice40hx4k | yosys/nextpnr |
+| Lattice | ice40up5k | yosys/nextpnr |
+| Lattice | ice40hx8k | yosys/nextpnr |
+| Lattice | ice40lp8k | yosys/nextpnr |
+| Lattice | ecp5-25k | yosys/nextpnr |
+| Lattice | LCMXO2-7000HC-5TG144C | diamond |
+| Xilinx | xc7a35ticsg324-1l | vivado |
+| Xilinx | xc3s250e-4-vq100 | ise |
 
 
 ## FPGA-Toolchain:

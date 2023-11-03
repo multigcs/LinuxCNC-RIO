@@ -10,6 +10,7 @@ RealtimeIO for LinuxCNC based on an FPGA
 * generated verilog-code / setup via json files (free pin-selection)
 * using free FPGA-Toolchain
 * tested on ICE40UP5K, ICE40LP8K, ICE40HX8K, ECP5, TangNano9K boards and more
+* you can also use this project as template-generator for your own projects
 
 ![tango](./files/tango.jpg)
 

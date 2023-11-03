@@ -224,6 +224,7 @@
             "type": "vin_quadencoderz",
             "debounce": false,
             "pullup": true,
+            "function": "jogwheel",
             "pins": {
                 "a": "86",
                 "b": "85",

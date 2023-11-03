@@ -1160,6 +1160,7 @@ net j{num}enable 		<= joint.{num}.amp-enable-out 	=> rio.joint.{num}.enable
 
 def generate_custom_postgui_hal(project):
     gui = project["jdata"].get("gui", "axis")
+    num_joints = min(project['joints'], 9)
 
     if gui == "qtdragon":
         prefix = "qtdragon"
@@ -1316,6 +1317,7 @@ def generate_custom_postgui_hal(project):
 def generate_rio_gui(project):
 
     gui = project["jdata"].get("gui", "axis")
+    num_joints = min(project['joints'], 9)
 
     if gui == "qtdragon":
         gui_gen = qtdragon()

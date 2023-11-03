@@ -57,15 +57,15 @@ RealtimeIO for LinuxCNC based on an FPGA
 | Gowin | GW2AR-LV18QN88C8/I7 | yosys/nextpnr and gowin |
 | Gowin | GW1NR-LV9QN88PC6/I5 | yosys/nextpnr and gowin |
 | Gowin | GW2A-LV18PG256C8/I7 | yosys/nextpnr and gowin |
-| Intel | EP4CE6E22C8 | quartus |
+| Intel/Altera | EP4CE6E22C8 (Cyclone-IV) | quartus |
 | Lattice | ice40hx4k | yosys/nextpnr |
 | Lattice | ice40up5k | yosys/nextpnr |
 | Lattice | ice40hx8k | yosys/nextpnr |
 | Lattice | ice40lp8k | yosys/nextpnr |
 | Lattice | ecp5-25k | yosys/nextpnr |
 | Lattice | LCMXO2-7000HC-5TG144C | diamond |
-| Xilinx | xc7a35ticsg324-1l | vivado |
-| Xilinx | xc3s250e-4-vq100 | ise |
+| AMD/Xilinx | xc7a35ticsg324-1l (Artix-7) | vivado |
+| AMD/Xilinx | xc3s250e-4-vq100 (Spartan-3E) | ise |
 
 
 ## FPGA-Toolchain:

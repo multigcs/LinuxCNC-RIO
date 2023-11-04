@@ -12,8 +12,7 @@ module vout_7seg (
         output wire displayD,
         output wire displayE,
         output wire displayF,
-        output wire displayG,
-        output wire displayP
+        output wire displayG
     );
 
 

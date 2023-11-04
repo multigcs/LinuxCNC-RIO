@@ -18,8 +18,7 @@ to display a value on a 7seg Display
         "seg_d": "PIN_141",
         "seg_e": "PIN_142",
         "seg_f": "PIN_138",
-        "seg_g": "PIN_2",
-        "seg_p": "PIN_3"
+        "seg_g": "PIN_2"
     }
 }
 ```

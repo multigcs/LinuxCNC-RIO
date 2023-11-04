@@ -69,10 +69,6 @@ class Plugin:
                                 "type": "output",
                                 "name": "segment G output pin",
                             },
-                            "seg_p": {
-                                "type": "output",
-                                "name": "segment P output pin",
-                            },
                         },
                     },
                 },
@@ -95,7 +91,6 @@ class Plugin:
                 pinlist_out.append((f"VOUT{num}_7SEG_SEG_E", pins["seg_e"], "OUTPUT"))
                 pinlist_out.append((f"VOUT{num}_7SEG_SEG_F", pins["seg_f"], "OUTPUT"))
                 pinlist_out.append((f"VOUT{num}_7SEG_SEG_G", pins["seg_g"], "OUTPUT"))
-                pinlist_out.append((f"VOUT{num}_7SEG_SEG_P", pins["seg_p"], "OUTPUT"))
         return pinlist_out
 
     def voutnames(self):
@@ -128,8 +123,7 @@ class Plugin:
                 func_out.append(f"        .displayD (VOUT{num}_7SEG_SEG_D),")
                 func_out.append(f"        .displayE (VOUT{num}_7SEG_SEG_E),")
                 func_out.append(f"        .displayF (VOUT{num}_7SEG_SEG_F),")
-                func_out.append(f"        .displayG (VOUT{num}_7SEG_SEG_G),")
-                func_out.append(f"        .displayP (VOUT{num}_7SEG_SEG_P)")
+                func_out.append(f"        .displayG (VOUT{num}_7SEG_SEG_G)")
                 func_out.append("    );")
         return func_out
 

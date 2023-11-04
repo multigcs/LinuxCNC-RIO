@@ -7,6 +7,7 @@ http://land-boards.com/blwiki/index.php?title=Cyclone_IV_FPGA_EP4CE6E22C8N_Devel
 https://github.com/grepz/quartus_makefile_stub
 https://github.com/andykarpov/radio-86rk-wxeda
 
+https://github.com/douggilliland/MultiComp/blob/master/MultiComp_On_Cyclone%20IV%20VGA%20Card/Card%20docs%20ZRTech-C/2-Schematic/schematic_v200.pdf
 
 
 ## devboard pinout

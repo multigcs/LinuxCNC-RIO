@@ -10,28 +10,87 @@
         "pin": "P41"
     },
     "blink": {
-        "pin": "P9",
-        "_pin": "P10"
+        "pin": "P36"
     },
 
     "interface": [
         {
             "type": "uart",
             "pins": {
-                "RX": "P54",
-                "TX": "P53"
+                "RX": "P35",
+                "TX": "P34"
             }
         }
     ],
 
     "plugins": [
+
+        {
+            "invert": true,
+            "pin": "P9",
+            "name": "LED0",
+            "type": "dout_bit"
+        },
+        {
+            "invert": true,
+            "pin": "P10",
+            "name": "LED1",
+            "type": "dout_bit"
+        },
+
+        {
+            "pin": "P40",
+            "name": "SW1",
+            "type": "din_bit"
+        },
+        {
+            "pin": "P38",
+            "name": "SW2",
+            "type": "din_bit"
+        }
+
+
     ],
-    "_plugins": [
+    "docs": [
+        {
+            "type": "picosoc",
+            "baud": 115200,
+            "peripherals": [
+                {
+                    "type": "gpio",
+                    "pins": {"gpio0": ["P9", "OUTPUT"], "gpio1": ["P86", "OUTPUT"]}
+                },
+                {
+                    "type": "counter"
+                },
+                {
+                    "type": "sysclock"
+                }
+            ],
+            "pins": {
+                "rx": "P54",
+                "tx": "P53",
+                "flash_clk": "P50",
+                "flash_csb": "P24",
+                "flash_mosi": "P27",
+                "flash_miso": "P44"
+            },
+            "name": "PICOSOC"
+        },
         {
             "flash_cs": ["P24"],
             "flash_si": ["P27"],
             "flash_so": ["P44"],
             "flashsck": ["P50"],
+
+
+
+            "aux0 SW_UPDATE": ["P40"],
+            "auxCS_SW_RST": ["P38"],
+            "aux1_LED_ACT": ["P36"],
+            "aux2_RX": ["P35"],
+            "aux3_TX": ["P34"],
+
 
             "aux3": ["P34"],
             "ext_clk_in": ["P32"],

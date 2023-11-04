@@ -119,7 +119,7 @@ for num, vout in enumerate(project["voutnames"]):
     elif vout.get('type') == "vout_spipoti":
         voutminmax.append((vout.get('min', 0), vout.get('max', 255), 'spipoti', 0))
     else:
-        voutminmax.append((vout.get('min', 0), vout.get('max', 10), 'scale', 1))
+        voutminmax.append((vout.get('min', 0), vout.get('max', 10000), 'scale', 1))
 
 JOINT_ENABLE_BYTES = project['joints_en_total'] // 8
 DIGITAL_OUTPUT_BYTES = project['douts_total'] // 8

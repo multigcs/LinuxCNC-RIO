@@ -23,6 +23,10 @@
     ],
     "plugins": [
         {
+            "type": "vin_ir",
+            "pins": {"ir": "PIN_132"}
+        },
+        {
             "type": "vout_7seg",
             "pins": {
                 "en1": "PIN_137",

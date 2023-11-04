@@ -10,10 +10,23 @@
         "pin": "P41"
     },
     "blink": {
-        "pin": "P09"
+        "pin": "P9",
         "_pin": "P10"
     },
+
+    "interface": [
+        {
+            "type": "uart",
+            "pins": {
+                "RX": "P54",
+                "TX": "P53"
+            }
+        }
+    ],
+
     "plugins": [
+    ],
+    "_plugins": [
         {
             "flash_cs": ["P24"],
             "flash_si": ["P27"],

@@ -227,39 +227,39 @@ class WinForm(QWidget):
         layout.addWidget(QLabel(''), gpy, 1)
         gpy += 1
 
-
-        for dbyte in range(DIGITAL_OUTPUT_BYTES):
-            if dbyte == 0:
-                layout.addWidget(QLabel(f'DOUT:'), gpy, 0)
-                self.widgets["dout_auto"] = QCheckBox()
-                layout.addWidget(self.widgets["dout_auto"], gpy, 2)
-            for dn in range(8):
-                key = f'doc{dbyte}{dn}'
-                self.widgets[key] = QCheckBox(DOUT_NAMES[dbyte * 8 + dn]['_name'])
-                self.widgets[key].setChecked(False)
-                layout.addWidget(self.widgets[key], gpy, dn + 3)
-                if dbyte * 8 + dn == DOUTS - 1:
-                    break
+        if DOUT_NAMES:
+            for dbyte in range(DIGITAL_OUTPUT_BYTES):
+                if dbyte == 0:
+                    layout.addWidget(QLabel(f'DOUT:'), gpy, 0)
+                    self.widgets["dout_auto"] = QCheckBox()
+                    layout.addWidget(self.widgets["dout_auto"], gpy, 2)
+                for dn in range(8):
+                    key = f'doc{dbyte}{dn}'
+                    self.widgets[key] = QCheckBox(DOUT_NAMES[dbyte * 8 + dn]['_name'])
+                    self.widgets[key].setChecked(False)
+                    layout.addWidget(self.widgets[key], gpy, dn + 3)
+                    if dbyte * 8 + dn == DOUTS - 1:
+                        break
+                gpy += 1
+            layout.addWidget(QLabel(''), gpy, 1)
             gpy += 1
-        layout.addWidget(QLabel(''), gpy, 1)
-        gpy += 1
 
-
-        for dbyte in range(DIGITAL_INPUT_BYTES):
-            if dbyte == 0:
-                layout.addWidget(QLabel(f'DIN:'), gpy, 0)
-            for dn in range(8):
-                layout.addWidget(QLabel(DIN_NAMES[dbyte * 8 + dn]['_name']), gpy, dn + 3)
-                if dbyte * 8 + dn == DINS - 1:
-                    break
-            gpy += 1
-            for dn in range(8):
-                key = f'dic{dbyte}{dn}'
-                self.widgets[key] = QLabel("0")
-                layout.addWidget(self.widgets[key], gpy, dn + 3)
-                if dbyte * 8 + dn == DINS - 1:
-                    break
-            gpy += 1
+        if DIN_NAMES:
+            for dbyte in range(DIGITAL_INPUT_BYTES):
+                if dbyte == 0:
+                    layout.addWidget(QLabel(f'DIN:'), gpy, 0)
+                for dn in range(8):
+                    layout.addWidget(QLabel(DIN_NAMES[dbyte * 8 + dn]['_name']), gpy, dn + 3)
+                    if dbyte * 8 + dn == DINS - 1:
+                        break
+                gpy += 1
+                for dn in range(8):
+                    key = f'dic{dbyte}{dn}'
+                    self.widgets[key] = QLabel("0")
+                    layout.addWidget(self.widgets[key], gpy, dn + 3)
+                    if dbyte * 8 + dn == DINS - 1:
+                        break
+                gpy += 1
 
         layout.addWidget(QLabel(''), gpy, 0)
         gpy += 1
@@ -306,7 +306,7 @@ class WinForm(QWidget):
                 key = f"vo{vn}"
                 self.widgets[key].setText(str(vouts[vn]))
 
-            if self.widgets["dout_auto"].isChecked():
+            if DOUT_NAMES and self.widgets["dout_auto"].isChecked():
                 for dbyte in range(DIGITAL_OUTPUT_BYTES):
                     for dn in range(8):
                         key = f"doc{dbyte}{dn}"
@@ -325,14 +325,15 @@ class WinForm(QWidget):
                     self.doutcounter += 1
 
             douts = []
-            for dbyte in range(DIGITAL_OUTPUT_BYTES):
-                douts.append(0)
-                for dn in range(8):
-                    key = f"doc{dbyte}{dn}"
-                    if self.widgets[key].isChecked():
-                        douts[dbyte] |= (1<<(7-dn))
-                    if dbyte * 8 + dn == DOUTS - 1:
-                        break
+            if DOUT_NAMES:
+                for dbyte in range(DIGITAL_OUTPUT_BYTES):
+                    douts.append(0)
+                    for dn in range(8):
+                        key = f"doc{dbyte}{dn}"
+                        if self.widgets[key].isChecked():
+                            douts[dbyte] |= (1<<(7-dn))
+                        if dbyte * 8 + dn == DOUTS - 1:
+                            break
 
 
             bn = 4
@@ -387,10 +388,11 @@ class WinForm(QWidget):
                 data[bn] = 0xFF
                 bn += 1
 
-            # dout
-            for dbyte in range(DIGITAL_OUTPUT_BYTES):
-                data[bn] = douts[dbyte]
-                bn += 1
+            if DOUT_NAMES:
+                # dout
+                for dbyte in range(DIGITAL_OUTPUT_BYTES):
+                    data[bn] = douts[dbyte]
+                    bn += 1
 
             print("")
             print("tx:", data)
@@ -468,22 +470,23 @@ class WinForm(QWidget):
                         value = 1000 / PRU_OSC / 20 * value * 343.2
                 self.widgets[key].setText(f"{round(value, 2)}{unit}")
 
-            for dbyte in range(DIGITAL_INPUT_BYTES):
-                for dn in range(8):
-                    key = f"dic{dbyte}{dn}"
+            if DIN_NAMES:
+                for dbyte in range(DIGITAL_INPUT_BYTES):
+                    for dn in range(8):
+                        key = f"dic{dbyte}{dn}"
 
-                    value = "0"
-                    if inputs[dbyte] & (1<<(7-dn)) != 0:
-                        value = "1"
+                        value = "0"
+                        if inputs[dbyte] & (1<<(7-dn)) != 0:
+                            value = "1"
 
-                    self.widgets[key].setText(value)
-                    if value == "0":
-                        self.widgets[key].setStyleSheet("background-color: lightgreen")
-                    else:
-                        self.widgets[key].setStyleSheet("background-color: yellow")
+                        self.widgets[key].setText(value)
+                        if value == "0":
+                            self.widgets[key].setStyleSheet("background-color: lightgreen")
+                        else:
+                            self.widgets[key].setStyleSheet("background-color: yellow")
 
-                    if dbyte * 8 + dn == DINS - 1:
-                        break
+                        if dbyte * 8 + dn == DINS - 1:
+                            break
 
         except Exception as e:
             print("ERROR", e)

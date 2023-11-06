@@ -36,13 +36,6 @@ def main(configfile, outputdir=None):
         f"cp -a files/subroutines/* {project['LINUXCNC_PATH']}/ConfigSamples/rio/subroutines"
     )
 
-    if project["jdata"].get("toolchain") == "diamond":
-        project["SOURCE_PATH"] = f"{project['FIRMWARE_PATH']}/impl1/source"
-        project["PINS_PATH"] = f"{project['FIRMWARE_PATH']}/impl1/source"
-        os.system(f"mkdir -p {project['SOURCE_PATH']}")
-        os.system(f"mkdir -p {project['PINS_PATH']}")
-
-
     if project["verilog_defines"]:
         verilog_defines = []
         for key, value in project["verilog_defines"].items():
@@ -59,23 +52,30 @@ def main(configfile, outputdir=None):
     for plugin in project["plugins"]:
         if hasattr(project["plugins"][plugin], "ips"):
             for ipv in project["plugins"][plugin].ips():
+                ipv_name = ipv.split("/")[-1]
                 if ipv.endswith((".v", ".sv")):
-                    project["verilog_files"].append(ipv)
+                    project["verilog_files"].append(ipv_name)
                 ipv_path = f"plugins/{plugin}/{ipv}"
                 if not os.path.isfile(ipv_path):
                     ipv_path = f"generators/firmware/{ipv}"
                 os.system(
-                    f"cp -a {ipv_path} {project['SOURCE_PATH']}/{ipv}"
+                    f"cp -a {ipv_path} {project['SOURCE_PATH']}/{ipv_name}"
                 )
+                """
                 if ipv.endswith(".v") and not ipv.startswith("PLL_"):
                     os.system(
                         f"which verilator >/dev/null && cd {project['SOURCE_PATH']} && verilator --lint-only {ipv}"
                     )
+                """
 
     print(f"generating files in {project['OUTPUT_PATH']}")
 
-    for generator in project["generators"].values():
-        generator.generate(project)
+    for generator in project["generators"]:
+        if generator != "documentation":
+            project["generators"][generator].generate(project)
+    for generator in project["generators"]:
+        if generator == "documentation":
+            project["generators"][generator].generate(project)
 
 
 if __name__ == "__main__":

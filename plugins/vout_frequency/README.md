@@ -4,7 +4,7 @@ Variable-Output for frequencys
 
 ```
 {
-    "type": "frequency",
+    "type": "vout_frequency",
     "pin": "T3",
 },
 ```

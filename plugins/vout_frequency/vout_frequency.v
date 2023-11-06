@@ -7,7 +7,7 @@ module vout_frequency
          output SIGNAL
      );
 
-    reg DIR;
+    wire DIR;
     assign DIR = (frequency > 0);
     reg [31:0] freqCounter = 32'd0;
     reg [31:0] frequencyAbs = 32'd0;

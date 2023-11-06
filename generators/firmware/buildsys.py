@@ -229,6 +229,7 @@ def buildsys_icestorm(project):
     makefile_data.append(f"all: {bitfileName}")
     makefile_data.append("")
     makefile_data.append(f"rio.json: {verilogs}")
+    
     if project["jdata"]["type"] == "up5k":
         makefile_data.append(f"	yosys -q -l yosys.log -p 'synth_${{FAMILY}} -dsp -top rio -json rio.json' {verilogs}")
     else:
@@ -292,6 +293,47 @@ def buildsys_icestorm(project):
         "\n".join(makefile_data)
     )
 
+def buildsys_ise(project):
+    pins_ucf(project)
+
+    verilogs = " ".join(project["verilog_files"])
+    ifns = " -ifn ".join(project["verilog_files"])
+
+    makefile_data = []
+    makefile_data.append("")
+    makefile_data.append("all: rio.bit")
+    makefile_data.append("")
+    makefile_data.append(f"rio-modules.v: {verilogs}")
+    makefile_data.append(f"	cat {verilogs} > rio-modules.v")
+    makefile_data.append("")
+    makefile_data.append(f"rio.ngc: rio-modules.v")
+    makefile_data.append(f"	echo 'run -ifn rio-modules.v -ifmt Verilog -ofn rio.ngc -top rio -p {project['jdata']['type']} -opt_mode Speed -opt_level 1' | xst")
+    makefile_data.append("")
+    makefile_data.append("rio.ngd: rio.ngc pins.ucf")
+    makefile_data.append(f"	ngdbuild -p {project['jdata']['type']} -uc pins.ucf rio.ngc")
+    makefile_data.append("")
+    makefile_data.append("rio.ncd: rio.ngd")
+    makefile_data.append("	map -detail -pr b rio.ngd")
+    makefile_data.append("")
+    makefile_data.append("parout.ncd: rio.ncd rio.pcf")
+    makefile_data.append("	par -w rio.ncd parout.ncd rio.pcf")
+    makefile_data.append("")
+    makefile_data.append("rio.bit: parout.ncd rio.pcf")
+    makefile_data.append("	bitgen -w -g StartUpClk:CClk -g CRC:Enable parout.ncd rio.bit rio.pcf")
+    makefile_data.append("")
+    makefile_data.append("clean:")
+    makefile_data.append("	rm -rf rio.ngc rio.ngd rio.ncd parout.ncd rio.bit")
+    makefile_data.append("")
+    makefile_data.append("load: rio.bit")
+    makefile_data.append("	openFPGALoader -v -c usb-blaster rio.bit")
+    makefile_data.append("")
+    makefile_data.append("")
+    open(f"{project['FIRMWARE_PATH']}/Makefile", "w").write(
+        "\n".join(makefile_data)
+    )
+
+
+
 def buildsys_vivado(project):
     pins_xdc(project)
 
@@ -301,7 +343,7 @@ def buildsys_vivado(project):
     makefile_data.append("all: build/rio.bit")
     makefile_data.append("")
     makefile_data.append(f"build/rio.bit: rio.tcl pins.xdc {verilogs}")
-    makefile_data.append("	vivado -mode tcl -source rio.tcl")
+    makefile_data.append("	vivado -mode batch -source rio.tcl")
     makefile_data.append("")
     makefile_data.append("clean:")
     makefile_data.append("	rm -rf build")
@@ -375,86 +417,141 @@ def buildsys_vivado(project):
 
 
 def buildsys_diamond(project):
-    os.system(f"cp files/pif21.sty {project['FIRMWARE_PATH']}/")
+    pins_lpf(project)
 
-    ldf_data = []
-    ldf_data.append('<?xml version="1.0" encoding="UTF-8"?>')
-    ldf_data.append(
-        f'<BaliProject version="3.2" title="rio" device="{project["jdata"]["type"]}" default_implementation="impl1">'
-    )
-    ldf_data.append("    <Options/>")
-    ldf_data.append(
-        '    <Implementation title="impl1" dir="impl1" description="impl1" synthesis="lse" default_strategy="Strategy1">'
-    )
-    ldf_data.append('        <Options def_top="rio"/>')
+    verilogs = " ".join(project["verilog_files"])
+
+    tcl_data = []
+    tcl_data.append(f"prj_project new -name rio -impl build -dev {project['jdata']['type']} -lpf pins.lpf")
     for vfile in project["verilog_files"]:
-        ldf_data.append(
-            f'        <Source name="impl1/source/{vfile}" type="Verilog" type_short="Verilog">'
-        )
-        ldf_data.append("            <Options/>")
-        ldf_data.append("        </Source>")
-    ldf_data.append(
-        '        <Source name="impl1/source/pins.lpf" type="Logic Preference" type_short="LPF">'
-    )
-    ldf_data.append("            <Options/>")
-    ldf_data.append("        </Source>")
-    ldf_data.append("    </Implementation>")
-    ldf_data.append('    <Strategy name="Strategy1" file="pif21.sty"/>')
-    ldf_data.append("</BaliProject>")
-    ldf_data.append("")
-    open(f"{project['FIRMWARE_PATH']}/rio.ldf", "w").write("\n".join(ldf_data))
+        tcl_data.append(f"prj_src add {vfile}")
+    tcl_data.append("prj_impl option top rio")
+    tcl_data.append("prj_project save")
+    tcl_data.append("prj_project close")
+    tcl_data.append("")
+    open(f"{project['FIRMWARE_PATH']}/rio.tcl", "w").write("\n".join(tcl_data))
 
-    # pins.lpf (diamond)
-    pcf_data = []
-    pcf_data.append("")
-    pcf_data.append("BLOCK RESETPATHS;")
-    pcf_data.append("BLOCK ASYNCPATHS;")
-    pcf_data.append("")
-    pcf_data.append("BANK 0 VCCIO 3.3 V;")
-    pcf_data.append("BANK 1 VCCIO 3.3 V;")
-    pcf_data.append("BANK 2 VCCIO 3.3 V;")
-    pcf_data.append("BANK 3 VCCIO 3.3 V;")
-    pcf_data.append("BANK 5 VCCIO 3.3 V;")
-    pcf_data.append("BANK 6 VCCIO 3.3 V;")
-    pcf_data.append("")
-    pcf_data.append('TRACEID "00111100" ;')
-    pcf_data.append("IOBUF ALLPORTS IO_TYPE=LVCMOS33 ;")
-    # pcf_data.append('SYSCONFIG JTAG_PORT=DISABLE  SDM_PORT=PROGRAMN  I2C_PORT=DISABLE  SLAVE_SPI_PORT=ENABLE  MCCLK_FREQ=10.23 ;')
-    pcf_data.append(
-        "SYSCONFIG JTAG_PORT=ENABLE  SDM_PORT=PROGRAMN  I2C_PORT=DISABLE  SLAVE_SPI_PORT=DISABLE  MCCLK_FREQ=10.23 ;"
+    tcl_data = []
+    tcl_data.append("prj_project open rio.ldf")
+    tcl_data.append("prj_run Synthesis -impl build")
+    tcl_data.append("prj_run Translate -impl build")
+    tcl_data.append("prj_run Map -impl build")
+    tcl_data.append("prj_run PAR -impl build")
+    tcl_data.append("prj_run PAR -impl build -task PARTrace")
+    tcl_data.append("prj_run Export -impl build -task Bitgen")
+    tcl_data.append("prj_project close")
+    tcl_data.append("")
+    open(f"{project['FIRMWARE_PATH']}/syn.tcl", "w").write("\n".join(tcl_data))
+
+    makefile_data = []
+    makefile_data.append("")
+    makefile_data.append("all: build/rio_build.bit")
+    makefile_data.append("")
+    makefile_data.append(f"rio.ldf: rio.tcl {verilogs}")
+    makefile_data.append("	diamondc rio.tcl")
+    makefile_data.append("")
+    makefile_data.append("build/rio_build.bit: rio.ldf")
+    makefile_data.append("	diamondc syn.tcl")
+    makefile_data.append("")
+    makefile_data.append("clean:")
+    makefile_data.append("	rm -rf build rio.ldf")
+    makefile_data.append("")
+    open(f"{project['FIRMWARE_PATH']}/Makefile", "w").write("\n".join(makefile_data))
+
+
+def buildsys_quartus(project):
+    pins_qdf(project)
+
+    family = project["jdata"]["family"]
+    ftype = project["jdata"]["type"]
+    verilogs = " ".join(project["verilog_files"])
+
+
+    makefile_data = []
+    makefile_data.append("")
+    makefile_data.append(f"PRODUCT   = rio")
+    makefile_data.append(f"PART      = {ftype}")
+    makefile_data.append(f"FAMILY    = \"{family}\"")
+    makefile_data.append("BOARDFILE = pins.qdf")
+    makefile_data.append("MOD       = rio")
+    makefile_data.append("")
+    makefile_data.append("QC   = quartus_sh")
+    makefile_data.append("QP   = quartus_pgm")
+    makefile_data.append("QM   = quartus_map")
+    makefile_data.append("QF   = quartus_fit")
+    makefile_data.append("QA   = quartus_asm")
+    makefile_data.append("QS   = quartus_sta")
+    makefile_data.append("ECHO = echo")
+    makefile_data.append("Q   ?= @")
+    makefile_data.append("")
+    makefile_data.append("STAMP = echo done >")
+    makefile_data.append("")
+    makefile_data.append("QCFLAGS = --flow compile")
+    makefile_data.append("QPFLAGS =")
+    makefile_data.append("QMFLAGS = --read_settings_files=on $(addprefix --source=,$(SRCS))")
+    makefile_data.append("QFFLAGS = --part=$(PART) --read_settings_files=on")
+    makefile_data.append("")
+    makefile_data.append(f"SRCS = {verilogs}")
+    makefile_data.append("ASIGN = $(PRODUCT).qsf $(PRODUCT).qpf")
+    makefile_data.append("")
+    makefile_data.append("all: $(PRODUCT)")
+    makefile_data.append("")
+    makefile_data.append("map: smart.log $(PRODUCT).map.rpt")
+    makefile_data.append("fit: smart.log $(PRODUCT).fit.rpt")
+    makefile_data.append("asm: smart.log $(PRODUCT).asm.rpt")
+    makefile_data.append("sta: smart.log $(PRODUCT).sta.rpt")
+    makefile_data.append("smart: smart.log")
+    makefile_data.append("")
+    makefile_data.append("$(ASIGN):")
+    makefile_data.append("	$(Q)$(ECHO) \"Generating asignment files.\"")
+    makefile_data.append("	$(QC) --prepare -f $(FAMILY) -t $(MOD) $(PRODUCT)")
+    makefile_data.append("	echo >> $(PRODUCT).qsf")
+    makefile_data.append("	cat $(BOARDFILE) >> $(PRODUCT).qsf")
+    makefile_data.append("")
+    makefile_data.append("smart.log: $(ASIGN)")
+    makefile_data.append("	$(Q)$(ECHO) \"Generating smart.log.\"")
+    makefile_data.append("	$(QC) --determine_smart_action $(PRODUCT) > smart.log")
+    makefile_data.append("")
+    makefile_data.append("$(PRODUCT): smart.log $(PRODUCT).asm.rpt $(PRODUCT).sta.rpt")
+    makefile_data.append("")
+    makefile_data.append("$(PRODUCT).map.rpt: map.chg $(SRCS)")
+    makefile_data.append("	$(QM) $(QMFLAGS) $(PRODUCT)")
+    makefile_data.append("	$(STAMP) fit.chg")
+    makefile_data.append("")
+    makefile_data.append("$(PRODUCT).fit.rpt: fit.chg $(PRODUCT).map.rpt")
+    makefile_data.append("	$(QF) $(QFFLAGS) $(PRODUCT)")
+    makefile_data.append("	$(STAMP) asm.chg")
+    makefile_data.append("	$(STAMP) sta.chg")
+    makefile_data.append("")
+    makefile_data.append("$(PRODUCT).asm.rpt: asm.chg $(PRODUCT).fit.rpt")
+    makefile_data.append("	$(QA) $(PRODUCT)")
+    makefile_data.append("")
+    makefile_data.append("$(PRODUCT).sta.rpt: sta.chg $(PRODUCT).fit.rpt")
+    makefile_data.append("	$(QS) $(PRODUCT)")
+    makefile_data.append("")
+    makefile_data.append("map.chg:")
+    makefile_data.append("	$(STAMP) map.chg")
+    makefile_data.append("fit.chg:")
+    makefile_data.append("	$(STAMP) fit.chg")
+    makefile_data.append("sta.chg:")
+    makefile_data.append("	$(STAMP) sta.chg")
+    makefile_data.append("asm.chg:")
+    makefile_data.append("	$(STAMP) asm.chg")
+    makefile_data.append("")
+    makefile_data.append("clean:")
+    makefile_data.append("	$(Q)$(ECHO) \"Cleaning.\"")
+    makefile_data.append("	rm -rf db incremental_db")
+    makefile_data.append("	rm -f smart.log *.rpt *.sof *.chg *.qsf *.qpf *.summary *.smsg *.pin *.jdi")
+    makefile_data.append("")
+    makefile_data.append("load: prog")
+    makefile_data.append("prog: $(PRODUCT).sof")
+    makefile_data.append("	$(Q)$(ECHO) \"Programming.\"")
+    makefile_data.append("	$(QP) --no_banner --mode=jtag -o \"P;$(PRODUCT).sof\"")
+    makefile_data.append("")
+    makefile_data.append("")
+
+
+    open(f"{project['FIRMWARE_PATH']}/Makefile", "w").write(
+        "\n".join(makefile_data)
     )
-    pcf_data.append('USERCODE ASCII  "PIF2"      ;')
-    pcf_data.append("")
-    pcf_data.append('# LOCATE COMP "FDONE"           SITE "109";')
-    pcf_data.append('# LOCATE COMP "FINITn"          SITE "110";')
-    pcf_data.append('# LOCATE COMP "FPROGn"          SITE "119";')
-    pcf_data.append('# LOCATE COMP "FJTAGn"          SITE "120";')
-    pcf_data.append('# LOCATE COMP "FTMS"            SITE "130";')
-    pcf_data.append('# LOCATE COMP "FTCK"            SITE "131";')
-    pcf_data.append('# LOCATE COMP "FTDI"            SITE "136";')
-    pcf_data.append('# LOCATE COMP "FTDO"            SITE "137";')
-    pcf_data.append("")
-    pcf_data.append('LOCATE COMP "GSRn"              SITE "136";')
-    pcf_data.append('LOCATE COMP "LEDR"              SITE "112";')
-    pcf_data.append('LOCATE COMP "LEDG"              SITE "113";')
-    pcf_data.append('LOCATE COMP "SDA"               SITE "125";')
-    pcf_data.append('LOCATE COMP "SCL"               SITE "126";')
-    pcf_data.append('IOBUF  PORT "GSRn"              IO_TYPE=LVCMOS33 PULLMODE=UP;')
-    pcf_data.append(
-        'IOBUF  PORT "LEDR"              IO_TYPE=LVCMOS33 PULLMODE=DOWN;'
-    )
-    pcf_data.append(
-        'IOBUF  PORT "LEDG"              IO_TYPE=LVCMOS33 PULLMODE=DOWN;'
-    )
-    pcf_data.append('IOBUF  PORT "SCL"               IO_TYPE=LVCMOS33 PULLMODE=UP;')
-    pcf_data.append('IOBUF  PORT "SDA"               IO_TYPE=LVCMOS33 PULLMODE=UP;')
-    pcf_data.append("")
-    for pname, pins in project["pinlists"].items():
-        pcf_data.append(f"### {pname} ###")
-        for pin in pins:
-            if pin[1].startswith("EXPANSION"):
-                continue
-            pcf_data.append(f'LOCATE COMP "{pin[0]}"           SITE "{pin[1]}";')
-        pcf_data.append("")
-    pcf_data.append("")
-    open(f"{project['PINS_PATH']}/pins.lpf", "w").write("\n".join(pcf_data))
+

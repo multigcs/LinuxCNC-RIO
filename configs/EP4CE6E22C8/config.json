@@ -1,0 +1,83 @@
+{
+    "name": "EP4CE6E22C8",
+    "description": "EP4CE6E22C8 on china devboard - Cyclone IV E",
+    "toolchain": "quartus",
+    "family": "Cyclone IV E",
+    "type": "EP4CE6E22C8",
+    "package": "128",
+    "clock": {
+        "speed": "48000000",
+        "pin": "PIN_24"
+    },
+    "blink": {
+        "pin": "PIN_3"
+    },
+    "interface": [
+        {
+            "type": "uart",
+            "pins": {
+                "RX": "PIN_87",
+                "TX": "PIN_86"
+            }
+        }
+    ],
+    "plugins": [
+        {
+            "pin": "PIN_88",
+            "invert": true,
+            "name": "SW_S1",
+            "type": "din_bit"
+        },
+        {
+            "pin": "PIN_91",
+            "invert": true,
+            "name": "SW_S2",
+            "type": "din_bit"
+        },
+        {
+            "pin": "PIN_90",
+            "invert": true,
+            "name": "SW_S3",
+            "type": "din_bit"
+        },
+        {
+            "pin": "PIN_89",
+            "invert": true,
+            "name": "SW_S4",
+            "type": "din_bit"
+        },
+        {
+            "type": "vout_frequency",
+            "pin": "PIN_85",
+            "name": "SOUND"
+        },
+        {
+            "type": "vin_ir",
+            "pins": {"ir": "PIN_132"}
+        },
+        {
+            "type": "vin_tlc549c",
+            "pins": {
+                "miso": "PIN_128",
+                "sclk": "PIN_127",
+                "cs": "PIN_129"
+            }
+        },
+        {
+            "type": "vout_7seg",
+            "pins": {
+                "en1": "PIN_137",
+                "en2": "PIN_135",
+                "en3": "PIN_136",
+                "en4": "PIN_133",
+                "seg_a": "PIN_143",
+                "seg_b": "PIN_144",
+                "seg_c": "PIN_1",
+                "seg_d": "PIN_141",
+                "seg_e": "PIN_142",
+                "seg_f": "PIN_138",
+                "seg_g": "PIN_2"
+            }
+        }
+    ]
+}

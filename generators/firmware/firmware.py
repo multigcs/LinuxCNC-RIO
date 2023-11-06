@@ -161,7 +161,8 @@ def verilog_top(project):
         if project["jdata"]["enable"].get("invert", False):
             top_data.append(f"    wire ENA_INV;")
             top_data.append(f"    assign ENA = ~ENA_INV;")
-            top_data.append(f"    assign ENA_INV = ({jointEnablesStr}) && ~ERROR;")
+            if jointEnablesStr:
+                top_data.append(f"    assign ENA_INV = ({jointEnablesStr}) && ~ERROR;")
         else:
             if jointEnablesStr:
                 top_data.append(f"    assign ENA = ({jointEnablesStr}) && ~ERROR;")

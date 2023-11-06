@@ -1,6 +1,9 @@
 
 module vout_udpoti 
-    #(parameter RESOLUTION = 100, SPEED = 100000)
+    #(
+        parameter RESOLUTION = 100,
+        parameter SPEED = 100000
+    )
     (
         input clk,
         input wire [31:0] value,

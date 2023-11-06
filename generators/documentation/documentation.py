@@ -10,5 +10,5 @@ def generate(project):
         verilogs.append(f"{project['FIRMWARE_PATH']}/rio.v")
         
         verilog2doc(verilogs, top="rio", output=f"{project['OUTPUT_PATH']}/Documentation")
-    except:
-        print("# can't generate documentation")
+    except Exception as error:
+        print(f"# can't generate documentation: {error}")

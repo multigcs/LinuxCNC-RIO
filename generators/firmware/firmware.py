@@ -18,8 +18,16 @@ def verilog_top(project):
     top_data = []
     top_data.append("/*")
     top_data.append(f"    ######### {project['jdata']['name']} #########")
+    top_data.append("")
+    for key in ("toolchain", "family", "type", "package",):
+        value = project['jdata'].get(key)
+        if value:
+            top_data.append(f"    {key:10s}: {value}")
+    top_data.append(f"    Clock     : {float(project['jdata']['clock']['speed']) / 1000000} Mhz")
+    top_data.append("")
     top_data.append("*/")
     top_data.append("")
+
     argsstr = ",\n        ".join(top_arguments)
     top_data.append(f"module rio (\n        {argsstr}")
     top_data.append("    );")

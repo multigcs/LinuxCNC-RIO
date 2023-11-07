@@ -22,7 +22,7 @@ def verilog_top(project):
     for key in ("toolchain", "family", "type", "package",):
         value = project['jdata'].get(key)
         if value:
-            top_data.append(f"    {key:10s}: {value}")
+            top_data.append(f"    {key.title():10s}: {value}")
     top_data.append(f"    Clock     : {float(project['jdata']['clock']['speed']) / 1000000} Mhz")
     top_data.append("")
     top_data.append("*/")

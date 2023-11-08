@@ -70,13 +70,13 @@ def verilog2doc(verilogs, top=None, output=None):
                     argm = patternArg.search(arg)
                     if argm:
                         if argm["dir"]:
-                            moduleArg["direction"] = argm["dir"]
+                            moduleArg["direction"] = argm["dir"].strip()
                         if argm["type"]:
-                            moduleArg["type"] = argm["type"]
+                            moduleArg["type"] = argm["type"].strip()
                         if argm["size"]:
-                            moduleArg["size"] = argm["size"]
+                            moduleArg["size"] = argm["size"].strip()
                         if argm["name"]:
-                            moduleArg["name"] = argm["name"]
+                            moduleArg["name"] = argm["name"].strip()
                         modules[moduleName]["args"][moduleArg["name"]] = moduleArg
                         moduleArgLast = moduleArg
                     elif len(arg.strip().split()) == 1:
@@ -246,16 +246,34 @@ def verilog2doc(verilogs, top=None, output=None):
 
             if graphviz is not None:
                 fd.write("<h3>flow</h3>\n")
-                if graphviz is not None:
-                    gSub = graphviz.Digraph('G', format="svg")
-                    gSub.attr(rankdir='LR')
-                    gSub.node(moduleName, shape='box', label=moduleName)
+
+                ports = []
+                for argName, arg in module["args"].items():
+                    if not arg.get('defines'):
+                        ports.append(f"<{argName}> {argName}")
+
+                gSub = graphviz.Digraph('G', format="svg")
+                gSub.attr(rankdir='LR')
+
+                label = f"{{ {{{' | '.join(ports)}}} | {moduleName} }}"
+                gSub.node(moduleName, shape='record', label=label)
+
                 for moduleNameFrom, moduleFrom in modules.items():
                     for subFrom in moduleFrom["sub"]:
                         if subFrom[0] == moduleName:
-                            gSub.edge(moduleNameFrom, moduleName)
+                            label = f"{{ {moduleNameFrom} |{{{' | '.join(ports)}}}}}"
                             filename = modules[moduleNameFrom]["filename"]
-                            gSub.node(moduleNameFrom, shape='plaintext', label=moduleNameFrom, href=f"{filename.split('/')[-1]}.html#{moduleNameFrom}")
+                            gSub.node(moduleNameFrom, shape='record', label=label, href=f"{filename.split('/')[-1]}.html#{moduleNameFrom}")
+                            for argName, arg in module["args"].items():
+                                if not arg.get('defines'):
+
+                                    if arg.get('direction') == "input":
+                                        gSub.edge(f"{moduleNameFrom}:{argName}", f"{moduleName}:{argName}")
+                                    elif arg.get('direction') == "inout":
+                                        gSub.edge(f"{moduleNameFrom}:{argName}", f"{moduleName}:{argName}", dir="both")
+                                    else:
+                                        gSub.edge(f"{moduleNameFrom}:{argName}", f"{moduleName}:{argName}", dir="back")
+
                 for sub in module["sub"]:
                     if sub[0] in modules:
                         gAll.edge(moduleName, sub[0])

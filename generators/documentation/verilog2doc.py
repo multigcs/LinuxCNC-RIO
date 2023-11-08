@@ -250,23 +250,37 @@ def verilog2doc(verilogs, top=None, output=None):
                 ports = []
                 for argName, arg in module["args"].items():
                     if not arg.get('defines'):
-                        ports.append(f"<{argName}> {argName}")
+                        ports.append(f"<{argName}>{argName}{arg.get('size') or ''}")
 
                 gSub = graphviz.Digraph('G', format="svg")
                 gSub.attr(rankdir='LR')
+                #gSub.attr(fontsize='6.0')
 
-                label = f"{{ {{ {' | '.join(ports)} }} | {moduleName} }}"
-                gSub.node(moduleName, shape='record', label=label)
+                with gSub.subgraph(name='cluster_0') as c:
+                    #c.attr(style='filled', color='lightgrey')
+                    c.attr(label=moduleName)
+                    c.attr(margin="0")
+                    label = f"{{ {{ {' | '.join(ports)} }} | {moduleName} }}"
+                    c.node(moduleName, shape='record', label=label, fontsize="11pt")
+
+                    for sub in module["sub"]:
+                        if sub[0] in modules:
+                            sports = []
+                            for argName, arg in modules[sub[0]]["args"].items():
+                                if not arg.get('defines'):
+                                    sports.append(f"<{argName}>{argName}{arg.get('size') or ''}")
+                            label = f"{{ {sub[0]} | {{ {' | '.join(sports)} }} }}"
+                            c.node(f"{moduleName}_{sub[0]}", shape='record', label=label, fontsize="11pt")
+                            c.edge(moduleName, f"{moduleName}_{sub[0]}", dir="none", style="dotted")
 
                 for moduleNameFrom, moduleFrom in modules.items():
                     for subFrom in moduleFrom["sub"]:
                         if subFrom[0] == moduleName:
                             label = f"{{ {moduleNameFrom} |{{ {' | '.join(ports)} }} }}"
                             filename = modules[moduleNameFrom]["filename"]
-                            gSub.node(moduleNameFrom, shape='record', label=label, href=f"{filename.split('/')[-1]}.html#{moduleNameFrom}")
+                            gSub.node(moduleNameFrom, shape='record', label=label, href=f"{filename.split('/')[-1]}.html#{moduleNameFrom}", fontsize="11pt")
                             for argName, arg in module["args"].items():
                                 if not arg.get('defines'):
-
                                     if arg.get('direction') == "input":
                                         gSub.edge(f"{moduleNameFrom}:{argName}", f"{moduleName}:{argName}")
                                     elif arg.get('direction') == "inout":
@@ -277,9 +291,22 @@ def verilog2doc(verilogs, top=None, output=None):
                 for sub in module["sub"]:
                     if sub[0] in modules:
                         gAll.edge(moduleName, sub[0])
+
+                        sports = []
+                        for argName, arg in modules[sub[0]]["args"].items():
+                            if not arg.get('defines'):
+                                sports.append(f"<{argName}>{argName}{arg.get('size') or ''}")
+                                if arg.get('direction') == "input":
+                                    gSub.edge(f"{moduleName}_{sub[0]}:{argName}", f"{sub[0]}:{argName}")
+                                elif arg.get('direction') == "inout":
+                                    gSub.edge(f"{moduleName}_{sub[0]}:{argName}", f"{sub[0]}:{argName}", dir="both")
+                                else:
+                                    gSub.edge(f"{moduleName}_{sub[0]}:{argName}", f"{sub[0]}:{argName}", dir="back")
+
+                        label = f"{{ {{ {' | '.join(sports)} }} | {sub[0]} }}"
                         filename = modules[sub[0]]["filename"]
-                        gSub.node(sub[0], shape='plaintext', label=sub[0], href=f"{filename.split('/')[-1]}.html#{sub[0]}")
-                        gSub.edge(moduleName, sub[0])
+                        gSub.node(sub[0], shape='record', label=label, href=f"{filename.split('/')[-1]}.html#{sub[0]}", fontsize="11pt")
+                        #gSub.edge(f"{moduleName}_{sub[0]}", sub[0])
                 fd.write(gSub.pipe().decode())
                 fd.write("\n")
                 fd.write("<br>\n")

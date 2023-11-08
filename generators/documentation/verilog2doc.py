@@ -255,13 +255,13 @@ def verilog2doc(verilogs, top=None, output=None):
                 gSub = graphviz.Digraph('G', format="svg")
                 gSub.attr(rankdir='LR')
 
-                label = f"{{ {{{' | '.join(ports)}}} | {moduleName} }}"
+                label = f"{{ {{ {' | '.join(ports)} }} | {moduleName} }}"
                 gSub.node(moduleName, shape='record', label=label)
 
                 for moduleNameFrom, moduleFrom in modules.items():
                     for subFrom in moduleFrom["sub"]:
                         if subFrom[0] == moduleName:
-                            label = f"{{ {moduleNameFrom} |{{{' | '.join(ports)}}}}}"
+                            label = f"{{ {moduleNameFrom} |{{ {' | '.join(ports)} }} }}"
                             filename = modules[moduleNameFrom]["filename"]
                             gSub.node(moduleNameFrom, shape='record', label=label, href=f"{filename.split('/')[-1]}.html#{moduleNameFrom}")
                             for argName, arg in module["args"].items():

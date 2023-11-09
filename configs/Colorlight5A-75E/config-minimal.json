@@ -1,17 +1,17 @@
 {
-  "name": "Colorlight5A-75E",
-  "description": "minimal configuration for Colorlight5A-75E",
-  "toolchain": "icestorm",
-  "family": "ecp5",
-  "type": "25k",
-  "package": "CABGA256",
-  "transport": "SPI",
-  "clock": {
-    "speed": "25000000",
-    "pin": "P6"
-  },
-  "plugins": [],
-  "blink": {
-    "pin": "T6"
-  }
+    "name": "Colorlight5A-75E",
+    "description": "minimal configuration for Colorlight5A-75E",
+    "toolchain": "icestorm",
+    "family": "ecp5",
+    "type": "25k",
+    "package": "CABGA256",
+    "transport": "SPI",
+    "clock": {
+        "speed": "25000000",
+        "pin": "P6"
+    },
+    "plugins": [],
+    "blink": {
+        "pin": "T6"
+    }
 }

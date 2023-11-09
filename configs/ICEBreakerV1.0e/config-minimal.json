@@ -1,17 +1,17 @@
 {
-  "name": "ICEBreakerV1.0e",
-  "description": "minimal configuration for ICEBreakerV1.0e",
-  "toolchain": "icestorm",
-  "family": "ice40",
-  "type": "up5k",
-  "package": "sg48",
-  "flashcmd": "openFPGALoader -b ice40_generic rio.bin -f",
-  "clock": {
-    "speed": "12000000",
-    "pin": "35"
-  },
-  "blink": {
-    "pin": "27"
-  },
-  "plugins": []
+    "name": "ICEBreakerV1.0e",
+    "description": "minimal configuration for ICEBreakerV1.0e",
+    "toolchain": "icestorm",
+    "family": "ice40",
+    "type": "up5k",
+    "package": "sg48",
+    "flashcmd": "openFPGALoader -b ice40_generic rio.bin -f",
+    "clock": {
+        "speed": "12000000",
+        "pin": "35"
+    },
+    "blink": {
+        "pin": "27"
+    },
+    "plugins": []
 }

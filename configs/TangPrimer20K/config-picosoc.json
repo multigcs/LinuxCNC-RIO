@@ -1,5 +1,5 @@
 {
-    "name": "TangPrimer20K_udp",
+    "name": "TangPrimer20K",
     "description": "TangPrimer20K",
     "board": "TangPrimer20K",
     "type": "GW2A-LV18PG256C8/I7",
@@ -45,7 +45,16 @@
             "peripherals": [
                 {
                     "type": "gpio",
-                    "pins": {"gpio0": ["N16", "OUTPUT"], "gpio1": ["N14", "OUTPUT"]}
+                    "pins": {
+                        "gpio0": [
+                            "N16",
+                            "OUTPUT"
+                        ],
+                        "gpio1": [
+                            "N14",
+                            "OUTPUT"
+                        ]
+                    }
                 },
                 {
                     "type": "counter"

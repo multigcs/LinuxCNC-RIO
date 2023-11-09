@@ -21,7 +21,16 @@
             "peripherals": [
                 {
                     "type": "gpio",
-                    "pins": {"gpio0": ["H5", "OUTPUT"], "gpio1": ["J5", "OUTPUT"]}
+                    "pins": {
+                        "gpio0": [
+                            "H5",
+                            "OUTPUT"
+                        ],
+                        "gpio1": [
+                            "J5",
+                            "OUTPUT"
+                        ]
+                    }
                 },
                 {
                     "type": "counter"
@@ -41,6 +50,5 @@
             },
             "name": "PICOSOC"
         }
-
     ]
 }

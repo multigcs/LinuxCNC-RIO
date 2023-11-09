@@ -1,5 +1,5 @@
 {
-    "name": "arty-a7-35t",
+    "name": "Arty-a7-35t",
     "description": "Arty a7-35t - testing",
     "toolchain": "vivado",
     "family": "xc7",
@@ -20,7 +20,16 @@
             "peripherals": [
                 {
                     "type": "gpio",
-                    "pins": {"gpio0": ["H5", "OUTPUT"], "gpio1": ["J5", "OUTPUT"]}
+                    "pins": {
+                        "gpio0": [
+                            "H5",
+                            "OUTPUT"
+                        ],
+                        "gpio1": [
+                            "J5",
+                            "OUTPUT"
+                        ]
+                    }
                 },
                 {
                     "type": "counter"
@@ -41,6 +50,5 @@
             },
             "name": "PICOSOC"
         }
-
     ]
 }

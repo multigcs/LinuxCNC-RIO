@@ -1,17 +1,17 @@
 {
-  "name": "Bugblat_PIF2",
-  "description": "minimal configuration for Bugblat_PIF2",
-  "toolchain": "diamond",
-  "family": "LCMXO2",
-  "type": "LCMXO2-7000HC-5TG144C",
-  "package": "TQFP144",
-  "clock": {
-    "internal": true,
-    "speed": "133000000",
-    "pin": "0"
-  },
-  "blink": {
-    "pin": "113"
-  },
-  "plugins": []
+    "name": "Bugblat_PIF2",
+    "description": "minimal configuration for Bugblat_PIF2",
+    "toolchain": "diamond",
+    "family": "LCMXO2",
+    "type": "LCMXO2-7000HC-5TG144C",
+    "package": "TQFP144",
+    "clock": {
+        "internal": true,
+        "speed": "133000000",
+        "pin": "0"
+    },
+    "blink": {
+        "pin": "113"
+    },
+    "plugins": []
 }

@@ -1,5 +1,5 @@
 {
-    "name": "ICEBreakerV1.0e-BOB",
+    "name": "ICEBreakerV1.0e",
     "description": "Small and low cost FPGA educational and development board",
     "toolchain": "icestorm",
     "family": "ice40",
@@ -19,7 +19,16 @@
             "peripherals": [
                 {
                     "type": "gpio",
-                    "pins": {"gpio0": ["11", "OUTPUT"], "gpio1": ["37", "OUTPUT"]}
+                    "pins": {
+                        "gpio0": [
+                            "11",
+                            "OUTPUT"
+                        ],
+                        "gpio1": [
+                            "37",
+                            "OUTPUT"
+                        ]
+                    }
                 },
                 {
                     "type": "counter"

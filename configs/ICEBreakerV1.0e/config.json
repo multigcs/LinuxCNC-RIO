@@ -1,0 +1,129 @@
+{
+    "name": "ICEBreakerV1.0e",
+    "description": "Small and low cost FPGA educational and development board",
+    "toolchain": "icestorm",
+    "family": "ice40",
+    "type": "up5k",
+    "package": "sg48",
+    "flashcmd": "openFPGALoader -b ice40_generic rio.bin -f",
+    "clock": {
+        "osc": "12000000",
+        "speed": "50250000",
+        "pin": "35"
+    },
+    "interface": [
+        {
+            "type": "spi",
+            "pins": {
+                "MOSI": "42",
+                "MISO": "43",
+                "SCK": "38",
+                "SEL": "36"
+            }
+        }
+    ],
+    "blink": {
+        "pin": "27"
+    },
+    "plugins": [
+        {
+            "debounce": true,
+            "pin": "10",
+            "name": "DIN0",
+            "type": "din_bit"
+        },
+        {
+            "debounce": true,
+            "pin": "20",
+            "name": "DIN1",
+            "type": "din_bit"
+        },
+        {
+            "debounce": true,
+            "pin": "19",
+            "name": "DIN2",
+            "type": "din_bit"
+        },
+        {
+            "debounce": true,
+            "pin": "18",
+            "name": "DIN3",
+            "type": "din_bit"
+        },
+        {
+            "pin": "23",
+            "name": "DOUT0",
+            "type": "dout_bit"
+        },
+        {
+            "pin": "25",
+            "name": "DOUT1",
+            "type": "dout_bit"
+        },
+        {
+            "pin": "26",
+            "name": "DOUT2",
+            "type": "dout_bit"
+        },
+        {
+            "pin": "21",
+            "name": "DOUT3",
+            "type": "dout_bit"
+        },
+        {
+            "type": "vin_frequency",
+            "pin": "44",
+            "pullup": true,
+            "name": "VIN0"
+        },
+        {
+            "type": "vout_pwm",
+            "pins": {
+                "pwm": "37"
+            },
+            "invert_pwm": true,
+            "name": "VOUT0"
+        },
+        {
+            "type": "vout_pwm",
+            "pins": {
+                "pwm": "11"
+            },
+            "invert_pwm": true,
+            "name": "VOUT1"
+        },
+        {
+            "comment": "J9.1+3+4",
+            "type": "joint_stepper",
+            "cl": false,
+            "pins": {
+                "dir": "3",
+                "step": "4",
+                "enable": "48"
+            },
+            "name": "JOINT0"
+        },
+        {
+            "comment": "J9.1+3+4_2",
+            "type": "joint_stepper",
+            "cl": false,
+            "pins": {
+                "dir": "2",
+                "step": "46",
+                "enable": "47"
+            },
+            "name": "JOINT1"
+        },
+        {
+            "comment": "J9.1+3+4_3",
+            "type": "joint_stepper",
+            "cl": false,
+            "pins": {
+                "dir": "32",
+                "step": "34",
+                "enable": "28"
+            },
+            "name": "JOINT2"
+        }
+    ]
+}

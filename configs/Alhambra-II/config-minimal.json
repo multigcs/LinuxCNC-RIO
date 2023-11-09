@@ -1,0 +1,20 @@
+{
+  "name": "Alhambra-II",
+  "description": "minimal configuration for Alhambra-II",
+  "board": "Alhambra-II",
+  "toolchain": "icestorm",
+  "family": "ice40",
+  "type": "hx4k",
+  "package": "tq144",
+  "clock": {
+    "speed": "12000000",
+    "pin": "49"
+  },
+  "transport": "UDP",
+  "ip": "192.168.10.28",
+  "axis": 3,
+  "blink": {
+    "pin": "37"
+  },
+  "plugins": []
+}

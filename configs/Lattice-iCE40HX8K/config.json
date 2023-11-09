@@ -1,0 +1,158 @@
+{
+    "name": "Lattice-iCE40HX8K",
+    "description": "Lattice-ICE40HX8K_BOB with cheap 5axis-BOB",
+    "toolchain": "icestorm",
+    "family": "ice40",
+    "type": "hx8k",
+    "package": "ct256",
+    "clock": {
+        "osc": "12000000",
+        "speed": "48000000",
+        "pin": "J3"
+    },
+    "interface": [
+        {
+            "type": "spi",
+            "pins": {
+                "MOSI": "K1",
+                "MISO": "J1",
+                "SCK": "H1",
+                "SEL": "G2"
+            }
+        }
+    ],
+    "error": {
+        "pin": "R15"
+    },
+    "enable": {
+        "pin": "P15"
+    },
+    "blink": {
+        "pin": "P16"
+    },
+    "plugins": [
+        {
+            "comment": "DB-10",
+            "debounce": true,
+            "pullup": true,
+            "pin": "F15",
+            "name": "DIN0",
+            "type": "din_bit"
+        },
+        {
+            "comment": "DB-11",
+            "debounce": true,
+            "pullup": true,
+            "pin": "J15",
+            "name": "DIN1",
+            "type": "din_bit"
+        },
+        {
+            "comment": "DB-12",
+            "debounce": true,
+            "pullup": true,
+            "pin": "G15",
+            "name": "DIN2",
+            "type": "din_bit"
+        },
+        {
+            "comment": "LED-0",
+            "pin": "B5",
+            "name": "DOUT0",
+            "type": "dout_bit"
+        },
+        {
+            "comment": "LED-1",
+            "pin": "B4",
+            "name": "DOUT1",
+            "type": "dout_bit"
+        },
+        {
+            "comment": "LED-2",
+            "pin": "A2",
+            "name": "DOUT2",
+            "type": "dout_bit"
+        },
+        {
+            "comment": "LED-3",
+            "pin": "A1",
+            "name": "DOUT3",
+            "type": "dout_bit"
+        },
+        {
+            "comment": "DB-01",
+            "pin": "C16",
+            "name": "DOUT4",
+            "type": "dout_bit"
+        },
+        {
+            "comment": "DB-14",
+            "pin": "F14",
+            "name": "DOUT5",
+            "type": "dout_bit"
+        },
+        {
+            "comment": "DB-16",
+            "pin": "J14",
+            "name": "DOUT6",
+            "type": "dout_bit"
+        },
+        {
+            "comment": "DB-17",
+            "pin": "K15",
+            "name": "DOUT7",
+            "type": "dout_bit"
+        },
+        {
+            "comment": "MPG DB-13 DB-15",
+            "type": "vin_mpgencoder",
+            "pullup": true,
+            "pins": {
+                "a": "G14",
+                "b": "K14"
+            },
+            "name": "VIN0"
+        },
+        {
+            "comment": "Spindle DB-08 DB-09",
+            "type": "vout_pwm",
+            "min": "-10",
+            "max": "+10",
+            "pins": {
+                "pwm": "E14",
+                "dir": "G16"
+            },
+            "name": "VOUT0"
+        },
+        {
+            "COMMENT": "Joint 0 X DB-02 DB-03",
+            "type": "joint_stepper",
+            "cl": false,
+            "pins": {
+                "step": "B16",
+                "dir": "D16"
+            },
+            "name": "JOINT0"
+        },
+        {
+            "comment": "Joint 1 Y DB-04 DB-05",
+            "type": "joint_stepper",
+            "cl": false,
+            "pins": {
+                "step": "D14",
+                "dir": "E16"
+            },
+            "name": "JOINT1"
+        },
+        {
+            "comment": "Joint 2 Z DB-06 DB-07",
+            "type": "joint_stepper",
+            "cl": false,
+            "pins": {
+                "step": "D15",
+                "dir": "F16"
+            },
+            "name": "JOINT2"
+        }
+    ]
+}

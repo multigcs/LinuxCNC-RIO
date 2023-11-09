@@ -1,0 +1,228 @@
+{
+    "name": "TangNano9K",
+    "description": "TangNano9K with 5Axis BOB over SPI (4Axis+Relais)",
+    "board": "TangNano9K",
+    "type": "GW1NR-LV9QN88PC6/I5",
+    "family": "GW1N-9C",
+    "toolchain": "icestorm",
+    "package": "",
+    "clock": {
+        "speed": "27000000",
+        "pin": "52"
+    },
+    "transport": "SPI",
+    "axis": 4,
+    "interface": [
+        {
+            "type": "spi",
+            "pins": {
+                "MOSI": "48",
+                "MISO": "49",
+                "SCK": "31",
+                "SEL": "32"
+            }
+        }
+    ],
+    "blink": {
+        "pin": "10"
+    },
+    "error": {
+        "invert": true,
+        "pin": "11"
+    },
+    "enable": {
+        "pin": "69"
+    },
+    "expansion": [
+        {
+            "type": "shiftreg",
+            "bits": 8,
+            "invert": true,
+            "pullup": true,
+            "pins": {
+                "out": "73",
+                "in": "72",
+                "clock": "71",
+                "load": "70"
+            }
+        }
+    ],
+    "plugins": [
+        {
+            "name": "home-x",
+            "net": "joint.0.home-sw-in",
+            "comment": "BOB DIN0",
+            "_invert": true,
+            "pullup": true,
+            "pin": "33",
+            "type": "din_bit"
+        },
+        {
+            "name": "home-y",
+            "net": "joint.1.home-sw-in",
+            "comment": "BOB DIN1",
+            "_invert": true,
+            "pullup": true,
+            "pin": "30",
+            "type": "din_bit"
+        },
+        {
+            "name": "home-z",
+            "net": "joint.2.home-sw-in",
+            "comment": "BOB DIN2",
+            "_invert": true,
+            "pullup": true,
+            "pin": "29",
+            "type": "din_bit"
+        },
+        {
+            "name": "tool-probe",
+            "net": "motion.probe-input",
+            "comment": "BOB DIN3",
+            "debounce": true,
+            "_invert": true,
+            "pullup": true,
+            "pin": "28",
+            "type": "din_bit"
+        },
+        {
+            "comment": "BOB DIN4",
+            "_invert": true,
+            "pullup": true,
+            "pin": "68",
+            "name": "DIN4",
+            "type": "din_bit"
+        },
+        {
+            "comment": "ADPATER DIN0",
+            "pullup": true,
+            "pin": "79",
+            "name": "DIN5",
+            "type": "din_bit"
+        },
+        {
+            "comment": "ADPATER DIN1",
+            "pullup": true,
+            "pin": "80",
+            "name": "DIN6",
+            "type": "din_bit"
+        },
+        {
+            "comment": "ADPATER DIN2",
+            "pullup": true,
+            "pin": "81",
+            "name": "DIN7",
+            "type": "din_bit"
+        },
+        {
+            "comment": "ADPATER DIN3",
+            "pullup": true,
+            "pin": "82",
+            "name": "DIN8",
+            "type": "din_bit"
+        },
+        {
+            "comment": "ADPATER DIN4",
+            "pullup": true,
+            "pin": "83",
+            "name": "DIN9",
+            "type": "din_bit"
+        },
+        {
+            "comment": "ADPATER DIN5",
+            "pullup": true,
+            "pin": "84",
+            "name": "DIN10",
+            "type": "din_bit"
+        },
+        {
+            "comment": "ADPATER DIN6",
+            "pullup": true,
+            "pin": "85",
+            "name": "DIN11",
+            "type": "din_bit"
+        },
+        {
+            "comment": "ADPATER DIN7",
+            "pullup": true,
+            "pin": "86",
+            "name": "DIN12",
+            "type": "din_bit"
+        },
+        {
+            "name": "flood-enable",
+            "net": "iocontrol.0.coolant-flood",
+            "comment": "P16",
+            "invert": true,
+            "pin": "57",
+            "type": "dout_bit"
+        },
+        {
+            "name": "spindle-enable",
+            "net": "spindle.0.on",
+            "comment": "P17",
+            "invert": true,
+            "pin": "56",
+            "type": "dout_bit"
+        },
+        {
+            "type": "vin_counter",
+            "pullup": true,
+            "pins": {
+                "up": "3",
+                "down": "4"
+            },
+            "name": "VIN0"
+        },
+        {
+            "name": "spindle-speed",
+            "net": "spindle.0.speed-out",
+            "min": "0",
+            "max": "20000",
+            "_invert": true,
+            "type": "vout_pwm",
+            "pins": {
+                "pwm": "55"
+            }
+        },
+        {
+            "type": "joint_stepper",
+            "cl": false,
+            "scale": 800,
+            "pins": {
+                "step": "54",
+                "dir": "53"
+            },
+            "name": "JOINT0"
+        },
+        {
+            "type": "joint_stepper",
+            "cl": false,
+            "scale": 800,
+            "pins": {
+                "step": "51",
+                "dir": "42"
+            },
+            "name": "JOINT1"
+        },
+        {
+            "type": "joint_stepper",
+            "cl": false,
+            "scale": 800,
+            "pins": {
+                "step": "41",
+                "dir": "35"
+            },
+            "name": "JOINT2"
+        },
+        {
+            "type": "joint_stepper",
+            "cl": false,
+            "pins": {
+                "step": "40",
+                "dir": "34"
+            },
+            "name": "JOINT3"
+        }
+    ]
+}

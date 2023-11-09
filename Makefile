@@ -4,7 +4,7 @@
 CONFIG ?= configs/Lattice-iCE40HX8K_BOB/config.json
 TARGETNAME = $(shell jq -r '.name' < ${CONFIG})
 
-all: build firmware components
+all: build gateware components
 
 build:
 	python3 buildtool.py ${CONFIG}
@@ -23,7 +23,7 @@ flake8:
 	flake8 --ignore S605 --max-line-length 200 buildtool.py plugins/*/*.py
 
 mypy:
-	mypy buildtool.py generators/firmware/*.py plugins/*/*.py
+	mypy buildtool.py generators/gateware/*.py plugins/*/*.py
 
 check: isort flake8 mypy
 
@@ -35,8 +35,8 @@ schema: files/schema.svg
 files/schema.svg: files/schema.sh
 	files/schema.sh > files/schema.svg
 
-firmware:
-	(cd Output/${TARGETNAME}/Firmware/ ; make)
+gateware:
+	(cd Output/${TARGETNAME}/Gateware/ ; make)
 
 components:
 	sudo halcompile --install Output/${TARGETNAME}/LinuxCNC/Components/rio.c

@@ -656,7 +656,7 @@ def generate_rio_ini(project):
 
 
     cfgini_data = []
-    cfgini_data.append("# Basic LinuxCNC config for testing RIO firmware")
+    cfgini_data.append("# Basic LinuxCNC config for testing RIO gateware")
     cfgini_data.append("")
     for section, setup in basic_setup.items():
         cfgini_data.append(f"[{section}]")

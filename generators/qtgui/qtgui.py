@@ -500,7 +500,7 @@ if __name__ == '__main__':
 
     """)
 
-    open(f"{project['FIRMWARE_PATH']}/qt_spitest.py", "w").write("\n".join(spitest_data))
+    open(f"{project['GATEWARE_PATH']}/qt_spitest.py", "w").write("\n".join(spitest_data))
 
 
 

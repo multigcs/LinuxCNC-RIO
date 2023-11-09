@@ -27,17 +27,17 @@ do
         exit 1
     fi
     (
-        cd Output/$FOLDER/Firmware/
+        cd Output/$FOLDER/Gateware/
         if grep -s -q gowin_build Makefile
         then
-            echo "build firmware: make clean gowin_build"
+            echo "build gateware: make clean gowin_build"
             if ! make clean gowin_build
             then
                 echo "ERROR building bitfile for $CONFIG"
                 exit 1
             fi
         else
-            echo "build firmware: make clean all"
+            echo "build gateware: make clean all"
             if ! make clean all
             then
                 echo "ERROR building bitfile for $CONFIG"

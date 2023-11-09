@@ -1,0 +1,17 @@
+{
+  "name": "Colorlight_i5-v7.0",
+  "description": "minimal configuration for Colorlight_i5-v7.0",
+  "toolchain": "icestorm",
+  "family": "ecp5",
+  "type": "25k",
+  "package": "CABGA381",
+  "transport": "SPI",
+  "clock": {
+    "speed": "25000000",
+    "pin": "P3"
+  },
+  "blink": {
+    "pin": "U16"
+  },
+  "plugins": []
+}

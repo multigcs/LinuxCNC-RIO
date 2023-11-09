@@ -1,0 +1,16 @@
+{
+  "name": "OpenBench_LogicSniffer",
+  "description": "minimal configuration for OpenBench_LogicSniffer",
+  "toolchain": "ise",
+  "family": "xc3",
+  "type": "xc3s250e-4-vq100",
+  "package": "vq100",
+  "clock": {
+    "speed": "50000000",
+    "pin": "P41"
+  },
+  "blink": {
+    "pin": "P36"
+  },
+  "plugins": []
+}

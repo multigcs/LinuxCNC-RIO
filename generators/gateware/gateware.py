@@ -85,7 +85,7 @@ def verilog_top(project):
         top_data.append("")
         project["verilog_files"].append("blink.v")
         os.system(
-            f"cp -a generators/firmware/blink.v* {project['SOURCE_PATH']}/blink.v"
+            f"cp -a generators/gateware/blink.v* {project['SOURCE_PATH']}/blink.v"
         )
 
     if "error" in project["jdata"]:
@@ -310,12 +310,12 @@ def verilog_top(project):
 
 
 def generate(project):
-    print("generating firmware")
+    print("generating gateware")
 
     # general verilog-files
     project["verilog_files"].append("debouncer.v")
     os.system(
-        f"cp -a generators/firmware/debouncer.v* {project['SOURCE_PATH']}/debouncer.v"
+        f"cp -a generators/gateware/debouncer.v* {project['SOURCE_PATH']}/debouncer.v"
     )
 
     # system clock (pll setup)

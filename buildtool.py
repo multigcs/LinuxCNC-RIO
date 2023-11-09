@@ -20,9 +20,9 @@ def main(configfile, outputdir=None):
             "OUTPUT_PATH"
         ] = f"Output/{project['jdata']['name'].replace(' ', '_').replace('/', '_')}"
 
-    project["FIRMWARE_PATH"] = f"{project['OUTPUT_PATH']}/Firmware"
-    project["SOURCE_PATH"] = f"{project['FIRMWARE_PATH']}"
-    project["PINS_PATH"] = f"{project['FIRMWARE_PATH']}"
+    project["GATEWARE_PATH"] = f"{project['OUTPUT_PATH']}/Gateware"
+    project["SOURCE_PATH"] = f"{project['GATEWARE_PATH']}"
+    project["PINS_PATH"] = f"{project['GATEWARE_PATH']}"
     project["LINUXCNC_PATH"] = f"{project['OUTPUT_PATH']}/LinuxCNC"
     os.system(f"mkdir -p {project['OUTPUT_PATH']}")
     os.system(f"mkdir -p {project['SOURCE_PATH']}")
@@ -44,8 +44,8 @@ def main(configfile, outputdir=None):
         open(f"{project['SOURCE_PATH']}/defines.v", "w").write("\n".join(verilog_defines))
         project["verilog_files"].append("defines.v")
 
-    if project["firmware_extrafiles"]:
-        for filename, content in project["firmware_extrafiles"].items():
+    if project["gateware_extrafiles"]:
+        for filename, content in project["gateware_extrafiles"].items():
             open(f"{project['SOURCE_PATH']}/{filename}", "w").write(content)
 
 
@@ -57,7 +57,7 @@ def main(configfile, outputdir=None):
                     project["verilog_files"].append(ipv_name)
                 ipv_path = f"plugins/{plugin}/{ipv}"
                 if not os.path.isfile(ipv_path):
-                    ipv_path = f"generators/firmware/{ipv}"
+                    ipv_path = f"generators/gateware/{ipv}"
                 os.system(
                     f"cp -a {ipv_path} {project['SOURCE_PATH']}/{ipv_name}"
                 )

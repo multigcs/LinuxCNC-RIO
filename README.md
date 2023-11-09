@@ -98,7 +98,7 @@ if you want to test the connection without LinuxCNC, you can use
 the python test-tool:
 
 ```
-python3 Output/BOARD_NAME/Firmware/qt_spitest.py [IP]
+python3 Output/BOARD_NAME/Gateware/qt_spitest.py [IP]
 ```
 
 

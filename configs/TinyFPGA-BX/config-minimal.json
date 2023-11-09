@@ -1,16 +1,16 @@
 {
-  "name": "TinyFPGA-BX",
-  "description": "minimal configuration for TinyFPGA-BX",
-  "toolchain": "icestorm",
-  "family": "ice40",
-  "type": "lp8k",
-  "package": "cm81",
-  "clock": {
-    "speed": "16000000",
-    "pin": "B2"
-  },
-  "plugins": [],
-  "blink": {
-    "pin": "B3"
-  }
+    "name": "TinyFPGA-BX",
+    "description": "minimal configuration for TinyFPGA-BX",
+    "toolchain": "icestorm",
+    "family": "ice40",
+    "type": "lp8k",
+    "package": "cm81",
+    "clock": {
+        "speed": "16000000",
+        "pin": "B2"
+    },
+    "plugins": [],
+    "blink": {
+        "pin": "B3"
+    }
 }

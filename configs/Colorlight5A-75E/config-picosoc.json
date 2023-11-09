@@ -1,0 +1,46 @@
+{
+    "name": "Colorlight5A-75E",
+    "description": "only for testing",
+    "toolchain": "icestorm",
+    "family": "ecp5",
+    "type": "25k",
+    "package": "CABGA256",
+    "transport": "SPI",
+    "clock": {
+        "_osc": "25000000",
+        "speed": "25000000",
+        "pin": "P6"
+    },
+    "blink": {
+        "pin": "T6"
+    },
+    "plugins": [
+        {
+            "type": "picosoc",
+            "baud": 115200,
+            "peripherals": [
+                {
+                    "type": "gpio",
+                    "pins": {"gpio0": ["H5", "OUTPUT"], "gpio1": ["J5", "OUTPUT"]}
+                },
+                {
+                    "type": "counter"
+                },
+                {
+                    "type": "sysclock"
+                }
+            ],
+            "pins": {
+                "rx": "C4",
+                "tx": "D4",
+                "_flash_clk": "N0",
+                "flash_clk": "USRMCLK",
+                "flash_csb": "N8",
+                "flash_mosi": "T8",
+                "flash_miso": "T7"
+            },
+            "name": "PICOSOC"
+        }
+
+    ]
+}

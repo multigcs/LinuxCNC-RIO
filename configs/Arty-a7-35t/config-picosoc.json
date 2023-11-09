@@ -1,0 +1,46 @@
+{
+    "name": "arty-a7-35t",
+    "description": "Arty a7-35t - testing",
+    "toolchain": "vivado",
+    "family": "xc7",
+    "type": "xc7a35ticsg324-1l",
+    "package": "csg324",
+    "clock": {
+        "osc": "100000000",
+        "speed": "50000000",
+        "pin": "E3"
+    },
+    "blink": {
+        "pin": "T9"
+    },
+    "plugins": [
+        {
+            "type": "picosoc",
+            "baud": 115200,
+            "peripherals": [
+                {
+                    "type": "gpio",
+                    "pins": {"gpio0": ["H5", "OUTPUT"], "gpio1": ["J5", "OUTPUT"]}
+                },
+                {
+                    "type": "counter"
+                },
+                {
+                    "type": "sysclock"
+                }
+            ],
+            "pins": {
+                "rx": "A9",
+                "tx": "D10",
+                "flash_clk": "L16",
+                "flash_csb": "L13",
+                "flash_io0": "K17",
+                "flash_io1": "K18",
+                "flash_io2": "L14",
+                "flash_io3": "M14"
+            },
+            "name": "PICOSOC"
+        }
+
+    ]
+}

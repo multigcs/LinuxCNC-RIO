@@ -1,0 +1,59 @@
+{
+    "name": "Colorlight_i5-v7.0",
+    "description": "only for testing",
+    "toolchain": "icestorm",
+    "family": "ecp5",
+    "type": "25k",
+    "package": "CABGA381",
+    "transport": "SPI",
+    "clock": {
+        "_osc": "25000000",
+        "speed": "25000000",
+        "pin": "P3"
+    },
+    "blink": {
+        "pin": "U16"
+    },
+    "plugins": [
+        {
+            "type": "picosoc",
+            "baud": 115200,
+            "peripherals": [
+                {
+                    "type": "gpio",
+                    "pins": {"gpio0": ["D1", "OUTPUT"], "gpio1": ["E1", "OUTPUT"]}
+                },
+                {
+                    "type": "counter"
+                },
+                {
+                    "type": "sysclock"
+                },
+                {
+                    "type": "hdmi",
+                    "pins": {
+                        "gpdi_dp0": ["G19", "OUTPUT", false, "DRIVE=4"],
+                        "gpdi_dn0": ["H20", "OUTPUT", false, "DRIVE=4"],
+                        "gpdi_dp1": ["E20", "OUTPUT", false, "DRIVE=4"],
+                        "gpdi_dn1": ["F19", "OUTPUT", false, "DRIVE=4"],
+                        "gpdi_dp2": ["C20", "OUTPUT", false, "DRIVE=4"],
+                        "gpdi_dn2": ["D19", "OUTPUT", false, "DRIVE=4"],
+                        "gpdi_dp3": ["J19", "OUTPUT", false, "DRIVE=4"],
+                        "gpdi_dn3": ["K19", "OUTPUT", false, "DRIVE=4"]
+                    }
+                }
+            ],
+            "mem": 16384,
+            "pins": {
+                "rx": "H18",
+                "tx": "J17",
+                "flash_clk": "USRMCLK",
+                "flash_csb": "R2",
+                "flash_mosi": "W2",
+                "flash_miso": "V2"
+            },
+            "name": "PICOSOC"
+        }
+
+    ]
+}

@@ -1,0 +1,118 @@
+{
+    "name": "TangNano9K",
+    "description": "TangNano9K over serial",
+    "board": "TangNano9K",
+    "type": "GW1NR-LV9QN88PC6/I5",
+    "family": "GW1N-9C",
+    "toolchain": "icestorm",
+    "package": "",
+    "clock": {
+        "speed": "27000000",
+        "pin": "52"
+    },
+    "transport": "SERIAL",
+    "axis": 2,
+    "interface": [
+        {
+            "type": "uart",
+            "pins": {
+                "RX": "48",
+                "TX": "49"
+            }
+        }
+    ],
+    "blink": {
+        "pin": "10"
+    },
+    "error": {
+        "invert": true,
+        "pin": "11"
+    },
+    "enable": {
+        "pin": "69"
+    },
+    "plugins": [
+        {
+            "pullup": true,
+            "pin": "33",
+            "name": "DIN0",
+            "type": "din_bit"
+        },
+        {
+            "pullup": true,
+            "pin": "30",
+            "name": "DIN1",
+            "type": "din_bit"
+        },
+        {
+            "invert": true,
+            "pin": "13",
+            "name": "DOUT0",
+            "type": "dout_bit"
+        },
+        {
+            "invert": true,
+            "pin": "14",
+            "name": "DOUT1",
+            "type": "dout_bit"
+        },
+        {
+            "invert": true,
+            "pin": "15",
+            "name": "DOUT2",
+            "type": "dout_bit"
+        },
+        {
+            "type": "vin_counter",
+            "pullup": true,
+            "pins": {
+                "up": "3",
+                "down": "4"
+            },
+            "name": "VIN0"
+        },
+        {
+            "type": "vout_pwm",
+            "pins": {
+                "pwm": "55"
+            },
+            "name": "VOUT0"
+        },
+        {
+            "type": "joint_stepper",
+            "cl": false,
+            "scale": 800,
+            "pins": {
+                "step": "54",
+                "dir": "53"
+            },
+            "name": "JOINT0"
+        },
+        {
+            "type": "joint_stepper",
+            "cl": false,
+            "scale": 800,
+            "pins": {
+                "step": "51",
+                "dir": "42"
+            },
+            "name": "JOINT1"
+        },
+        {
+            "type": "picosoc",
+            "baud": 115200,
+            "mem": 1024,
+            "pins": {
+                "rx": "48",
+                "tx": "49",
+                "flash_clk": "15",
+                "flash_csb": "16",
+                "flash_io0": "14",
+                "flash_io1": "17",
+                "flash_io2": "12",
+                "flash_io3": "13"
+            },
+            "name": "PICOSOC"
+        }
+    ]
+}

@@ -44,8 +44,8 @@ def main(configfile, outputdir=None):
         open(f"{project['SOURCE_PATH']}/defines.v", "w").write("\n".join(verilog_defines))
         project["verilog_files"].append("defines.v")
 
-    if project["gateware_extrafiles"]:
-        for filename, content in project["gateware_extrafiles"].items():
+    if project["firmware_extrafiles"]:
+        for filename, content in project["firmware_extrafiles"].items():
             open(f"{project['SOURCE_PATH']}/{filename}", "w").write(content)
 
 

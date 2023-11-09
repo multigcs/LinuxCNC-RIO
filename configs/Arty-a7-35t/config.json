@@ -1,5 +1,5 @@
 {
-    "name": "arty-a7-35t",
+    "name": "Arty-a7-35t",
     "description": "Arty a7-35t - testing",
     "toolchain": "vivado",
     "family": "xc7",
@@ -19,7 +19,6 @@
         {
             "comment": "ChipKit/Arduino Header",
             "pins": {
-
                 "D0": "V15",
                 "D1": "U16",
                 "D2": "P14",
@@ -123,8 +122,6 @@
             "name": "SW3",
             "type": "din_bit"
         },
-
-
         {
             "debounce": true,
             "pin": "D9",
@@ -149,9 +146,6 @@
             "name": "BTN3",
             "type": "din_bit"
         },
-
-
-
         {
             "type": "dout_bit",
             "name": "LD0_R",
@@ -167,8 +161,6 @@
             "name": "LD0_B",
             "pin": "E1"
         },
-
-
         {
             "type": "dout_bit",
             "name": "LD1_R",
@@ -184,8 +176,6 @@
             "name": "LD1_B",
             "pin": "G4"
         },
-
-
         {
             "type": "dout_bit",
             "name": "LD2_R",
@@ -201,8 +191,6 @@
             "name": "LD2_B",
             "pin": "H4"
         },
-
-
         {
             "type": "dout_bit",
             "name": "LD3_R",
@@ -218,9 +206,6 @@
             "name": "LD3_B",
             "pin": "K2"
         },
-
-
-
         {
             "type": "dout_bit",
             "name": "LD4",
@@ -231,7 +216,5 @@
             "name": "LD5",
             "pin": "J5"
         }
-
-
     ]
 }

@@ -1,5 +1,5 @@
 {
-    "name": "Olimex-ICE40HX8K-EVB_BOB",
+    "name": "Olimex-ICE40HX8K-EVB",
     "description": "Olimex-ICE40HX8K-EVB with cheap 5axis-BOB",
     "toolchain": "icestorm",
     "family": "ice40",

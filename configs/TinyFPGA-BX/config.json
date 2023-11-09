@@ -1,5 +1,5 @@
 {
-    "name": "TinyFPGA-BX_BOB",
+    "name": "TinyFPGA-BX",
     "description": "TinyFPGA-BX_BOB with cheap 5axis-BOB",
     "toolchain": "icestorm",
     "family": "ice40",

@@ -1,5 +1,5 @@
 {
-    "name": "Lattice-ICE40HX8K_BOB",
+    "name": "Lattice-iCE40HX8K",
     "description": "Lattice-ICE40HX8K_BOB with cheap 5axis-BOB",
     "toolchain": "icestorm",
     "family": "ice40",

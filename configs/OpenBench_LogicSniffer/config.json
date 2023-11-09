@@ -1,5 +1,5 @@
 {
-    "name": "xc3s250e",
+    "name": "OpenBench_LogicSniffer",
     "description": "xc3s250e - testing",
     "toolchain": "ise",
     "family": "xc3",
@@ -12,7 +12,6 @@
     "blink": {
         "pin": "P36"
     },
-
     "interface": [
         {
             "type": "uart",
@@ -22,9 +21,7 @@
             }
         }
     ],
-
     "plugins": [
-
         {
             "invert": true,
             "pin": "P9",
@@ -37,7 +34,6 @@
             "name": "LED1",
             "type": "dout_bit"
         },
-
         {
             "pin": "P40",
             "name": "SW1",
@@ -48,8 +44,6 @@
             "name": "SW2",
             "type": "din_bit"
         }
-
-
     ],
     "docs": [
         {
@@ -58,7 +52,16 @@
             "peripherals": [
                 {
                     "type": "gpio",
-                    "pins": {"gpio0": ["P9", "OUTPUT"], "gpio1": ["P86", "OUTPUT"]}
+                    "pins": {
+                        "gpio0": [
+                            "P9",
+                            "OUTPUT"
+                        ],
+                        "gpio1": [
+                            "P86",
+                            "OUTPUT"
+                        ]
+                    }
                 },
                 {
                     "type": "counter"
@@ -78,25 +81,45 @@
             "name": "PICOSOC"
         },
         {
-            "flash_cs": ["P24"],
-            "flash_si": ["P27"],
-            "flash_so": ["P44"],
-            "flashsck": ["P50"],
-
-
-
-            "aux0 SW_UPDATE": ["P40"],
-            "auxCS_SW_RST": ["P38"],
-            "aux1_LED_ACT": ["P36"],
-            "aux2_RX": ["P35"],
-            "aux3_TX": ["P34"],
-
-
-            "aux3": ["P34"],
-            "ext_clk_in": ["P32"],
-            "ex_clk_out": ["P33"],
-            "ext_trigger_in": ["P26"],
-
+            "flash_cs": [
+                "P24"
+            ],
+            "flash_si": [
+                "P27"
+            ],
+            "flash_so": [
+                "P44"
+            ],
+            "flashsck": [
+                "P50"
+            ],
+            "aux0 SW_UPDATE": [
+                "P40"
+            ],
+            "auxCS_SW_RST": [
+                "P38"
+            ],
+            "aux1_LED_ACT": [
+                "P36"
+            ],
+            "aux2_RX": [
+                "P35"
+            ],
+            "aux3_TX": [
+                "P34"
+            ],
+            "aux3": [
+                "P34"
+            ],
+            "ext_clk_in": [
+                "P32"
+            ],
+            "ex_clk_out": [
+                "P33"
+            ],
+            "ext_trigger_in": [
+                "P26"
+            ],
             "input_pins": [
                 "P83",
                 "P84",
@@ -115,7 +138,6 @@
                 "P94",
                 "P02"
             ],
-
             "wing_pins": [
                 "P53",
                 "P54",
@@ -135,6 +157,5 @@
                 "P79"
             ]
         }
-
     ]
 }

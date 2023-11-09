@@ -1,5 +1,5 @@
 {
-    "name": "BugblatPIF_2",
+    "name": "Bugblat_PIF2",
     "description": "do not work / only for testing",
     "toolchain": "diamond",
     "family": "LCMXO2",
@@ -13,6 +13,5 @@
     "blink": {
         "pin": "113"
     },
-    "plugins": [
-    ]
+    "plugins": []
 }

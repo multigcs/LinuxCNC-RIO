@@ -35,7 +35,7 @@ def buildsys_gowin(project):
     makefile_data.append("	gowin_pack -d ${FAMILY} -o $(PROJECT).fs $(PROJECT)_pnr.json")
     makefile_data.append("")
     makefile_data.append("load: $(PROJECT).fs")
-    makefile_data.append("	openFPGALoader -b tangnano9k $(PROJECT).fs -f")
+    makefile_data.append(f"	openFPGALoader -b {board.lower()} $(PROJECT).fs -f")
     makefile_data.append("")
     makefile_data.append("clean:")
     makefile_data.append("	rm -rf $(PROJECT).fs $(PROJECT).json $(PROJECT)_pnr.json $(PROJECT).tcl abc.history impl yosys.log")
@@ -58,7 +58,7 @@ def buildsys_gowin(project):
     makefile_data.append("	gw_sh $(PROJECT).tcl")
     makefile_data.append("")
     makefile_data.append("gowin_load: impl/pnr/project.fs")
-    makefile_data.append("	openFPGALoader -b tangnano9k impl/pnr/project.fs -f")
+    makefile_data.append(f"	openFPGALoader -b {board.lower()} impl/pnr/project.fs -f")
     makefile_data.append("")
     makefile_data.append("")
     open(f"{project['GATEWARE_PATH']}/Makefile", "w").write(

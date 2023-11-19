@@ -502,3 +502,149 @@ def buildsys_quartus(project):
     open(f"{project['GATEWARE_PATH']}/Makefile", "w").write(
         "\n".join(makefile_data)
     )
+
+def buildsys_verilator(project):
+    pins_qdf(project)
+
+    verilogs = " ".join(project["verilog_files"])
+    makefile_data = []
+    makefile_data.append("")
+    makefile_data.append("PROJECT   := rio")
+    makefile_data.append("TOP       := rio")
+    makefile_data.append(f"VERILOGS  := {verilogs}")
+    makefile_data.append("")
+    makefile_data.append("all: obj_dir/V$(TOP)")
+    makefile_data.append("")
+    makefile_data.append("obj_dir/V$(TOP): $(VERILOGS)")
+    makefile_data.append("	verilator --cc --exe --build -j 0 -Wall main.cpp $(TOP).v")
+    makefile_data.append("")
+    makefile_data.append("clean:")
+    makefile_data.append("	rm -rf obj_dir")
+    makefile_data.append("")
+    makefile_data.append("")
+    open(f"{project['GATEWARE_PATH']}/Makefile", "w").write(
+        "\n".join(makefile_data)
+    )
+
+
+
+    top_arguments = []
+    for pname in sorted(list(project["pinlists"])):
+        pins = project["pinlists"][pname]
+        for pin in pins:
+            if pin[1].startswith("EXPANSION"):
+                continue
+            if pin[1] == "USRMCLK":
+                continue
+
+            top_arguments.append({
+                "dir": pin[2].lower(),
+                "name": pin[0],
+            })
+
+    print(top_arguments)
+
+    main_cpp = []
+    main_cpp.append("#include \"Vrio.h\"")
+    main_cpp.append("#include \"verilated.h\"")
+    main_cpp.append("")
+    main_cpp.append("#include <stdio.h>")
+    main_cpp.append("#include <sys/types.h>")
+    main_cpp.append("#include <sys/stat.h>")
+    main_cpp.append("#include <fcntl.h>")
+    main_cpp.append("#include <unistd.h>")
+    main_cpp.append("")
+    main_cpp.append(f"#define BUFFER_BIT {project['data_size']}")
+    main_cpp.append("#define BUFFER_BYTES (BUFFER_BIT / 8)")
+    main_cpp.append("")
+    main_cpp.append("int main(int argc, char** argv) {")
+    main_cpp.append("")
+    main_cpp.append("    uint8_t spi_tx[BUFFER_BYTES] = {0x74, 0x69, 0x72, 0x77};")
+    main_cpp.append("    uint8_t spi_rx[BUFFER_BYTES];")
+    main_cpp.append("    int spi_rx_num = 0;")
+    main_cpp.append("    int spi_rx_bit = 0;")
+    main_cpp.append("    int spi_rx_cs = 1;")
+    main_cpp.append("")
+    main_cpp.append("    VerilatedContext* contextp = new VerilatedContext;")
+    main_cpp.append("    contextp->commandArgs(argc, argv);")
+    main_cpp.append("    Vrio* rio = new Vrio{contextp};")
+    for argument in top_arguments:
+        main_cpp.append(f"    rio->{argument['name']} = 0;")
+    main_cpp.append("    rio->eval();")
+    main_cpp.append("")
+    main_cpp.append("    int counter = 0;")
+    main_cpp.append("    int last = 0;")
+    main_cpp.append("    while (!contextp->gotFinish()) {")
+    main_cpp.append("        rio->sysclk = 1 - rio->sysclk;")
+    main_cpp.append("        rio->eval();")
+    main_cpp.append("        rio->sysclk = 1 - rio->sysclk;")
+    main_cpp.append("        rio->eval();")
+    main_cpp.append("")
+    main_cpp.append("        if (rio->BLINK_LED != last) {")
+    for argument in top_arguments:
+        if argument['dir'] == "output":
+            main_cpp.append(f"            fprintf(stdout, \"{argument['name']}=%i \", rio->{argument['name']});")
+    main_cpp.append(f"            fprintf(stdout, \"\\n\");")
+    main_cpp.append("        }")
+    main_cpp.append("        last = rio->BLINK_LED;")
+    main_cpp.append("        ")
+    main_cpp.append("        if (counter++ > 10000) {")
+    main_cpp.append("            counter = 0;")
+    main_cpp.append("            if (rio->INTERFACE_SPI_SSEL == 0) {")
+    main_cpp.append("                if (rio->INTERFACE_SPI_SCK == 0) {")
+    main_cpp.append("                    if (spi_rx_bit < 8) {")
+    main_cpp.append("                        if ((spi_tx[spi_rx_num] & (1<<(7-spi_rx_bit))) > 0) {")
+    main_cpp.append("                            rio->INTERFACE_SPI_MOSI = 1;")
+    main_cpp.append("                        } else {")
+    main_cpp.append("                            rio->INTERFACE_SPI_MOSI = 0;")
+    main_cpp.append("                        }")
+    main_cpp.append("                    }")
+    main_cpp.append("                    rio->INTERFACE_SPI_SCK = 1;")
+    main_cpp.append("                } else if (spi_rx_num < BUFFER_BYTES) {")
+    main_cpp.append("                    if (spi_rx_bit < 8) {")
+    main_cpp.append("                        spi_rx[spi_rx_num] |= (rio->INTERFACE_SPI_MISO<<(7-spi_rx_bit));")
+    main_cpp.append("                        spi_rx_bit++;")
+    main_cpp.append("                    }")
+    main_cpp.append("                    if (spi_rx_bit == 8) {")
+    main_cpp.append("                        //printf(\"#spi_rx_num: %i 0x%X %i\\n\", spi_rx_num, spi_rx[spi_rx_num], 0);")
+    main_cpp.append("")
+    main_cpp.append("                        int fd_rx = open(\"/dev/shm/verilog.rx\", O_WRONLY);")
+    main_cpp.append("                        write(fd_rx, spi_rx, BUFFER_BYTES);")
+    main_cpp.append("                        close(fd_rx);")
+    main_cpp.append("                        ")
+    main_cpp.append("                        spi_rx_bit = 0;")
+    main_cpp.append("                        spi_rx_num++;")
+    main_cpp.append("                    }")
+    main_cpp.append("                    if (spi_rx_num < BUFFER_BYTES) {")
+    main_cpp.append("                        rio->INTERFACE_SPI_SCK = 0;")
+    main_cpp.append("                    }")
+    main_cpp.append("                } else {")
+    main_cpp.append("                    rio->INTERFACE_SPI_SSEL = 1;")
+    main_cpp.append("                    spi_rx_bit = 0;")
+    main_cpp.append("                    spi_rx_num = 0;")
+    main_cpp.append("                }")
+    main_cpp.append("            } else if (rio->INTERFACE_SPI_SSEL == 1) {")
+    main_cpp.append("                int fd_tx = open(\"/dev/shm/verilog.tx\", O_RDONLY);")
+    main_cpp.append("                read(fd_tx, spi_tx, BUFFER_BYTES);")
+    main_cpp.append("                close(fd_tx);")
+    main_cpp.append("")
+    main_cpp.append("                spi_rx_bit = 0;")
+    main_cpp.append("                spi_rx_num = 0;")
+    main_cpp.append("                rio->INTERFACE_SPI_SSEL = 0;")
+    main_cpp.append("                rio->INTERFACE_SPI_SCK = 0;")
+    main_cpp.append("            }")
+    main_cpp.append("")
+    main_cpp.append("        }")
+    main_cpp.append("")
+    main_cpp.append("    }")
+    main_cpp.append("")
+    main_cpp.append("    delete rio;")
+    main_cpp.append("    delete contextp;")
+    main_cpp.append("    return 0;")
+    main_cpp.append("}")
+    main_cpp.append("")
+    main_cpp.append("")
+
+    open(f"{project['GATEWARE_PATH']}/main.cpp", "w").write(
+        "\n".join(main_cpp)
+    )

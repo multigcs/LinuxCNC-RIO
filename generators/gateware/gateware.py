@@ -27,6 +27,8 @@ def verilog_top(project):
     top_data.append("")
     top_data.append("*/")
     top_data.append("")
+    top_data.append("/* verilator lint_off UNUSEDSIGNAL */")
+    top_data.append("")
 
     argsstr = ",\n        ".join(top_arguments)
     top_data.append(f"module rio (\n        {argsstr}")
@@ -387,3 +389,6 @@ def generate(project):
 
     elif project["jdata"].get("toolchain") == "diamond":
         buildsys_diamond(project)
+
+    elif project["jdata"].get("toolchain") == "verilator":
+        buildsys_verilator(project)

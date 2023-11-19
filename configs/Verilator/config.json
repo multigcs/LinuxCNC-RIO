@@ -1,0 +1,44 @@
+{
+    "name": "Verilator",
+    "description": "Verilator test",
+    "toolchain": "verilator",
+    "clock": {
+        "speed": "1000000",
+        "pin": "35"
+    },
+    "blink": {
+        "pin": "27"
+    },
+    "interface": [
+        {
+            "type": "spi",
+            "max": "4000000",
+            "pins": {
+                "MOSI": "G6",
+                "MISO": "H7",
+                "SCK": "G7",
+                "SEL": "G1"
+            }
+        }
+    ],
+    "plugins": [
+        {
+            "joint": "0",
+            "pin": "C2",
+            "pullup": true,
+            "invert": true,
+            "name": "DIN0",
+            "type": "din_bit"
+        },
+        {
+            "pin": "A6",
+            "name": "DOUT0",
+            "type": "dout_bit"
+        },
+        {
+            "pin": "A7",
+            "name": "DOUT1",
+            "type": "dout_bit"
+        }
+    ]
+}

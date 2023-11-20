@@ -198,10 +198,10 @@ class WinForm(QWidget):
             key = f'vos{vn}'
             self.widgets[key] = QSlider(Qt.Horizontal)
             if voutminmax[vn][2] == "pwmdir":
-                self.widgets[key].setMinimum(-voutminmax[vn][1])
+                self.widgets[key].setMinimum(-int(voutminmax[vn][1]))
             else:
-                self.widgets[key].setMinimum(voutminmax[vn][0])
-            self.widgets[key].setMaximum(voutminmax[vn][1])
+                self.widgets[key].setMinimum(int(voutminmax[vn][0]))
+            self.widgets[key].setMaximum(int(voutminmax[vn][1]))
             self.widgets[key].setValue(0)
             layout.addWidget(self.widgets[key], gpy, vn + 3)
         gpy += 1

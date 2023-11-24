@@ -39,6 +39,7 @@ def verilog_top(project):
     if project["internal_clock"]:
         if project["jdata"].get("toolchain") == "diamond":
             top_data.append("    // Internal Oscillator")
+            top_data.append("    wire sysclk;")
             top_data.append('    defparam OSCH_inst.NOM_FREQ = "133.00";')
             top_data.append("    OSCH OSCH_inst ( ")
             top_data.append("        .STDBY(1'b0),")

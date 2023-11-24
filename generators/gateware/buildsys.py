@@ -369,7 +369,7 @@ def buildsys_vivado(project):
 
 
 def buildsys_diamond(project):
-    pins_lpf(project)
+    pins_lpf(project, diamond=True)
 
     verilogs = " ".join(project["verilog_files"])
     makefile_data = []
@@ -397,6 +397,7 @@ def buildsys_diamond(project):
     makefile_data.append("	@echo \"prj_run PAR -impl build\" >> syn.tcl")
     makefile_data.append("	@echo \"prj_run PAR -impl build -task PARTrace\" >> syn.tcl")
     makefile_data.append("	@echo \"prj_run Export -impl build -task Bitgen\" >> syn.tcl")
+    makefile_data.append("	@echo \"prj_run Export -impl build -task Jedecgen\" >> syn.tcl")
     makefile_data.append("	@echo \"prj_project close\" >> syn.tcl")
     makefile_data.append("")
     makefile_data.append("$(PROJECT).ldf: syn.tcl")

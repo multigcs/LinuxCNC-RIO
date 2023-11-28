@@ -706,6 +706,8 @@ def generate_rio_ini(project):
         if num >= num_joints:
             continue
 
+        AXIS_NAME = joint.get("axis", axis_names[num])
+
         if joint.get("type") == "rcservo":
             SCALE = 80.0
             MIN_LIMIT = -110
@@ -723,8 +725,6 @@ def generate_rio_ini(project):
                 SCALE = 400.0
                 MIN_LIMIT = -1300
                 MAX_LIMIT = 1300
-
-        AXIS_NAME = joint.get("axis", axis_names[num])
         OUTPUT_SCALE = float(joint.get("scale", SCALE))
         INPUT_SCALE = float(joint.get("enc_scale", OUTPUT_SCALE))
         scales = f"SCALE = {OUTPUT_SCALE}"

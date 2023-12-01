@@ -874,6 +874,17 @@ net user-request-enable <= iocontrol.0.user-request-enable	=> rio.SPI-reset
     # net pressure wcomp.0.in <= rio.pressure
     # net compressor wcomp.0.out => rio.compressor
 
+    for plugin in project["jdata"]["plugins"]:
+        if plugin["type"] == "modbus":
+            for protocol in plugin["protocols"]:
+                if protocol["type"] == "hyvfd":
+                    cfghal_data.append("setp rio.MODBUS_HYVFD_0.enable 1")
+                    cfghal_data.append("net spindle0_speed spindle.0.speed-out-abs => rio.MODBUS_HYVFD_0.speed-command")
+                    cfghal_data.append("net spindle0_forward spindle.0.forward => rio.MODBUS_HYVFD_0.spindle-forward")
+                    cfghal_data.append("net spindle0_reverse spindle.0.reverse => rio.MODBUS_HYVFD_0.spindle-reverse")
+                    cfghal_data.append("net spindle0_on spindle.0.on => rio.MODBUS_HYVFD_0.spindle-on")
+                    cfghal_data.append("")
+
     if "hy_vfd" in project["jdata"]:
         hy_vfd_dev = project["jdata"]["hy_vfd"]
         cfghal_data.append(f"loadusr -Wn vfd hy_vfd -n vfd -d {hy_vfd_dev} -p none -r 9600")
@@ -1295,6 +1306,16 @@ def generate_custom_postgui_hal(project):
             customhal_data.append(f"net ztouch halui.mdi-command-02 <= {prefix}.ztouch")
 
         # spindle.0
+        for plugin in project["jdata"]["plugins"]:
+            if plugin["type"] == "modbus":
+                for protocol in plugin["protocols"]:
+                    if protocol["type"] == "hyvfd":
+                        customhal_data.append(f"net {prefix}-spindle-at-speed   rio.MODBUS_HYVFD_0.spindle-at-speed      => {prefix}.spindle-at-speed")
+                        customhal_data.append(f"net {prefix}-spindle-speed_fb   rio.MODBUS_HYVFD_0.spindle-speed-fb      => {prefix}.spindle-speed")
+                        customhal_data.append(f"net {prefix}-hycomm-ok          rio.MODBUS_HYVFD_0.hycomm-ok             => {prefix}.hycomm-ok")
+                        customhal_data.append(f"#net {prefix}-spindle-voltage    rio.MODBUS_HYVFD_0.rated-motor-voltage   => {prefix}.spindle-voltage")
+                        customhal_data.append(f"#net {prefix}-spindle-current    rio.MODBUS_HYVFD_0.rated-motor-current   => {prefix}.spindle-current")
+
         if "hy_vfd" in project["jdata"]:
             customhal_data.append(f"net {prefix}-spindle-at-speed   vfd.spindle-at-speed      => {prefix}.spindle-at-speed")
             customhal_data.append(f"net {prefix}-spindle-speed_fb   vfd.spindle-speed-fb      => {prefix}.spindle-speed")
@@ -1382,7 +1403,17 @@ def generate_rio_gui(project):
             pass
 
     # spindle.0
+    hy_vfd_gui = 0
+    for plugin in project["jdata"]["plugins"]:
+        if plugin["type"] == "modbus":
+            for protocol in plugin["protocols"]:
+                if protocol["type"] == "hyvfd":
+                    hy_vfd_gui = 1
+
     if "hy_vfd" in project["jdata"]:
+        hy_vfd_gui = 1
+
+    if hy_vfd_gui:
         cfgxml_data.append("<labelframe text=\"Spindle\">")
         cfgxml_data.append("    <relief>RAISED</relief>")
         cfgxml_data.append("    <font>(\"Helvetica\", 12)</font>")

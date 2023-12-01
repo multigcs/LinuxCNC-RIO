@@ -1312,6 +1312,7 @@ def generate_custom_postgui_hal(project):
                     if protocol["type"] == "hyvfd":
                         customhal_data.append(f"net {prefix}-spindle-at-speed   rio.MODBUS_HYVFD_0.spindle-at-speed      => {prefix}.spindle-at-speed")
                         customhal_data.append(f"net {prefix}-spindle-speed_fb   rio.MODBUS_HYVFD_0.spindle-speed-fb      => {prefix}.spindle-speed")
+                        customhal_data.append(f"net {prefix}-spindle-rott   rio.MODBUS_HYVFD_0.Rott      => {prefix}.spindle-rott")
                         customhal_data.append(f"net {prefix}-hycomm-ok          rio.MODBUS_HYVFD_0.hycomm-ok             => {prefix}.hycomm-ok")
                         customhal_data.append(f"#net {prefix}-spindle-voltage    rio.MODBUS_HYVFD_0.rated-motor-voltage   => {prefix}.spindle-voltage")
                         customhal_data.append(f"#net {prefix}-spindle-current    rio.MODBUS_HYVFD_0.rated-motor-current   => {prefix}.spindle-current")
@@ -1453,6 +1454,11 @@ def generate_rio_gui(project):
         cfgxml_data.append("        </hbox>")
         cfgxml_data.append("      </vbox>")
         cfgxml_data.append("    </hbox>")
+        cfgxml_data.append("      <number>")
+        cfgxml_data.append('        <halpin>"spindle-rott"</halpin>')
+        cfgxml_data.append('        <font>("Helvetica",24)</font>')
+        cfgxml_data.append('        <format>"05d"</format>')
+        cfgxml_data.append("      </number>")
         cfgxml_data.append("  </vbox>")
         cfgxml_data.append("</labelframe>")
 

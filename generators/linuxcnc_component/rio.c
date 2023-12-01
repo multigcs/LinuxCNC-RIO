@@ -28,6 +28,7 @@
 #include <fcntl.h>
 #include <sys/mman.h>
 #include <unistd.h>
+#include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
 
@@ -1254,8 +1255,11 @@ uint8_t spindle_start_fwd[] = { 0x01, WRITE_CONTROL_DATA, 0x01, CONTROL_Run_Fwd 
 uint8_t spindle_start_rev[] = { 0x01, WRITE_CONTROL_DATA, 0x01, CONTROL_Run_Rev };
 uint8_t spindle_stop[] =  { 0x01, WRITE_CONTROL_DATA, 0x01, CONTROL_Stop };
 uint8_t spindle_speed[] = { 0x01, WRITE_FREQ_DATA, 0x02, 0x0, 0x0 };
+uint8_t spindle_PD004[] = { 0x01, FUNCTION_READ, 0x03, 4, 0x00, 0x00 };
 uint8_t spindle_PD005[] = { 0x01, FUNCTION_READ, 0x03, 5, 0x00, 0x00 };
 uint8_t spindle_PD011[] = { 0x01, FUNCTION_READ, 0x03, 11, 0x00, 0x00 };
+uint8_t spindle_PD141[] = { 0x01, FUNCTION_READ, 0x03, 141, 0x00, 0x00 };
+uint8_t spindle_PD142[] = { 0x01, FUNCTION_READ, 0x03, 142, 0x00, 0x00 };
 uint8_t spindle_PD143[] = { 0x01, FUNCTION_READ, 0x03, 143, 0x00, 0x00 };
 uint8_t spindle_PD144[] = { 0x01, FUNCTION_READ, 0x03, 144, 0x00, 0x00 };
 uint8_t spindle_status_frq_set[] = { 0x01, READ_CONTROL_STATUS, 0x03, 0x00, 0x00, 0x00 };
@@ -1267,16 +1271,10 @@ uint8_t spindle_status_ac_volt[] = { 0x01, READ_CONTROL_STATUS, 0x03, 0x05, 0x00
 uint8_t spindle_status_condition[] = { 0x01, READ_CONTROL_STATUS, 0x03, 0x06, 0x00, 0x00 };
 uint8_t spindle_status_temp[] = { 0x01, READ_CONTROL_STATUS, 0x03, 0x07, 0x00, 0x00 };
 
-uint16_t maxFrequency = 0;
-uint16_t minFrequency = 0;
-uint16_t maxRpmAt50Hz = 0;
-uint16_t min_rpm = 0;
-uint16_t max_rpm = 0;
 uint16_t motor_poles = 0;
 uint8_t hycomm_ok = 0;
 int32_t set_speed = 0;
 uint8_t set_direction = 0;
-
 uint16_t modbus_stat_n = 0;
 uint32_t pkg_counter = 0;
 
@@ -1331,24 +1329,23 @@ void modbus_hyvfd_rec_msg(uint8_t *rec) {
         if (rec[4] == 0x00) {
             *(mb_data->SetF[spindle]) = (float)value;
         } else if (rec[4] == 0x01) {
-            *(mb_data->OutF[spindle]) = (float)value;
+            *(mb_data->OutF[spindle]) = (float)value * 0.01;
+
+            if (*(mb_data->max_freq[spindle]) > 0) {
+                *(mb_data->spindle_speed_fb[spindle]) = ((float)*(mb_data->OutF[spindle]) / *(mb_data->max_freq[spindle])) * *(mb_data->rated_motor_rev[spindle]);
+                *(mb_data->spindle_speed_fb_rps[spindle]) = *(mb_data->spindle_speed_fb[spindle]) / 60.0;
+                float speed_tolerance = *(mb_data->spindle_speed_fb[spindle]) * *(mb_data->spindle_at_speed_tolerance[spindle]);
+                float speed_diff = fabs(*(mb_data->spindle_speed_fb[spindle]) - set_speed);
+                if (speed_diff <= speed_tolerance) {
+                    *(mb_data->spindle_at_speed[spindle]) = 1;
+                } else {
+                    *(mb_data->spindle_at_speed[spindle]) = 0;
+                }
+            }
         } else if (rec[4] == 0x02) {
-            *(mb_data->OutA[spindle]) = (float)value;
+            *(mb_data->OutA[spindle]) = (float)value * 0.1;
         } else if (rec[4] == 0x03) {
             *(mb_data->Rott[spindle]) = (float)value;
-            *(mb_data->spindle_speed_fb[spindle]) = (float)value;
-
-            // TODO: fixing calculation
-            //*(mb_data->spindle_speed_fb[spindle]) = ((float)*(mb_data->OutF[spindle]) / (float)maxFrequency) * (float)maxRpmAt50Hz;
-            *(mb_data->spindle_speed_fb_rps[spindle]) = *(mb_data->spindle_speed_fb[spindle]) / 60.0;
-            float speed_tolerance = *(mb_data->spindle_speed_fb[spindle]) * *(mb_data->spindle_at_speed_tolerance[spindle]);
-            float speed_diff = fabs(*(mb_data->spindle_speed_fb[spindle]) - set_speed);
-            if (speed_diff <= speed_tolerance) {
-                *(mb_data->spindle_at_speed[spindle]) = 1;
-            } else {
-                *(mb_data->spindle_at_speed[spindle]) = 0;
-            }
-
         } else if (rec[4] == 0x04) {
             *(mb_data->DCV[spindle]) = (float)value;
         } else if (rec[4] == 0x05) {
@@ -1362,24 +1359,28 @@ void modbus_hyvfd_rec_msg(uint8_t *rec) {
     } else if (rec[2] == FUNCTION_READ && rec[3] == 0x03) {
         uint16_t value = (rec[5] << 8) | rec[6];
         if (rec[4] == FUNCTION_PD005) {
-            maxFrequency = value;
-            *(mb_data->max_freq[spindle]) = (float)value;
+            *(mb_data->max_freq[spindle]) = (float)value * 0.01;
+        } else if (rec[4] == FUNCTION_PD004) {
+            *(mb_data->base_freq[spindle]) = (float)value * 0.01;
         } else if (rec[4] == FUNCTION_PD011) {
-            minFrequency = value;
-            *(mb_data->freq_lower_limit[spindle]) = (float)value;
+            *(mb_data->freq_lower_limit[spindle]) = (float)value * 0.01;
+        } else if (rec[4] == FUNCTION_PD141) {
+            motor_poles = value;
+            *(mb_data->rated_motor_voltage[spindle]) = value;
+        } else if (rec[4] == FUNCTION_PD142) {
+            motor_poles = value;
+            *(mb_data->rated_motor_current[spindle]) = value;
         } else if (rec[4] == FUNCTION_PD143) {
             motor_poles = value;
             *(mb_data->motor_poles[spindle]) = (uint32_t)value;
         } else if (rec[4] == FUNCTION_PD144) {
-            maxRpmAt50Hz = value;
-            *(mb_data->base_freq[spindle]) = (float)value;
+            float rpm_at_50hz = value;
+            *(mb_data->rated_motor_rev[spindle]) = (rpm_at_50hz / 50.0) * *(mb_data->max_freq[spindle]);
         }
 
-        if (minFrequency > maxFrequency) {
-            minFrequency = maxFrequency;
+        if (*(mb_data->freq_lower_limit[spindle]) > *(mb_data->max_freq[spindle])) {
+            *(mb_data->freq_lower_limit[spindle]) = *(mb_data->max_freq[spindle]);
         }
-        min_rpm = minFrequency * maxRpmAt50Hz / 5000;
-        max_rpm = maxFrequency * maxRpmAt50Hz / 5000;
 
         hycomm_ok = 1;
     }
@@ -1432,18 +1433,18 @@ void modbus_hyvfd_send_msg(uint8_t *data) {
         } else if (modbus_stat_n == 11) {
             modbus_hyvfd_send_cmd(data, spindle_status_temp, sizeof(spindle_status_temp), addr);
         } else if (modbus_stat_n == 12) {
-            modbus_hyvfd_send_cmd(data, spindle_PD143, sizeof(spindle_PD143), addr);
-
+            modbus_hyvfd_send_cmd(data, spindle_PD141, sizeof(spindle_PD141), addr);
         } else if (modbus_stat_n == 13) {
+            modbus_hyvfd_send_cmd(data, spindle_PD142, sizeof(spindle_PD142), addr);
+        } else if (modbus_stat_n == 14) {
+            modbus_hyvfd_send_cmd(data, spindle_PD143, sizeof(spindle_PD143), addr);
+        } else if (modbus_stat_n == 15) {
+            modbus_hyvfd_send_cmd(data, spindle_PD004, sizeof(spindle_PD004), addr);
+
+        } else if (modbus_stat_n == 16) {
 
             if (*(mb_data->spindle_on[spindle]) == 1) {
                 set_speed = *(mb_data->speed_command[spindle]);
-                if (set_speed < min_rpm) {
-                    set_speed = min_rpm;
-                }
-                if (set_speed > max_rpm) {
-                    set_speed = max_rpm;
-                }
             } else {
                 set_speed = 0;
             }
@@ -1458,36 +1459,29 @@ void modbus_hyvfd_send_msg(uint8_t *data) {
             if (set_speed == 0) {
                 modbus_hyvfd_send_cmd(data, spindle_stop, sizeof(spindle_stop), addr);
             } else {
-                if (set_speed < 0) {
-                    set_speed *= -1;
-                }
-                if (set_speed >= max_rpm) {
-                    set_speed = max_rpm;
-                } else if (set_speed <= min_rpm) {
-                    set_speed = min_rpm;
-                }
 
-                // TODO: fixing calculation
-                /*
-                float hz_per_rpm = maxFrequency / maxRpmAt50Hz;
-                uint16_t value = set_speed * hz_per_rpm;
-                if (value > maxFrequency) {
-                    value = maxFrequency;
-                }
-                if (value < minFrequency) {
-                    value = minFrequency;
-                }
-                value *= 100;
+                if (*(mb_data->rated_motor_rev[spindle]) > 0) {
+                    uint16_t freq_comp = 0;
+                    if (set_direction == 1) {
+                        freq_comp = 1;
+                    }
+                    float hz_per_rpm = *(mb_data->max_freq[spindle]) / *(mb_data->rated_motor_rev[spindle]);
+                    uint16_t value = abs((int)((set_speed + freq_comp) * hz_per_rpm * 100));
+                    if (value > *(mb_data->max_freq[spindle]) * 100) {
+                        value = *(mb_data->max_freq[spindle]) * 100;
+                    }
+                    if (value < *(mb_data->freq_lower_limit[spindle]) * 100) {
+                        value = *(mb_data->freq_lower_limit[spindle]) * 100;
+                    }
+// 750 , 6000
+// 1 0.1333 400 3000 10000
 
-                spindle_speed[3] = (value >> 8) & 0xFF;
-                spindle_speed[4] = (value & 0xFF);
-                modbus_hyvfd_send_cmd(data, spindle_speed, sizeof(spindle_speed), addr);
-                */
+                    printf("## %i %f %f %f %i\n", set_speed, hz_per_rpm, *(mb_data->max_freq[spindle]), *(mb_data->rated_motor_rev[spindle]), value);
 
-                uint16_t value = set_speed * 5000 / maxRpmAt50Hz;
-                spindle_speed[3] = (value >> 8) & 0xFF;
-                spindle_speed[4] = (value & 0xFF);
-                modbus_hyvfd_send_cmd(data, spindle_speed, sizeof(spindle_speed), addr);
+                    spindle_speed[3] = (value>>8) & 0xFF;
+                    spindle_speed[4] = (value & 0xFF);
+                    modbus_hyvfd_send_cmd(data, spindle_speed, sizeof(spindle_speed), addr);
+                }
 
 
             }
@@ -1496,12 +1490,6 @@ void modbus_hyvfd_send_msg(uint8_t *data) {
 
             if (*(mb_data->spindle_on[spindle]) == 1) {
                 set_speed = *(mb_data->speed_command[spindle]);
-                if (set_speed < min_rpm) {
-                    set_speed = min_rpm;
-                }
-                if (set_speed > max_rpm) {
-                    set_speed = max_rpm;
-                }
             } else {
                 set_speed = 0;
             }

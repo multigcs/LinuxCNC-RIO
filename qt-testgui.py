@@ -141,8 +141,12 @@ class modbus_vfd():
     READ_CONTROL_STATUS =    0x04
     WRITE_FREQ_DATA     =    0x05
     LOOP_TEST           =    0x08
+    FUNCTION_PD004      =    4
     FUNCTION_PD005      =    5
     FUNCTION_PD011      =    11
+    FUNCTION_PD141      =    141
+    FUNCTION_PD142      =    142
+    FUNCTION_PD143      =    143
     FUNCTION_PD144      =    144
     CONTROL_Run_Fwd     =    0x01
     CONTROL_Run_Rev     =    0x11
@@ -156,23 +160,31 @@ class modbus_vfd():
     CONTROL_Bracking    =    0x40
     CONTROL_Track_Start =    0x80
 
-    rpm = 0
+    speed_command = 0
+    spindle_speed_fb = 0
+    freq_cmd = 0
     modbus_interval = 1
     modbus_counter = 0
     cmd_counter = 0
-    maxFrequency = 0
-    minFrequency = 0
+
+    rated_motor_voltage = 0
+    rated_motor_current = 0
+    base_freq = 0
+    max_freq = 0
+    freq_lower_limit = 0
     min_rpm = 0
     max_rpm = 0
-    maxRpmAt50Hz = 0
-    frq_set = 0
-    frq_get = 0
-    ampere = 0
-    srpm = 0
-    dc_volt = 0
-    ac_volt = 0
-    condition = 0
-    temp = 0
+    rated_motor_rev = 0
+    rpm_at_50hz = 0
+    motor_poles = 0
+    SetF = 0
+    OutF = 0
+    OutA = 0
+    RoTT = 0
+    DCV = 0
+    ACV = 0
+    Cont = 0
+    Tmp = 0
     addr = 1
 
     def __init__(self, addr):
@@ -182,15 +194,18 @@ class modbus_vfd():
         self.spindle_speed            = [0x01, self.WRITE_FREQ_DATA, 0x02, 0x0, 0x0]
         self.spindle_PD005            = [0x01, self.FUNCTION_READ, 0x03, 5, 0x00, 0x00]
         self.spindle_PD011            = [0x01, self.FUNCTION_READ, 0x03, 11, 0x00, 0x00]
+        self.spindle_PD141            = [0x01, self.FUNCTION_READ, 0x03, 141, 0x00, 0x00]
+        self.spindle_PD142            = [0x01, self.FUNCTION_READ, 0x03, 142, 0x00, 0x00]
+        self.spindle_PD143            = [0x01, self.FUNCTION_READ, 0x03, 143, 0x00, 0x00]
         self.spindle_PD144            = [0x01, self.FUNCTION_READ, 0x03, 144, 0x00, 0x00]
-        self.spindle_status_frq_set   = [0x01, self.READ_CONTROL_STATUS, 0x03, 0x00, 0x00, 0x00]
-        self.spindle_status_frq_get   = [0x01, self.READ_CONTROL_STATUS, 0x03, 0x01, 0x00, 0x00]
-        self.spindle_status_ampere    = [0x01, self.READ_CONTROL_STATUS, 0x03, 0x02, 0x00, 0x00]
-        self.spindle_status_rpm       = [0x01, self.READ_CONTROL_STATUS, 0x03, 0x03, 0x00, 0x00]
-        self.spindle_status_dc_volt   = [0x01, self.READ_CONTROL_STATUS, 0x03, 0x04, 0x00, 0x00]
-        self.spindle_status_ac_volt   = [0x01, self.READ_CONTROL_STATUS, 0x03, 0x05, 0x00, 0x00]
-        self.spindle_status_condition = [0x01, self.READ_CONTROL_STATUS, 0x03, 0x06, 0x00, 0x00]
-        self.spindle_status_temp      = [0x01, self.READ_CONTROL_STATUS, 0x03, 0x07, 0x00, 0x00]
+        self.spindle_status_SetF      = [0x01, self.READ_CONTROL_STATUS, 0x03, 0x00, 0x00, 0x00]
+        self.spindle_status_OutF      = [0x01, self.READ_CONTROL_STATUS, 0x03, 0x01, 0x00, 0x00]
+        self.spindle_status_OutA      = [0x01, self.READ_CONTROL_STATUS, 0x03, 0x02, 0x00, 0x00]
+        self.spindle_status_RoTT      = [0x01, self.READ_CONTROL_STATUS, 0x03, 0x03, 0x00, 0x00]
+        self.spindle_status_DCV       = [0x01, self.READ_CONTROL_STATUS, 0x03, 0x04, 0x00, 0x00]
+        self.spindle_status_ACV       = [0x01, self.READ_CONTROL_STATUS, 0x03, 0x05, 0x00, 0x00]
+        self.spindle_status_Cont      = [0x01, self.READ_CONTROL_STATUS, 0x03, 0x06, 0x00, 0x00]
+        self.spindle_status_Tmp       = [0x01, self.READ_CONTROL_STATUS, 0x03, 0x07, 0x00, 0x00]
         self.run_cmd = self.spindle_stop
         self.addr = addr
 
@@ -208,7 +223,7 @@ class modbus_vfd():
         return crc & 0xFFFF
 
     def set_speed(self, rpm):
-        self.rpm = abs(rpm)
+        self.speed_command = abs(rpm)
         if rpm > 0:
             self.run_cmd = self.spindle_start_fwd
         elif rpm < 0:
@@ -224,23 +239,26 @@ class modbus_vfd():
             cmds = [
                 self.spindle_PD005,
                 self.spindle_PD011,
+                self.spindle_PD141,
+                self.spindle_PD142,
+                self.spindle_PD143,
                 self.spindle_PD144,
 
                 self.spindle_speed,
                 self.run_cmd,
 
-                self.spindle_status_ampere,
-                self.spindle_status_rpm,
-                self.spindle_status_frq_set,
-                self.spindle_status_frq_get,
+                self.spindle_status_OutA,
+                self.spindle_status_RoTT,
+                self.spindle_status_SetF,
+                self.spindle_status_OutF,
 
                 self.spindle_speed,
                 self.run_cmd,
 
-                self.spindle_status_ac_volt,
-                self.spindle_status_dc_volt,
-                self.spindle_status_condition,
-                self.spindle_status_temp,
+                self.spindle_status_ACV,
+                self.spindle_status_DCV,
+                self.spindle_status_Cont,
+                self.spindle_status_Tmp,
 
                 self.spindle_speed,
                 self.run_cmd,
@@ -249,10 +267,12 @@ class modbus_vfd():
             cmd = cmds[self.cmd_counter]
             cmd[0] = self.addr
 
-            if cmd == self.spindle_speed and self.maxRpmAt50Hz > 0:
-                value = self.rpm * 5000 // self.maxRpmAt50Hz;
-                cmd[3] = (value >> 8) & 0xFF;
-                cmd[4] = (value & 0xFF);
+            if cmd == self.spindle_speed and self.rpm_at_50hz > 0 and self.rated_motor_rev > 0:
+                freq_comp = 0
+                hz_per_rpm = self.max_freq / self.rated_motor_rev
+                self.freq_cmd = int(abs((self.speed_command + freq_comp) * hz_per_rpm * 100))
+                cmd[3] = (self.freq_cmd >> 8) & 0xFF;
+                cmd[4] = (self.freq_cmd & 0xFF);
 
             if self.cmd_counter < len(cmds) - 1:
                 self.cmd_counter += 1
@@ -279,20 +299,25 @@ class modbus_vfd():
 
     def feedback(self):
         feedback = {
-            "rpm": self.rpm,
-            "maxFrequency": self.maxFrequency,
-            "minFrequency": self.minFrequency,
+            "speed_command": self.speed_command,
+            "spindle_speed_fb": self.spindle_speed_fb,
+            "freq_cmd": self.freq_cmd,
+            "base_freq": self.base_freq,
+            "max_freq": self.max_freq,
+            "freq_lower_limit": self.freq_lower_limit,
             "min_rpm": self.min_rpm,
             "max_rpm": self.max_rpm,
-            "maxRpmAt50Hz": self.maxRpmAt50Hz,
-            "frq_set": self.frq_set,
-            "frq_get": self.frq_get,
-            "ampere": self.ampere,
-            "srpm": self.srpm,
-            "dc_volt": self.dc_volt,
-            "ac_volt": self.ac_volt,
-            "condition": self.condition,
-            "temp": self.temp,
+            "rpm_at_50hz": self.rpm_at_50hz,
+            "rated_motor_rev": self.rated_motor_rev,
+            "SetF": self.SetF,
+            "OutF": self.OutF,
+            "OutA": self.OutA,
+            "RoTT": self.RoTT,
+            "DCV": self.DCV,
+            "ACV": self.ACV,
+            "motor_poles": self.motor_poles,
+            "Cont": self.Cont,
+            "Tmp": self.Tmp,
             "addr": self.addr,
         }
         return feedback
@@ -313,35 +338,45 @@ class modbus_vfd():
             value = (data[5] << 8) | data[6]
             print(value)
             if data[4] == 0x00:
-                self.frq_set = value
+                self.SetF = value * 0.01
             elif data[4] == 0x01:
-                self.frq_get = value
+                self.OutF = value * 0.01
+                self.spindle_speed_fb = (self.OutF / self.max_freq) * self.rated_motor_rev;
+                self.spindle_speed_fb_rps = self.spindle_speed_fb / 60.0;
             elif data[4] == 0x02:
-                self.ampere = value
+                self.OutA = value * 0.1
             elif data[4] == 0x03:
-                self.srpm = value
+                self.RoTT = value
             elif data[4] == 0x04:
-                self.dc_volt = value
+                self.DCV = value
             elif data[4] == 0x05:
-                self.ac_volt = value
+                self.ACV = value
             elif data[4] == 0x06:
-                self.condition = value
+                self.Cont = value
             elif data[4] == 0x07:
-                self.temp = value
+                self.Tmp = value
 
         elif data[2] == self.FUNCTION_READ and data[3] == 0x03:
             value = (data[5] << 8) | data[6];
             if data[4] == self.FUNCTION_PD005:
-                self.maxFrequency = value
+                self.max_freq = value * 0.01
+            elif data[4] == self.FUNCTION_PD004:
+                self.base_freq = value * 0.01
             elif data[4] == self.FUNCTION_PD011:
-                self.minFrequency = value
+                self.freq_lower_limit = value * 0.01
+            elif data[4] == self.FUNCTION_PD141:
+                self.rated_motor_voltage = value
+            elif data[4] == self.FUNCTION_PD142:
+                self.rated_motor_current = value
+            elif data[4] == self.FUNCTION_PD143:
+                self.motor_poles = value
             elif data[4] == self.FUNCTION_PD144:
-                self.maxRpmAt50Hz = value
-            if self.minFrequency > self.maxFrequency:
-                self.minFrequency = self.maxFrequency
-            self.min_rpm = self.minFrequency * self.maxRpmAt50Hz / 5000
-            self.max_rpm = self.maxFrequency * self.maxRpmAt50Hz / 5000
-    
+                self.rpm_at_50hz = value
+                self.rated_motor_rev = (self.rpm_at_50hz / 50.0) * self.max_freq;
+
+            if self.freq_lower_limit > self.max_freq:
+                self.freq_lower_limit = self.max_freq
+
 
 class WinForm(QWidget):
 
@@ -531,7 +566,7 @@ class WinForm(QWidget):
                         layout.addWidget(self.widgets[f"{name}-hyvfd-rst"], gpy, 4)
                         gpy += 1
 
-                        for vn, vname in enumerate(["rpm","maxFrequency","minFrequency","min_rpm","max_rpm","maxRpmAt50Hz","frq_set","frq_get","ampere","srpm","dc_volt","ac_volt","condition","temp","addr"]):
+                        for vn, vname in enumerate(["speed_command","spindle_speed_fb","freq_cmd","max_freq","freq_lower_limit","min_rpm","max_rpm","rpm_at_50hz","rated_motor_rev","SetF","OutF","OutA","RoTT","DCV","ACV","Cont","Tmp","addr", "motor_poles"]):
                             layout.addWidget(QLabel(vname), gpy, 3)
                             self.widgets[f"{name}-hyvfd-{vname}"] = QLabel(vname)
                             layout.addWidget(self.widgets[f"{name}-hyvfd-{vname}"], gpy, 4)

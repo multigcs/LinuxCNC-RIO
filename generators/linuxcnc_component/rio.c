@@ -469,12 +469,7 @@ int rtapi_app_main(void)
     }
 
 
-#ifdef BOUT_INITS
-    BOUT_INITS
-#endif
-#ifdef BIN_INITS
-    BIN_INITS
-#endif
+    modbus_hyvfd_init(comp_id, prefix);
 
 
 error:
@@ -1088,10 +1083,8 @@ void rio_readwrite()
                 }
 
 
-#ifdef BIN_CALLBACKS
-                // bins
-                BIN_CALLBACKS
-#endif
+                modbus_hyvfd_rec_msg(rxData.MODBUS_IN);
+
                 // Inputs
                 int index_num = 0;
                 for (bi = 0; bi < DIGITAL_INPUT_BYTES; bi++) {
@@ -1229,3 +1222,476 @@ static CONTROL parse_ctrl_type(const char *ctrl)
     if(*ctrl == 'v' || *ctrl == 'V') return VELOCITY;
     return INVALID;
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+/*
+<name>.SetF (float, out)
+<name>.OutF (float, out)
+<name>.OutA (float, out)
+<name>.Rott (float, out)
+<name>.DCV (float, out)
+<name>.ACV (float, out)
+<name>.Cont (float, out)
+<name>.Tmp (float, out)
+<name>.CNTR (float, out)
+<name>.CNST (float, out)
+<name>.CNST-run (bit, out)
+<name>.CNST-jog (bit, out)
+<name>.CNST-command-rf (bit, out)
+<name>.CNST-running (bit, out)
+<name>.CNST-jogging (bit, out)
+<name>.CNST-running-rf (bit, out)
+<name>.CNST-bracking (bit, out)
+<name>.CNST-track-start (bit, out)
+<name>.spindle-at-speed (bit, out) True when the current spindle speed is within .spindle-at-speed-tolerance of the commanded speed.
+<name>.frequency-command (float, out)
+<name>.max-freq (float, out)
+<name>.base-freq (float, out)
+<name>.freq-lower-limit (float, out)
+<name>.rated-motor-voltage (float, out)
+<name>.rated-motor-current (float, out)
+<name>.rated-motor-rev (float, out)
+<name>.motor-poles (u32, out)
+<name>.hycomm-ok (bit, out)
+<name>.spindle-speed-fb  (float, out) Current spindle speed as reported by Huanyang VFD.
+------------------------
+<name>.enable (bit, in) Enable communication from the hy_vfd driver to the VFD.
+<name>.spindle-forward (bit, in)
+<name>.spindle-reverse (bin, in)
+<name>.spindle-on  (bin, in)
+<name>.speed-command (float, in)
+<name>.spindle-at-speed-tolerance  (float, in) Spindle speed error tolerance. If the actual spindle speed is within .spindle-at-speed-tolerance of the commanded speed, then the .spindle-at-speed pin will go True. The default .spindle-at-speed-tolerance is 0.02, which means the actual speed must be within 2% of the commanded spindle speed.
+*/
+
+#include <unistd.h>
+#include <stdio.h>
+#include <stdint.h>
+#include <string.h>
+
+#include "hal.h"			/* HAL public API decls */
+
+#include "hyvfd.h"
+
+#define	FUNCTION_READ			0x01
+#define	FUNCTION_WRITE			0x02
+#define	WRITE_CONTROL_DATA		0x03
+#define	READ_CONTROL_STATUS		0x04
+#define	WRITE_FREQ_DATA			0x05
+#define	LOOP_TEST				0x08
+#define	FUNCTION_PD005  		5
+#define	FUNCTION_PD011  		11
+#define	FUNCTION_PD144  		144
+#define CONTROL_Run_Fwd		0x01
+#define CONTROL_Run_Rev		0x11
+#define CONTROL_Stop		0x08
+#define CONTROL_Run			0x01
+#define CONTROL_Jog			0x02
+#define CONTROL_Command_rf	0x04
+#define CONTROL_Running		0x08
+#define CONTROL_Jogging		0x10
+#define CONTROL_Running_rf	0x20
+#define CONTROL_Bracking	0x40
+#define CONTROL_Track_Start	0x80
+uint8_t spindle_start_fwd[] = { 0x01, WRITE_CONTROL_DATA, 0x01, CONTROL_Run_Fwd };
+uint8_t spindle_start_rev[] = { 0x01, WRITE_CONTROL_DATA, 0x01, CONTROL_Run_Rev };
+uint8_t spindle_stop[] =  { 0x01, WRITE_CONTROL_DATA, 0x01, CONTROL_Stop };
+uint8_t spindle_speed[] = { 0x01, WRITE_FREQ_DATA, 0x02, 0x0, 0x0 };
+uint8_t spindle_PD005[] = { 0x01, FUNCTION_READ, 0x03, 5, 0x00, 0x00 };
+uint8_t spindle_PD011[] = { 0x01, FUNCTION_READ, 0x03, 11, 0x00, 0x00 };
+uint8_t spindle_PD144[] = { 0x01, FUNCTION_READ, 0x03, 144, 0x00, 0x00 };
+uint8_t spindle_status_frq_set[] = { 0x01, READ_CONTROL_STATUS, 0x03, 0x00, 0x00, 0x00 };
+uint8_t spindle_status_frq_get[] = { 0x01, READ_CONTROL_STATUS, 0x03, 0x01, 0x00, 0x00 };
+uint8_t spindle_status_ampere[] = { 0x01, READ_CONTROL_STATUS, 0x03, 0x02, 0x00, 0x00 };
+uint8_t spindle_status_rpm[] = { 0x01, READ_CONTROL_STATUS, 0x03, 0x03, 0x00, 0x00 };
+uint8_t spindle_status_dc_volt[] = { 0x01, READ_CONTROL_STATUS, 0x03, 0x04, 0x00, 0x00 };
+uint8_t spindle_status_ac_volt[] = { 0x01, READ_CONTROL_STATUS, 0x03, 0x05, 0x00, 0x00 };
+uint8_t spindle_status_condition[] = { 0x01, READ_CONTROL_STATUS, 0x03, 0x06, 0x00, 0x00 };
+uint8_t spindle_status_temp[] = { 0x01, READ_CONTROL_STATUS, 0x03, 0x07, 0x00, 0x00 };
+
+
+uint16_t maxFrequency = 0;
+uint16_t minFrequency = 0;
+uint16_t maxRpmAt50Hz = 0;
+uint16_t min_rpm = 0;
+uint16_t max_rpm = 0;
+//uint16_t rpm = 6000;
+//uint16_t frq_set = 0;
+//uint16_t frq_get = 0;
+//uint16_t ampere = 0;
+//uint16_t srpm = 0;
+//uint16_t dc_volt = 0;
+//uint16_t ac_volt = 0;
+//uint16_t condition = 0;
+//uint16_t temp = 0;
+//uint8_t waitflag = 0;
+//int32_t new_speed = 0;
+//int32_t last_speed = 0;
+//uint16_t stat_counter = 0;
+//int32_t set_speed = 0;
+
+uint16_t modbus_stat_n = 0;
+uint32_t pkg_counter = 0;
+
+
+#define NUM_VFD_SPINDLES 1
+typedef struct {
+    hal_bit_t *enable[NUM_VFD_SPINDLES];
+    hal_float_t *SetF[NUM_VFD_SPINDLES];
+    hal_float_t *OutF[NUM_VFD_SPINDLES];
+    hal_float_t *OutA[NUM_VFD_SPINDLES];
+    hal_float_t *Rott[NUM_VFD_SPINDLES];
+    hal_float_t *DCV[NUM_VFD_SPINDLES];
+    hal_float_t *ACV[NUM_VFD_SPINDLES];
+    hal_float_t *Cont[NUM_VFD_SPINDLES];
+    hal_float_t *Tmp[NUM_VFD_SPINDLES];
+    hal_bit_t *spindle_forward[NUM_VFD_SPINDLES];
+    hal_bit_t *spindle_reverse[NUM_VFD_SPINDLES];
+    hal_bit_t *spindle_on[NUM_VFD_SPINDLES];
+    hal_float_t *CNTR[NUM_VFD_SPINDLES];
+    hal_float_t *CNST[NUM_VFD_SPINDLES];
+    hal_bit_t *CNST_run[NUM_VFD_SPINDLES];
+    hal_bit_t *CNST_jog[NUM_VFD_SPINDLES];
+    hal_bit_t *CNST_command_rf[NUM_VFD_SPINDLES];
+    hal_bit_t *CNST_running[NUM_VFD_SPINDLES];
+    hal_bit_t *CNST_jogging[NUM_VFD_SPINDLES];
+    hal_bit_t *CNST_running_rf[NUM_VFD_SPINDLES];
+    hal_bit_t *CNST_bracking[NUM_VFD_SPINDLES];
+    hal_bit_t *CNST_track_start[NUM_VFD_SPINDLES];
+    hal_float_t *speed_command[NUM_VFD_SPINDLES];
+    hal_float_t *spindle_speed_fb[NUM_VFD_SPINDLES];
+    hal_float_t *spindle_at_speed_tolerance[NUM_VFD_SPINDLES];
+    hal_bit_t *spindle_at_speed[NUM_VFD_SPINDLES];
+    hal_float_t *frequency_command[NUM_VFD_SPINDLES];
+    hal_float_t *max_freq[NUM_VFD_SPINDLES];
+    hal_float_t *base_freq[NUM_VFD_SPINDLES];
+    hal_float_t *freq_lower_limit[NUM_VFD_SPINDLES];
+    hal_float_t *rated_motor_voltage[NUM_VFD_SPINDLES];
+    hal_float_t *rated_motor_current[NUM_VFD_SPINDLES];
+    hal_float_t *rated_motor_rev[NUM_VFD_SPINDLES];
+    hal_u32_t *motor_poles[NUM_VFD_SPINDLES];
+    hal_bit_t *hycomm_ok[NUM_VFD_SPINDLES];
+} mb_data_t;
+
+static mb_data_t *mb_data;
+
+void modbus_hyvfd_rec_msg(uint8_t *rec) {
+    uint8_t spindle = 0;
+
+    /*
+    uint8_t i = 0;
+    for(i = 0; i < 9; i++) {
+        printf("#### REC: 0x%X  %i\n", rec[i], rec[i]);
+    }
+    printf("###################\n");
+    */
+
+    if (rec[2] == READ_CONTROL_STATUS && rec[3] == 0x03) {
+        uint16_t value = (rec[5] << 8) | rec[6];
+        if (rec[4] == 0x00) {
+            *(mb_data->SetF[spindle]) = (float)value;
+        } else if (rec[4] == 0x01) {
+            *(mb_data->OutF[spindle]) = (float)value;
+        } else if (rec[4] == 0x02) {
+            *(mb_data->OutA[spindle]) = (float)value;
+        } else if (rec[4] == 0x03) {
+            *(mb_data->Rott[spindle]) = (float)value;
+        } else if (rec[4] == 0x04) {
+            *(mb_data->DCV[spindle]) = (float)value;
+        } else if (rec[4] == 0x05) {
+            *(mb_data->ACV[spindle]) = (float)value;
+        } else if (rec[4] == 0x06) {
+            *(mb_data->Cont[spindle]) = (float)value;
+        } else if (rec[4] == 0x07) {
+            *(mb_data->Tmp[spindle]) = (float)value;
+        }
+
+    } else if (rec[2] == FUNCTION_READ && rec[3] == 0x03) {
+        uint16_t value = (rec[5] << 8) | rec[6];
+        if (rec[4] == FUNCTION_PD005) {
+            maxFrequency = value;
+            *(mb_data->max_freq[spindle]) = (float)value;
+        } else if (rec[4] == FUNCTION_PD011) {
+            minFrequency = value;
+            *(mb_data->freq_lower_limit[spindle]) = (float)value;
+        } else if (rec[4] == FUNCTION_PD144) {
+            maxRpmAt50Hz = value;
+            *(mb_data->base_freq[spindle]) = (float)value;
+        }
+
+        if (minFrequency > maxFrequency) {
+            minFrequency = maxFrequency;
+        }
+        min_rpm = minFrequency * maxRpmAt50Hz / 5000;
+        max_rpm = maxFrequency * maxRpmAt50Hz / 5000;
+    }
+}
+
+void modbus_hyvfd_send_cmd(uint8_t *data, uint8_t *cmd, uint8_t dlen, uint8_t addr) {
+    uint8_t i = 0;
+    uint16_t crc = 0xFFFF;
+
+    cmd[0] = addr;
+    data[0] = dlen + 2;
+    for(i = 0; i < dlen; i++) {
+        data[i + 1] = cmd[i];
+        crc = crc16_update(crc, cmd[i]);
+    }
+    data[dlen + 1] = crc & 0xFF;
+    data[dlen + 2] = crc>>8 & 0xFF;
+    /*
+    for(i = 0; i < data[0]; i++) {
+        printf("#### 0x%X  %i\n", data[i+1], data[i+1]);
+    }
+    printf("###################\n");
+
+    printf("## frq_set = %i\n", frq_set);
+    printf("## frq_get = %i\n", frq_get);
+    printf("## ampere = %i\n", ampere);
+    printf("## srpm = %i\n", srpm);
+    printf("## dc_volt = %i\n", dc_volt);
+    printf("## ac_volt = %i\n", ac_volt);
+    printf("## condition = %i\n", condition);
+    printf("## temp = %i\n", temp);
+    printf("## maxFrequency = %i\n", maxFrequency);
+    printf("## minFrequency = %i\n", minFrequency);
+    printf("## maxRpmAt50Hz = %i\n", maxRpmAt50Hz);
+
+
+    printf("#### SEND: ");
+    for(i = 0; i < 9; i++) {
+        printf("%i ", data[i], data[i]);
+    }
+    printf("\n");
+    printf("###################\n");
+    */
+    /*
+    printf("#### REC: ");
+    for(i = 0; i < 9; i++) {
+        printf("%i ", rxData.MODBUS_IN[i], rxData.MODBUS_IN[i]);
+    }
+    printf("\n");
+    printf("###################\n");
+    */
+}
+
+void modbus_hyvfd_send_msg(uint8_t *data) {
+    uint8_t i = 0;
+    uint8_t addr = 1;
+    for(i = 0; i < 9; i++) {
+        data[i] = 0;
+    }
+    if (pkg_counter == 100) {
+        pkg_counter = 0;
+        if (modbus_stat_n == 1) {
+            modbus_hyvfd_send_cmd(data, spindle_PD005, sizeof(spindle_PD005), addr);
+        } else if (modbus_stat_n == 2) {
+            modbus_hyvfd_send_cmd(data, spindle_PD011, sizeof(spindle_PD011), addr);
+        } else if (modbus_stat_n == 3) {
+            modbus_hyvfd_send_cmd(data, spindle_PD144, sizeof(spindle_PD144), addr);
+        } else if (modbus_stat_n == 4) {
+            modbus_hyvfd_send_cmd(data, spindle_status_ampere, sizeof(spindle_status_ampere), addr);
+        } else if (modbus_stat_n == 5) {
+            modbus_hyvfd_send_cmd(data, spindle_status_rpm, sizeof(spindle_status_rpm), addr);
+        } else if (modbus_stat_n == 6) {
+            modbus_hyvfd_send_cmd(data, spindle_status_frq_set, sizeof(spindle_status_frq_set), addr);
+        } else if (modbus_stat_n == 7) {
+            modbus_hyvfd_send_cmd(data, spindle_status_frq_get, sizeof(spindle_status_frq_get), addr);
+        } else if (modbus_stat_n == 8) {
+            modbus_hyvfd_send_cmd(data, spindle_status_ac_volt, sizeof(spindle_status_ac_volt), addr);
+        } else if (modbus_stat_n == 9) {
+            modbus_hyvfd_send_cmd(data, spindle_status_dc_volt, sizeof(spindle_status_dc_volt), addr);
+        } else if (modbus_stat_n == 10) {
+            modbus_hyvfd_send_cmd(data, spindle_status_condition, sizeof(spindle_status_condition), addr);
+        } else if (modbus_stat_n == 11) {
+            modbus_hyvfd_send_cmd(data, spindle_status_temp, sizeof(spindle_status_temp), addr);
+        } else {
+            modbus_stat_n = 0;
+        }
+        modbus_stat_n++;
+    }
+    pkg_counter++;
+}
+
+int modbus_hyvfd_init(int comp_id, const char *prefix) {
+    int retval = 0;
+    uint8_t spindle = 0;
+
+    // allocate shared memory
+    mb_data = hal_malloc(sizeof(mb_data_t));
+    if (mb_data == 0) {
+        rtapi_print_msg(RTAPI_MSG_ERR,
+                        "%s: ERROR: hal_malloc() failed\n", modname);
+        hal_exit(comp_id);
+        return -1;
+    }
+
+    retval = hal_pin_bit_newf(HAL_IN, &(mb_data->enable[spindle]), comp_id, "%s.MODBUS_HYVFD_%i.enable", prefix, spindle);
+    if (retval < 0) return -1;
+    *(mb_data->enable[spindle]) = 0;
+
+    retval = hal_pin_float_newf(HAL_OUT, &(mb_data->SetF[spindle]), comp_id, "%s.MODBUS_HYVFD_%i.SetF", prefix, spindle);
+    if (retval < 0) return -1;
+    *(mb_data->SetF[spindle]) = 0.0;
+
+    retval = hal_pin_float_newf(HAL_OUT, &(mb_data->OutF[spindle]), comp_id, "%s.MODBUS_HYVFD_%i.OutF", prefix, spindle);
+    if (retval < 0) return -1;
+    *(mb_data->OutF[spindle]) = 0.0;
+
+    retval = hal_pin_float_newf(HAL_OUT, &(mb_data->OutA[spindle]), comp_id, "%s.MODBUS_HYVFD_%i.OutA", prefix, spindle);
+    if (retval < 0) return -1;
+    *(mb_data->OutA[spindle]) = 0.0;
+
+    retval = hal_pin_float_newf(HAL_OUT, &(mb_data->Rott[spindle]), comp_id, "%s.MODBUS_HYVFD_%i.Rott", prefix, spindle);
+    if (retval < 0) return -1;
+    *(mb_data->Rott[spindle]) = 0.0;
+
+    retval = hal_pin_float_newf(HAL_OUT, &(mb_data->DCV[spindle]), comp_id, "%s.MODBUS_HYVFD_%i.DCV", prefix, spindle);
+    if (retval < 0) return -1;
+    *(mb_data->DCV[spindle]) = 0.0;
+
+    retval = hal_pin_float_newf(HAL_OUT, &(mb_data->ACV[spindle]), comp_id, "%s.MODBUS_HYVFD_%i.ACV", prefix, spindle);
+    if (retval < 0) return -1;
+    *(mb_data->ACV[spindle]) = 0.0;
+
+    retval = hal_pin_float_newf(HAL_OUT, &(mb_data->Cont[spindle]), comp_id, "%s.MODBUS_HYVFD_%i.Cont", prefix, spindle);
+    if (retval < 0) return -1;
+    *(mb_data->Cont[spindle]) = 0.0;
+
+    retval = hal_pin_float_newf(HAL_OUT, &(mb_data->Tmp[spindle]), comp_id, "%s.MODBUS_HYVFD_%i.Tmp", prefix, spindle);
+    if (retval < 0) return -1;
+    *(mb_data->Tmp[spindle]) = 0.0;
+
+    retval = hal_pin_bit_newf(HAL_IN, &(mb_data->spindle_forward[spindle]), comp_id, "%s.MODBUS_HYVFD_%i.spindle-forward", prefix, spindle);
+    if (retval < 0) return -1;
+    *(mb_data->spindle_forward[spindle]) = 0;
+
+    retval = hal_pin_bit_newf(HAL_IN, &(mb_data->spindle_reverse[spindle]), comp_id, "%s.MODBUS_HYVFD_%i.spindle-reverse", prefix, spindle);
+    if (retval < 0) return -1;
+    *(mb_data->spindle_reverse[spindle]) = 0;
+
+    retval = hal_pin_bit_newf(HAL_IN, &(mb_data->spindle_on[spindle]), comp_id, "%s.MODBUS_HYVFD_%i.spindle-on", prefix, spindle);
+    if (retval < 0) return -1;
+    *(mb_data->spindle_on[spindle]) = 0;
+
+    retval = hal_pin_float_newf(HAL_OUT, &(mb_data->CNTR[spindle]), comp_id, "%s.MODBUS_HYVFD_%i.CNTR", prefix, spindle);
+    if (retval < 0) return -1;
+    *(mb_data->CNTR[spindle]) = 0.0;
+
+    retval = hal_pin_float_newf(HAL_OUT, &(mb_data->CNST[spindle]), comp_id, "%s.MODBUS_HYVFD_%i.CNST", prefix, spindle);
+    if (retval < 0) return -1;
+    *(mb_data->CNST[spindle]) = 0.0;
+
+    retval = hal_pin_bit_newf(HAL_OUT, &(mb_data->CNST_run[spindle]), comp_id, "%s.MODBUS_HYVFD_%i.CNST-run", prefix, spindle);
+    if (retval < 0) return -1;
+    *(mb_data->CNST_run[spindle]) = 0;
+
+    retval = hal_pin_bit_newf(HAL_OUT, &(mb_data->CNST_jog[spindle]), comp_id, "%s.MODBUS_HYVFD_%i.CNST-jog", prefix, spindle);
+    if (retval < 0) return -1;
+    *(mb_data->CNST_jog[spindle]) = 0;
+
+    retval = hal_pin_bit_newf(HAL_OUT, &(mb_data->CNST_command_rf[spindle]), comp_id, "%s.MODBUS_HYVFD_%i.CNST-command-rf", prefix, spindle);
+    if (retval < 0) return -1;
+    *(mb_data->CNST_command_rf[spindle]) = 0;
+
+    retval = hal_pin_bit_newf(HAL_OUT, &(mb_data->CNST_running[spindle]), comp_id, "%s.MODBUS_HYVFD_%i.CNST-running", prefix, spindle);
+    if (retval < 0) return -1;
+    *(mb_data->CNST_running[spindle]) = 0;
+
+    retval = hal_pin_bit_newf(HAL_OUT, &(mb_data->CNST_jogging[spindle]), comp_id, "%s.MODBUS_HYVFD_%i.CNST-jogging", prefix, spindle);
+    if (retval < 0) return -1;
+    *(mb_data->CNST_jogging[spindle]) = 0;
+
+    retval = hal_pin_bit_newf(HAL_OUT, &(mb_data->CNST_running_rf[spindle]), comp_id, "%s.MODBUS_HYVFD_%i.CNST-running-rf", prefix, spindle);
+    if (retval < 0) return -1;
+    *(mb_data->CNST_running_rf[spindle]) = 0;
+
+    retval = hal_pin_bit_newf(HAL_OUT, &(mb_data->CNST_bracking[spindle]), comp_id, "%s.MODBUS_HYVFD_%i.CNST-bracking", prefix, spindle);
+    if (retval < 0) return -1;
+    *(mb_data->CNST_bracking[spindle]) = 0;
+
+    retval = hal_pin_bit_newf(HAL_OUT, &(mb_data->CNST_track_start[spindle]), comp_id, "%s.MODBUS_HYVFD_%i.CNST-track-start", prefix, spindle);
+    if (retval < 0) return -1;
+    *(mb_data->CNST_track_start[spindle]) = 0;
+
+    retval = hal_pin_float_newf(HAL_IN, &(mb_data->speed_command[spindle]), comp_id, "%s.MODBUS_HYVFD_%i.speed-command", prefix, spindle);
+    if (retval < 0) return -1;
+    *(mb_data->speed_command[spindle]) = 0.0;
+
+    retval = hal_pin_float_newf(HAL_OUT, &(mb_data->spindle_speed_fb[spindle]), comp_id, "%s.MODBUS_HYVFD_%i.spindle-speed-fb", prefix, spindle);
+    if (retval < 0) return -1;
+    *(mb_data->spindle_speed_fb[spindle]) = 0.0;
+
+    retval = hal_pin_float_newf(HAL_IN, &(mb_data->spindle_at_speed_tolerance[spindle]), comp_id, "%s.MODBUS_HYVFD_%i.spindle-at-speed-tolerance", prefix, spindle);
+    if (retval < 0) return -1;
+    *(mb_data->spindle_at_speed_tolerance[spindle]) = 0.0;
+
+    retval = hal_pin_bit_newf(HAL_OUT, &(mb_data->spindle_at_speed[spindle]), comp_id, "%s.MODBUS_HYVFD_%i.spindle-at-speed", prefix, spindle);
+    if (retval < 0) return -1;
+    *(mb_data->spindle_at_speed[spindle]) = 0;
+
+    retval = hal_pin_float_newf(HAL_OUT, &(mb_data->frequency_command[spindle]), comp_id, "%s.MODBUS_HYVFD_%i.frequency-command", prefix, spindle);
+    if (retval < 0) return -1;
+    *(mb_data->frequency_command[spindle]) = 0.0;
+
+    retval = hal_pin_float_newf(HAL_OUT, &(mb_data->max_freq[spindle]), comp_id, "%s.MODBUS_HYVFD_%i.max-freq", prefix, spindle);
+    if (retval < 0) return -1;
+    *(mb_data->max_freq[spindle]) = 0.0;
+
+    retval = hal_pin_float_newf(HAL_OUT, &(mb_data->base_freq[spindle]), comp_id, "%s.MODBUS_HYVFD_%i.base-freq", prefix, spindle);
+    if (retval < 0) return -1;
+    *(mb_data->base_freq[spindle]) = 0.0;
+
+    retval = hal_pin_float_newf(HAL_OUT, &(mb_data->freq_lower_limit[spindle]), comp_id, "%s.MODBUS_HYVFD_%i.freq-lower-limit", prefix, spindle);
+    if (retval < 0) return -1;
+    *(mb_data->freq_lower_limit[spindle]) = 0.0;
+
+    retval = hal_pin_float_newf(HAL_OUT, &(mb_data->rated_motor_voltage[spindle]), comp_id, "%s.MODBUS_HYVFD_%i.rated-motor-voltage", prefix, spindle);
+    if (retval < 0) return -1;
+    *(mb_data->rated_motor_voltage[spindle]) = 0.0;
+
+    retval = hal_pin_float_newf(HAL_OUT, &(mb_data->rated_motor_current[spindle]), comp_id, "%s.MODBUS_HYVFD_%i.rated-motor-current", prefix, spindle);
+    if (retval < 0) return -1;
+    *(mb_data->rated_motor_current[spindle]) = 0.0;
+
+    retval = hal_pin_float_newf(HAL_OUT, &(mb_data->rated_motor_rev[spindle]), comp_id, "%s.MODBUS_HYVFD_%i.rated-motor-rev", prefix, spindle);
+    if (retval < 0) return -1;
+    *(mb_data->rated_motor_rev[spindle]) = 0.0;
+
+    retval = hal_pin_u32_newf(HAL_OUT, &(mb_data->motor_poles[spindle]), comp_id, "%s.MODBUS_HYVFD_%i.motor-poles", prefix, spindle);
+    if (retval < 0) return -1;
+    *(mb_data->motor_poles[spindle]) = 0;
+
+    retval = hal_pin_bit_newf(HAL_OUT, &(mb_data->hycomm_ok[spindle]), comp_id, "%s.MODBUS_HYVFD_%i.hycomm-ok", prefix, spindle);
+    if (retval < 0) return -1;
+    *(mb_data->hycomm_ok[spindle]) = 0;
+
+    return 1;
+}
+

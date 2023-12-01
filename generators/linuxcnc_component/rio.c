@@ -1351,10 +1351,11 @@ uint16_t max_rpm = 0;
 //uint16_t condition = 0;
 //uint16_t temp = 0;
 //uint8_t waitflag = 0;
-//int32_t new_speed = 0;
-//int32_t last_speed = 0;
 //uint16_t stat_counter = 0;
-//int32_t set_speed = 0;
+//int32_t last_speed = 0;
+//int32_t new_speed = 0;
+int32_t set_speed = 0;
+int8_t set_direction = 0;
 
 uint16_t modbus_stat_n = 0;
 uint32_t pkg_counter = 0;
@@ -1504,6 +1505,8 @@ void modbus_hyvfd_send_cmd(uint8_t *data, uint8_t *cmd, uint8_t dlen, uint8_t ad
 void modbus_hyvfd_send_msg(uint8_t *data) {
     uint8_t i = 0;
     uint8_t addr = 1;
+    uint8_t spindle = 0;
+
     for(i = 0; i < 9; i++) {
         data[i] = 0;
     }
@@ -1531,7 +1534,58 @@ void modbus_hyvfd_send_msg(uint8_t *data) {
             modbus_hyvfd_send_cmd(data, spindle_status_condition, sizeof(spindle_status_condition), addr);
         } else if (modbus_stat_n == 11) {
             modbus_hyvfd_send_cmd(data, spindle_status_temp, sizeof(spindle_status_temp), addr);
+
+        } else if (modbus_stat_n == 12) {
+
+            if (*(mb_data->spindle_on[spindle]) == 1) {
+                set_speed = *(mb_data->speed_command[spindle]);
+            } else {
+                set_speed = 0;
+            }
+
+            if (set_speed == 0) {
+                modbus_hyvfd_send_cmd(data, spindle_stop, sizeof(spindle_stop), addr);
+            } else {
+                if (set_speed < 0) {
+                    set_speed *= -1;
+                }
+                if (set_speed >= max_rpm) {
+                    set_speed = max_rpm;
+                } else if (set_speed <= min_rpm) {
+                    set_speed = min_rpm;
+                }
+                uint16_t value = set_speed * 5000 / maxRpmAt50Hz;
+                spindle_speed[3] = (value >> 8) & 0xFF;
+                spindle_speed[4] = (value & 0xFF);
+                modbus_hyvfd_send_cmd(data, spindle_speed, sizeof(spindle_speed), addr);
+            }
+
         } else {
+
+            if (*(mb_data->spindle_on[spindle]) == 1) {
+                set_speed = *(mb_data->speed_command[spindle]);
+            } else {
+                set_speed = 0;
+            }
+
+            if (*(mb_data->spindle_forward[spindle]) == 1) {
+                set_direction = 1;
+            } else if (*(mb_data->spindle_reverse[spindle]) == 1) {
+                set_direction = 0;
+            } else {
+                set_speed = 0;
+            }
+
+            if (set_speed == 0) {
+                modbus_hyvfd_send_cmd(data, spindle_stop, sizeof(spindle_stop), addr);
+            } else {
+                if (set_direction == 1) {
+                    modbus_hyvfd_send_cmd(data, spindle_start_fwd, sizeof(spindle_start_fwd), addr);
+                } else {
+                    modbus_hyvfd_send_cmd(data, spindle_start_rev, sizeof(spindle_start_rev), addr);
+                }
+            }
+
             modbus_stat_n = 0;
         }
         modbus_stat_n++;
@@ -1650,7 +1704,7 @@ int modbus_hyvfd_init(int comp_id, const char *prefix) {
 
     retval = hal_pin_float_newf(HAL_IN, &(mb_data->spindle_at_speed_tolerance[spindle]), comp_id, "%s.MODBUS_HYVFD_%i.spindle-at-speed-tolerance", prefix, spindle);
     if (retval < 0) return -1;
-    *(mb_data->spindle_at_speed_tolerance[spindle]) = 0.0;
+    *(mb_data->spindle_at_speed_tolerance[spindle]) = 0.02;
 
     retval = hal_pin_bit_newf(HAL_OUT, &(mb_data->spindle_at_speed[spindle]), comp_id, "%s.MODBUS_HYVFD_%i.spindle-at-speed", prefix, spindle);
     if (retval < 0) return -1;

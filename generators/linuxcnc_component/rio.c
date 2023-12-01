@@ -1653,7 +1653,7 @@ int modbus_hyvfd_init(int comp_id, const char *prefix) {
     retval = hal_pin_bit_newf(HAL_IN, &(mb_data->spindle_on[spindle]), comp_id, "%s.MODBUS_HYVFD_%i.spindle-on", prefix, spindle);
     if (retval < 0) return -1;
     *(mb_data->spindle_on[spindle]) = 0;
-
+    /*
     retval = hal_pin_float_newf(HAL_OUT, &(mb_data->CNTR[spindle]), comp_id, "%s.MODBUS_HYVFD_%i.CNTR", prefix, spindle);
     if (retval < 0) return -1;
     *(mb_data->CNTR[spindle]) = 0.0;
@@ -1693,7 +1693,7 @@ int modbus_hyvfd_init(int comp_id, const char *prefix) {
     retval = hal_pin_bit_newf(HAL_OUT, &(mb_data->CNST_track_start[spindle]), comp_id, "%s.MODBUS_HYVFD_%i.CNST-track-start", prefix, spindle);
     if (retval < 0) return -1;
     *(mb_data->CNST_track_start[spindle]) = 0;
-
+    */
     retval = hal_pin_float_newf(HAL_IN, &(mb_data->speed_command[spindle]), comp_id, "%s.MODBUS_HYVFD_%i.speed-command", prefix, spindle);
     if (retval < 0) return -1;
     *(mb_data->speed_command[spindle]) = 0.0;

@@ -1,0 +1,87 @@
+{
+    "name": "ICEBreakerV1.0e",
+    "description": "Small and low cost FPGA educational and development board",
+    "toolchain": "icestorm",
+    "family": "ice40",
+    "type": "up5k",
+    "transport": "UDP",
+    "ip": "192.168.10.13",
+    "package": "sg48",
+    "flashcmd": "openFPGALoader -b ice40_generic rio.bin -f",
+    "clock": {
+        "osc": "12000000",
+        "speed": "50250000",
+        "pin": "35"
+    },
+    "interface": [
+        {
+            "type": "uart",
+            "pins": {
+                "RX": "6",
+                "TX": "9"
+            }
+        }
+    ],
+    "blink": {
+        "comment": "Green LED",
+        "pin": "37"
+    },
+    "error": {
+        "comment": "Red LED",
+        "invert": true,
+        "pin": "11"
+    },
+    "slots": [
+        {
+            "comment": "PMOD1A",
+            "pins": {
+                "P1": "4",
+                "P2": "2",
+                "P3": "47",
+                "P4": "45",
+                "P7": "3",
+                "P8": "48",
+                "P9": "46",
+                "P10": "44"
+            },
+            "_module": ""
+        },
+        {
+            "comment": "PMOD1B",
+            "pins": {
+                "P1": "43",
+                "P2": "38",
+                "P3": "34",
+                "P4": "31",
+                "P7": "42",
+                "P8": "36",
+                "P9": "32",
+                "P10": "28"
+            },
+            "_module": ""
+        },
+        {
+            "comment": "PMOD2",
+            "pins": {
+                "P1": "27",
+                "P2": "25",
+                "P3": "21",
+                "P4": "19",
+                "P7": "26",
+                "P8": "23",
+                "P9": "20",
+                "P10": "18"
+            },
+            "module": "modbus"
+        }
+    ],
+    "plugins": [
+        {
+            "comment": "User Button",
+            "pullup": true,
+            "pin": "10",
+            "name": "DIN0",
+            "type": "din_bit"
+        }
+    ]
+}

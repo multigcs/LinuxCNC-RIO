@@ -54,7 +54,8 @@ def main(configfile, outputdir=None):
             for ipv in project["plugins"][plugin].ips():
                 ipv_name = ipv.split("/")[-1]
                 if ipv.endswith((".v", ".sv")):
-                    project["verilog_files"].append(ipv_name)
+                    if ipv_name not in project["verilog_files"]:
+                        project["verilog_files"].append(ipv_name)
                 ipv_path = f"plugins/{plugin}/{ipv}"
                 if not os.path.isfile(ipv_path):
                     ipv_path = f"generators/gateware/{ipv}"

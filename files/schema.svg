@@ -51,15 +51,15 @@
 <path fill="none" stroke="black" d="M536.61,-576.76C528.82,-567.97 519.04,-556.93 510.38,-547.14"/>
 <polygon fill="black" stroke="black" points="512.97,-544.8 503.72,-539.63 507.73,-549.44 512.97,-544.8"/>
 </g>
-<!-- Firmware -->
+<!-- Gateware -->
 <g id="node5" class="node">
-<title>Firmware</title>
+<title>Gateware</title>
 <ellipse fill="none" stroke="black" cx="378.99" cy="-378" rx="55.79" ry="18"/>
-<text text-anchor="middle" x="378.99" y="-374.3" font-family="Times,serif" font-size="14.00">Firmware</text>
+<text text-anchor="middle" x="378.99" y="-374.3" font-family="Times,serif" font-size="14.00">Gateware</text>
 </g>
-<!-- Output/TARGET&#45;&gt;Firmware -->
+<!-- Output/TARGET&#45;&gt;Gateware -->
 <g id="edge4" class="edge">
-<title>Output/TARGET&#45;&gt;Firmware</title>
+<title>Output/TARGET&#45;&gt;Gateware</title>
 <path fill="none" stroke="black" d="M463.48,-432.76C448.16,-423.02 428.52,-410.52 412.02,-400.02"/>
 <polygon fill="black" stroke="black" points="413.55,-396.84 403.23,-394.43 409.79,-402.75 413.55,-396.84"/>
 </g>
@@ -81,9 +81,9 @@
 <ellipse fill="none" stroke="black" cx="103.99" cy="-306" rx="103.98" ry="18"/>
 <text text-anchor="middle" x="103.99" y="-302.3" font-family="Times,serif" font-size="14.00">Verilog Source&#45;Files</text>
 </g>
-<!-- Firmware&#45;&gt;Verilog Source&#45;Files -->
+<!-- Gateware&#45;&gt;Verilog Source&#45;Files -->
 <g id="edge5" class="edge">
-<title>Firmware&#45;&gt;Verilog Source&#45;Files</title>
+<title>Gateware&#45;&gt;Verilog Source&#45;Files</title>
 <path fill="none" stroke="black" d="M336.62,-366.22C292.18,-354.9 221.73,-336.97 169.99,-323.8"/>
 <polygon fill="black" stroke="black" points="170.78,-320.39 160.23,-321.32 169.06,-327.17 170.78,-320.39"/>
 </g>
@@ -93,9 +93,9 @@
 <ellipse fill="none" stroke="black" cx="304.99" cy="-306" rx="79.09" ry="18"/>
 <text text-anchor="middle" x="304.99" y="-302.3" font-family="Times,serif" font-size="14.00">Pin&#45;Definitions</text>
 </g>
-<!-- Firmware&#45;&gt;Pin&#45;Definitions -->
+<!-- Gateware&#45;&gt;Pin&#45;Definitions -->
 <g id="edge6" class="edge">
-<title>Firmware&#45;&gt;Pin&#45;Definitions</title>
+<title>Gateware&#45;&gt;Pin&#45;Definitions</title>
 <path fill="none" stroke="black" d="M361.83,-360.76C352.35,-351.79 340.39,-340.49 329.9,-330.56"/>
 <polygon fill="black" stroke="black" points="332.24,-327.96 322.57,-323.63 327.43,-333.05 332.24,-327.96"/>
 </g>
@@ -105,9 +105,9 @@
 <ellipse fill="none" stroke="black" cx="452.99" cy="-306" rx="50.89" ry="18"/>
 <text text-anchor="middle" x="452.99" y="-302.3" font-family="Times,serif" font-size="14.00">Makefile</text>
 </g>
-<!-- Firmware&#45;&gt;Makefile -->
+<!-- Gateware&#45;&gt;Makefile -->
 <g id="edge7" class="edge">
-<title>Firmware&#45;&gt;Makefile</title>
+<title>Gateware&#45;&gt;Makefile</title>
 <path fill="none" stroke="black" d="M396.15,-360.76C405.77,-351.66 417.93,-340.16 428.54,-330.13"/>
 <polygon fill="black" stroke="black" points="431.06,-332.56 435.92,-323.15 426.25,-327.48 431.06,-332.56"/>
 </g>

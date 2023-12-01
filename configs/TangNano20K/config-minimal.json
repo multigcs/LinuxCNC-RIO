@@ -1,0 +1,19 @@
+{
+    "name": "TangNano20K",
+    "description": "minimal configuration for TangNano20K",
+    "board": "TangNano20K",
+    "type": "GW2AR-LV18QN88C8/I7",
+    "family": "GW2AR-18C",
+    "toolchain": "icestorm",
+    "package": "QN88",
+    "clock": {
+        "speed": "27000000",
+        "pin": "4"
+    },
+    "transport": "SPI",
+    "axis": 3,
+    "blink": {
+        "pin": "15"
+    },
+    "plugins": []
+}

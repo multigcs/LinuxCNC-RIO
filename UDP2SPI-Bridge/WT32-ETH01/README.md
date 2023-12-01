@@ -2,7 +2,7 @@
 
 based on WT32-ETH01
 
-## Install Firmware:
+## Install Gateware:
 
 Needed: FTDI or other USB2Serial adapter
 

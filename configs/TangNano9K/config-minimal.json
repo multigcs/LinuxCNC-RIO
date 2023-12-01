@@ -1,0 +1,19 @@
+{
+    "name": "TangNano9K",
+    "description": "minimal configuration for TangNano9K",
+    "board": "TangNano9K",
+    "type": "GW1NR-LV9QN88PC6/I5",
+    "family": "GW1N-9C",
+    "toolchain": "icestorm",
+    "package": "",
+    "clock": {
+        "speed": "27000000",
+        "pin": "52"
+    },
+    "transport": "SPI",
+    "axis": 9,
+    "blink": {
+        "pin": "10"
+    },
+    "plugins": []
+}

@@ -1,6 +1,9 @@
 /* verilator lint_off WIDTHTRUNC */
 module expansion_shiftreg
-    #(parameter WIDTH = 8, SPEED = 100000)
+    #(
+        parameter WIDTH = 8, 
+        parameter SPEED = 100000
+    )
     (
        input clk,
        output reg SHIFT_OUT = 0,

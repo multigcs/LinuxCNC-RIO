@@ -1,7 +1,7 @@
 /********************************************************************
 * Description:  rio.c
 *               This file, 'rio.c', is a HAL component that
-*               provides an SPI connection to a external FPGA-Board running RIO firmware.
+*               provides an SPI connection to a external FPGA-Board running RIO gateware.
 *
 *				Initially developed for RaspberryPi -> Arduino Due.
 *				Further developed for RaspberryPi -> Smoothieboard and clones (LPC1768).

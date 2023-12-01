@@ -1,0 +1,20 @@
+{
+    "name": "Tangoboard",
+    "description": "minimal configuration for Tangoboard",
+    "board": "TangNano9K",
+    "type": "GW1NR-LV9QN88PC6/I5",
+    "family": "GW1N-9C",
+    "toolchain": "icestorm",
+    "package": "",
+    "clock": {
+        "speed": "27000000",
+        "pin": "52"
+    },
+    "transport": "UDP",
+    "ip": "192.168.10.14",
+    "axis": 3,
+    "blink": {
+        "pin": "10"
+    },
+    "plugins": []
+}

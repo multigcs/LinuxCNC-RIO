@@ -49,7 +49,7 @@ python3 buildtool.py configs/Tangoboard/config-mycnc.json
 connect the TangNano9K board to your USB-Port and run:
 ```
 (
-cd Output/Tangoboard/Firmware
+cd Output/Tangoboard/Gateware
 make all
 sudo make load
 )
@@ -101,7 +101,7 @@ cd UDP2SPI-Bridge/ESP32-PoE-ISO
 make build
 ```
 
-then connect the Ethernet-Board to your USB and flash the Firmware:
+then connect the Ethernet-Board to your USB and flash the Gateware:
 
 ```
 make upload

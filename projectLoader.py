@@ -101,27 +101,23 @@ def load(configfile):
 
     project["verilog_files"] = []
     project["component_files"] = []
+    project["verilog_defines"] = {}
+    project["gateware_extrafiles"] = {}
     project["pinlists"] = {}
     project["expansions"] = {}
     project["internal_clock"] = None
 
-    project["osc_clock"] = False
-    if project["jdata"].get("toolchain") == "icestorm":
-        project["osc_clock"] = project["jdata"]["clock"].get("osc")
-        project["internal_clock"] = project["jdata"]["clock"].get("internal")
-        if project["internal_clock"]:
-            pass
-        elif project["osc_clock"]:
-            project["pinlists"]["main"] = (
-                ("sysclk_in", project["jdata"]["clock"]["pin"], "INPUT", True),
-            )
-        else:
-            project["pinlists"]["main"] = (
-                ("sysclk", project["jdata"]["clock"]["pin"], "INPUT", True),
-            )
+    project["osc_clock"] = project["jdata"]["clock"].get("osc", False)
+    project["internal_clock"] = project["jdata"]["clock"].get("internal")
+    if project["internal_clock"]:
+        pass
+    elif project["osc_clock"]:
+        project["pinlists"]["main"] = (
+            ("sysclk_in", project["jdata"]["clock"]["pin"], "INPUT", False),
+        )
     else:
         project["pinlists"]["main"] = (
-            ("sysclk", project["jdata"]["clock"]["pin"], "INPUT", True),
+            ("sysclk", project["jdata"]["clock"]["pin"], "INPUT", False),
         )
 
     if "blink" in project["jdata"]:
@@ -144,6 +140,10 @@ def load(configfile):
             project["pinlists"][plugin] = project["plugins"][plugin].pinlist()
         if hasattr(project["plugins"][plugin], "expansions"):
             project["expansions"][plugin] = project["plugins"][plugin].expansions()
+        if hasattr(project["plugins"][plugin], "ipdefs"):
+            project["verilog_defines"].update(project["plugins"][plugin].ipdefs())
+        if hasattr(project["plugins"][plugin], "gateware_extrafiles"):
+            project["gateware_extrafiles"].update(project["plugins"][plugin].gateware_extrafiles())
 
     # check for double assigned pins
     double_pins = False

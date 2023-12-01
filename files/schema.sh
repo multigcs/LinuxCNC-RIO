@@ -10,10 +10,10 @@ digraph {
     "plugins" -> "buildtool.py"
     "buildtool.py" -> "Output/TARGET"
 
-    "Output/TARGET" -> "Firmware"
-    "Firmware" -> "Verilog Source-Files"
-    "Firmware" -> "Pin-Definitions"
-    "Firmware" -> "Makefile"
+    "Output/TARGET" -> "Gateware"
+    "Gateware" -> "Verilog Source-Files"
+    "Gateware" -> "Pin-Definitions"
+    "Gateware" -> "Makefile"
 
     "Verilog Source-Files" -> "Bitstream"
     "Pin-Definitions" -> "Bitstream"

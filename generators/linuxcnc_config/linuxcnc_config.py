@@ -656,7 +656,7 @@ def generate_rio_ini(project):
 
 
     cfgini_data = []
-    cfgini_data.append("# Basic LinuxCNC config for testing RIO firmware")
+    cfgini_data.append("# Basic LinuxCNC config for testing RIO gateware")
     cfgini_data.append("")
     for section, setup in basic_setup.items():
         cfgini_data.append(f"[{section}]")
@@ -706,6 +706,8 @@ def generate_rio_ini(project):
         if num >= num_joints:
             continue
 
+        AXIS_NAME = joint.get("axis", axis_names[num])
+
         if joint.get("type") == "rcservo":
             SCALE = 80.0
             MIN_LIMIT = -110
@@ -721,10 +723,8 @@ def generate_rio_ini(project):
                 MAX_LIMIT = 360
             else:
                 SCALE = 400.0
-                MIN_LIMIT = -360
-                MAX_LIMIT = 360
-
-        AXIS_NAME = joint.get("axis", axis_names[num])
+                MIN_LIMIT = -1300
+                MAX_LIMIT = 1300
         OUTPUT_SCALE = float(joint.get("scale", SCALE))
         INPUT_SCALE = float(joint.get("enc_scale", OUTPUT_SCALE))
         scales = f"SCALE = {OUTPUT_SCALE}"
@@ -1160,6 +1160,7 @@ net j{num}enable 		<= joint.{num}.amp-enable-out 	=> rio.joint.{num}.enable
 
 def generate_custom_postgui_hal(project):
     gui = project["jdata"].get("gui", "axis")
+    num_joints = min(project['joints'], 9)
 
     if gui == "qtdragon":
         prefix = "qtdragon"
@@ -1316,6 +1317,7 @@ def generate_custom_postgui_hal(project):
 def generate_rio_gui(project):
 
     gui = project["jdata"].get("gui", "axis")
+    num_joints = min(project['joints'], 9)
 
     if gui == "qtdragon":
         gui_gen = qtdragon()
@@ -1379,51 +1381,49 @@ def generate_rio_gui(project):
         elif function:
             pass
 
-        # spindle.0
-        if "hy_vfd" in project["jdata"]:
-            cfgxml_data.append("<labelframe text=\"Spindle\">")
-            cfgxml_data.append("    <relief>RAISED</relief>")
-            cfgxml_data.append("    <font>(\"Helvetica\", 12)</font>")
-            cfgxml_data.append("  <vbox>")
-            cfgxml_data.append("    <hbox>")
-            cfgxml_data.append("      <label>")
-            cfgxml_data.append("          <text>\"RPM\"</text>")
-            cfgxml_data.append("          <font>(\"Helvetica\",10)</font>")
-            cfgxml_data.append("      </label>")
-            cfgxml_data.append("      <number>")
-            cfgxml_data.append('        <halpin>"spindle-speed"</halpin>')
-            cfgxml_data.append('        <font>("Helvetica",24)</font>')
-            cfgxml_data.append('        <format>"05d"</format>')
-            cfgxml_data.append("      </number>")
-            cfgxml_data.append("      <vbox>")
-            cfgxml_data.append("        <hbox>")
-            cfgxml_data.append("          <led>")
-            cfgxml_data.append("            <halpin>\"hycomm-ok\"</halpin>")
-            cfgxml_data.append("            <size>\"10\"</size>")
-            cfgxml_data.append("            <on_color>\"green\"</on_color>")
-            cfgxml_data.append("            <off_color>\"red\"</off_color>")
-            cfgxml_data.append("          </led>")
-            cfgxml_data.append("          <label>")
-            cfgxml_data.append("            <text>\"Modbus\"</text>")
-            cfgxml_data.append("          </label>")
-            cfgxml_data.append("        </hbox>")
-            cfgxml_data.append("        <hbox>")
-            cfgxml_data.append("          <led>")
-            cfgxml_data.append("            <halpin>\"spindle-at-speed\"</halpin>")
-            cfgxml_data.append("            <size>\"10\"</size>")
-            cfgxml_data.append("            <on_color>\"green\"</on_color>")
-            cfgxml_data.append("            <off_color>\"red\"</off_color>")
-            cfgxml_data.append("          </led>")
-            cfgxml_data.append("          <label>")
-            cfgxml_data.append("            <text>\"at speed\"</text>")
-            cfgxml_data.append("          </label>")
-            cfgxml_data.append("        </hbox>")
-            cfgxml_data.append("      </vbox>")
-            cfgxml_data.append("    </hbox>")
-            cfgxml_data.append("  </vbox>")
-            cfgxml_data.append("</labelframe>")
-
-
+    # spindle.0
+    if "hy_vfd" in project["jdata"]:
+        cfgxml_data.append("<labelframe text=\"Spindle\">")
+        cfgxml_data.append("    <relief>RAISED</relief>")
+        cfgxml_data.append("    <font>(\"Helvetica\", 12)</font>")
+        cfgxml_data.append("  <vbox>")
+        cfgxml_data.append("    <hbox>")
+        cfgxml_data.append("      <label>")
+        cfgxml_data.append("          <text>\"RPM\"</text>")
+        cfgxml_data.append("          <font>(\"Helvetica\",10)</font>")
+        cfgxml_data.append("      </label>")
+        cfgxml_data.append("      <number>")
+        cfgxml_data.append('        <halpin>"spindle-speed"</halpin>')
+        cfgxml_data.append('        <font>("Helvetica",24)</font>')
+        cfgxml_data.append('        <format>"05d"</format>')
+        cfgxml_data.append("      </number>")
+        cfgxml_data.append("      <vbox>")
+        cfgxml_data.append("        <hbox>")
+        cfgxml_data.append("          <led>")
+        cfgxml_data.append("            <halpin>\"hycomm-ok\"</halpin>")
+        cfgxml_data.append("            <size>\"10\"</size>")
+        cfgxml_data.append("            <on_color>\"green\"</on_color>")
+        cfgxml_data.append("            <off_color>\"red\"</off_color>")
+        cfgxml_data.append("          </led>")
+        cfgxml_data.append("          <label>")
+        cfgxml_data.append("            <text>\"Modbus\"</text>")
+        cfgxml_data.append("          </label>")
+        cfgxml_data.append("        </hbox>")
+        cfgxml_data.append("        <hbox>")
+        cfgxml_data.append("          <led>")
+        cfgxml_data.append("            <halpin>\"spindle-at-speed\"</halpin>")
+        cfgxml_data.append("            <size>\"10\"</size>")
+        cfgxml_data.append("            <on_color>\"green\"</on_color>")
+        cfgxml_data.append("            <off_color>\"red\"</off_color>")
+        cfgxml_data.append("          </led>")
+        cfgxml_data.append("          <label>")
+        cfgxml_data.append("            <text>\"at speed\"</text>")
+        cfgxml_data.append("          </label>")
+        cfgxml_data.append("        </hbox>")
+        cfgxml_data.append("      </vbox>")
+        cfgxml_data.append("    </hbox>")
+        cfgxml_data.append("  </vbox>")
+        cfgxml_data.append("</labelframe>")
 
     for num, din in enumerate(project["dinnames"]):
         dname = din['_name']

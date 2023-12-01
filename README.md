@@ -19,10 +19,10 @@ RealtimeIO for LinuxCNC based on an FPGA
 | --- | --- |
 | [TangNano9K](configs/TangNano9K) | Tang Nano 9K with 5axis-BOB |
 | [Tango-Board](configs/Tangoboard) | Tango-Board with Tang Nano 9K |
-| [Olimex-ICE40HX8K-EVB_BOB](configs/Olimex-ICE40HX8K-EVB_BOB) | Olimex ICE40HX8K-EVB with 5axis-BOB |
-| [TinyFPGA-BX_BOB](configs/TinyFPGA-BX_BOB) | TinyFPGA-BX with 5axis-BOB |
+| [Olimex-ICE40HX8K-EVB](configs/Olimex-ICE40HX8K-EVB) | Olimex ICE40HX8K-EVB with 5axis-BOB |
+| [TinyFPGA-BX](configs/TinyFPGA-BX) | TinyFPGA-BX with 5axis-BOB |
 | [ICEBreakerV1.0e](configs/ICEBreakerV1.0e) | ICEBreakerV1.0e tests |
-| [Lattice-iCE40HX8K_BOB](configs/Lattice-iCE40HX8K_BOB) | Lattice  iCE40HX8K with custom bob |
+| [Lattice-iCE40HX8K](configs/Lattice-iCE40HX8K) | Lattice  iCE40HX8K with custom bob |
 | [Colorlight5A-75E](configs/Colorlight5A-75E) | Colorlight5A-75E tests |
 | [Alhambra-II](configs/Alhambra-II) | Alhambra II FPGA board with 3 Axis SPI |
 
@@ -80,7 +80,7 @@ if you want to test the connection without LinuxCNC, you can use
 the python test-tool:
 
 ```
-python3 Output/BOARD_NAME/Firmware/qt_spitest.py [IP]
+python3 Output/BOARD_NAME/Gateware/qt_spitest.py [IP]
 ```
 
 
@@ -94,7 +94,7 @@ at the moment, you need at least configure one item of each of the following sec
 you can select a config via make argument:
 
 ```
-make CONFIG=configs/TinyFPGA-BX_BOB/config.json build
+make CONFIG=configs/TinyFPGA-BX/config.json build
 ```
 
 ## Structure:

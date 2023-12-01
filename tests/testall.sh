@@ -14,10 +14,12 @@ fi
 
 echo -n > build-testall.log
 
+rm -rf Output/*
 for CONFIG in $CONFIGS
 do
-    rm -rf Output/*
     echo $CONFIG
+    FOLDER="`cat $CONFIG | jq -r '.name'`"
+    
     STAMP1=`date +%s`
     if ! python3 buildtool.py $CONFIG
     then
@@ -25,11 +27,22 @@ do
         exit 1
     fi
     (
-        cd Output/*/Firmware/
-        if ! make
+        cd Output/$FOLDER/Gateware/
+        if grep -s -q gowin_build Makefile
         then
-            echo "ERROR building bitfile for $CONFIG"
-            exit 1
+            echo "build gateware: make clean gowin_build"
+            if ! make clean gowin_build
+            then
+                echo "ERROR building bitfile for $CONFIG"
+                exit 1
+            fi
+        else
+            echo "build gateware: make clean all"
+            if ! make clean all
+            then
+                echo "ERROR building bitfile for $CONFIG"
+                exit 1
+            fi
         fi
     )
     STAMP2=`date +%s`

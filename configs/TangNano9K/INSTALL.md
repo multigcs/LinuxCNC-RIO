@@ -55,7 +55,7 @@ in this case, please first flash the ethernet-board, check the IP and edit the j
 connect the TangNano9K board to your USB-Port and run:
 ```
 (
-cd Output/TangNano9K/Firmware
+cd Output/TangNano9K/Gateware
 make all
 sudo make load
 )
@@ -107,7 +107,7 @@ cd UDP2SPI-Bridge/ESP32-PoE-ISO
 make build
 ```
 
-then connect the Ethernet-Board to your USB and flash the Firmware:
+then connect the Ethernet-Board to your USB and flash the Gateware:
 
 ```
 make upload

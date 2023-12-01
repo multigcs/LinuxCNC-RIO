@@ -1,0 +1,154 @@
+{
+    "name": "Olimex-ICE40HX8K-EVB",
+    "description": "Olimex-ICE40HX8K-EVB with cheap 5axis-BOB",
+    "toolchain": "icestorm",
+    "family": "ice40",
+    "type": "hx8k",
+    "package": "ct256",
+    "clock": {
+        "speed": "100000000",
+        "pin": "J3"
+    },
+    "interface": [
+        {
+            "type": "spi",
+            "pins": {
+                "MOSI": "P12",
+                "MISO": "P11",
+                "SCK": "R11",
+                "SEL": "L11"
+            }
+        }
+    ],
+    "error": {
+        "pin": "R16"
+    },
+    "enable": {
+        "pin": "F5"
+    },
+    "plugins": [
+        {
+            "pullup": true,
+            "pin": "H6",
+            "name": "DIN0",
+            "type": "din_bit"
+        },
+        {
+            "pullup": true,
+            "pin": "F2",
+            "name": "DIN1",
+            "type": "din_bit"
+        },
+        {
+            "pullup": true,
+            "pin": "H3",
+            "name": "DIN2",
+            "type": "din_bit"
+        },
+        {
+            "pullup": true,
+            "pin": "F3",
+            "name": "DIN3",
+            "type": "din_bit"
+        },
+        {
+            "pullup": true,
+            "pin": "B1",
+            "name": "DIN4",
+            "type": "din_bit"
+        },
+        {
+            "pin": "F4",
+            "name": "DOUT0",
+            "type": "dout_bit"
+        },
+        {
+            "pin": "D2",
+            "name": "DOUT1",
+            "type": "dout_bit"
+        },
+        {
+            "pin": "G5",
+            "name": "DOUT2",
+            "type": "dout_bit"
+        },
+        {
+            "pin": "D1",
+            "name": "DOUT3",
+            "type": "dout_bit"
+        },
+        {
+            "type": "vin_quadencoder",
+            "pullup": true,
+            "pins": {
+                "a": "E2",
+                "b": "G3"
+            },
+            "name": "VIN0"
+        },
+        {
+            "type": "vout_pwm",
+            "pins": {
+                "pwm": "J2",
+                "dir": "J14"
+            },
+            "name": "VOUT0"
+        },
+        {
+            "type": "vout_pwm",
+            "min": "-10",
+            "max": "+10",
+            "pins": {
+                "pwm": "H5",
+                "dir": "J12"
+            },
+            "name": "VOUT1"
+        },
+        {
+            "type": "joint_stepper",
+            "cl": false,
+            "pins": {
+                "step": "H1",
+                "dir": "G1"
+            },
+            "name": "JOINT0"
+        },
+        {
+            "type": "joint_stepper",
+            "cl": false,
+            "pins": {
+                "step": "J5",
+                "dir": "H2"
+            },
+            "name": "JOINT1"
+        },
+        {
+            "type": "joint_stepper",
+            "cl": false,
+            "pins": {
+                "step": "J4",
+                "dir": "G2"
+            },
+            "name": "JOINT2"
+        },
+        {
+            "type": "joint_stepper",
+            "cl": false,
+            "enc_scale": "2",
+            "pins": {
+                "step": "H4",
+                "dir": "F1"
+            },
+            "name": "JOINT3"
+        },
+        {
+            "type": "joint_stepper",
+            "cl": false,
+            "pins": {
+                "step": "C2",
+                "dir": "C1"
+            },
+            "name": "JOINT4"
+        }
+    ]
+}

@@ -1,0 +1,134 @@
+{
+    "name": "ICEBreakerV1.0e",
+    "description": "Small and low cost FPGA educational and development board",
+    "toolchain": "icestorm",
+    "family": "ice40",
+    "type": "up5k",
+    "transport": "UDP",
+    "ip": "192.168.10.13",
+    "package": "sg48",
+    "flashcmd": "openFPGALoader -b ice40_generic rio.bin -f",
+    "clock": {
+        "osc": "12000000",
+        "speed": "50250000",
+        "pin": "35"
+    },
+    "interface": [
+        {
+            "type": "spi",
+            "pins": {
+                "MOSI": "27",
+                "MISO": "25",
+                "SCK": "21",
+                "SEL": "19"
+            }
+        }
+    ],
+    "blink": {
+        "pin": "37"
+    },
+    "error": {
+        "invert": true,
+        "pin": "11"
+    },
+    "plugins": [
+        {
+            "pullup": true,
+            "pin": "38",
+            "name": "DIN0",
+            "type": "din_bit"
+        },
+        {
+            "pullup": true,
+            "pin": "34",
+            "name": "DIN1",
+            "type": "din_bit"
+        },
+        {
+            "pullup": true,
+            "pin": "31",
+            "name": "DIN2",
+            "type": "din_bit"
+        },
+        {
+            "pullup": true,
+            "pin": "48",
+            "name": "DIN3",
+            "type": "din_bit"
+        },
+        {
+            "type": "vin_frequency",
+            "pin": "10",
+            "name": "VIN0"
+        },
+        {
+            "type": "vout_pwm",
+            "pins": {
+                "pwm": "4"
+            },
+            "name": "VOUT0"
+        },
+        {
+            "type": "joint_stepper",
+            "cl": false,
+            "pins": {
+                "step": "2",
+                "dir": "47"
+            },
+            "name": "JOINT0"
+        },
+        {
+            "type": "joint_stepper",
+            "cl": false,
+            "pins": {
+                "step": "45",
+                "dir": "28"
+            },
+            "name": "JOINT1"
+        },
+        {
+            "type": "joint_stepper",
+            "cl": false,
+            "pins": {
+                "step": "32",
+                "dir": "36"
+            },
+            "name": "JOINT2"
+        },
+        {
+            "type": "joint_stepper",
+            "cl": false,
+            "pins": {
+                "step": "42",
+                "dir": "43"
+            },
+            "name": "JOINT3"
+        },
+        {
+            "type": "joint_stepper",
+            "cl": false,
+            "pins": {
+                "step": "46",
+                "dir": "44"
+            },
+            "name": "JOINT4"
+        },
+        {
+            "type": "modbus",
+            "protocols": [
+                {
+                    "type": "hyvfd",
+                    "addr": 1,
+                    "spindle": 0
+                }
+            ],
+            "baud": 9600,
+            "pins": {
+                "rx": "18",
+                "tx": "20",
+                "tx_enable": "23"
+            },
+            "name": "MODBUS"
+        }
+    ]
+}

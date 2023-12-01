@@ -1,5 +1,5 @@
 {
-    "name": "TangPrimer20K_udp",
+    "name": "TangPrimer20K",
     "description": "TangPrimer20K",
     "board": "TangPrimer20K",
     "type": "GW2A-LV18PG256C8/I7",
@@ -104,7 +104,6 @@
             "invert": true,
             "pin": "C7"
         },
-
         {
             "type": "dout_bit",
             "name": "BLED2",

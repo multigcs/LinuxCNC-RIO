@@ -1248,77 +1248,8 @@ static CONTROL parse_ctrl_type(const char *ctrl)
 
 
 
-
-
-
-/*
-<name>.SetF (float, out)
-<name>.OutF (float, out)
-<name>.OutA (float, out)
-<name>.Rott (float, out)
-<name>.DCV (float, out)
-<name>.ACV (float, out)
-<name>.Cont (float, out)
-<name>.Tmp (float, out)
-<name>.CNTR (float, out)
-<name>.CNST (float, out)
-<name>.CNST-run (bit, out)
-<name>.CNST-jog (bit, out)
-<name>.CNST-command-rf (bit, out)
-<name>.CNST-running (bit, out)
-<name>.CNST-jogging (bit, out)
-<name>.CNST-running-rf (bit, out)
-<name>.CNST-bracking (bit, out)
-<name>.CNST-track-start (bit, out)
-<name>.spindle-at-speed (bit, out) True when the current spindle speed is within .spindle-at-speed-tolerance of the commanded speed.
-<name>.frequency-command (float, out)
-<name>.max-freq (float, out)
-<name>.base-freq (float, out)
-<name>.freq-lower-limit (float, out)
-<name>.rated-motor-voltage (float, out)
-<name>.rated-motor-current (float, out)
-<name>.rated-motor-rev (float, out)
-<name>.motor-poles (u32, out)
-<name>.hycomm-ok (bit, out)
-<name>.spindle-speed-fb  (float, out) Current spindle speed as reported by Huanyang VFD.
-------------------------
-<name>.enable (bit, in) Enable communication from the hy_vfd driver to the VFD.
-<name>.spindle-forward (bit, in)
-<name>.spindle-reverse (bin, in)
-<name>.spindle-on  (bin, in)
-<name>.speed-command (float, in)
-<name>.spindle-at-speed-tolerance  (float, in) Spindle speed error tolerance. If the actual spindle speed is within .spindle-at-speed-tolerance of the commanded speed, then the .spindle-at-speed pin will go True. The default .spindle-at-speed-tolerance is 0.02, which means the actual speed must be within 2% of the commanded spindle speed.
-*/
-
-#include <unistd.h>
-#include <stdio.h>
-#include <stdint.h>
-#include <string.h>
-
-#include "hal.h"			/* HAL public API decls */
-
 #include "hyvfd.h"
 
-#define	FUNCTION_READ			0x01
-#define	FUNCTION_WRITE			0x02
-#define	WRITE_CONTROL_DATA		0x03
-#define	READ_CONTROL_STATUS		0x04
-#define	WRITE_FREQ_DATA			0x05
-#define	LOOP_TEST				0x08
-#define	FUNCTION_PD005  		5
-#define	FUNCTION_PD011  		11
-#define	FUNCTION_PD144  		144
-#define CONTROL_Run_Fwd		0x01
-#define CONTROL_Run_Rev		0x11
-#define CONTROL_Stop		0x08
-#define CONTROL_Run			0x01
-#define CONTROL_Jog			0x02
-#define CONTROL_Command_rf	0x04
-#define CONTROL_Running		0x08
-#define CONTROL_Jogging		0x10
-#define CONTROL_Running_rf	0x20
-#define CONTROL_Bracking	0x40
-#define CONTROL_Track_Start	0x80
 uint8_t spindle_start_fwd[] = { 0x01, WRITE_CONTROL_DATA, 0x01, CONTROL_Run_Fwd };
 uint8_t spindle_start_rev[] = { 0x01, WRITE_CONTROL_DATA, 0x01, CONTROL_Run_Rev };
 uint8_t spindle_stop[] =  { 0x01, WRITE_CONTROL_DATA, 0x01, CONTROL_Stop };
@@ -1335,27 +1266,14 @@ uint8_t spindle_status_ac_volt[] = { 0x01, READ_CONTROL_STATUS, 0x03, 0x05, 0x00
 uint8_t spindle_status_condition[] = { 0x01, READ_CONTROL_STATUS, 0x03, 0x06, 0x00, 0x00 };
 uint8_t spindle_status_temp[] = { 0x01, READ_CONTROL_STATUS, 0x03, 0x07, 0x00, 0x00 };
 
-
 uint16_t maxFrequency = 0;
 uint16_t minFrequency = 0;
 uint16_t maxRpmAt50Hz = 0;
 uint16_t min_rpm = 0;
 uint16_t max_rpm = 0;
-//uint16_t rpm = 6000;
-//uint16_t frq_set = 0;
-//uint16_t frq_get = 0;
-//uint16_t ampere = 0;
-//uint16_t srpm = 0;
-//uint16_t dc_volt = 0;
-//uint16_t ac_volt = 0;
-//uint16_t condition = 0;
-//uint16_t temp = 0;
-//uint8_t waitflag = 0;
-//uint16_t stat_counter = 0;
-//int32_t last_speed = 0;
-//int32_t new_speed = 0;
+uint8_t hycomm_ok = 0;
 int32_t set_speed = 0;
-int8_t set_direction = 0;
+uint8_t set_direction = 0;
 
 uint16_t modbus_stat_n = 0;
 uint32_t pkg_counter = 0;
@@ -1405,14 +1323,6 @@ static mb_data_t *mb_data;
 void modbus_hyvfd_rec_msg(uint8_t *rec) {
     uint8_t spindle = 0;
 
-    /*
-    uint8_t i = 0;
-    for(i = 0; i < 9; i++) {
-        printf("#### REC: 0x%X  %i\n", rec[i], rec[i]);
-    }
-    printf("###################\n");
-    */
-
     if (rec[2] == READ_CONTROL_STATUS && rec[3] == 0x03) {
         uint16_t value = (rec[5] << 8) | rec[6];
         if (rec[4] == 0x00) {
@@ -1451,6 +1361,8 @@ void modbus_hyvfd_rec_msg(uint8_t *rec) {
         }
         min_rpm = minFrequency * maxRpmAt50Hz / 5000;
         max_rpm = maxFrequency * maxRpmAt50Hz / 5000;
+
+        hycomm_ok = 1;
     }
 }
 
@@ -1466,40 +1378,6 @@ void modbus_hyvfd_send_cmd(uint8_t *data, uint8_t *cmd, uint8_t dlen, uint8_t ad
     }
     data[dlen + 1] = crc & 0xFF;
     data[dlen + 2] = crc>>8 & 0xFF;
-    /*
-    for(i = 0; i < data[0]; i++) {
-        printf("#### 0x%X  %i\n", data[i+1], data[i+1]);
-    }
-    printf("###################\n");
-
-    printf("## frq_set = %i\n", frq_set);
-    printf("## frq_get = %i\n", frq_get);
-    printf("## ampere = %i\n", ampere);
-    printf("## srpm = %i\n", srpm);
-    printf("## dc_volt = %i\n", dc_volt);
-    printf("## ac_volt = %i\n", ac_volt);
-    printf("## condition = %i\n", condition);
-    printf("## temp = %i\n", temp);
-    printf("## maxFrequency = %i\n", maxFrequency);
-    printf("## minFrequency = %i\n", minFrequency);
-    printf("## maxRpmAt50Hz = %i\n", maxRpmAt50Hz);
-
-
-    printf("#### SEND: ");
-    for(i = 0; i < 9; i++) {
-        printf("%i ", data[i], data[i]);
-    }
-    printf("\n");
-    printf("###################\n");
-    */
-    /*
-    printf("#### REC: ");
-    for(i = 0; i < 9; i++) {
-        printf("%i ", rxData.MODBUS_IN[i], rxData.MODBUS_IN[i]);
-    }
-    printf("\n");
-    printf("###################\n");
-    */
 }
 
 void modbus_hyvfd_send_msg(uint8_t *data) {
@@ -1585,6 +1463,14 @@ void modbus_hyvfd_send_msg(uint8_t *data) {
                     modbus_hyvfd_send_cmd(data, spindle_start_rev, sizeof(spindle_start_rev), addr);
                 }
             }
+
+
+            if (hycomm_ok == 1) {
+                *(mb_data->hycomm_ok[spindle]) = 1;
+            } else {
+                *(mb_data->hycomm_ok[spindle]) = 0;
+            }
+            hycomm_ok = 0;
 
             modbus_stat_n = 0;
         }

@@ -2,6 +2,7 @@
 import argparse
 import time
 from struct import *
+from functools import partial
 import sys
 from PyQt5.QtWidgets import QWidget,QPushButton,QApplication,QListWidget,QGridLayout,QLabel,QSlider,QCheckBox
 from PyQt5.QtCore import QTimer,QDateTime, Qt
@@ -390,6 +391,16 @@ class WinForm(QWidget):
             self.widgets[key].setValue(0)
             layout.addWidget(self.widgets[key], gpy, jn + 3)
         gpy += 1
+
+        for jn in range(JOINTS):
+            key = f'jcs_reset{jn}'
+            self.widgets[key] = QPushButton("0")
+            self.widgets[key].clicked.connect(
+                partial(self.slider_reset, f'jcs{jn}')
+            )
+            layout.addWidget(self.widgets[key], gpy, jn + 3)
+        gpy += 1
+
         layout.addWidget(QLabel(f'SET'), gpy, 1)
         for jn in range(JOINTS):
             key = f'jcraw{jn}'
@@ -429,6 +440,16 @@ class WinForm(QWidget):
             self.widgets[key].setValue(0)
             layout.addWidget(self.widgets[key], gpy, vn + 3)
         gpy += 1
+
+        for vn in range(VOUTS):
+            key = f'vos_reset{vn}'
+            self.widgets[key] = QPushButton("0")
+            self.widgets[key].clicked.connect(
+                partial(self.slider_reset, f'vos{vn}')
+            )
+            layout.addWidget(self.widgets[key], gpy, vn + 3)
+        gpy += 1
+
         layout.addWidget(QLabel(f'SET'), gpy, 1)
         for vn in range(VOUTS):
             key = f'vo{vn}'
@@ -502,6 +523,12 @@ class WinForm(QWidget):
                         self.widgets[f"{name}-hyvfd"].setMaximum(20000)
                         self.widgets[f"{name}-hyvfd"].setValue(0)
                         layout.addWidget(self.widgets[f"{name}-hyvfd"], gpy, 3)
+
+                        self.widgets[f"{name}-hyvfd-rst"] = QPushButton("0")
+                        self.widgets[f"{name}-hyvfd-rst"].clicked.connect(
+                            partial(self.slider_reset, f"{name}-hyvfd")
+                        )
+                        layout.addWidget(self.widgets[f"{name}-hyvfd-rst"], gpy, 4)
                         gpy += 1
 
                         for vn, vname in enumerate(["rpm","maxFrequency","minFrequency","min_rpm","max_rpm","maxRpmAt50Hz","frq_set","frq_get","ampere","srpm","dc_volt","ac_volt","condition","temp","addr"]):
@@ -533,6 +560,9 @@ class WinForm(QWidget):
         self.timer=QTimer()
         self.timer.timeout.connect(self.runTimer)
         self.timer.start(INTERVAL)
+
+    def slider_reset(self, key):
+        self.widgets[key].setValue(0)
 
     def runTimer(self):
         data[0] = 0x74

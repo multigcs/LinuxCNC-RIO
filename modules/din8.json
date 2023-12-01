@@ -5,49 +5,49 @@
             "type": "din_bit",
             "invert": true,
             "pullup": true,
-            "pin": "B1"
+            "pin": "P1"
         },
         {
             "type": "din_bit",
             "invert": true,
             "pullup": true,
-            "pin": "A1"
+            "pin": "P7"
         },
         {
             "type": "din_bit",
             "invert": true,
             "pullup": true,
-            "pin": "B2"
+            "pin": "P2"
         },
         {
             "type": "din_bit",
             "invert": true,
             "pullup": true,
-            "pin": "A2"
+            "pin": "P8"
         },
         {
             "type": "din_bit",
             "invert": true,
             "pullup": true,
-            "pin": "B3"
+            "pin": "P3"
         },
         {
             "type": "din_bit",
             "invert": true,
             "pullup": true,
-            "pin": "A3"
+            "pin": "P9"
         },
         {
             "type": "din_bit",
             "invert": true,
             "pullup": true,
-            "pin": "B4"
+            "pin": "P4"
         },
         {
             "type": "din_bit",
             "invert": true,
             "pullup": true,
-            "pin": "A4"
+            "pin": "P10"
         }
     ]
 }

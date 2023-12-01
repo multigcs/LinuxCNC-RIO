@@ -10,10 +10,10 @@
     "flashcmd": "openFPGALoader -b ice40_generic rio.bin -f",
     "clock": {
         "osc": "12000000",
-        "speed": "50250000",
+        "speed": "24000000",
         "pin": "35"
     },
-    "interface": [
+    "______interface": [
         {
             "type": "uart",
             "pins": {
@@ -44,7 +44,7 @@
                 "P9": "46",
                 "P10": "44"
             },
-            "_module": ""
+            "module": "joint3+dout1"
         },
         {
             "comment": "PMOD1B",
@@ -58,7 +58,7 @@
                 "P9": "32",
                 "P10": "28"
             },
-            "_module": ""
+            "module": "din8"
         },
         {
             "comment": "PMOD2",
@@ -72,7 +72,7 @@
                 "P9": "20",
                 "P10": "18"
             },
-            "module": "modbus"
+            "module": "modbus+spi"
         }
     ],
     "plugins": [

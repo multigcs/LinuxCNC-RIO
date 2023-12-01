@@ -1246,10 +1246,36 @@ static CONTROL parse_ctrl_type(const char *ctrl)
 
 
 
+#define	FUNCTION_READ			0x01
+#define	FUNCTION_WRITE			0x02
+#define	WRITE_CONTROL_DATA		0x03
+#define	READ_CONTROL_STATUS		0x04
+#define	WRITE_FREQ_DATA			0x05
+#define	LOOP_TEST				0x08
+#define	FUNCTION_PD004  		4
+#define	FUNCTION_PD005  		5
+#define	FUNCTION_PD011  		11
+#define	FUNCTION_PD141  		141
+#define	FUNCTION_PD142  		142
+#define	FUNCTION_PD143  		143
+#define	FUNCTION_PD144  		144
 
+#define CONTROL_Run_Fwd		0x01
+#define CONTROL_Run_Rev		0x11
+#define CONTROL_Stop		0x08
+#define CONTROL_Run			0x01
+#define CONTROL_Jog			0x02
+#define CONTROL_Command_rf	0x04
+#define CONTROL_Running		0x08
+#define CONTROL_Jogging		0x10
+#define CONTROL_Running_rf	0x20
+#define CONTROL_Bracking	0x40
+#define CONTROL_Track_Start	0x80
 
+extern int modbus_hyvfd_init(int comp_id, const char *prefix);
+extern void modbus_hyvfd_rec_msg(uint8_t *rec);
+extern void modbus_hyvfd_send_msg(uint8_t *data);
 
-#include "hyvfd.h"
 
 uint8_t spindle_start_fwd[] = { 0x01, WRITE_CONTROL_DATA, 0x01, CONTROL_Run_Fwd };
 uint8_t spindle_start_rev[] = { 0x01, WRITE_CONTROL_DATA, 0x01, CONTROL_Run_Rev };

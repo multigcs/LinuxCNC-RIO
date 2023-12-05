@@ -16,6 +16,8 @@ def buildsys_gowin(project):
     verilogs = " ".join(project["verilog_files"])
     makefile_data = []
     makefile_data.append("")
+    makefile_data.append("# Toolchain: Gowin and Icestorm")
+    makefile_data.append("")
     makefile_data.append("PROJECT  := rio")
     makefile_data.append("TOP      := rio")
     makefile_data.append(f"FAMILY   := {family}")
@@ -195,6 +197,8 @@ def buildsys_icestorm(project):
     verilogs = " ".join(project["verilog_files"])
     makefile_data = []
     makefile_data.append("")
+    makefile_data.append("# Toolchain: Icestorm")
+    makefile_data.append("")
     makefile_data.append("PROJECT  := rio")
     makefile_data.append("TOP      := rio")
     makefile_data.append(f"FAMILY   := {project['jdata']['family']}")
@@ -267,6 +271,8 @@ def buildsys_ise(project):
     verilogs = " ".join(project["verilog_files"])
     makefile_data = []
     makefile_data.append("")
+    makefile_data.append("# Toolchain: ISE/Webpack")
+    makefile_data.append("")
     makefile_data.append("PROJECT  := rio")
     makefile_data.append("TOP      := rio")
     makefile_data.append(f"PART     := {project['jdata']['type']}")
@@ -309,6 +315,8 @@ def buildsys_vivado(project):
 
     verilogs = " ".join(project["verilog_files"])
     makefile_data = []
+    makefile_data.append("")
+    makefile_data.append("# Toolchain: Vivado")
     makefile_data.append("")
     makefile_data.append("PROJECT  := rio")
     makefile_data.append("TOP      := rio")
@@ -374,6 +382,8 @@ def buildsys_diamond(project):
     verilogs = " ".join(project["verilog_files"])
     makefile_data = []
     makefile_data.append("")
+    makefile_data.append("# Toolchain: Diamond")
+    makefile_data.append("")
     makefile_data.append("PROJECT  := rio")
     makefile_data.append("TOP      := rio")
     makefile_data.append(f"PART     := {project['jdata']['type']}")
@@ -419,6 +429,8 @@ def buildsys_quartus(project):
     ftype = project["jdata"]["type"]
     verilogs = " ".join(project["verilog_files"])
     makefile_data = []
+    makefile_data.append("")
+    makefile_data.append("# Toolchain: Quartus")
     makefile_data.append("")
     makefile_data.append("PROJECT   := rio")
     makefile_data.append("TOP       := rio")

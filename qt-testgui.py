@@ -28,6 +28,7 @@ args = parser.parse_args()
 project = projectLoader.load(args.json)
 print(args.baud)
 
+SHM_FILE = ''
 SERIAL = ''
 NET_IP = ''
 if args.device and args.device.startswith('/dev/tty'):
@@ -35,6 +36,8 @@ if args.device and args.device.startswith('/dev/tty'):
     SERIAL = args.device
     BAUD = args.baud
     ser = serial.Serial(SERIAL, BAUD, timeout=0.001)
+elif args.device and args.device.startswith('/dev/shm/'):
+    SHM_FILE = args.device
 elif args.device and args.device != '':
     NET_IP = args.device
     NET_PORT = args.port
@@ -195,10 +198,10 @@ class WinForm(QWidget):
             key = f'vos{vn}'
             self.widgets[key] = QSlider(Qt.Horizontal)
             if voutminmax[vn][2] == "pwmdir":
-                self.widgets[key].setMinimum(-voutminmax[vn][1])
+                self.widgets[key].setMinimum(-int(voutminmax[vn][1]))
             else:
-                self.widgets[key].setMinimum(voutminmax[vn][0])
-            self.widgets[key].setMaximum(voutminmax[vn][1])
+                self.widgets[key].setMinimum(int(voutminmax[vn][0]))
+            self.widgets[key].setMaximum(int(voutminmax[vn][1]))
             self.widgets[key].setValue(0)
             layout.addWidget(self.widgets[key], gpy, vn + 3)
         gpy += 1
@@ -403,6 +406,14 @@ class WinForm(QWidget):
             elif SERIAL:
                 ser.write(bytes(data))
                 msgFromServer = ser.read(len(data))
+                rec = list(msgFromServer)
+            elif SHM_FILE:
+                fd = open(f"{SHM_FILE}.tx", "wb")
+                fd.write(bytes(data))
+                fd.close()
+                fd = open(f"{SHM_FILE}.rx", "rb")
+                msgFromServer = fd.read(len(data))
+                fd.close()
                 rec = list(msgFromServer)
             else:
                 rec = spi.xfer2(data)

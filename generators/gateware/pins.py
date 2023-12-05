@@ -1,7 +1,19 @@
-def pins_lpf(project):
+def pins_lpf(project, diamond=False):
     data = []
-
     lpf_data = []
+    if diamond:
+        lpf_data.append("BLOCK RESETPATHS;")
+        lpf_data.append("BLOCK ASYNCPATHS;")
+        lpf_data.append("BANK 0 VCCIO 3.3 V;")
+        lpf_data.append("BANK 1 VCCIO 3.3 V;")
+        lpf_data.append("BANK 2 VCCIO 3.3 V;")
+        lpf_data.append("BANK 3 VCCIO 3.3 V;")
+        lpf_data.append("BANK 5 VCCIO 3.3 V;")
+        lpf_data.append("BANK 6 VCCIO 3.3 V;")
+        lpf_data.append("IOBUF ALLPORTS IO_TYPE=LVCMOS33;")
+        lpf_data.append("SYSCONFIG JTAG_PORT=DISABLE  SDM_PORT=PROGRAMN  I2C_PORT=DISABLE  SLAVE_SPI_PORT=ENABLE  MCCLK_FREQ=10.23;")
+        lpf_data.append("")
+
     for pname, pins in project['pinlists'].items():
         if not pins:
             continue

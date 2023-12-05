@@ -27,6 +27,8 @@ def verilog_top(project):
     top_data.append("")
     top_data.append("*/")
     top_data.append("")
+    top_data.append("/* verilator lint_off UNUSEDSIGNAL */")
+    top_data.append("")
 
     argsstr = ",\n        ".join(top_arguments)
     top_data.append(f"module rio (\n        {argsstr}")
@@ -37,6 +39,7 @@ def verilog_top(project):
     if project["internal_clock"]:
         if project["jdata"].get("toolchain") == "diamond":
             top_data.append("    // Internal Oscillator")
+            top_data.append("    wire sysclk;")
             top_data.append('    defparam OSCH_inst.NOM_FREQ = "133.00";')
             top_data.append("    OSCH OSCH_inst ( ")
             top_data.append("        .STDBY(1'b0),")
@@ -387,3 +390,6 @@ def generate(project):
 
     elif project["jdata"].get("toolchain") == "diamond":
         buildsys_diamond(project)
+
+    elif project["jdata"].get("toolchain") == "verilator":
+        buildsys_verilator(project)

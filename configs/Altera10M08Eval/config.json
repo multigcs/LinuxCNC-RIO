@@ -13,8 +13,29 @@
         "pin": "PIN_132"
     },
     "error": {
+        "invert": "true",
         "pin": "PIN_134"
     },
+    "_interface": [
+        {
+            "type": "uart",
+            "pins": {
+                "RX": "PIN_58",
+                "TX": "PIN_57"
+            }
+        }
+    ],
+    "interface": [
+        {
+            "type": "spi",
+            "pins": {
+                "MOSI": "PIN_55",
+                "MISO": "PIN_56",
+                "SCK": "PIN_59",
+                "SEL": "PIN_60"
+            }
+        }
+    ],
     "slots": [
         {
             "comment": "ChipKit/Arduino Header",
@@ -50,16 +71,19 @@
         {
             "type": "dout_bit",
             "name": "LED3",
+            "invert": "true",
             "pin": "PIN_135"
         },
         {
             "type": "dout_bit",
             "name": "LED4",
+            "invert": "true",
             "pin": "PIN_140"
         },
         {
             "type": "dout_bit",
             "name": "LED5",
+            "invert": "true",
             "pin": "PIN_141"
         },
         {

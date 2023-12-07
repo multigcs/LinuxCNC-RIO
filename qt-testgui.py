@@ -382,7 +382,7 @@ class WinForm(QWidget):
 
     def __init__(self,parent=None):
         super(WinForm, self).__init__(parent)
-        self.setWindowTitle('SPI-Test')
+        self.setWindowTitle(f"SPI-Test ({project['jdata']['name']} @ {args.device})")
         self.listFile=QListWidget()
         layout=QGridLayout()
         self.widgets = {}

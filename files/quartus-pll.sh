@@ -19,8 +19,11 @@ then
     exit 1
 fi
 
+BASENAME=`basename $FILE .v`
 
-cat <<EOF  > PLL.v
+echo "generating $FILE.."
+
+cat <<EOF  > "$FILE"
 // megafunction wizard: %ALTPLL%
 // GENERATION: STANDARD
 // VERSION: WM1.0
@@ -48,16 +51,19 @@ cat <<EOF  > PLL.v
 // Retrieval info: PRIVATE: PLL_TARGET_HARCOPY_CHECK NUMERIC "0"
 // Retrieval info: PRIVATE: PRIMARY_CLK_COMBO STRING "inclk0"
 
-// Retrieval info: GEN_FILE: TYPE_NORMAL PLL.v TRUE
-// Retrieval info: GEN_FILE: TYPE_NORMAL PLL.ppf FALSE
-// Retrieval info: GEN_FILE: TYPE_NORMAL PLL.inc FALSE
-// Retrieval info: GEN_FILE: TYPE_NORMAL PLL.cmp FALSE
-// Retrieval info: GEN_FILE: TYPE_NORMAL PLL.bsf FALSE
-// Retrieval info: GEN_FILE: TYPE_NORMAL PLL_inst.v FALSE
-// Retrieval info: GEN_FILE: TYPE_NORMAL PLL_bb.v FALSE
+// Retrieval info: GEN_FILE: TYPE_NORMAL $BASENAME.v TRUE
+// Retrieval info: GEN_FILE: TYPE_NORMAL $BASENAME.ppf FALSE
+// Retrieval info: GEN_FILE: TYPE_NORMAL $BASENAME.inc FALSE
+// Retrieval info: GEN_FILE: TYPE_NORMAL $BASENAME.cmp FALSE
+// Retrieval info: GEN_FILE: TYPE_NORMAL $BASENAME.bsf FALSE
+// Retrieval info: GEN_FILE: TYPE_NORMAL $BASENAME_inst.v FALSE
+// Retrieval info: GEN_FILE: TYPE_NORMAL $BASENAME_bb.v FALSE
 EOF
 
-qmegawiz -silent PLL.v
+qmegawiz -silent $FILE
+echo "..done"
 
-grep EFF_OUTPUT_FREQ_VALUE0 PLL.v
+OUTPUT=`grep EFF_OUTPUT_FREQ_VALUE0 "$FILE" | cut -d'"' -f2`
+echo "OUTPUT FREQ: $OUTPUT"
+
 

@@ -5,6 +5,9 @@
     "family": "MAX 10",
     "type": "10M08SAE144C8G",
     "package": "csg324",
+    "transport": "UDP",
+    "_gui": "qtdragon",
+    "ip": "192.168.10.13",
     "clock": {
         "speed": "50000000",
         "pin": "PIN_27"
@@ -63,6 +66,25 @@
                 "A6": "PIN_13",
                 "A7": "PIN_14",
                 "RST": "PIN_121"
+            },
+            "setup": {
+                "plugins": [
+                    {},
+                    {},
+                    {},
+                    {},
+                    {},
+                    {},
+                    {
+                        "scale": "6400"
+                    },
+                    {
+                        "scale": "6400"
+                    },
+                    {
+                        "scale": "400"
+                    }
+                ]
             },
             "module": "cnc-shield-v3"
         }

@@ -66,7 +66,6 @@ def load(configfile):
                             # overwrite with setup data
                             if ssetup:
                                 ssetup_data = ssetup.get(ftype, [])
-
                                 if len(ssetup_data) > jn:
                                     msetup.update(ssetup_data[jn])
                             # rewrite pins

@@ -5,7 +5,7 @@
 DEVICE="$1" # "MAX 10"
 IN_MHZ="$2" # 50
 OUT_MHZ="$3" # 100
-FILE="$4"
+FILE="$4" # PLL.v
 
 if test "$FILE" = ""
 then

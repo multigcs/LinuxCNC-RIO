@@ -469,8 +469,9 @@ int rtapi_app_main(void)
         }
     }
 
-
+#ifdef MODBUS
     modbus_hyvfd_init(comp_id, prefix);
+#endif
 
 
 error:
@@ -1084,7 +1085,9 @@ void rio_readwrite()
                 }
 
 
+#ifdef MODBUS
                 modbus_hyvfd_rec_msg(rxData.MODBUS_IN);
+#endif
 
                 // Inputs
                 int index_num = 0;
@@ -1232,18 +1235,7 @@ static CONTROL parse_ctrl_type(const char *ctrl)
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
+#ifdef MODBUS
 
 
 #define	FUNCTION_READ			0x01
@@ -1712,3 +1704,4 @@ int modbus_hyvfd_init(int comp_id, const char *prefix) {
     return 1;
 }
 
+#endif

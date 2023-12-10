@@ -1,5 +1,5 @@
 
-module vout_pwm
+module vout_rcservo
     #(parameter divider = 255)
      (
          input clk,

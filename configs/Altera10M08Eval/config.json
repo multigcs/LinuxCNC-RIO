@@ -346,7 +346,15 @@
             "pin": "EXPANSION0_OUTPUT[15]",
             "name": "DOUT7b",
             "type": "dout_bit"
+        },
+
+
+        {
+            "type": "vout_rcservo",
+            "frequency": "50",
+            "pin": "PIN_43"
         }
+
 
 
     ],

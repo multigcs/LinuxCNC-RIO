@@ -6,7 +6,7 @@ Variable-Output for RC-Servos
 
 ```
 {
-    "type": "rcservo",
+    "type": "vout_rcservo",
     "frequency": "50",
     "pin": "M5"
 },

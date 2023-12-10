@@ -1041,6 +1041,18 @@ void rio_readwrite()
                         value *= *(data->processVariableScale[i]);
                         *(data->processVariable[i]) = value;
                         *(data->processVariableS32[i]) = (int)value;
+
+                    } else if (vin_type[i] == TYPE_VIN_DS18B20) {
+                        if (((int)value<<8) & 0x80) {
+                            value = (((int)value ^ 0xffff) + 1) * -1;
+                        }
+                        value = value / 16;
+
+                        value += *(data->processVariableOffset[i]);
+                        value *= *(data->processVariableScale[i]);
+                        *(data->processVariable[i]) = value;
+                        *(data->processVariableS32[i]) = (int)value;
+
                     } else if (vin_type[i] == TYPE_VIN_ADC) {
                         value /= 1000.0; // to Volt
                         value += *(data->processVariableOffset[i]);

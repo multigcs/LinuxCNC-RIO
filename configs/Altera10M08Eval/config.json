@@ -350,9 +350,10 @@
 
 
         {
-            "type": "vout_rcservo",
-            "frequency": "50",
-            "pin": "PIN_43"
+            "type": "vin_ds18b20",
+            "pins": {
+                "data": "PIN_43"
+            }
         }
 
 

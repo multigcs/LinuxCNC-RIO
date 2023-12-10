@@ -83,12 +83,14 @@ PRU_OSC = int(project['jdata']['clock']['speed'])
 
 vinminmax = []
 for num, vin in enumerate(project["vinnames"]):
-    if vin.get("type") == "frequency":
+    if vin.get("type") == "vin_frequency":
         vinminmax.append((vin.get('min', -100), vin.get('max', 100), 'frequency', 0))
-    elif vin.get("type") == "pwm":
+    elif vin.get("type") == "vin_pwm":
         vinminmax.append((vin.get('min', -100), vin.get('max', 100), 'pwm', 0))
-    elif vin.get("type") == "sonar":
+    elif vin.get("type") == "vin_sonar":
         vinminmax.append((vin.get('min', 0),  vin.get('max', 100000), 'sonar', 0))
+    elif vin.get("type") == "vin_ds18b20":
+        vinminmax.append((vin.get('min', 0),  vin.get('max', 100000), 'ds18b20', 0))
     else:
         vinminmax.append((vin.get('min', -100), vin.get('max', 100), '', 0))
 
@@ -821,6 +823,12 @@ class WinForm(QWidget):
                     unit = "mm"
                     if value != 0:
                         value = 1000 / PRU_OSC / 20 * value * 343.2
+                elif vinminmax[vn][2] == 'ds18b20':
+                    unit = "°C"
+                    if (value<<8) & 0x80:
+                        value = ((value ^ 0xffff) + 1) * -1;
+                    value = value / 16
+
                 self.widgets[key].setText(f"{round(value, 2)}{unit}")
 
             for dbyte in range(DIGITAL_INPUT_BYTES):

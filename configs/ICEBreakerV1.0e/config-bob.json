@@ -4,8 +4,6 @@
     "toolchain": "icestorm",
     "family": "ice40",
     "type": "up5k",
-    "transport": "UDP",
-    "ip": "192.168.10.13",
     "package": "sg48",
     "flashcmd": "openFPGALoader -b ice40_generic rio.bin -f",
     "clock": {
@@ -31,6 +29,18 @@
         "invert": true,
         "pin": "11"
     },
+    "expansion": [
+        {
+            "type": "shiftreg",
+            "bits": 8,
+            "pins": {
+                "out": "26",
+                "in": "23",
+                "clock": "20",
+                "load": "18"
+            }
+        }
+    ],
     "plugins": [
         {
             "pullup": true,
@@ -55,6 +65,86 @@
             "pin": "48",
             "name": "DIN3",
             "type": "din_bit"
+        },
+        {
+            "pin": "EXPANSION0_INPUT[0]",
+            "name": "DIN4",
+            "type": "din_bit"
+        },
+        {
+            "pin": "EXPANSION0_INPUT[1]",
+            "name": "DIN5",
+            "type": "din_bit"
+        },
+        {
+            "pin": "EXPANSION0_INPUT[2]",
+            "name": "DIN6",
+            "type": "din_bit"
+        },
+        {
+            "pin": "EXPANSION0_INPUT[3]",
+            "name": "DIN7",
+            "type": "din_bit"
+        },
+        {
+            "pin": "EXPANSION0_INPUT[4]",
+            "name": "DIN8",
+            "type": "din_bit"
+        },
+        {
+            "pin": "EXPANSION0_INPUT[5]",
+            "name": "DIN9",
+            "type": "din_bit"
+        },
+        {
+            "pin": "EXPANSION0_INPUT[6]",
+            "name": "DIN10",
+            "type": "din_bit"
+        },
+        {
+            "pin": "EXPANSION0_INPUT[7]",
+            "name": "DIN11",
+            "type": "din_bit"
+        },
+        {
+            "pin": "EXPANSION0_OUTPUT[0]",
+            "name": "DOUT0",
+            "type": "dout_bit"
+        },
+        {
+            "pin": "EXPANSION0_OUTPUT[1]",
+            "name": "DOUT1",
+            "type": "dout_bit"
+        },
+        {
+            "pin": "EXPANSION0_OUTPUT[2]",
+            "name": "DOUT2",
+            "type": "dout_bit"
+        },
+        {
+            "pin": "EXPANSION0_OUTPUT[3]",
+            "name": "DOUT3",
+            "type": "dout_bit"
+        },
+        {
+            "pin": "EXPANSION0_OUTPUT[4]",
+            "name": "DOUT4",
+            "type": "dout_bit"
+        },
+        {
+            "pin": "EXPANSION0_OUTPUT[5]",
+            "name": "DOUT5",
+            "type": "dout_bit"
+        },
+        {
+            "pin": "EXPANSION0_OUTPUT[6]",
+            "name": "DOUT6",
+            "type": "dout_bit"
+        },
+        {
+            "pin": "EXPANSION0_OUTPUT[7]",
+            "name": "DOUT7",
+            "type": "dout_bit"
         },
         {
             "type": "vin_frequency",
@@ -112,23 +202,6 @@
                 "dir": "44"
             },
             "name": "JOINT4"
-        },
-        {
-            "type": "modbus",
-            "protocols": [
-                {
-                    "type": "hyvfd",
-                    "addr": 1,
-                    "spindle": 0
-                }
-            ],
-            "baud": 9600,
-            "pins": {
-                "rx": "18",
-                "tx": "20",
-                "tx_enable": "23"
-            },
-            "name": "MODBUS"
         }
     ]
 }

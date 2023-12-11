@@ -25,6 +25,8 @@ RealtimeIO for LinuxCNC based on an FPGA
 | [Lattice-iCE40HX8K](configs/Lattice-iCE40HX8K) | Lattice  iCE40HX8K with custom bob |
 | [Colorlight5A-75E](configs/Colorlight5A-75E) | Colorlight5A-75E tests |
 | [Alhambra-II](configs/Alhambra-II) | Alhambra II FPGA board with 3 Axis SPI |
+| [Altera10M08Eval](configs/Altera10M08Eval) | Altera10M08Eval with Arduino CNC-Shield v3 |
+| [Arty-a7-35t](configs/Arty-a7-35t) | Arty-a7-35t with Arduino CNC-Shield v3 |
 
 
 ## Plugins:
@@ -39,7 +41,8 @@ RealtimeIO for LinuxCNC based on an FPGA
 | vin | [quadencoder](plugins/vin_quadencoder) | Variable-Input for Quad-Encoder (int32_t) |
 | vin | [quadencoderz](plugins/vin_quadencoderz) | Variable-Input for Quad-Encoder with Z-Pin (int32_t) |
 | vin | [sonar](plugins/vin_sonar) | Variable-Input for distance measurement via ultrasonic sonar sensor (HC-SR04) |
-| vin | [sonar](plugins/vin_lm75) | Variable-Input for temperature measurement via LM75 sensor |
+| vin | [lm75](plugins/vin_lm75) | Variable-Input for temperature measurement via LM75 sensor |
+| vin | [ds18b20](plugins/vin_ds18b20) | Variable-Input for temperature measurement via DS18B20 sensor |
 | vout | [frequency](plugins/vout_frequency) | Variable-Output for frequencys |
 | vout | [pwm](plugins/vout_pwm) | Variable-Output for PWM-Signals with optional DIR pin |
 | vout | [sinepwm](plugins/vout_sinepwm) | Variable-Output for Sine-Waves via PWM-Signal |
@@ -48,6 +51,7 @@ RealtimeIO for LinuxCNC based on an FPGA
 | din | [bit](plugins/din_bit) | Digital Input Pin (1bit) |
 | dout | [bit](plugins/dout_bit) | Digital Output Pin (1bit) |
 | expansion | [shiftreg](plugins/expansion_shiftreg) | Expansion to add I/O's via shiftregister's |
+| expansion | [shiftreg](plugins/expansion_pcf8574) | Expansion to add I/O's via pcf8574 over I2C |
 | interface | [spislave](plugins/interface_spislave) | communication interface ( RPI(Master) <-SPI-> FPGA(Slave) ) |
 
 

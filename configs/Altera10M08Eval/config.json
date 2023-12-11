@@ -209,24 +209,28 @@
             "invert": true,
             "pin": "EXPANSION0_OUTPUT[0]",
             "name": "DOUT0",
+            "net": "motion.digital-out-00",
             "type": "dout_bit"
         },
         {
             "invert": true,
             "pin": "EXPANSION0_OUTPUT[1]",
             "name": "DOUT1",
+            "net": "motion.digital-out-01",
             "type": "dout_bit"
         },
         {
             "invert": true,
             "pin": "EXPANSION0_OUTPUT[2]",
             "name": "DOUT2",
+            "net": "motion.digital-out-02",
             "type": "dout_bit"
         },
         {
             "invert": true,
             "pin": "EXPANSION0_OUTPUT[3]",
             "name": "DOUT3",
+            "net": "motion.digital-out-03",
             "type": "dout_bit"
         },
 
@@ -234,24 +238,28 @@
             "invert": true,
             "pin": "EXPANSION0_OUTPUT[4]",
             "name": "DOUT4",
+            "net": "motion.digital-out-04",
             "type": "dout_bit"
         },
         {
             "invert": true,
             "pin": "EXPANSION0_OUTPUT[5]",
             "name": "DOUT5",
+            "net": "motion.digital-out-05",
             "type": "dout_bit"
         },
         {
             "invert": true,
             "pin": "EXPANSION0_OUTPUT[6]",
             "name": "DOUT6",
+            "net": "motion.digital-out-06",
             "type": "dout_bit"
         },
         {
             "invert": true,
             "pin": "EXPANSION0_OUTPUT[7]",
             "name": "DOUT7",
+            "net": "motion.digital-out-07",
             "type": "dout_bit"
         },
 
@@ -302,24 +310,28 @@
             "invert": true,
             "pin": "EXPANSION0_OUTPUT[8]",
             "name": "DOUT0b",
+            "net": "motion.digital-out-08",
             "type": "dout_bit"
         },
         {
             "invert": true,
             "pin": "EXPANSION0_OUTPUT[9]",
             "name": "DOUT1b",
+            "net": "motion.digital-out-09",
             "type": "dout_bit"
         },
         {
             "invert": true,
             "pin": "EXPANSION0_OUTPUT[10]",
             "name": "DOUT2b",
+            "net": "motion.digital-out-10",
             "type": "dout_bit"
         },
         {
             "invert": true,
             "pin": "EXPANSION0_OUTPUT[11]",
             "name": "DOUT3b",
+            "net": "motion.digital-out-11",
             "type": "dout_bit"
         },
 
@@ -327,30 +339,35 @@
             "invert": true,
             "pin": "EXPANSION0_OUTPUT[12]",
             "name": "DOUT4b",
+            "net": "motion.digital-out-12",
             "type": "dout_bit"
         },
         {
             "invert": true,
             "pin": "EXPANSION0_OUTPUT[13]",
             "name": "DOUT5b",
+            "net": "motion.digital-out-13",
             "type": "dout_bit"
         },
         {
             "invert": true,
             "pin": "EXPANSION0_OUTPUT[14]",
             "name": "DOUT6b",
+            "net": "motion.digital-out-14",
             "type": "dout_bit"
         },
         {
             "invert": true,
             "pin": "EXPANSION0_OUTPUT[15]",
             "name": "DOUT7b",
+            "net": "motion.digital-out-15",
             "type": "dout_bit"
         },
 
 
         {
             "type": "vin_ds18b20",
+            "display": {"text": "Temp", "type": "number"},
             "pins": {
                 "data": "PIN_43"
             }

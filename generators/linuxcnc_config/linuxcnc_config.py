@@ -520,6 +520,22 @@ def generate_rio_ini(project):
 
     num_joints = len(traj_axis_list)
 
+    dio_max = 4
+    aio_max = 4
+    for net in netlist:
+        if net.startswith(("motion.digital-out-", "motion.digital-in-")):
+            dio_num = net.split("-")[2]
+            if len(dio_num) != 2:
+                print(f"invalid net name (leading zero): {net}")
+                exit(1)
+            dio_max = max(dio_max, int(dio_num) + 1)
+        if net.startswith(("motion.analog-out-", "motion.analog-in-")):
+            aio_num = net.split("-")[2]
+            if len(aio_num) != 2:
+                print(f"invalid net name (leading zero): {net}")
+                exit(1)
+            aio_max = max(aio_max, int(aio_num) + 1)
+
     basic_setup = {
         "EMC": {
             "MACHINE": "Rio",
@@ -580,6 +596,8 @@ def generate_rio_ini(project):
             "COMM_WAIT": 0.010,
             "BASE_PERIOD": 0,
             "SERVO_PERIOD": 1000000,
+            "NUM_DIO": dio_max,
+            "NUM_AIO": aio_max,
         },
         "HAL": {
             "HALFILE": "rio.hal",
@@ -849,7 +867,7 @@ def generate_rio_hal(project):
         f"""
 # load the realtime components
 loadrt [KINS]KINEMATICS
-loadrt [EMCMOT]EMCMOT base_period_nsec=[EMCMOT]BASE_PERIOD servo_period_nsec=[EMCMOT]SERVO_PERIOD num_joints=[KINS]JOINTS
+loadrt [EMCMOT]EMCMOT base_period_nsec=[EMCMOT]BASE_PERIOD servo_period_nsec=[EMCMOT]SERVO_PERIOD num_joints=[KINS]JOINTS num_dio=[EMCMOT]NUM_DIO num_aio=[EMCMOT]NUM_AIO
 
 # set joint modes (p=postion, v=velocity)
 loadrt rio ctrl_type={','.join(ctrl_types)}

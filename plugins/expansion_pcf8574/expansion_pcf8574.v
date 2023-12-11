@@ -35,7 +35,7 @@ module expansion_pcf8574
     reg [7:0] ioeOutputData = 0;
     wire ioeDataReady;
     reg ioeEnable = 0;
-    
+
     // TODO: clock setup via param
     reg [2:0] clk_cnt = 0;
     wire clk_slow;
@@ -44,7 +44,6 @@ module expansion_pcf8574
     reg [3:0] device = 0;
     reg [7:0] address = 0;
 
-    
     pcf8574_i2c i2c(
         clk_slow,
         sdaIn,
@@ -116,7 +115,7 @@ module expansion_pcf8574
     end
 endmodule
 
-module pcf8574_ioe 
+module pcf8574_ioe
     (
         input clk,
         input wire [7:0] address,
@@ -384,7 +383,7 @@ module pcf8574_i2c (
                 end
                 // else if (clockDivider == 7'b1000000) begin
                 //     sdaIn should be 0
-                // end 
+                // end
             end
             STATE_DONE: begin
                 complete <= 1;

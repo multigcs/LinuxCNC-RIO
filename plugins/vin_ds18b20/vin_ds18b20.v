@@ -51,18 +51,18 @@ module vin_ds18b20
     reg [5:0] step;
     reg [3:0] bit_valid;
     reg one_wire_buf;
-  
+
     assign one_wire = one_wire_buf;
 
     always @(posedge clk_1us) begin
         case (state)
-          S00 : begin              
+          S00 : begin
                   temperature_buf <= 16'h001F;
                   state <= S0;
                 end
           S0 :  begin
                   cnt_1us_clear <= 1;
-                  one_wire_buf <= 0;              
+                  one_wire_buf <= 0;
                   state <= S1;
                 end
           S1 :  begin
@@ -71,14 +71,14 @@ module vin_ds18b20
                     cnt_1us_clear <= 1;
                     one_wire_buf <= 1'bZ;
                     state <= S2;
-                  end 
+                  end
                 end
           S2 :  begin
                   cnt_1us_clear <= 0;
                   if (cnt_1us == 100) begin
                     cnt_1us_clear <= 1;
                     state <= S3;
-                  end 
+                  end
                 end
           S3 :  if (~one_wire) begin
                   state <= S4;
@@ -90,8 +90,8 @@ module vin_ds18b20
                   if (cnt_1us == 400) begin
                     cnt_1us_clear <= 1;
                     state <= S5;
-                  end 
-                end        
+                  end
+                end
           S5 :  begin
                   if (step == 0) begin
                     step <= step + 1'b1;
@@ -102,11 +102,11 @@ module vin_ds18b20
                   end else if (step == 2) begin
                     one_wire_buf <= 0;
                     step <= step + 1'b1;
-                    state <= WRITE01; 
+                    state <= WRITE01;
                   end else if (step == 3) begin
                     one_wire_buf <= 0;
                     step <= step + 1'b1;
-                    state <= WRITE01;                
+                    state <= WRITE01;
                   end else if (step == 4) begin
                     step <= step + 1'b1;
                     state <= WRITE0;
@@ -150,7 +150,7 @@ module vin_ds18b20
                   end else if (step == 16) begin
                     one_wire_buf <= 1'bZ;
                     step <= step + 1'b1;
-                    state <= S6;                
+                    state <= S6;
                   end else if (step == 17) begin
                     step <= step + 1'b1;
                     state <= WRITE0;
@@ -160,7 +160,7 @@ module vin_ds18b20
                   end else if (step == 19) begin
                     one_wire_buf <= 0;
                     step <= step + 1'b1;
-                    state <= WRITE01;                
+                    state <= WRITE01;
                   end else if (step == 20) begin
                     step <= step + 1'b1;
                     state <= WRITE01;
@@ -178,14 +178,14 @@ module vin_ds18b20
                   end else if (step == 24) begin
                     one_wire_buf <= 0;
                     step <= step + 1'b1;
-                    state <= WRITE01;               
+                    state <= WRITE01;
                   end else if (step == 25) begin
                     step <= step + 1'b1;
                     state <= WRITE0;
                   end else if (step >= 26 && step <= 30) begin
                     one_wire_buf <= 0;
                     step <= step + 1'b1;
-                    state <= WRITE01;                
+                    state <= WRITE01;
                   end else if (step == 31) begin
                     step <= step + 1'b1;
                     state <= WRITE0;
@@ -203,7 +203,7 @@ module vin_ds18b20
                   if (cnt_1us == 750000 | one_wire) begin
                     cnt_1us_clear <= 1;
                     state <= S0;
-                  end 
+                  end
                 end
           S7 :  begin
                   if (step == 34) begin
@@ -222,8 +222,8 @@ module vin_ds18b20
 
                     temperature <= temperature_buf;
 
-                  end 
-                end            
+                  end
+                end
           WRITE0 : begin
                   cnt_1us_clear <= 0;
                   one_wire_buf <= 0;
@@ -231,7 +231,7 @@ module vin_ds18b20
                     cnt_1us_clear <= 1;
                     one_wire_buf <= 1'bZ;
                     state <= WRITE00;
-                  end 
+                  end
                 end
           WRITE00 : begin
                   state <= S5;
@@ -245,7 +245,7 @@ module vin_ds18b20
                   if (cnt_1us == 80) begin
                     cnt_1us_clear <= 1;
                     state <= S5;
-                  end 
+                  end
                 end
           READ0: begin
                     state <= READ1;
@@ -256,7 +256,7 @@ module vin_ds18b20
                   if (cnt_1us == 10) begin
                     cnt_1us_clear <= 1;
                     state <= READ2;
-                  end 
+                  end
                 end
           READ2: begin
                   temperature_buf[bit_valid] <= one_wire;
@@ -267,12 +267,11 @@ module vin_ds18b20
                   if (cnt_1us == 55) begin
                     cnt_1us_clear <= 1;
                     state <= S7;
-                  end 
+                  end
                 end
           default: begin
                 state <= S00;
             end
-        endcase 
-    end 
-
+        endcase
+    end
 endmodule

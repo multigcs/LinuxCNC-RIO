@@ -274,14 +274,11 @@ int rtapi_app_main(void)
     }
 
     // Configure SPI0
+    // The defines are set in rio.h
     bcm2835_spi_setBitOrder(BCM2835_SPI_BIT_ORDER_MSBFIRST);
     bcm2835_spi_setDataMode(BCM2835_SPI_MODE0);
     bcm2835_spi_setClockDivider(SPI_SPEED);
     bcm2835_spi_chipSelect(BCM2835_SPI_CS_NONE);
-    bcm2835_gpio_set_pud(RPI_GPIO_P1_19, BCM2835_GPIO_PUD_DOWN);	// MOSI
-    bcm2835_gpio_set_pud(RPI_GPIO_P1_21, BCM2835_GPIO_PUD_DOWN);	// MISO
-    bcm2835_gpio_set_pud(RPI_GPIO_P1_24, BCM2835_GPIO_PUD_UP);		// CS0
-
 #endif
 
     retval = hal_pin_bit_newf(HAL_IN, &(data->SPIenable),
@@ -1182,13 +1179,13 @@ void rio_transfer()
 #ifdef TRANSPORT_SPI
     int i;
 
-    bcm2835_gpio_fsel(RPI_GPIO_P1_26, BCM2835_GPIO_FSEL_OUTP);
-    bcm2835_gpio_write(RPI_GPIO_P1_26, LOW);
+    bcm2835_gpio_fsel(SPI_PIN_CS, BCM2835_GPIO_FSEL_OUTP);
+    bcm2835_gpio_write(SPI_PIN_CS, LOW);
 
     for (i = 0; i < SPIBUFSIZE; i++) {
         rxData.rxBuffer[i] = bcm2835_spi_transfer(txData.txBuffer[i]);
     }
-    bcm2835_gpio_write(RPI_GPIO_P1_26, HIGH);
+    bcm2835_gpio_write(SPI_PIN_CS, HIGH);
 #endif
 
 }

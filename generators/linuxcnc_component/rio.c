@@ -7,7 +7,7 @@
 *				Further developed for RaspberryPi -> Smoothieboard and clones (LPC1768).
 *
 * Author: Scott Alford
-* Modified by: Oliver Dippel
+* Modified by: Oliver Dippel and Jesse Schoch
 * License: GPL Version 2
 *
 *		Credit to GP Orcullo and PICnc V2 which originally inspired this

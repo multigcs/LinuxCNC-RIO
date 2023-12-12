@@ -6,8 +6,12 @@
     "type": "10M08SAE144C8G",
     "package": "csg324",
     "transport": "SPI",
-    "_gui": "qtdragon",
-    "ip": "192.168.10.13",
+    "rpispi": {
+        "MOSI": 10,
+        "MISO": 9,
+        "CLK": 11,
+        "CS": 7
+    },
     "clock": {
         "speed": "50000000",
         "pin": "PIN_27"

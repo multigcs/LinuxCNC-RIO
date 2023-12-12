@@ -1,7 +1,7 @@
 
 # load the realtime components
 loadrt [KINS]KINEMATICS
-loadrt [EMCMOT]EMCMOT base_period_nsec=[EMCMOT]BASE_PERIOD servo_period_nsec=[EMCMOT]SERVO_PERIOD num_joints=[KINS]JOINTS
+loadrt [EMCMOT]EMCMOT base_period_nsec=[EMCMOT]BASE_PERIOD servo_period_nsec=[EMCMOT]SERVO_PERIOD num_joints=[KINS]JOINTS num_dio=[EMCMOT]NUM_DIO num_aio=[EMCMOT]NUM_AIO
 
 # set joint modes (p=postion, v=velocity)
 loadrt rio ctrl_type=p,p,p,p,p

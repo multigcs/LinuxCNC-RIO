@@ -1,6 +1,7 @@
 #ifndef RIO_H
 #define RIO_H
 
+
 #define TRANSPORT_SPI
 #define SPI_SPEED BCM2835_SPI_CLOCK_DIVIDER_256
 
@@ -39,6 +40,7 @@
 #define TYPE_VIN_ADC 4
 #define TYPE_VIN_ENCODER 5
 #define TYPE_VIN_NTC 6
+#define TYPE_VIN_DS18B20 7
 #define JOINT_FB_REL 0
 #define JOINT_FB_ABS 1
 #define JOINT_STEPPER 0

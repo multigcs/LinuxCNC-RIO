@@ -30,23 +30,25 @@ def generate(project):
             f"#define SERIAL_SPEED B{project['jdata']['interface'][0].get('baud', '1000000')}"
         )
     elif transport == "SPI":
+        rpi_spi_mosi = project['jdata'].get('rpispi', {}).get('MOSI', 10)
+        rpi_spi_miso = project['jdata'].get('rpispi', {}).get('MISO', 9)
+        rpi_spi_clk = project['jdata'].get('rpispi', {}).get('CLK', 11)
+        rpi_spi_cs = project['jdata'].get('rpispi', {}).get('CS', 7)
+        rpi_spi_prescaler = project['jdata'].get('rpispi', {}).get('PRESCALER', 256)
         rio_data.append("#define TRANSPORT_SPI")
-        # rio_data.append("#define SPI_SPEED BCM2835_SPI_CLOCK_DIVIDER_128")
-        rio_data.append("#define SPI_SPEED BCM2835_SPI_CLOCK_DIVIDER_256")
-        rio_data.append("""
-// for Raspberry 3 and 4
-// If you are using a different board refer to this for the pin mapping
-//       https://elinux.org/RPi_BCM2835_GPIOs
-// If you are using the RPi Compute Module, just use the GPIO number: there is no need to use one of these symbolic names
-#define SPI_PIN_CS 8
-#define SPI_PIN_MOSI 10
-#define SPI_PIN_MISO 9
-//#define SPI_PIN_CLK 11
-
-        """)
+        rio_data.append("// for Raspberry 3 and 4")
+        rio_data.append("// If you are using a different board refer to this for the pin mapping")
+        rio_data.append("//       https://elinux.org/RPi_BCM2835_GPIOs")
+        rio_data.append("// If you are using the RPi Compute Module, just use the GPIO number: there is no need to use one of these symbolic names")
+        rio_data.append(f"#define SPI_PIN_MOSI {rpi_spi_mosi}")
+        rio_data.append(f"#define SPI_PIN_MISO {rpi_spi_miso}")
+        rio_data.append(f"#define SPI_PIN_CLK {rpi_spi_clk}")
+        rio_data.append(f"#define SPI_PIN_CS {rpi_spi_cs}")
+        rio_data.append(f"#define SPI_SPEED BCM2835_SPI_CLOCK_DIVIDER_{rpi_spi_prescaler}")
     else:
         print("ERROR: UNKNOWN transport protocol:", transport)
         sys.exit(1)
+
     rio_data.append("")
     rio_data.append(f"#define JOINTS               {project['joints']}")
     rio_data.append(f"#define JOINT_ENABLE_BYTES   {project['joints_en_total'] // 8}")

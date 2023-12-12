@@ -3,16 +3,15 @@
 
 
 #define TRANSPORT_SPI
-#define SPI_SPEED BCM2835_SPI_CLOCK_DIVIDER_256
-
 // for Raspberry 3 and 4
 // If you are using a different board refer to this for the pin mapping
 //       https://elinux.org/RPi_BCM2835_GPIOs
 // If you are using the RPi Compute Module, just use the GPIO number: there is no need to use one of these symbolic names
-#define SPI_PIN_CS 8
 #define SPI_PIN_MOSI 10
 #define SPI_PIN_MISO 9
-//#define SPI_PIN_CLK 11
+#define SPI_PIN_CLK 11
+#define SPI_PIN_CS 7
+#define SPI_SPEED BCM2835_SPI_CLOCK_DIVIDER_256
 
 #define JOINTS               5
 #define JOINT_ENABLE_BYTES   1

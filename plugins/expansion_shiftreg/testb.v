@@ -13,7 +13,7 @@ module testb;
 
     initial begin
         $dumpfile("testb.vcd");
-    
+
         $dumpvars(0, clk);
         $dumpvars(1, SHIFT_OUT);
         $dumpvars(2, SHIFT_IN);
@@ -31,13 +31,13 @@ module testb;
     end
 
     expansion_shiftreg #(8, 1) expansion_shiftreg1 (
-        .clk (clk),
-        .SHIFT_OUT (SHIFT_OUT),
-        .SHIFT_IN (SHIFT_IN),
-        .SHIFT_CLK (SHIFT_CLK),
-        .SHIFT_LOAD (SHIFT_LOAD),
-        .data_in (data_in),
-        .data_out (data_out)
-    );
+                           .clk (clk),
+                           .SHIFT_OUT (SHIFT_OUT),
+                           .SHIFT_IN (SHIFT_IN),
+                           .SHIFT_CLK (SHIFT_CLK),
+                           .SHIFT_LOAD (SHIFT_LOAD),
+                           .data_in (data_in),
+                           .data_out (data_out)
+                       );
 
 endmodule

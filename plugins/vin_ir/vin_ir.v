@@ -1,11 +1,11 @@
 
 module vin_ir
     #(parameter SPEED = 24)
-    (
-        input  clk,
-        input  ir,
-        output reg [7:0]Code
-    );
+     (
+         input  clk,
+         input  ir,
+         output reg [7:0]Code
+     );
 
     reg clk_1us;
     reg [31:0]counter;
@@ -39,7 +39,7 @@ module vin_ir
     parameter CODE_0 	= 16'd512  + 16'd512;
     parameter CODE_1 	= 16'd1536 + 16'd512;
 
-    reg   [2:0]state;		
+    reg   [2:0]state;
     initial state = ST_START_L;
     reg	[15:0]cnt_h;
     initial cnt_h = 16'b0;
@@ -79,7 +79,7 @@ module vin_ir
 
     always @ (posedge clk_1us or negedge ir) begin
         if(!ir)
-            cnt_h <= 16'b0;					
+            cnt_h <= 16'b0;
         else if(cnt_h[15] & cnt_h[10])
             cnt_h <= 16'b0;
         else
@@ -89,32 +89,32 @@ module vin_ir
 
     always @ (negedge clk_1us) begin
         if(cnt_h == START_H)
-                Flag_HVL <=1;
+            Flag_HVL <=1;
         else if(IR_neg2)
-                Flag_HVL <= 1'b0;
+            Flag_HVL <= 1'b0;
     end
 
     reg [15:0]IR_code;
     always @ (posedge clk_1us or posedge IR_neg) begin
-                if(IR_neg)
-                    begin
-                        cnt_val 	<= 16'b0;				
-                    end
-                else if(state == ST_CODE_P)
-                begin
-                    if(cnt_val == CODE_0)
-                        begin
-                        IR_code	<= CODE_0;
-                        cnt_val <= cnt_val + 1'b1;				
-                        end
-                    else if(cnt_val == CODE_1)
-                        begin		
-                        IR_code	<= CODE_1;			
-                        cnt_val <= cnt_val + 1'b1;				
-                        end
-                    else
-                        cnt_val <= cnt_val + 1'b1;	
-                end
+        if(IR_neg)
+        begin
+            cnt_val 	<= 16'b0;
+        end
+        else if(state == ST_CODE_P)
+        begin
+            if(cnt_val == CODE_0)
+            begin
+                IR_code	<= CODE_0;
+                cnt_val <= cnt_val + 1'b1;
+            end
+            else if(cnt_val == CODE_1)
+            begin
+                IR_code	<= CODE_1;
+                cnt_val <= cnt_val + 1'b1;
+            end
+            else
+                cnt_val <= cnt_val + 1'b1;
+        end
     end
 
 
@@ -123,46 +123,46 @@ module vin_ir
     initial cnt_num = 6'b0;
 
     always @ (posedge clk_1us) begin
-     case(state)
-         ST_START_L: begin
-            cnt_num  <=  6'b0;	
+        case(state)
+            ST_START_L: begin
+                cnt_num  <=  6'b0;
                 if((IR_pos == 1'b1) & (Flag_LVL==1'b1))
-                    begin
-                        state <= ST_START_H;
-                    end
+                begin
+                    state <= ST_START_H;
+                end
                 else if(fault)
                     state <= ST_START_L;
             end
-         ST_START_H: begin
-            cnt_num  <=  6'b0;	
+            ST_START_H: begin
+                cnt_num  <=  6'b0;
                 if((IR_neg == 1'b1) & (Flag_HVL==1'b1))
-                    begin
-                        state <= ST_CODE_P;
-                    end
+                begin
+                    state <= ST_CODE_P;
+                end
                 else if(fault)
                     state <= ST_START_L;
-            end			
-         ST_CODE_P: begin
-                if((IR_neg)&(IR_code == CODE_1))
-                    begin
-                        cnt_num = cnt_num + 1'b1;
-                        IR_Value <= {IR_Value[30:0],1'b1};
-                    end
-                else	if((IR_neg)&(IR_code == CODE_0))
-                    begin
-                        cnt_num = cnt_num + 1'b1;
-                        IR_Value <= {IR_Value[30:0],1'b0};
-                    end
-                else if(cnt_num==6'd32)
-                    begin
-                        cnt_num  <=  6'b0;
-                        T_Value  <=  IR_Value;
-                        state 	<=  ST_START_L;
-                        Code 		<=  {IR_Value[8],IR_Value[9],IR_Value[10],IR_Value[11],IR_Value[12],IR_Value[13],IR_Value[14],IR_Value[15]};
-                    end
             end
-         default : state <=  ST_START_L;
-    endcase
-    end				
+            ST_CODE_P: begin
+                if((IR_neg)&(IR_code == CODE_1))
+                begin
+                    cnt_num = cnt_num + 1'b1;
+                    IR_Value <= {IR_Value[30:0],1'b1};
+                end
+                else	if((IR_neg)&(IR_code == CODE_0))
+                begin
+                    cnt_num = cnt_num + 1'b1;
+                    IR_Value <= {IR_Value[30:0],1'b0};
+                end
+                else if(cnt_num==6'd32)
+                begin
+                    cnt_num  <=  6'b0;
+                    T_Value  <=  IR_Value;
+                    state 	<=  ST_START_L;
+                    Code 		<=  {IR_Value[8],IR_Value[9],IR_Value[10],IR_Value[11],IR_Value[12],IR_Value[13],IR_Value[14],IR_Value[15]};
+                end
+            end
+            default : state <=  ST_START_L;
+        endcase
+    end
 
 endmodule

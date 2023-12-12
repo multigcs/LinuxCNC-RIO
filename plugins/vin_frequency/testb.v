@@ -20,9 +20,9 @@ module testb;
     end
 
     vin_frequency vin_frequency1 (
-                     .clk (clk),
-                     .SIGNAL (SIGNAL),
-                     .frequency (frequency)
-                 );
+                      .clk (clk),
+                      .SIGNAL (SIGNAL),
+                      .frequency (frequency)
+                  );
 
 endmodule

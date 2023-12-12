@@ -23,11 +23,11 @@ module testb;
     end
 
     joint_stepper joint_stepper1 (
-                .clk (clk),
-                .jointFreqCmd (jointFreqCmd),
-                .jointFeedback (jointFeedback),
-                .DIR (DIR),
-                .STP (STP)
-            );
+                      .clk (clk),
+                      .jointFreqCmd (jointFreqCmd),
+                      .jointFeedback (jointFeedback),
+                      .DIR (DIR),
+                      .STP (STP)
+                  );
 
 endmodule

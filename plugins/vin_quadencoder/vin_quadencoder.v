@@ -1,7 +1,7 @@
 module vin_quadencoder
     #(
-      parameter BITS = 32,
-      parameter QUAD_TYPE = 0
+         parameter BITS = 32,
+         parameter QUAD_TYPE = 0
      )
      (
          input clk,

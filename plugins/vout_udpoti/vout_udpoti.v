@@ -1,15 +1,15 @@
 
-module vout_udpoti 
+module vout_udpoti
     #(
-        parameter RESOLUTION = 100,
-        parameter SPEED = 100000
-    )
-    (
-        input clk,
-        input wire [31:0] value,
-        output reg UPDOWN = 0,
-        output reg INCREMENT = 0
-    );
+         parameter RESOLUTION = 100,
+         parameter SPEED = 100000
+     )
+     (
+         input clk,
+         input wire [31:0] value,
+         output reg UPDOWN = 0,
+         output reg INCREMENT = 0
+     );
 
     reg ctrl_clk = 0;
     reg [31:0] counter;

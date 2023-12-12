@@ -21,10 +21,10 @@ module testb;
     end
 
     joint_rcservo joint_rcservo1 (
-                .clk (clk),
-                .jointFreqCmd (jointFreqCmd),
-                .jointFeedback (jointFeedback),
-                .PWM (PWM)
-            );
+                      .clk (clk),
+                      .jointFreqCmd (jointFreqCmd),
+                      .jointFeedback (jointFeedback),
+                      .PWM (PWM)
+                  );
 
 endmodule

@@ -1,13 +1,13 @@
 
 module interface_uart
     #(parameter BUFFER_SIZE=80, parameter MSGID=32'h74697277, parameter TIMEOUT=32'd4800000, parameter ClkFrequency=12000000, parameter Baud=2000000)
-    (
-        input clk,
-        output reg [BUFFER_SIZE-1:0] rx_data,
-        input [BUFFER_SIZE-1:0] tx_data,
-        output UART_TX,
-        input UART_RX
-    );
+     (
+         input clk,
+         output reg [BUFFER_SIZE-1:0] rx_data,
+         input [BUFFER_SIZE-1:0] tx_data,
+         output UART_TX,
+         input UART_RX
+     );
 
     reg [BUFFER_SIZE-1:0] tx_data_buffer;
     reg [BUFFER_SIZE-1:0] rx_data_buffer;
@@ -22,21 +22,21 @@ module interface_uart
     wire RxD_endofpacket;
 
     uart_rx #(ClkFrequency, Baud) uart_rx1 (
-        .clk (clk),
-        .RxD (UART_RX),
-        .RxD_data_ready (RxD_data_ready),
-        .RxD_data (RxD_data),
-        .RxD_idle (RxD_idle),
-        .RxD_endofpacket (RxD_endofpacket)
-    );
+                .clk (clk),
+                .RxD (UART_RX),
+                .RxD_data_ready (RxD_data_ready),
+                .RxD_data (RxD_data),
+                .RxD_idle (RxD_idle),
+                .RxD_endofpacket (RxD_endofpacket)
+            );
 
     uart_tx #(ClkFrequency, Baud) uart_tx1 (
-        .clk (clk),
-        .TxD_start (TxD_start),
-        .TxD_data (TxD_data),
-        .TxD (UART_TX),
-        .TxD_busy (TxD_busy)
-    );
+                .clk (clk),
+                .TxD_start (TxD_start),
+                .TxD_data (TxD_data),
+                .TxD (UART_TX),
+                .TxD_busy (TxD_busy)
+            );
 
     reg tx_state = 0;
     reg [7:0] rx_counter = 0;

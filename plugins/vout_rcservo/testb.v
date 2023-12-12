@@ -20,9 +20,9 @@ module testb;
     end
 
     vout_pwm vout_pwm1 (
-            .clk (clk),
-            .dty (dty),
-            .pwm (PWM)
-        );
+                 .clk (clk),
+                 .dty (dty),
+                 .pwm (PWM)
+             );
 
 endmodule

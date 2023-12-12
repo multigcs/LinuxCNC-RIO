@@ -52,13 +52,13 @@ module testb;
     end
 
     vin_quadencoderz vin_quadencoderz1 (
-        .clk (clk),
-        .quadA (quadA),
-        .quadB (quadB),
-        .quadZ (quadZ),
-        .reset_in (reset_in),
-        .reset_out (reset_out),
-        .pos (pos)
-    );
+                         .clk (clk),
+                         .quadA (quadA),
+                         .quadB (quadB),
+                         .quadZ (quadZ),
+                         .reset_in (reset_in),
+                         .reset_out (reset_out),
+                         .pos (pos)
+                     );
 
 endmodule

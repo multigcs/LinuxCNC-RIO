@@ -1,12 +1,12 @@
 
 module vin_ps2
     #(parameter SPEED = 24)
-    (
-        input  clk,
-        input  ps2_clk,
-        input  ps2_data,
-        output reg [15:0]code
-    );
+     (
+         input  clk,
+         input  ps2_clk,
+         input  ps2_data,
+         output reg [15:0]code
+     );
 
     reg [7:0] data_curr;
     reg [7:0] data_pre;

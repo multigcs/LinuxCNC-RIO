@@ -1,18 +1,18 @@
 /* verilator lint_off WIDTHTRUNC */
 module expansion_shiftreg
     #(
-        parameter WIDTH = 8, 
-        parameter SPEED = 100000
-    )
-    (
-       input clk,
-       output reg SHIFT_OUT = 0,
-       input SHIFT_IN,
-       output reg SHIFT_CLK = 0,
-       output reg SHIFT_LOAD = 1,
-       output reg [WIDTH-1:0] data_in = 0,
-       input [WIDTH-1:0] data_out
-    );
+         parameter WIDTH = 8,
+         parameter SPEED = 100000
+     )
+     (
+         input clk,
+         output reg SHIFT_OUT = 0,
+         input SHIFT_IN,
+         output reg SHIFT_CLK = 0,
+         output reg SHIFT_LOAD = 1,
+         output reg [WIDTH-1:0] data_in = 0,
+         input [WIDTH-1:0] data_out
+     );
     reg [7:0] data_pos = 0;
     reg [31:0] counter = 0;
     reg [8:0] state = 0;

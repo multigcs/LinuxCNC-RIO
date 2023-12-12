@@ -34,43 +34,43 @@ module ws2812 (
     end
 
     always @(posedge clk)
-        case(state)
+    case(state)
 
-            STATE_RESET: begin
-                rgb_counter <= 5'd23;
-                led_counter <= NUM_LEDS - 1;
-                data <= 0;
+        STATE_RESET: begin
+            rgb_counter <= 5'd23;
+            led_counter <= NUM_LEDS - 1;
+            data <= 0;
 
-                bit_counter <= bit_counter - 1;
+            bit_counter <= bit_counter - 1;
 
-                if(bit_counter == 0) begin
-                    state <= STATE_DATA;
+            if(bit_counter == 0) begin
+                state <= STATE_DATA;
+                bit_counter <= t_period;
+            end
+        end
+
+        STATE_DATA: begin
+            if(led_color[rgb_counter])
+                data <= bit_counter > (t_period - t_on);
+            else
+                data <= bit_counter > (t_period - t_off);
+            bit_counter <= bit_counter - 1;
+            if(bit_counter == 0) begin
+                bit_counter <= t_period;
+                rgb_counter <= rgb_counter - 1;
+
+                if(rgb_counter == 0) begin
+                    led_counter <= led_counter - 1;
                     bit_counter <= t_period;
+                    rgb_counter <= 23;
+
+                    if(led_counter == 0) begin
+                        state <= STATE_RESET;
+                        led_counter <= NUM_LEDS - 1;
+                        bit_counter <= t_reset;
+                    end
                 end
             end
-
-            STATE_DATA: begin
-                if(led_color[rgb_counter])
-                    data <= bit_counter > (t_period - t_on);
-                else
-                    data <= bit_counter > (t_period - t_off);
-                bit_counter <= bit_counter - 1;
-                if(bit_counter == 0) begin
-                    bit_counter <= t_period;
-                    rgb_counter <= rgb_counter - 1;
-
-                    if(rgb_counter == 0) begin
-                        led_counter <= led_counter - 1;
-                        bit_counter <= t_period;
-                        rgb_counter <= 23;
-
-                        if(led_counter == 0) begin
-                            state <= STATE_RESET;
-                            led_counter <= NUM_LEDS - 1;
-                            bit_counter <= t_reset;
-                        end
-                    end
-                end 
-            end
-        endcase
+        end
+    endcase
 endmodule

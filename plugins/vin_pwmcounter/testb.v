@@ -20,9 +20,9 @@ module testb;
     end
 
     vin_pwmcounter vin_pwmcounter1 (
-                    .clk (clk),
-                    .SIGNAL (SIGNAL),
-                    .frequency (frequency)
-                );
+                       .clk (clk),
+                       .SIGNAL (SIGNAL),
+                       .frequency (frequency)
+                   );
 
 endmodule

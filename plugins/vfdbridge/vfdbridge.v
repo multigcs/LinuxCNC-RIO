@@ -1,14 +1,14 @@
 
-module vfdbridge 
+module vfdbridge
     #(parameter divider = 5)
-    (
-        input clk,
-        inout i2cSda,
-        output i2cScl,
-        output wire [31:0] speed_feedback,
-        input wire [31:0] speed_set,
-        output reg speed_at = 0
-    );
+     (
+         input clk,
+         inout i2cSda,
+         output i2cScl,
+         output wire [31:0] speed_feedback,
+         input wire [31:0] speed_set,
+         output reg speed_at = 0
+     );
 
     localparam STATE_TRIGGER_CONV = 0;
     localparam STATE_WAIT_FOR_START = 1;
@@ -34,41 +34,41 @@ module vfdbridge
     reg [255:0] iclk_cnt = 0;
 
     always @(posedge clk) begin
-    
+
         if (iclk_cnt == divider) begin
             iclk <= ~iclk;
             iclk_cnt <= 0;
         end else begin
             iclk_cnt <= iclk_cnt + 1;
         end
-    
+
     end
 
     vfdbridge_i2c i2c(
-        iclk,
-        sdaIn,
-        sdaOut,
-        isSending,
-        i2cScl,
-        i2cInstruction,
-        i2cEnable,
-        i2cByteToSend,
-        i2cByteReceived,
-        i2cComplete
-    );
+                      iclk,
+                      sdaIn,
+                      sdaOut,
+                      isSending,
+                      i2cScl,
+                      i2cInstruction,
+                      i2cEnable,
+                      i2cByteToSend,
+                      i2cByteReceived,
+                      i2cComplete
+                  );
 
     vfdbridge_com com(
-        iclk,
-        speed_feedback,
-        speed_set,
-        comDataReady,
-        comEnable,
-        i2cInstruction,
-        i2cEnable,
-        i2cByteToSend,
-        i2cByteReceived,
-        i2cComplete
-    );
+                      iclk,
+                      speed_feedback,
+                      speed_set,
+                      comDataReady,
+                      comEnable,
+                      i2cInstruction,
+                      i2cEnable,
+                      i2cByteToSend,
+                      i2cByteReceived,
+                      i2cComplete
+                  );
 
 
     always @(posedge iclk) begin
@@ -398,7 +398,7 @@ module vfdbridge_i2c (
                 end
                 // else if (clockDivider == 7'b1000000) begin
                 //     sdaIn should be 0
-                // end 
+                // end
             end
             STATE_DONE: begin
                 complete <= 1;

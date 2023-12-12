@@ -29,30 +29,30 @@ module vin_lm75 (
     reg adcEnable = 0;
 
     lm75_i2c i2cX(
-        clk,
-        sdaIn,
-        sdaOut,
-        isSending,
-        i2cScl,
-        i2cInstruction,
-        i2cEnable,
-        i2cByteToSend,
-        i2cByteReceived,
-        i2cComplete
-    );
+                 clk,
+                 sdaIn,
+                 sdaOut,
+                 isSending,
+                 i2cScl,
+                 i2cInstruction,
+                 i2cEnable,
+                 i2cByteToSend,
+                 i2cByteReceived,
+                 i2cComplete
+             );
 
     lm75_adc #(7'b1001000) adcX(
-        clk,
-        adcChannel,
-        adcOutputData,
-        adcDataReady,
-        adcEnable,
-        i2cInstruction,
-        i2cEnable,
-        i2cByteToSend,
-        i2cByteReceived,
-        i2cComplete
-    );
+                 clk,
+                 adcChannel,
+                 adcOutputData,
+                 adcDataReady,
+                 adcEnable,
+                 i2cInstruction,
+                 i2cEnable,
+                 i2cByteToSend,
+                 i2cByteReceived,
+                 i2cComplete
+             );
 
     always @(posedge clk) begin
         case (drawState)
@@ -205,7 +205,7 @@ module lm75_i2c (
                 end
                 // else if (clockDivider == 7'b1000000) begin
                 //     sdaIn should be 0
-                // end 
+                // end
             end
             STATE_DONE: begin
                 complete <= 1;

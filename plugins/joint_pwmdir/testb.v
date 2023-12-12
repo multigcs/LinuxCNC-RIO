@@ -22,11 +22,11 @@ module testb;
     end
 
     joint_pwmdir joint_pwmdir1 (
-                .clk (clk),
-                .jointEnable (jointEnable),
-                .jointFreqCmd (jointFreqCmd),
-                .jointFeedback (jointFeedback),
-                .PWM (PWM)
-            );
+                     .clk (clk),
+                     .jointEnable (jointEnable),
+                     .jointFreqCmd (jointFreqCmd),
+                     .jointFeedback (jointFeedback),
+                     .PWM (PWM)
+                 );
 
 endmodule

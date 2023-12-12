@@ -1,15 +1,15 @@
 module joint_rcservo
     #(
-        parameter servo_freq = 480000,
-        parameter servo_center = 72000,
-        parameter servo_minmax = 72000
-    )
-    (
-        input clk,
-        input signed [31:0] jointFreqCmd,
-        output signed [31:0] jointFeedback,
-        output PWM
-    );
+         parameter servo_freq = 480000,
+         parameter servo_center = 72000,
+         parameter servo_minmax = 72000
+     )
+     (
+         input clk,
+         input signed [31:0] jointFreqCmd,
+         output signed [31:0] jointFeedback,
+         output PWM
+     );
     reg pulse = 0;
     assign PWM = pulse;
     reg [31:0] counter = 0;

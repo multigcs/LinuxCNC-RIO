@@ -20,9 +20,9 @@ module testb;
     end
 
     vout_sinepwm vout_sinepwm1 (
-                 .clk (clk),
-                 .freq (freq),
-                 .pwm_out (pwm_out)
-             );
+                     .clk (clk),
+                     .freq (freq),
+                     .pwm_out (pwm_out)
+                 );
 
 endmodule

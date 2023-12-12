@@ -35,30 +35,30 @@ module vin_ads1115 (
     reg adcEnable = 0;
 
     ads1115_i2c i2c(
-        clk,
-        sdaIn,
-        sdaOut,
-        isSending,
-        i2cScl,
-        i2cInstruction,
-        i2cEnable,
-        i2cByteToSend,
-        i2cByteReceived,
-        i2cComplete
-    );
+                    clk,
+                    sdaIn,
+                    sdaOut,
+                    isSending,
+                    i2cScl,
+                    i2cInstruction,
+                    i2cEnable,
+                    i2cByteToSend,
+                    i2cByteReceived,
+                    i2cComplete
+                );
 
     ads1115_adc #(7'b1001001) adc(
-        clk,
-        adcChannel,
-        adcOutputData,
-        adcDataReady,
-        adcEnable,
-        i2cInstruction,
-        i2cEnable,
-        i2cByteToSend,
-        i2cByteReceived,
-        i2cComplete
-    );
+                    clk,
+                    adcChannel,
+                    adcOutputData,
+                    adcDataReady,
+                    adcEnable,
+                    i2cInstruction,
+                    i2cEnable,
+                    i2cByteToSend,
+                    i2cByteReceived,
+                    i2cComplete
+                );
 
     always @(posedge clk) begin
         case (drawState)
@@ -220,7 +220,7 @@ module ads1115_i2c (
                 end
                 // else if (clockDivider == 7'b1000000) begin
                 //     sdaIn should be 0
-                // end 
+                // end
             end
             STATE_DONE: begin
                 complete <= 1;
@@ -249,16 +249,16 @@ module ads1115_adc #(
 
     // setup config
     reg [15:0] setupRegister = {
-        1'b1, // Start Conversion
-        3'b100, // Channel 0 Single ended
-        3'b001, // FSR +- 4.096v
-        1'b1, // Single shot mode
-        3'b100, // 128 SPS
-        1'b0, // Traditional Comparator
-        1'b0, // Active low alert
-        1'b0, // Non latching
-        2'b11 // Disable comparator
-    };
+            1'b1, // Start Conversion
+            3'b100, // Channel 0 Single ended
+            3'b001, // FSR +- 4.096v
+            1'b1, // Single shot mode
+            3'b100, // 128 SPS
+            1'b0, // Traditional Comparator
+            1'b0, // Active low alert
+            1'b0, // Non latching
+            2'b11 // Disable comparator
+        };
 
     localparam CONFIG_REGISTER = 8'b00000001;
     localparam CONVERSION_REGISTER = 8'b00000000;
@@ -350,7 +350,7 @@ module ads1115_adc #(
                     {TASK_CHECK_DONE,3'd0}: begin
                         state <= STATE_DELAY;
                     end
-                    {TASK_CHECK_DONE,3'd3}, 
+                    {TASK_CHECK_DONE,3'd3},
                     {TASK_READ_VALUE,3'd2}: begin
                         instructionI2C <= INST_READ_BYTE;
                         enableI2C <= 1;

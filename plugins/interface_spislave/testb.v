@@ -100,14 +100,14 @@ module testb;
            };
 
     interface_spislave #(BUFFER_SIZE, 32'h17a17a17) interface_spislave1 (
-                  .clk (clk),
-                  .SPI_SCK (SPI_SCK),
-                  .SPI_SSEL (SPI_SSEL),
-                  .SPI_MOSI (SPI_MOSI),
-                  .SPI_MISO (SPI_MISO),
-                  .rx_data (rx_data),
-                  .tx_data (tx_data),
-                  .pkg_timeout (pkg_timeout)
-                  //.counter (counter)
-              );
+                           .clk (clk),
+                           .SPI_SCK (SPI_SCK),
+                           .SPI_SSEL (SPI_SSEL),
+                           .SPI_MOSI (SPI_MOSI),
+                           .SPI_MISO (SPI_MISO),
+                           .rx_data (rx_data),
+                           .tx_data (tx_data),
+                           .pkg_timeout (pkg_timeout)
+                           //.counter (counter)
+                       );
 endmodule

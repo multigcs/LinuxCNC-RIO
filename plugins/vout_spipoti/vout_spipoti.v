@@ -1,13 +1,13 @@
 /* verilator lint_off WIDTH */
 module vout_spipoti
     #(parameter WIDTH = 8, SPEED = 100000)
-    (
-       input clk,
-       output reg MOSI = 0,
-       output reg SCLK = 0,
-       output reg CS = 1,
-       input wire [7:0] value
-    );
+     (
+         input clk,
+         output reg MOSI = 0,
+         output reg SCLK = 0,
+         output reg CS = 1,
+         input wire [7:0] value
+     );
     parameter cmd = 8'd0;
     reg [7:0] state = 0;
     reg [7:0] data_pos = 0;

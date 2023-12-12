@@ -11,7 +11,7 @@ module testb;
     wire CS;
 
     //always #10 value = value + 1;
-    
+
     initial begin
         $dumpfile("testb.vcd");
         //$dumpvars(0, clk);
@@ -23,11 +23,11 @@ module testb;
     end
 
     vout_spipoti #(8, 0) vout_spipoti1 (
-         .clk (clk),
-         .MOSI (MOSI),
-         .SCLK (SCLK),
-         .CS (CS),
-         .value (value)
-     );
+                     .clk (clk),
+                     .MOSI (MOSI),
+                     .SCLK (SCLK),
+                     .CS (CS),
+                     .value (value)
+                 );
 
 endmodule

@@ -1,16 +1,16 @@
 
 module expansion_pcf8574
     #(
-        parameter ADDR = 8'h40,
-        parameter DEVICES = 1
-    )
-    (
-       input clk,
-       inout i2cSda,
-       output i2cScl,
-       output reg [(DEVICES*8)-1:0] data_in = 0,
-       input wire [(DEVICES*8)-1:0] data_out
-    );
+         parameter ADDR = 8'h40,
+         parameter DEVICES = 1
+     )
+     (
+         input clk,
+         inout i2cSda,
+         output i2cScl,
+         output reg [(DEVICES*8)-1:0] data_in = 0,
+         input wire [(DEVICES*8)-1:0] data_out
+     );
 
     localparam STATE_TRIGGER_TRX = 0;
     localparam STATE_WAIT_FOR_START = 1;
@@ -45,32 +45,32 @@ module expansion_pcf8574
     reg [7:0] address = 0;
 
     pcf8574_i2c i2c(
-        clk_slow,
-        sdaIn,
-        sdaOut,
-        isSending,
-        i2cScl,
-        i2cInstruction,
-        i2cEnable,
-        i2cByteToSend,
-        i2cByteReceived,
-        i2cComplete
-    );
+                    clk_slow,
+                    sdaIn,
+                    sdaOut,
+                    isSending,
+                    i2cScl,
+                    i2cInstruction,
+                    i2cEnable,
+                    i2cByteToSend,
+                    i2cByteReceived,
+                    i2cComplete
+                );
 
     pcf8574_ioe ioe
-    (
-        clk_slow,
-        address,
-        ioeInputData,
-        ioeOutputData,
-        ioeDataReady,
-        ioeEnable,
-        i2cInstruction,
-        i2cEnable,
-        i2cByteToSend,
-        i2cByteReceived,
-        i2cComplete
-    );
+                (
+                    clk_slow,
+                    address,
+                    ioeInputData,
+                    ioeOutputData,
+                    ioeDataReady,
+                    ioeEnable,
+                    i2cInstruction,
+                    i2cEnable,
+                    i2cByteToSend,
+                    i2cByteReceived,
+                    i2cComplete
+                );
 
     always @(posedge clk) begin
         clk_cnt = clk_cnt + 1;

@@ -1,13 +1,13 @@
 
 module dout_wled
     #(parameter CLK_MHZ = 27)
-    (
-        input clk,
-        input green,
-        input blue,
-        input red,
-        output wled
-    );
+     (
+         input clk,
+         input green,
+         input blue,
+         input red,
+         output wled
+     );
 
     // Green, Red, Blue
     reg [23:0] rgb_data;
@@ -34,12 +34,12 @@ module dout_wled
     reg write = 1;
 
     ws2812 #(CLK_MHZ) ws2812a (
-        .rgb_data (rgb_data),
-        .led_num (led_num),
-        .write(write),
-        .clk(clk),
-        .data(wled)
-    );
+               .rgb_data (rgb_data),
+               .led_num (led_num),
+               .write(write),
+               .clk(clk),
+               .data(wled)
+           );
 
 endmodule
 

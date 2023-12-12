@@ -1,12 +1,12 @@
 
 module vin_sonar
     #(parameter TRIGGER_START = 500, TRIGGER_LEN = 2000000, RESET_CNT = 5000000)
-    (
-        input clk,
-        output trigger,
-        input echo,
-        output [31:0] distance
-    );
+     (
+         input clk,
+         output trigger,
+         input echo,
+         output [31:0] distance
+     );
     reg [31:0] distance_set = 0;
     reg [31:0] dist_counter = 0;
     reg [31:0] counter = 0;

@@ -1,11 +1,11 @@
 
 module vin_ds18b20
     #(parameter SPEED = 24)
-    (
-        input clk,
-        inout one_wire,
-        output reg signed [15:0] temperature
-    );
+     (
+         input clk,
+         inout one_wire,
+         output reg signed [15:0] temperature
+     );
 
     reg clk_1us;
     reg [31:0]counter;
@@ -56,220 +56,220 @@ module vin_ds18b20
 
     always @(posedge clk_1us) begin
         case (state)
-          S00 : begin
-                  temperature_buf <= 16'h001F;
-                  state <= S0;
-                end
-          S0 :  begin
-                  cnt_1us_clear <= 1;
-                  one_wire_buf <= 0;
-                  state <= S1;
-                end
-          S1 :  begin
-                  cnt_1us_clear <= 0;
-                  if (cnt_1us == 500) begin
+            S00 : begin
+                temperature_buf <= 16'h001F;
+                state <= S0;
+            end
+            S0 :  begin
+                cnt_1us_clear <= 1;
+                one_wire_buf <= 0;
+                state <= S1;
+            end
+            S1 :  begin
+                cnt_1us_clear <= 0;
+                if (cnt_1us == 500) begin
                     cnt_1us_clear <= 1;
                     one_wire_buf <= 1'bZ;
                     state <= S2;
-                  end
                 end
-          S2 :  begin
-                  cnt_1us_clear <= 0;
-                  if (cnt_1us == 100) begin
+            end
+            S2 :  begin
+                cnt_1us_clear <= 0;
+                if (cnt_1us == 100) begin
                     cnt_1us_clear <= 1;
                     state <= S3;
-                  end
                 end
-          S3 :  if (~one_wire) begin
-                  state <= S4;
+            end
+            S3 :  if (~one_wire) begin
+                    state <= S4;
                 end else if (one_wire) begin
-                  state <= S0;
+                    state <= S0;
                 end
-          S4 :  begin
-                  cnt_1us_clear <= 0;
-                  if (cnt_1us == 400) begin
+            S4 :  begin
+                cnt_1us_clear <= 0;
+                if (cnt_1us == 400) begin
                     cnt_1us_clear <= 1;
                     state <= S5;
-                  end
                 end
-          S5 :  begin
-                  if (step == 0) begin
+            end
+            S5 :  begin
+                if (step == 0) begin
                     step <= step + 1'b1;
                     state <= WRITE0;
-                  end else if (step == 1) begin
+                end else if (step == 1) begin
                     step <= step + 1'b1;
                     state <= WRITE0;
-                  end else if (step == 2) begin
+                end else if (step == 2) begin
                     one_wire_buf <= 0;
                     step <= step + 1'b1;
                     state <= WRITE01;
-                  end else if (step == 3) begin
+                end else if (step == 3) begin
                     one_wire_buf <= 0;
                     step <= step + 1'b1;
                     state <= WRITE01;
-                  end else if (step == 4) begin
+                end else if (step == 4) begin
                     step <= step + 1'b1;
                     state <= WRITE0;
-                  end else if (step == 5) begin
+                end else if (step == 5) begin
                     step <= step + 1'b1;
                     state <= WRITE0;
-                  end else if (step == 6) begin
+                end else if (step == 6) begin
                     one_wire_buf <= 0;
                     step <= step + 1'b1;
                     state <= WRITE01;
-                  end else if (step == 7) begin
+                end else if (step == 7) begin
                     one_wire_buf <= 0;
                     step <= step + 1'b1;
                     state <= WRITE01;
-                  end else if (step == 8) begin
+                end else if (step == 8) begin
                     step <= step + 1'b1;
                     state <= WRITE0;
-                  end else if (step == 9) begin
+                end else if (step == 9) begin
                     step <= step + 1'b1;
                     state <= WRITE0;
-                  end else if (step == 10) begin
+                end else if (step == 10) begin
                     one_wire_buf <= 0;
                     step <= step + 1'b1;
                     state <= WRITE01;
-                  end else if (step == 11) begin
+                end else if (step == 11) begin
                     step <= step + 1'b1;
                     state <= WRITE0;
-                  end else if (step == 12) begin
+                end else if (step == 12) begin
                     step <= step + 1'b1;
                     state <= WRITE0;
-                  end else if (step == 13) begin
+                end else if (step == 13) begin
                     step <= step + 1'b1;
                     state <= WRITE0;
-                  end else if (step == 14) begin
+                end else if (step == 14) begin
                     one_wire_buf <= 0;
                     step <= step + 1'b1;
                     state <= WRITE01;
-                  end else if (step == 15) begin
+                end else if (step == 15) begin
                     step <= step + 1'b1;
                     state <= WRITE0;
-                  end else if (step == 16) begin
+                end else if (step == 16) begin
                     one_wire_buf <= 1'bZ;
                     step <= step + 1'b1;
                     state <= S6;
-                  end else if (step == 17) begin
+                end else if (step == 17) begin
                     step <= step + 1'b1;
                     state <= WRITE0;
-                  end else if (step == 18) begin
+                end else if (step == 18) begin
                     step <= step + 1'b1;
                     state <= WRITE0;
-                  end else if (step == 19) begin
+                end else if (step == 19) begin
                     one_wire_buf <= 0;
                     step <= step + 1'b1;
                     state <= WRITE01;
-                  end else if (step == 20) begin
+                end else if (step == 20) begin
                     step <= step + 1'b1;
                     state <= WRITE01;
                     one_wire_buf <= 0;
-                  end else if (step == 21) begin
+                end else if (step == 21) begin
                     step <= step + 1'b1;
                     state <= WRITE0;
-                  end else if (step == 22) begin
+                end else if (step == 22) begin
                     step <= step + 1'b1;
                     state <= WRITE0;
-                  end else if (step == 23) begin
+                end else if (step == 23) begin
                     one_wire_buf <= 0;
                     step <= step + 1'b1;
                     state <= WRITE01;
-                  end else if (step == 24) begin
+                end else if (step == 24) begin
                     one_wire_buf <= 0;
                     step <= step + 1'b1;
                     state <= WRITE01;
-                  end else if (step == 25) begin
+                end else if (step == 25) begin
                     step <= step + 1'b1;
                     state <= WRITE0;
-                  end else if (step >= 26 && step <= 30) begin
+                end else if (step >= 26 && step <= 30) begin
                     one_wire_buf <= 0;
                     step <= step + 1'b1;
                     state <= WRITE01;
-                  end else if (step == 31) begin
+                end else if (step == 31) begin
                     step <= step + 1'b1;
                     state <= WRITE0;
-                  end else if (step == 32) begin
+                end else if (step == 32) begin
                     one_wire_buf <= 0;
                     step <= step + 1'b1;
                     state <= WRITE01;
-                  end else if (step == 33) begin
+                end else if (step == 33) begin
                     step <= step + 1'b1;
                     state <= S7;
-                  end
                 end
-          S6 :  begin
-                  cnt_1us_clear <= 0;
-                  if (cnt_1us == 750000 | one_wire) begin
+            end
+            S6 :  begin
+                cnt_1us_clear <= 0;
+                if (cnt_1us == 750000 | one_wire) begin
                     cnt_1us_clear <= 1;
                     state <= S0;
-                  end
                 end
-          S7 :  begin
-                  if (step == 34) begin
+            end
+            S7 :  begin
+                if (step == 34) begin
                     bit_valid <= 0;
                     one_wire_buf <= 0;
                     step <= step + 1'b1;
                     state <= READ0;
-                  end else if (step >= 35 && step <= 49) begin
+                end else if (step >= 35 && step <= 49) begin
                     bit_valid <= bit_valid + 1'b1;
                     one_wire_buf <= 0;
                     step <= step + 1'b1;
                     state <= READ0;
-                  end else if (step == 50) begin
+                end else if (step == 50) begin
                     step <= 0;
                     state <= S0;
 
                     temperature <= temperature_buf;
 
-                  end
                 end
-          WRITE0 : begin
-                  cnt_1us_clear <= 0;
-                  one_wire_buf <= 0;
-                  if (cnt_1us == 80) begin
+            end
+            WRITE0 : begin
+                cnt_1us_clear <= 0;
+                one_wire_buf <= 0;
+                if (cnt_1us == 80) begin
                     cnt_1us_clear <= 1;
                     one_wire_buf <= 1'bZ;
                     state <= WRITE00;
-                  end
                 end
-          WRITE00 : begin
-                  state <= S5;
-                end
-          WRITE01 : begin
-                  state <= WRITE1;
-                end
-          WRITE1 : begin
-                  cnt_1us_clear <= 0;
-                  one_wire_buf <= 1'bZ;
-                  if (cnt_1us == 80) begin
+            end
+            WRITE00 : begin
+                state <= S5;
+            end
+            WRITE01 : begin
+                state <= WRITE1;
+            end
+            WRITE1 : begin
+                cnt_1us_clear <= 0;
+                one_wire_buf <= 1'bZ;
+                if (cnt_1us == 80) begin
                     cnt_1us_clear <= 1;
                     state <= S5;
-                  end
                 end
-          READ0: begin
-                    state <= READ1;
-                end
-          READ1: begin
-                  cnt_1us_clear <= 0;
-                  one_wire_buf <= 1'bZ;
-                  if (cnt_1us == 10) begin
+            end
+            READ0: begin
+                state <= READ1;
+            end
+            READ1: begin
+                cnt_1us_clear <= 0;
+                one_wire_buf <= 1'bZ;
+                if (cnt_1us == 10) begin
                     cnt_1us_clear <= 1;
                     state <= READ2;
-                  end
                 end
-          READ2: begin
-                  temperature_buf[bit_valid] <= one_wire;
-                  state <= READ3;
-                end
-          READ3: begin
-                  cnt_1us_clear <= 0;
-                  if (cnt_1us == 55) begin
+            end
+            READ2: begin
+                temperature_buf[bit_valid] <= one_wire;
+                state <= READ3;
+            end
+            READ3: begin
+                cnt_1us_clear <= 0;
+                if (cnt_1us == 55) begin
                     cnt_1us_clear <= 1;
                     state <= S7;
-                  end
                 end
-          default: begin
+            end
+            default: begin
                 state <= S00;
             end
         endcase

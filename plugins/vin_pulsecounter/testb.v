@@ -26,11 +26,11 @@ module testb;
     end
 
     vin_pulsecounter vin_pulsecounter1 (
-                     .clk (clk),
-                     .UP (UP),
-                     .DOWN (DOWN),
-                     .RESET (RESET),
-                     .counter (counter)
-                 );
+                         .clk (clk),
+                         .UP (UP),
+                         .DOWN (DOWN),
+                         .RESET (RESET),
+                         .counter (counter)
+                     );
 
 endmodule

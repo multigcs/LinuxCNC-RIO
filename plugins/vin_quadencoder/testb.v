@@ -24,10 +24,10 @@ module testb;
     end
 
     vin_quadencoder vin_quadencoder1 (
-        .clk (clk),
-        .quadA (quadA),
-        .quadB (quadB),
-        .pos (pos)
-    );
+                        .clk (clk),
+                        .quadA (quadA),
+                        .quadB (quadB),
+                        .pos (pos)
+                    );
 
 endmodule

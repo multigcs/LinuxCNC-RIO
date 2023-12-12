@@ -1,11 +1,11 @@
 
 module vout_frequency
-     (
-         input clk,
-         input signed [31:0] frequency,
-         input disabled,
-         output SIGNAL
-     );
+    (
+        input clk,
+        input signed [31:0] frequency,
+        input disabled,
+        output SIGNAL
+    );
 
     wire DIR;
     assign DIR = (frequency > 0);

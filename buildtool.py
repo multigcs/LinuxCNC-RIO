@@ -41,13 +41,14 @@ def main(configfile, outputdir=None):
         for key, value in project["verilog_defines"].items():
             verilog_defines.append(f"`define {key} {value}")
         verilog_defines.append(f"")
-        open(f"{project['SOURCE_PATH']}/defines.v", "w").write("\n".join(verilog_defines))
+        open(f"{project['SOURCE_PATH']}/defines.v", "w").write(
+            "\n".join(verilog_defines)
+        )
         project["verilog_files"].append("defines.v")
 
     if project["gateware_extrafiles"]:
         for filename, content in project["gateware_extrafiles"].items():
             open(f"{project['SOURCE_PATH']}/{filename}", "w").write(content)
-
 
     for plugin in project["plugins"]:
         if hasattr(project["plugins"][plugin], "ips"):
@@ -59,9 +60,7 @@ def main(configfile, outputdir=None):
                 ipv_path = f"plugins/{plugin}/{ipv}"
                 if not os.path.isfile(ipv_path):
                     ipv_path = f"generators/gateware/{ipv}"
-                os.system(
-                    f"cp -a {ipv_path} {project['SOURCE_PATH']}/{ipv_name}"
-                )
+                os.system(f"cp -a {ipv_path} {project['SOURCE_PATH']}/{ipv_name}")
                 """
                 if ipv.endswith(".v") and not ipv.startswith("PLL_"):
                     os.system(

@@ -61,7 +61,7 @@ class Plugin:
                 name = data.get("name", f"PV.{num}")
                 nameIntern = name.replace(".", "").replace("-", "_").upper()
 
-                speed = int(self.jdata['clock']['speed']) // 1000000 // 2
+                speed = int(self.jdata["clock"]["speed"]) // 1000000 // 2
 
                 func_out.append(f"    vin_ds18b20 #({speed}) vin_ds18b20{num} (")
                 func_out.append("        .clk (sysclk),")

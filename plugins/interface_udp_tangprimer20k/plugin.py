@@ -23,7 +23,6 @@ class Plugin:
             }
         ]
 
-
     def pinlist(self):
         pinlist_out = []
         for num, interface in enumerate(self.jdata.get("interface", [])):
@@ -49,7 +48,6 @@ class Plugin:
                 MAC = ",".join([f"8'h{part}" for part in MAC_STR.split(":")])
                 IP_STR = interface.get("ip", "192.168.10.14")
                 IP = ",".join([f"8'd{part}" for part in IP_STR.split(".")])
-
 
                 func_out.append("    wire clk1m;")
                 func_out.append("    wire clk6m;")
@@ -83,5 +81,10 @@ class Plugin:
     def ips(self):
         for num, interface in enumerate(self.jdata.get("interface", [])):
             if interface["type"] == "udp_tangprimer20k":
-                return ["PLL_6M.v", "udp.v", "interface_udp_tangprimer20k.v", "interface_udp_tangprimer20k.sdc"]
+                return [
+                    "PLL_6M.v",
+                    "udp.v",
+                    "interface_udp_tangprimer20k.v",
+                    "interface_udp_tangprimer20k.sdc",
+                ]
         return []

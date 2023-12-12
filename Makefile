@@ -14,7 +14,7 @@ clean:
 
 format:
 	black buildtool.py plugins/*/*.py
-	astyle --style=gnu -A4  generators/linuxcnc_component/rio.c
+	#astyle --style=gnu -A4  generators/linuxcnc_component/rio.c
 
 isort:
 	isort buildtool.py plugins/*/*.py

@@ -52,7 +52,7 @@ class Plugin:
                         "name": "output pin",
                     },
                 },
-            }
+            },
         ]
 
     def pinlist(self):
@@ -61,15 +61,11 @@ class Plugin:
             if data.get("type") == self.ptype:
                 name = data.get("name", f"SP.{num}")
                 nameIntern = name.replace(".", "").replace("-", "_").upper()
-                ret.append(
-                    (f"VOUT{num}", data["pin"], "OUTPUT")
-                )
+                ret.append((f"VOUT{num}", data["pin"], "OUTPUT"))
             elif data.get("type") == self.ptype2:
                 name = data.get("name", f"DOUT.{num}")
                 nameIntern = name.replace(".", "").replace("-", "_").upper()
-                ret.append(
-                    (f"DOUT{num}", data["pin"], "OUTPUT")
-                )
+                ret.append((f"DOUT{num}", data["pin"], "OUTPUT"))
         return ret
 
     def voutnames(self):
@@ -110,7 +106,9 @@ class Plugin:
             if data.get("type") == self.ptype:
                 name = data.get("name", f"SP.{num}")
                 nameIntern = name.replace(".", "").replace("-", "_").upper()
-                ret.append(f"    vout_wled #({int(self.jdata['clock']['speed']) // 1000000}) vout_wled{num} (")
+                ret.append(
+                    f"    vout_wled #({int(self.jdata['clock']['speed']) // 1000000}) vout_wled{num} ("
+                )
                 ret.append("        .clk (sysclk),")
                 ret.append(f"        .value ({nameIntern}),")
                 ret.append(f"        .wled (VOUT{num})")
@@ -118,7 +116,9 @@ class Plugin:
             elif data.get("type") == self.ptype2:
                 name = data.get("name", f"DOUT.{num}")
                 nameIntern = name.replace(".", "").replace("-", "_").upper()
-                ret.append(f"    dout_wled #({int(self.jdata['clock']['speed']) // 1000000}) dout_wled{num} (")
+                ret.append(
+                    f"    dout_wled #({int(self.jdata['clock']['speed']) // 1000000}) dout_wled{num} ("
+                )
                 ret.append("        .clk (sysclk),")
                 ret.append(f"        .green ({nameIntern}_G),")
                 ret.append(f"        .blue ({nameIntern}_B),")
@@ -134,4 +134,3 @@ class Plugin:
             if data.get("type") == self.ptype2:
                 return ["ws2812.v", "dout_wled.v"]
         return []
-

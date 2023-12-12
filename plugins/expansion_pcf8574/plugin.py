@@ -45,10 +45,20 @@ class Plugin:
             if expansion["type"] == self.ptype:
                 pullup = expansion.get("pullup", True)
                 pinlist_out.append(
-                    (f"EXPANSION{num}_PCF8574_SDA", expansion["pins"]["sda"], "INOUT", pullup)
+                    (
+                        f"EXPANSION{num}_PCF8574_SDA",
+                        expansion["pins"]["sda"],
+                        "INOUT",
+                        pullup,
+                    )
                 )
                 pinlist_out.append(
-                    (f"EXPANSION{num}_PCF8574_SCL", expansion["pins"]["scl"], "OUTPUT", pullup)
+                    (
+                        f"EXPANSION{num}_PCF8574_SCL",
+                        expansion["pins"]["scl"],
+                        "OUTPUT",
+                        pullup,
+                    )
                 )
         return pinlist_out
 
@@ -78,7 +88,9 @@ class Plugin:
             if expansion["type"] == self.ptype:
                 address = expansion.get("address", "8'h40")
                 devices = expansion.get("devices", 1)
-                func_out.append(f"    expansion_pcf8574 #({address}, {devices}) expansion_pcf8574{num} (")
+                func_out.append(
+                    f"    expansion_pcf8574 #({address}, {devices}) expansion_pcf8574{num} ("
+                )
                 func_out.append("       .clk (sysclk),")
                 func_out.append(f"       .i2cSda (EXPANSION{num}_PCF8574_SDA),")
                 func_out.append(f"       .i2cScl (EXPANSION{num}_PCF8574_SCL),")

@@ -9,13 +9,10 @@ import json
 import os
 import signal
 import sys
-import time
-from copy import deepcopy
 from functools import partial
 from struct import *
 
-from PyQt5.QtCore import QDateTime, Qt, QTimer
-from PyQt5.QtGui import QFont, QPixmap
+from PyQt5.QtGui import QPixmap
 from PyQt5.QtWidgets import (
     QApplication,
     QCheckBox,
@@ -23,10 +20,8 @@ from PyQt5.QtWidgets import (
     QGridLayout,
     QLabel,
     QLineEdit,
-    QListWidget,
     QPlainTextEdit,
     QPushButton,
-    QSlider,
     QSpinBox,
     QTabWidget,
     QWidget,
@@ -232,9 +227,7 @@ class WinForm(QWidget):
 
             if section in jdata:
                 for num, entry in enumerate(jdata[section]):
-                    plugin_name = "???"
                     etype = entry.get("type", "???")
-                    description = ""
                     pinlist = []
 
                     name = entry.get("name", "-")
@@ -247,13 +240,6 @@ class WinForm(QWidget):
                         if isinstance(pins, dict):
                             for pname, pin in pins.items():
                                 pinlist.append(f"{pname}:{pin}")
-
-                    for plugin in plugins:
-                        if hasattr(plugins[plugin], "types"):
-                            if etype in plugins[plugin].types():
-                                plugin_name = plugin
-                                if hasattr(plugins[plugin], "entry_info"):
-                                    description = plugins[plugin].entry_info(entry)
 
                     self.layout.addWidget(
                         QLabel(name), self.layout_row, self.layout_col

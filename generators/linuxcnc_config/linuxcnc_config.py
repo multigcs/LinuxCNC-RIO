@@ -167,12 +167,8 @@ class qtdragon:
         return cfgxml_data
 
     def draw_meter(self, name, halpin, setup={}, vmin=0, vmax=100):
-        display_min = setup.get("min", vmin)
         display_max = setup.get("max", vmax)
         display_text = setup.get("text", name)
-        display_subtext = setup.get("subtext", "")
-        display_region = setup.get("region", [])
-        display_size = setup.get("size", 150)
         display_threshold = setup.get("threshold")
         cfgxml_data = []
         cfgxml_data.append("   <item>")
@@ -225,15 +221,6 @@ class qtdragon:
 
     def draw_bar(self, name, halpin, setup={}, vmin=0, vmax=100):
         return self.draw_number(name, halpin, setup)
-
-        display_min = setup.get("min", vmin)
-        display_max = setup.get("max", vmax)
-        display_range = setup.get("range", [])
-        display_format = setup.get("format", "05d")
-        display_fillcolor = setup.get("fillcolor", "red")
-        display_bgcolor = setup.get("fillcolor", "grey")
-        cfgxml_data = []
-        return cfgxml_data
 
     def draw_number(self, name, halpin, setup={}):
         display_format = setup.get("format", "%0.2f")
@@ -708,7 +695,7 @@ def generate_rio_ini(project):
             if isinstance(value, list):
                 for entry in value:
                     cfgini_data.append(f"{key} = {entry}")
-            elif value != None:
+            elif value is not None:
                 cfgini_data.append(f"{key} = {value}")
         cfgini_data.append("")
 
@@ -850,7 +837,6 @@ def generate_rio_hal(project):
         if din_net:
             netlist.append(din_net)
 
-    gui = project["jdata"].get("gui", "axis")
     limit_axis = int(project["jdata"].get("axis", 9))
     num_axis = min(project["joints"], limit_axis)
     num_joints = min(project["joints"], 9)
@@ -910,7 +896,7 @@ net user-request-enable <= iocontrol.0.user-request-enable	=> rio.SPI-reset
 """
     )
 
-    ## wcomp test ##
+    # wcomp test #
     # loadrt wcomp count=1
     # addf wcomp.0 servo-thread
     # setp wcomp.0.min 2.0
@@ -1050,10 +1036,8 @@ net user-request-enable <= iocontrol.0.user-request-enable	=> rio.SPI-reset
                     pin_net = pin.get("net")
                     if pin_net and pin_net.lower().startswith(f"{mtype}:"):
                         if "." in mtype:
-                            output = mtype.split(".", 1)[1]
                             mtypeReal = mtype.split(".", 1)[0]
                         else:
-                            output = [msetup[1]][0]
                             mtypeReal = mtype
 
                         if mtypeReal not in mixedInputs["data"]:
@@ -1199,7 +1183,7 @@ net user-request-enable <= iocontrol.0.user-request-enable	=> rio.SPI-reset
             cfghal_data.append("")
         elif din_type == "probe":
             cfghal_data.append(f"net toolprobe <= rio.input.{dname}")
-            cfghal_data.append(f"net toolprobe => motion.probe-input")
+            cfghal_data.append("net toolprobe => motion.probe-input")
             cfghal_data.append("")
 
     for num, dout in enumerate(project["doutnames"]):
@@ -1212,7 +1196,7 @@ net user-request-enable <= iocontrol.0.user-request-enable	=> rio.SPI-reset
             cfghal_data.append(f"net {dout_name} => rio.{dname}")
             cfghal_data.append("")
 
-    if f"iocontrol.0.emc-enable-in" not in netlist:
+    if "iocontrol.0.emc-enable-in" not in netlist:
         cfghal_data.append(
             "net rio-status <= rio.SPI-status => iocontrol.0.emc-enable-in"
         )
@@ -1230,7 +1214,7 @@ net user-request-enable <= iocontrol.0.user-request-enable	=> rio.SPI-reset
         if function == "spindle-index":
             scale = vin.get("scale", 1.0)
             cfghal_data.append(f"setp rio.{vname}-scale {scale}")
-            cfghal_data.append(f"net spindle-position rio.{vname} => spindle.0.revs")
+            cfghal_data.append("net spindle-position rio.{vname} => spindle.0.revs")
             cfghal_data.append(
                 f"net spindle-index-enable rio.{vname}-index-enable <=> spindle.0.index-enable"
             )
@@ -1320,22 +1304,20 @@ def generate_custom_postgui_hal(project):
     customhal_data = []
     customhal_data.append("")
 
-    customhal_data.append(f"# doutnames")
+    customhal_data.append("# doutnames")
     for num, dout in enumerate(project["doutnames"]):
         dname = dout["_name"]
-        dout_name = dout.get("name", dname)
         dout_net = dout.get("net")
         if dout_net:
             customhal_data.append(f"net {dname} => {prefix}.{dname}")
         elif not dname.endswith("-index-enable"):
             customhal_data.append(f"net {dname} {prefix}.{dname} rio.{dname}")
 
-    customhal_data.append(f"# dinnames")
+    customhal_data.append("# dinnames")
     for num, din in enumerate(project["dinnames"]):
         dname = din["_name"]
         din_type = din.get("type")
         din_joint = din.get("joint", str(num))
-        din_name = din.get("name", dname)
         din_net = din.get("net")
         if din_net:
             customhal_data.append(f"net {dname} => {prefix}.{dname}")
@@ -1346,10 +1328,9 @@ def generate_custom_postgui_hal(project):
         elif not dname.endswith("-index-enable-out"):
             customhal_data.append(f"net {dname} rio.{dname} {prefix}.{dname}")
 
-    customhal_data.append(f"# voutnames")
+    customhal_data.append("# voutnames")
     for num, vout in enumerate(project["voutnames"]):
         vname = vout["_name"]
-        vout_name = vout.get("name", f"vout{num}")
         vout_net = vout.get("net")
         if vout_net:
             if (
@@ -1357,19 +1338,18 @@ def generate_custom_postgui_hal(project):
                 and gui == "qtdragon"
                 and vout["type"] == "vfdbridge"
             ):
-                customhal_data.append(f"# scale rpm display for qtdragon: rpm -> hz")
-                customhal_data.append(f"setp qtdragon.spindle-rpm-scale 0.016666666666")
+                customhal_data.append("# scale rpm display for qtdragon: rpm -> hz")
+                customhal_data.append("setp qtdragon.spindle-rpm-scale 0.016666666666")
             else:
                 customhal_data.append(f"net {vname} => {prefix}.{vname}")
 
         elif vout_net != "spindle.0.speed-out":
             customhal_data.append(f"net {vname} rio.{vname} => {prefix}.{vname}-f")
 
-    customhal_data.append(f"# vinnames")
+    customhal_data.append("# vinnames")
     jogwheel = False
     for num, vin in enumerate(project["vinnames"]):
         vname = vin["_name"]
-        vin_name = vin.get("name", f"vin{num}")
         vin_net = vin.get("net")
         function = vin.get("function")
         display = vin.get("display", {})
@@ -1386,11 +1366,11 @@ def generate_custom_postgui_hal(project):
             if gui != "qtdragon":
                 customhal_data.append("")
                 customhal_data.append("# jog-wheel")
-                customhal_data.append(f"loadrt mux8 count=1")
-                customhal_data.append(f"addf mux8.0 servo-thread")
-                customhal_data.append(f"setp mux8.0.in1 0.01")
-                customhal_data.append(f"setp mux8.0.in2 0.1")
-                customhal_data.append(f"setp mux8.0.in4 1.0")
+                customhal_data.append("loadrt mux8 count=1")
+                customhal_data.append("addf mux8.0 servo-thread")
+                customhal_data.append("setp mux8.0.in1 0.01")
+                customhal_data.append("setp mux8.0.in2 0.1")
+                customhal_data.append("setp mux8.0.in4 1.0")
                 customhal_data.append(
                     f"net scale1 mux8.0.sel0 <= {prefix}.jog-scale.001"
                 )
@@ -1398,7 +1378,7 @@ def generate_custom_postgui_hal(project):
                     f"net scale2 mux8.0.sel1 <= {prefix}.jog-scale.01"
                 )
                 customhal_data.append(f"net scale3 mux8.0.sel2 <= {prefix}.jog-scale.1")
-                customhal_data.append(f"net jog-scale <= mux8.0.out")
+                customhal_data.append("net jog-scale <= mux8.0.out")
                 customhal_data.append(f"net jog-vel-mode <= {prefix}.jog-mode")
                 for jnum in range(min(project["joints"], len(axis_names))):
                     # limit axis configurations
@@ -1575,8 +1555,8 @@ def generate_rio_gui(project):
                 cfgxml_data.append('		<halpin>"jog-scale"</halpin> ')
                 cfgxml_data.append("	</radiobutton>")
                 cfgxml_data.append("    <checkbutton>")
-                cfgxml_data.append(f'      <halpin>"jog-mode"</halpin>')
-                cfgxml_data.append(f'      <text>"Velocity"</text>')
+                cfgxml_data.append('      <halpin>"jog-mode"</halpin>')
+                cfgxml_data.append('      <text>"Velocity"</text>')
                 cfgxml_data.append("    </checkbutton>")
                 cfgxml_data.append("  </hbox>")
                 cfgxml_data.append("  </labelframe>")
@@ -1648,8 +1628,6 @@ def generate_rio_gui(project):
         dname = din["_name"]
         if dname.endswith("-index-enable-out"):
             continue
-        din_type = din.get("type")
-        din_joint = din.get("joint", str(num))
         din_name = din.get("name", dname)
         din_net = din.get("net")
         if din_net == "spindle.0.speed-out":
@@ -1708,8 +1686,6 @@ def generate_rio_gui(project):
         dname = din["_name"]
         if dname.endswith("-index-enable-out"):
             continue
-        din_type = din.get("type")
-        din_joint = din.get("joint", str(num))
         din_name = din.get("name", dname)
         din_net = din.get("net")
         if not din_net:

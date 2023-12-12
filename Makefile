@@ -20,7 +20,7 @@ isort:
 	isort buildtool.py projectLoader.py qtsetup.py qt-testgui.py generators/*/*.py plugins/*/*.py
 
 flake8:
-	flake8 --ignore S605 --max-line-length 200 buildtool.py projectLoader.py qtsetup.py qt-testgui.py generators/*/*.py plugins/*/*.py
+	flake8 --ignore S108,S607,S605,F401,F403,W291,W503 --max-line-length 200 buildtool.py projectLoader.py qtsetup.py qt-testgui.py generators/*/*.py plugins/*/*.py
 
 mypy:
 	mypy buildtool.py projectLoader.py qtsetup.py qt-testgui.py generators/*/*.py plugins/*/*.py

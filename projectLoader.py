@@ -152,7 +152,6 @@ def load(configfile):
     uniq_pins = {}
     for pinlist in project["pinlists"].values():
         for pinsetup in pinlist:
-            pin_name = pinsetup[0]
             pin_id = pinsetup[1]
             if pin_id in uniq_pins:
                 print()

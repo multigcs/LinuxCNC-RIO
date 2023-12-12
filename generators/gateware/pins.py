@@ -1,5 +1,4 @@
 def pins_lpf(project, diamond=False):
-    data = []
     lpf_data = []
     if diamond:
         lpf_data.append("BLOCK RESETPATHS;")
@@ -101,7 +100,7 @@ def pins_xdc(project):
 
 def pins_qdf(project):
     data = []
-    data.append(f'set_global_assignment -name STRATIX_DEVICE_IO_STANDARD "3.3-V LVTTL"')
+    data.append('set_global_assignment -name STRATIX_DEVICE_IO_STANDARD "3.3-V LVTTL"')
     for pname, pins in project["pinlists"].items():
         if not pins:
             continue

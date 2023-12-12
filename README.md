@@ -142,3 +142,11 @@ make CONFIG=configs/TinyFPGA-BX/config.json build
 
 ---
 Thanks to the https://github.com/scottalford75/Remora Project, i'm using a modified version of it's Linux-Component
+
+And many thanks to Contributions to:
+
+* https://github.com/TurBoss
+* https://github.com/ozzyrob
+* https://github.com/jschoch
+* https://github.com/festlv
+* and all other

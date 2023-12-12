@@ -1,5 +1,6 @@
-import sys
 import os
+import sys
+
 from .buildsys import *
 from .testbench import testbench
 
@@ -19,11 +20,18 @@ def verilog_top(project):
     top_data.append("/*")
     top_data.append(f"    ######### {project['jdata']['name']} #########")
     top_data.append("")
-    for key in ("toolchain", "family", "type", "package",):
-        value = project['jdata'].get(key)
+    for key in (
+        "toolchain",
+        "family",
+        "type",
+        "package",
+    ):
+        value = project["jdata"].get(key)
         if value:
             top_data.append(f"    {key.title():10s}: {value}")
-    top_data.append(f"    Clock     : {float(project['jdata']['clock']['speed']) / 1000000} Mhz")
+    top_data.append(
+        f"    Clock     : {float(project['jdata']['clock']['speed']) / 1000000} Mhz"
+    )
     top_data.append("")
     top_data.append("*/")
     top_data.append("")
@@ -68,14 +76,16 @@ def verilog_top(project):
         top_data.append("    pll mypll(sysclk_in, sysclk, locked);")
         top_data.append("")
 
-    for pname, pins in project['pinlists'].items():
+    for pname, pins in project["pinlists"].items():
         if not pins:
             continue
         for pin in pins:
             if pin[1] == "USRMCLK":
                 top_data.append(f"    wire {pin[0]};")
                 top_data.append("    wire tristate_usrmclk = 1'b0;")
-                top_data.append(f"    USRMCLK u1 (.USRMCLKI({pin[0]}), .USRMCLKTS(tristate_usrmclk));")
+                top_data.append(
+                    f"    USRMCLK u1 (.USRMCLKI({pin[0]}), .USRMCLKTS(tristate_usrmclk));"
+                )
                 top_data.append("")
 
     if "blink" in project["jdata"]:
@@ -152,7 +162,7 @@ def verilog_top(project):
                     if "_INPUT" not in pin[1]:
                         print("ERROR: pin-direction do not match:", pin)
                         exit(1)
-    #top_data.append("")
+    # top_data.append("")
 
     for pname, pins in project["pinlists"].items():
         for pin in pins:
@@ -204,13 +214,17 @@ def verilog_top(project):
     if project["binnames"]:
         top_data.append(f"    // bins {project['bins']}")
         for num, bins in enumerate(project["binnames"]):
-            top_data.append(f"    wire signed [{bins['size'] - 1}:0] {bins['_prefix']};")
+            top_data.append(
+                f"    wire signed [{bins['size'] - 1}:0] {bins['_prefix']};"
+            )
         top_data.append("")
 
     if project["boutnames"]:
         top_data.append(f"    // bouts {project['bouts']}")
         for num, bout in enumerate(project["boutnames"]):
-            top_data.append(f"    wire signed [{bout['size'] - 1}:0] {bout['_prefix']};")
+            top_data.append(
+                f"    wire signed [{bout['size'] - 1}:0] {bout['_prefix']};"
+            )
         top_data.append("")
 
     if project["jdata"]["interface"]:
@@ -236,15 +250,13 @@ def verilog_top(project):
             pos -= 32
 
         for num, bout in enumerate(project["boutnames"]):
-            boutsize = bout['size']
+            boutsize = bout["size"]
             pack = []
             for bn in range(boutsize // 8):
                 pack.append(f"rx_data[{pos-1}:{pos-8}]")
                 pos -= 8
             pack.reverse()
-            top_data.append(
-                f"    assign {bout['_prefix']} = {{{', '.join(pack)}}};"
-            )
+            top_data.append(f"    assign {bout['_prefix']} = {{{', '.join(pack)}}};")
 
         for dbyte in range(project["joints_en_total"] // 8):
             for num in range(8):
@@ -267,7 +279,7 @@ def verilog_top(project):
                     top_data.append(f"    // assign DOUTx = rx_data[{pos-1}];")
                 pos -= 1
 
-        #top_data.append("")
+        # top_data.append("")
         top_data.append(f"    // tx_data {project['tx_data_size']}")
         top_data.append("    assign tx_data = {")
         top_data.append(
@@ -285,13 +297,11 @@ def verilog_top(project):
             )
 
         for num, bins in enumerate(project["binnames"]):
-            binsize = bins['size']
+            binsize = bins["size"]
             pack = []
             for bn in range(binsize // 8):
                 pack.append(f"{bins['_prefix']}[{(bn * 8)+7}:{(bn * 8)}]")
-            top_data.append(
-                f"        {', '.join(pack)},"
-            )
+            top_data.append(f"        {', '.join(pack)},")
 
         tdins = []
         ldin = project["dins"]
@@ -316,7 +326,7 @@ def verilog_top(project):
         else:
             top_data.append(f"        {', '.join(tdins)}")
         top_data.append("    };")
-        #top_data.append("")
+        # top_data.append("")
 
         for pname, pins in project["pinlists"].items():
             for pin in pins:
@@ -357,8 +367,10 @@ def generate(project):
     if project["internal_clock"]:
         pass
     elif project["osc_clock"]:
-        if int(project['jdata']['clock']['speed']) < int(project['osc_clock']):
-            divider_val = int(project['osc_clock']) // int(project['jdata']['clock']['speed'])
+        if int(project["jdata"]["clock"]["speed"]) < int(project["osc_clock"]):
+            divider_val = int(project["osc_clock"]) // int(
+                project["jdata"]["clock"]["speed"]
+            )
             divider = []
             divider.append("")
             divider.append("module pll(")
@@ -400,7 +412,6 @@ def generate(project):
 
     verilog_top(project)
     testbench(project)
-
 
     # build files (makefiles/scripts/projects)
     board = project["jdata"].get("board")

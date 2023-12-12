@@ -37,7 +37,6 @@ def load(configfile):
         print("ERROR: old json config format, please run 'python3 convert-configs.py'")
         sys.exit(1)
 
-
     # loading modules
     project["modules"] = {}
     for path in glob.glob("modules/*.json"):
@@ -59,7 +58,9 @@ def load(configfile):
                 module_data = copy.deepcopy(project["modules"][module])
                 if "enable" in module_data:
                     project["jdata"]["enable"] = module_data["enable"]
-                    project["jdata"]["enable"]["pin"] = slot["pins"][module_data["enable"]["pin"]]
+                    project["jdata"]["enable"]["pin"] = slot["pins"][
+                        module_data["enable"]["pin"]
+                    ]
                 for ftype in ("interface", "expansion", "joints", "plugins"):
                     if ftype in module_data:
                         for jn, msetup in enumerate(module_data.get(ftype, [])):
@@ -142,7 +143,9 @@ def load(configfile):
         if hasattr(project["plugins"][plugin], "ipdefs"):
             project["verilog_defines"].update(project["plugins"][plugin].ipdefs())
         if hasattr(project["plugins"][plugin], "gateware_extrafiles"):
-            project["gateware_extrafiles"].update(project["plugins"][plugin].gateware_extrafiles())
+            project["gateware_extrafiles"].update(
+                project["plugins"][plugin].gateware_extrafiles()
+            )
 
     # check for double assigned pins
     double_pins = False

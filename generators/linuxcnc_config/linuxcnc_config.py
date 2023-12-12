@@ -1,11 +1,11 @@
-
 import os
 import sys
 
 axis_names = ["X", "Y", "Z", "A", "C", "B", "U", "V", "W"]
 netlist = []
 
-class qtdragon():
+
+class qtdragon:
     #
     # wget "https://raw.githubusercontent.com/LinuxCNC/linuxcnc/master/lib/python/qtvcp/designer/install_script"
     #
@@ -15,39 +15,43 @@ class qtdragon():
         cfgxml_data.append("")
         cfgxml_data.append("")
         cfgxml_data.append("           <item>")
-        cfgxml_data.append("            <widget class=\"QGroupBox\" name=\"groupBox_rio\">")
-        cfgxml_data.append("             <property name=\"title\">")
+        cfgxml_data.append('            <widget class="QGroupBox" name="groupBox_rio">')
+        cfgxml_data.append('             <property name="title">')
         cfgxml_data.append("              <string>RIO</string>")
         cfgxml_data.append("             </property>")
-        cfgxml_data.append("           <property name=\"sizePolicy\">")
-        cfgxml_data.append("            <sizepolicy hsizetype=\"Minimum\" vsizetype=\"Preferred\">")
+        cfgxml_data.append('           <property name="sizePolicy">')
+        cfgxml_data.append(
+            '            <sizepolicy hsizetype="Minimum" vsizetype="Preferred">'
+        )
         cfgxml_data.append("             <horstretch>0</horstretch>")
         cfgxml_data.append("             <verstretch>0</verstretch>")
         cfgxml_data.append("            </sizepolicy>")
         cfgxml_data.append("           </property>")
-        cfgxml_data.append("           <property name=\"minimumSize\">")
+        cfgxml_data.append('           <property name="minimumSize">')
         cfgxml_data.append("            <size>")
         cfgxml_data.append("             <width>200</width>")
         cfgxml_data.append("             <height>0</height>")
         cfgxml_data.append("            </size>")
         cfgxml_data.append("           </property>")
-        cfgxml_data.append("             <property name=\"alignment\">")
+        cfgxml_data.append('             <property name="alignment">')
         cfgxml_data.append("              <set>Qt::AlignCenter</set>")
         cfgxml_data.append("             </property>")
-        cfgxml_data.append("             <layout class=\"QVBoxLayout\" name=\"verticalLayout_30\">")
-        cfgxml_data.append("              <property name=\"spacing\">")
+        cfgxml_data.append(
+            '             <layout class="QVBoxLayout" name="verticalLayout_30">'
+        )
+        cfgxml_data.append('              <property name="spacing">')
         cfgxml_data.append("               <number>6</number>")
         cfgxml_data.append("              </property>")
-        cfgxml_data.append("              <property name=\"leftMargin\">")
+        cfgxml_data.append('              <property name="leftMargin">')
         cfgxml_data.append("               <number>2</number>")
         cfgxml_data.append("              </property>")
-        cfgxml_data.append("              <property name=\"topMargin\">")
+        cfgxml_data.append('              <property name="topMargin">')
         cfgxml_data.append("               <number>2</number>")
         cfgxml_data.append("              </property>")
-        cfgxml_data.append("              <property name=\"rightMargin\">")
+        cfgxml_data.append('              <property name="rightMargin">')
         cfgxml_data.append("               <number>2</number>")
         cfgxml_data.append("              </property>")
-        cfgxml_data.append("              <property name=\"bottomMargin\">")
+        cfgxml_data.append('              <property name="bottomMargin">')
         cfgxml_data.append("               <number>2</number>")
         cfgxml_data.append("              </property>")
         return cfgxml_data
@@ -64,8 +68,10 @@ class qtdragon():
     def draw_tabs_begin(self, names):
         cfgxml_data = []
         cfgxml_data.append("                    <item>")
-        cfgxml_data.append("                     <widget class=\"QTabWidget\" name=\"tabWidget_setup\">")
-        cfgxml_data.append("                      <property name=\"geometry\">")
+        cfgxml_data.append(
+            '                     <widget class="QTabWidget" name="tabWidget_setup">'
+        )
+        cfgxml_data.append('                      <property name="geometry">')
         cfgxml_data.append("                       <rect>")
         cfgxml_data.append("                        <x>0</x>")
         cfgxml_data.append("                        <y>0</y>")
@@ -73,13 +79,15 @@ class qtdragon():
         cfgxml_data.append("                        <height>300</height>")
         cfgxml_data.append("                       </rect>")
         cfgxml_data.append("                      </property>")
-        cfgxml_data.append("                      <property name=\"sizePolicy\">")
-        cfgxml_data.append("                       <sizepolicy hsizetype=\"Expanding\" vsizetype=\"Preferred\">")
+        cfgxml_data.append('                      <property name="sizePolicy">')
+        cfgxml_data.append(
+            '                       <sizepolicy hsizetype="Expanding" vsizetype="Preferred">'
+        )
         cfgxml_data.append("                        <horstretch>1</horstretch>")
         cfgxml_data.append("                        <verstretch>0</verstretch>")
         cfgxml_data.append("                       </sizepolicy>")
         cfgxml_data.append("                      </property>")
-        cfgxml_data.append("                      <property name=\"currentIndex\">")
+        cfgxml_data.append('                      <property name="currentIndex">')
         cfgxml_data.append("                       <number>0</number>")
         cfgxml_data.append("                      </property>")
         return cfgxml_data
@@ -92,28 +100,34 @@ class qtdragon():
 
     def draw_tab_begin(self, name):
         cfgxml_data = []
-        cfgxml_data.append(f"                      <widget class=\"QWidget\" name=\"tab_{name}\">")
-        cfgxml_data.append("                       <attribute name=\"title\">")
+        cfgxml_data.append(
+            f'                      <widget class="QWidget" name="tab_{name}">'
+        )
+        cfgxml_data.append('                       <attribute name="title">')
         cfgxml_data.append(f"                        <string>{name}</string>")
         cfgxml_data.append("                       </attribute>")
-        cfgxml_data.append("                       <layout class=\"QVBoxLayout\" name=\"layout_stat\">")
-        cfgxml_data.append("                        <property name=\"spacing\">")
+        cfgxml_data.append(
+            '                       <layout class="QVBoxLayout" name="layout_stat">'
+        )
+        cfgxml_data.append('                        <property name="spacing">')
         cfgxml_data.append("                         <number>0</number>")
         cfgxml_data.append("                        </property>")
-        cfgxml_data.append("                        <property name=\"leftMargin\">")
+        cfgxml_data.append('                        <property name="leftMargin">')
         cfgxml_data.append("                         <number>0</number>")
         cfgxml_data.append("                        </property>")
-        cfgxml_data.append("                        <property name=\"topMargin\">")
+        cfgxml_data.append('                        <property name="topMargin">')
         cfgxml_data.append("                         <number>0</number>")
         cfgxml_data.append("                        </property>")
-        cfgxml_data.append("                        <property name=\"rightMargin\">")
+        cfgxml_data.append('                        <property name="rightMargin">')
         cfgxml_data.append("                         <number>0</number>")
         cfgxml_data.append("                        </property>")
-        cfgxml_data.append("                        <property name=\"bottomMargin\">")
+        cfgxml_data.append('                        <property name="bottomMargin">')
         cfgxml_data.append("                         <number>0</number>")
         cfgxml_data.append("                        </property>")
         cfgxml_data.append("                         <item>")
-        cfgxml_data.append("                          <layout class=\"QVBoxLayout\" name=\"verticalLayout_58\">")
+        cfgxml_data.append(
+            '                          <layout class="QVBoxLayout" name="verticalLayout_58">'
+        )
         return cfgxml_data
 
     def draw_tab_end(self):
@@ -126,92 +140,92 @@ class qtdragon():
 
     def draw_scale(self, name, halpin, vmin, vmax):
         cfgxml_data = []
-        cfgxml_data.append('  <item>')
+        cfgxml_data.append("  <item>")
         cfgxml_data.append(f'   <layout class="QHBoxLayout" name="layl_{halpin}">')
-        cfgxml_data.append('    <item>')
+        cfgxml_data.append("    <item>")
         cfgxml_data.append('     <widget class="QLabel" name="label_22">')
         cfgxml_data.append('      <property name="text">')
-        cfgxml_data.append(f'       <string>{name}</string>')
-        cfgxml_data.append('      </property>')
+        cfgxml_data.append(f"       <string>{name}</string>")
+        cfgxml_data.append("      </property>")
         cfgxml_data.append('      <property name="indent">')
-        cfgxml_data.append('       <number>4</number>')
-        cfgxml_data.append('      </property>')
-        cfgxml_data.append('     </widget>')
-        cfgxml_data.append('    </item>')
-        cfgxml_data.append('    <item>')
+        cfgxml_data.append("       <number>4</number>")
+        cfgxml_data.append("      </property>")
+        cfgxml_data.append("     </widget>")
+        cfgxml_data.append("    </item>")
+        cfgxml_data.append("    <item>")
         cfgxml_data.append(f'     <widget class="Slider" name="{halpin}">')
         cfgxml_data.append('      <property name="maximum">')
-        cfgxml_data.append('       <number>100</number>')
-        cfgxml_data.append('      </property>')
+        cfgxml_data.append("       <number>100</number>")
+        cfgxml_data.append("      </property>")
         cfgxml_data.append('      <property name="orientation">')
-        cfgxml_data.append('       <enum>Qt::Horizontal</enum>')
-        cfgxml_data.append('      </property>')
-        cfgxml_data.append('     </widget>')
-        cfgxml_data.append('    </item>')
-        cfgxml_data.append('   </layout>')
-        cfgxml_data.append('  </item>')
+        cfgxml_data.append("       <enum>Qt::Horizontal</enum>")
+        cfgxml_data.append("      </property>")
+        cfgxml_data.append("     </widget>")
+        cfgxml_data.append("    </item>")
+        cfgxml_data.append("   </layout>")
+        cfgxml_data.append("  </item>")
         return cfgxml_data
 
     def draw_meter(self, name, halpin, setup={}, vmin=0, vmax=100):
         display_min = setup.get("min", vmin)
         display_max = setup.get("max", vmax)
         display_text = setup.get("text", name)
-        display_subtext = setup.get("subtext", '')
+        display_subtext = setup.get("subtext", "")
         display_region = setup.get("region", [])
         display_size = setup.get("size", 150)
         display_threshold = setup.get("threshold")
         cfgxml_data = []
-        cfgxml_data.append('   <item>')
+        cfgxml_data.append("   <item>")
         cfgxml_data.append(f'       <widget class="Gauge" name="{halpin}">')
         cfgxml_data.append('        <property name="minimumSize">')
-        cfgxml_data.append('         <size>')
-        cfgxml_data.append('          <width>150</width>')
-        cfgxml_data.append('          <height>150</height>')
-        cfgxml_data.append('         </size>')
-        cfgxml_data.append('        </property>')
+        cfgxml_data.append("         <size>")
+        cfgxml_data.append("          <width>150</width>")
+        cfgxml_data.append("          <height>150</height>")
+        cfgxml_data.append("         </size>")
+        cfgxml_data.append("        </property>")
         cfgxml_data.append('        <property name="max_value" stdset="0">')
-        cfgxml_data.append(f'         <number>{display_max}</number>')
-        cfgxml_data.append('        </property>')
+        cfgxml_data.append(f"         <number>{display_max}</number>")
+        cfgxml_data.append("        </property>")
         cfgxml_data.append('        <property name="max_reading" stdset="0">')
-        cfgxml_data.append(f'         <number>{display_max}</number>')
-        cfgxml_data.append('        </property>')
+        cfgxml_data.append(f"         <number>{display_max}</number>")
+        cfgxml_data.append("        </property>")
         if display_threshold:
             cfgxml_data.append('        <property name="threshold" stdset="0">')
-            cfgxml_data.append(f'         <number>{display_threshold}</number>')
-            cfgxml_data.append('        </property>')
+            cfgxml_data.append(f"         <number>{display_threshold}</number>")
+            cfgxml_data.append("        </property>")
         cfgxml_data.append('        <property name="num_ticks" stdset="0">')
-        cfgxml_data.append('         <number>9</number>')
-        cfgxml_data.append('        </property>')
+        cfgxml_data.append("         <number>9</number>")
+        cfgxml_data.append("        </property>")
         cfgxml_data.append('        <property name="gauge_label" stdset="0">')
-        cfgxml_data.append(f'         <string>{display_text}</string>')
-        cfgxml_data.append('        </property>')
+        cfgxml_data.append(f"         <string>{display_text}</string>")
+        cfgxml_data.append("        </property>")
         cfgxml_data.append('        <property name="zone1_color" stdset="0">')
-        cfgxml_data.append('         <color>')
-        cfgxml_data.append('          <red>0</red>')
-        cfgxml_data.append('          <green>100</green>')
-        cfgxml_data.append('          <blue>0</blue>')
-        cfgxml_data.append('         </color>')
-        cfgxml_data.append('        </property>')
+        cfgxml_data.append("         <color>")
+        cfgxml_data.append("          <red>0</red>")
+        cfgxml_data.append("          <green>100</green>")
+        cfgxml_data.append("          <blue>0</blue>")
+        cfgxml_data.append("         </color>")
+        cfgxml_data.append("        </property>")
         cfgxml_data.append('        <property name="zone2_color" stdset="0">')
-        cfgxml_data.append('         <color>')
-        cfgxml_data.append('          <red>200</red>')
-        cfgxml_data.append('          <green>0</green>')
-        cfgxml_data.append('          <blue>0</blue>')
-        cfgxml_data.append('         </color>')
-        cfgxml_data.append('        </property>')
+        cfgxml_data.append("         <color>")
+        cfgxml_data.append("          <red>200</red>")
+        cfgxml_data.append("          <green>0</green>")
+        cfgxml_data.append("          <blue>0</blue>")
+        cfgxml_data.append("         </color>")
+        cfgxml_data.append("        </property>")
         cfgxml_data.append('      <property name="halpin_name" stdset="0">')
-        cfgxml_data.append(f'       <string>{halpin}</string>')
-        cfgxml_data.append('      </property>')
+        cfgxml_data.append(f"       <string>{halpin}</string>")
+        cfgxml_data.append("      </property>")
         cfgxml_data.append('      <property name="halpin_option" stdset="0">')
-        cfgxml_data.append('       <bool>true</bool>')
-        cfgxml_data.append('      </property>')
-        cfgxml_data.append('       </widget>')
-        cfgxml_data.append('   </item>')
+        cfgxml_data.append("       <bool>true</bool>")
+        cfgxml_data.append("      </property>")
+        cfgxml_data.append("       </widget>")
+        cfgxml_data.append("   </item>")
         return cfgxml_data
 
     def draw_bar(self, name, halpin, setup={}, vmin=0, vmax=100):
         return self.draw_number(name, halpin, setup)
-        
+
         display_min = setup.get("min", vmin)
         display_max = setup.get("max", vmax)
         display_range = setup.get("range", [])
@@ -224,120 +238,124 @@ class qtdragon():
     def draw_number(self, name, halpin, setup={}):
         display_format = setup.get("format", "%0.2f")
         cfgxml_data = []
-        cfgxml_data.append('  <item>')
+        cfgxml_data.append("  <item>")
         cfgxml_data.append(f'   <layout class="QHBoxLayout" name="layl_{halpin}">')
-        cfgxml_data.append('    <item>')
+        cfgxml_data.append("    <item>")
         cfgxml_data.append('     <widget class="QLabel" name="label_22">')
         cfgxml_data.append('      <property name="text">')
-        cfgxml_data.append(f'       <string>{name}</string>')
-        cfgxml_data.append('      </property>')
+        cfgxml_data.append(f"       <string>{name}</string>")
+        cfgxml_data.append("      </property>")
         cfgxml_data.append('      <property name="indent">')
-        cfgxml_data.append('       <number>4</number>')
-        cfgxml_data.append('      </property>')
-        cfgxml_data.append('     </widget>')
-        cfgxml_data.append('    </item>')
-        cfgxml_data.append('    <item>')
+        cfgxml_data.append("       <number>4</number>")
+        cfgxml_data.append("      </property>")
+        cfgxml_data.append("     </widget>")
+        cfgxml_data.append("    </item>")
+        cfgxml_data.append("    <item>")
         cfgxml_data.append(f'     <widget class="HALLabel" name="{halpin}">')
         cfgxml_data.append('      <property name="sizePolicy">')
         cfgxml_data.append('       <sizepolicy hsizetype="Minimum" vsizetype="Fixed">')
-        cfgxml_data.append('        <horstretch>0</horstretch>')
-        cfgxml_data.append('        <verstretch>0</verstretch>')
-        cfgxml_data.append('       </sizepolicy>')
-        cfgxml_data.append('      </property>')
+        cfgxml_data.append("        <horstretch>0</horstretch>")
+        cfgxml_data.append("        <verstretch>0</verstretch>")
+        cfgxml_data.append("       </sizepolicy>")
+        cfgxml_data.append("      </property>")
         cfgxml_data.append('      <property name="textTemplate" stdset="0">')
-        cfgxml_data.append(f'       <string>{display_format}</string>')
-        cfgxml_data.append('      </property>')
+        cfgxml_data.append(f"       <string>{display_format}</string>")
+        cfgxml_data.append("      </property>")
         cfgxml_data.append('      <property name="styleSheet">')
-        cfgxml_data.append('       <string notr="true">font: 20pt &quot;Lato Heavy&quot;;</string>')
-        cfgxml_data.append('      </property>')
+        cfgxml_data.append(
+            '       <string notr="true">font: 20pt &quot;Lato Heavy&quot;;</string>'
+        )
+        cfgxml_data.append("      </property>")
         cfgxml_data.append('      <property name="bit_pin_type" stdset="0">')
-        cfgxml_data.append('       <bool>false</bool>')
-        cfgxml_data.append('      </property>')
+        cfgxml_data.append("       <bool>false</bool>")
+        cfgxml_data.append("      </property>")
         cfgxml_data.append('      <property name="float_pin_type" stdset="0">')
-        cfgxml_data.append('       <bool>true</bool>')
-        cfgxml_data.append('      </property>')
-        cfgxml_data.append('     </widget>')
-        cfgxml_data.append('    </item>')
-        cfgxml_data.append('   </layout>')
-        cfgxml_data.append('  </item>')
+        cfgxml_data.append("       <bool>true</bool>")
+        cfgxml_data.append("      </property>")
+        cfgxml_data.append("     </widget>")
+        cfgxml_data.append("    </item>")
+        cfgxml_data.append("   </layout>")
+        cfgxml_data.append("  </item>")
         return cfgxml_data
 
     def draw_checkbutton(self, name, halpin):
         cfgxml_data = []
-        cfgxml_data.append('  <item>')
+        cfgxml_data.append("  <item>")
         cfgxml_data.append(f'   <layout class="QHBoxLayout" name="layl_{halpin}">')
-        cfgxml_data.append('    <item>')
+        cfgxml_data.append("    <item>")
         cfgxml_data.append(f'     <widget class="PushButton" name="{halpin}">')
         cfgxml_data.append('      <property name="text">')
-        cfgxml_data.append(f'       <string>{name}</string>')
-        cfgxml_data.append('      </property>')
+        cfgxml_data.append(f"       <string>{name}</string>")
+        cfgxml_data.append("      </property>")
         cfgxml_data.append('      <property name="checkable">')
-        cfgxml_data.append('        <bool>true</bool>')
-        cfgxml_data.append('      </property>')
+        cfgxml_data.append("        <bool>true</bool>")
+        cfgxml_data.append("      </property>")
         cfgxml_data.append('      <property name="styleSheet">')
-        cfgxml_data.append('        <string notr="true">font: 18pt &quot;Lato Heavy&quot;;</string>')
-        cfgxml_data.append('      </property>')
+        cfgxml_data.append(
+            '        <string notr="true">font: 18pt &quot;Lato Heavy&quot;;</string>'
+        )
+        cfgxml_data.append("      </property>")
         cfgxml_data.append('      <property name="minimumSize">')
-        cfgxml_data.append('        <size>')
-        cfgxml_data.append('         <width>32</width>')
-        cfgxml_data.append('         <height>32</height>')
-        cfgxml_data.append('        </size>')
-        cfgxml_data.append('      </property>')
-        cfgxml_data.append('     </widget>')
-        cfgxml_data.append('    </item>')
-        cfgxml_data.append('   </layout>')
-        cfgxml_data.append('  </item>')
+        cfgxml_data.append("        <size>")
+        cfgxml_data.append("         <width>32</width>")
+        cfgxml_data.append("         <height>32</height>")
+        cfgxml_data.append("        </size>")
+        cfgxml_data.append("      </property>")
+        cfgxml_data.append("     </widget>")
+        cfgxml_data.append("    </item>")
+        cfgxml_data.append("   </layout>")
+        cfgxml_data.append("  </item>")
         return cfgxml_data
 
     def draw_led(self, name, halpin):
         cfgxml_data = []
-        cfgxml_data.append('  <item>')
+        cfgxml_data.append("  <item>")
         cfgxml_data.append(f'   <layout class="QHBoxLayout" name="layl_{halpin}">')
-        cfgxml_data.append('    <item>')
+        cfgxml_data.append("    <item>")
         cfgxml_data.append('     <widget class="QLabel" name="label_22">')
         cfgxml_data.append('      <property name="text">')
-        cfgxml_data.append(f'       <string>{name}</string>')
-        cfgxml_data.append('      </property>')
+        cfgxml_data.append(f"       <string>{name}</string>")
+        cfgxml_data.append("      </property>")
         cfgxml_data.append('      <property name="indent">')
-        cfgxml_data.append('       <number>4</number>')
-        cfgxml_data.append('      </property>')
-        cfgxml_data.append('     </widget>')
-        cfgxml_data.append('    </item>')
-        cfgxml_data.append('    <item>')
+        cfgxml_data.append("       <number>4</number>")
+        cfgxml_data.append("      </property>")
+        cfgxml_data.append("     </widget>")
+        cfgxml_data.append("    </item>")
+        cfgxml_data.append("    <item>")
         cfgxml_data.append(f'     <widget class="LED" name="{halpin}">')
         cfgxml_data.append('        <property name="sizePolicy">')
         cfgxml_data.append('         <sizepolicy hsizetype="Fixed" vsizetype="Fixed">')
-        cfgxml_data.append('          <horstretch>0</horstretch>')
-        cfgxml_data.append('          <verstretch>0</verstretch>')
-        cfgxml_data.append('         </sizepolicy>')
-        cfgxml_data.append('        </property>')
+        cfgxml_data.append("          <horstretch>0</horstretch>")
+        cfgxml_data.append("          <verstretch>0</verstretch>")
+        cfgxml_data.append("         </sizepolicy>")
+        cfgxml_data.append("        </property>")
         cfgxml_data.append('        <property name="minimumSize">')
-        cfgxml_data.append('         <size>')
-        cfgxml_data.append('          <width>32</width>')
-        cfgxml_data.append('          <height>32</height>')
-        cfgxml_data.append('         </size>')
-        cfgxml_data.append('        </property>')
+        cfgxml_data.append("         <size>")
+        cfgxml_data.append("          <width>32</width>")
+        cfgxml_data.append("          <height>32</height>")
+        cfgxml_data.append("         </size>")
+        cfgxml_data.append("        </property>")
         cfgxml_data.append('        <property name="color">')
-        cfgxml_data.append('          <color>')
-        cfgxml_data.append('           <red>85</red>')
-        cfgxml_data.append('           <green>255</green>')
-        cfgxml_data.append('           <blue>0</blue>')
-        cfgxml_data.append('          </color>')
-        cfgxml_data.append('        </property>')
+        cfgxml_data.append("          <color>")
+        cfgxml_data.append("           <red>85</red>")
+        cfgxml_data.append("           <green>255</green>")
+        cfgxml_data.append("           <blue>0</blue>")
+        cfgxml_data.append("          </color>")
+        cfgxml_data.append("        </property>")
         cfgxml_data.append('        <property name="maximumSize">')
-        cfgxml_data.append('         <size>')
-        cfgxml_data.append('          <width>32</width>')
-        cfgxml_data.append('          <height>32</height>')
-        cfgxml_data.append('         </size>')
-        cfgxml_data.append('        </property>')
-        cfgxml_data.append('     </widget>')
-        cfgxml_data.append('    </item>')
-        cfgxml_data.append('   </layout>')
-        cfgxml_data.append('  </item>')
+        cfgxml_data.append("         <size>")
+        cfgxml_data.append("          <width>32</width>")
+        cfgxml_data.append("          <height>32</height>")
+        cfgxml_data.append("         </size>")
+        cfgxml_data.append("        </property>")
+        cfgxml_data.append("     </widget>")
+        cfgxml_data.append("    </item>")
+        cfgxml_data.append("   </layout>")
+        cfgxml_data.append("  </item>")
         return cfgxml_data
 
-class axis():
 
+class axis:
     def draw_begin(self):
         cfgxml_data = []
         cfgxml_data.append("<pyvcp>")
@@ -350,25 +368,24 @@ class axis():
 
     def draw_tabs_begin(self, names):
         cfgxml_data = []
-        cfgxml_data.append('<tabs>')
-        cfgxml_data.append(f'    <names>{names}</names>')
+        cfgxml_data.append("<tabs>")
+        cfgxml_data.append(f"    <names>{names}</names>")
         return cfgxml_data
 
     def draw_tabs_end(self):
         cfgxml_data = []
-        cfgxml_data.append('</tabs>')
+        cfgxml_data.append("</tabs>")
         return cfgxml_data
 
     def draw_tab_begin(self, name):
         cfgxml_data = []
-        cfgxml_data.append('    <vbox>')
+        cfgxml_data.append("    <vbox>")
         return cfgxml_data
 
     def draw_tab_end(self):
         cfgxml_data = []
-        cfgxml_data.append('    </vbox>')
+        cfgxml_data.append("    </vbox>")
         return cfgxml_data
-
 
     def draw_scale(self, name, halpin, vmin, vmax):
         cfgxml_data = []
@@ -393,7 +410,7 @@ class axis():
     def draw_meter(self, name, halpin, setup={}, vmin=0, vmax=100):
         display_min = setup.get("min", vmin)
         display_max = setup.get("max", vmax)
-        display_subtext = setup.get("subtext", '')
+        display_subtext = setup.get("subtext", "")
         display_region = setup.get("region", [])
         display_size = setup.get("size", 150)
         cfgxml_data = []
@@ -403,12 +420,14 @@ class axis():
         cfgxml_data.append("  <meter>")
         cfgxml_data.append(f'      <halpin>"{halpin}"</halpin>')
         cfgxml_data.append(f'      <text>"{name}"</text>')
-        cfgxml_data.append(f"      <subtext>\"{display_subtext}\"</subtext>")
+        cfgxml_data.append(f'      <subtext>"{display_subtext}"</subtext>')
         cfgxml_data.append(f"      <size>{display_size}</size>")
         cfgxml_data.append(f"      <min_>{display_min}</min_>")
         cfgxml_data.append(f"      <max_>{display_max}</max_>")
         for rnum, region in enumerate(display_region):
-            cfgxml_data.append(f'      <region{rnum + 1}>({region[0]},{region[1]},"{region[2]}")</region{rnum + 1}>')
+            cfgxml_data.append(
+                f'      <region{rnum + 1}>({region[0]},{region[1]},"{region[2]}")</region{rnum + 1}>'
+            )
         cfgxml_data.append("    </meter>")
         cfgxml_data.append("  </hbox>")
         return cfgxml_data
@@ -435,7 +454,9 @@ class axis():
         cfgxml_data.append(f'    <bgcolor>"{display_bgcolor}"</bgcolor>')
         cfgxml_data.append(f'    <fillcolor>"{display_fillcolor}"</fillcolor>')
         for rnum, brange in enumerate(display_range):
-            cfgxml_data.append(f'    <range{rnum + 1}>({brange[0]},{brange[1]},"{brange[2]}")</range{rnum + 1}>')
+            cfgxml_data.append(
+                f'    <range{rnum + 1}>({brange[0]},{brange[1]},"{brange[2]}")</range{rnum + 1}>'
+            )
         cfgxml_data.append("    </bar>")
         cfgxml_data.append("  </hbox>")
         return cfgxml_data
@@ -487,13 +508,12 @@ class axis():
         return cfgxml_data
 
 
-
 def generate_rio_ini(project):
     global netlist
     gui = project["jdata"].get("gui", "axis")
     limit_axis = int(project["jdata"].get("axis", 9))
-    num_axis = min(project['joints'], limit_axis)
-    num_joints = min(project['joints'], 9)
+    num_axis = min(project["joints"], limit_axis)
+    num_joints = min(project["joints"], 9)
 
     axis_str = ""
     traj_axis_list = []
@@ -503,7 +523,6 @@ def generate_rio_ini(project):
             continue
         axis_str += axis_names[num]
         traj_axis_list.append(axis_names[num])
-
 
     for num, joint in enumerate(project["jointnames"]):
         # limit axis configurations
@@ -578,7 +597,10 @@ def generate_rio_ini(project):
             "KINEMATICS": f"trivkins coordinates={''.join(traj_axis_list)}",
         },
         "FILTER": {
-            "PROGRAM_EXTENSION": [".ngc,.nc,.tap G-Code File (*.ngc,*.nc,*.tap)", ".py Python Script"],
+            "PROGRAM_EXTENSION": [
+                ".ngc,.nc,.tap G-Code File (*.ngc,*.nc,*.tap)",
+                ".py Python Script",
+            ],
             "py": "python",
         },
         "TASK": {
@@ -643,10 +665,17 @@ def generate_rio_ini(project):
                 "LOG_FILE": "qtdragon_hd.log",
             },
             "MDI_COMMAND_LIST": {
-                "MDI_COMMAND": ["G0 Z25 X0 Y0;Z0,Goto\\nZero", "G53 G0 Z0;G53 G0 X0 Y0,Goto\\nMach\\nZero"],
+                "MDI_COMMAND": [
+                    "G0 Z25 X0 Y0;Z0,Goto\\nZero",
+                    "G53 G0 Z0;G53 G0 X0 Y0,Goto\\nMach\\nZero",
+                ],
             },
             "FILTER": {
-                "PROGRAM_EXTENSION": [".ngc,.nc,.tap G-Code File (*.ngc,*.nc,*.tap)", ".png,.gif,.jpg Greyscale Depth Image", ".py Python Script"],
+                "PROGRAM_EXTENSION": [
+                    ".ngc,.nc,.tap G-Code File (*.ngc,*.nc,*.tap)",
+                    ".png,.gif,.jpg Greyscale Depth Image",
+                    ".py Python Script",
+                ],
                 "png": "image-to-gcode",
                 "gif": "image-to-gcode",
                 "jpg": "image-to-gcode",
@@ -659,8 +688,7 @@ def generate_rio_ini(project):
                 "USER_M_PATH": "./mcodes/",
                 "ON_ABORT_COMMAND": "O <on_abort> call",
             },
-            "HALUI": {
-            },
+            "HALUI": {},
             "PROBE": {
                 "USE_PROBE": "basicprobe",
             },
@@ -670,8 +698,6 @@ def generate_rio_ini(project):
                 basic_setup[section] = {}
             for key, value in sdata.items():
                 basic_setup[section][key] = value
-
-
 
     cfgini_data = []
     cfgini_data.append("# Basic LinuxCNC config for testing RIO gateware")
@@ -717,7 +743,6 @@ def generate_rio_ini(project):
                 cfgini_data.append(f"MAX_LIMIT = {MAX_LIMIT}")
                 cfgini_data.append("")
                 break
-
 
     for num, joint in enumerate(project["jointnames"]):
         # limit axis configurations
@@ -771,7 +796,9 @@ def generate_rio_ini(project):
             "MAX_VELOCITY": joint.get("max_velocity", MAX_VELOCITY),
             "MAX_ACCELERATION": joint.get("max_acceleration", MAX_ACCELERATION),
             "STEPGEN_MAXACCEL": joint.get("stepgen_maxaccel", 4000.0),
-            "STEPGEN_DEADBAND": joint.get("stepgen_deadband", 1.0 / abs(OUTPUT_SCALE) * 10.0),
+            "STEPGEN_DEADBAND": joint.get(
+                "stepgen_deadband", 1.0 / abs(OUTPUT_SCALE) * 10.0
+            ),
             "FERROR": joint.get("ferror", 2.0),
             "MIN_FERROR": joint.get("min_ferror", 1.5),
         }
@@ -784,7 +811,6 @@ def generate_rio_ini(project):
             cfgini_data.append(f"{key} = {value}")
         cfgini_data.append(scales)
         cfgini_data.append("")
-
 
         HOME_SEQUENCE = 1
         if AXIS_NAME == "Z":
@@ -815,6 +841,7 @@ def generate_rio_ini(project):
         "\n".join(cfgini_data)
     )
 
+
 def generate_rio_hal(project):
     global netlist
     netlist = []
@@ -825,8 +852,8 @@ def generate_rio_hal(project):
 
     gui = project["jdata"].get("gui", "axis")
     limit_axis = int(project["jdata"].get("axis", 9))
-    num_axis = min(project['joints'], limit_axis)
-    num_joints = min(project['joints'], 9)
+    num_axis = min(project["joints"], limit_axis)
+    num_joints = min(project["joints"], 9)
 
     axis_str = ""
     traj_axis_list = []
@@ -836,7 +863,6 @@ def generate_rio_hal(project):
             continue
         axis_str += axis_names[num]
         traj_axis_list.append(axis_names[num])
-
 
     for num, joint in enumerate(project["jointnames"]):
         # limit axis configurations
@@ -897,28 +923,52 @@ net user-request-enable <= iocontrol.0.user-request-enable	=> rio.SPI-reset
             for protocol in plugin["protocols"]:
                 if protocol["type"] == "hyvfd":
                     cfghal_data.append("setp rio.MODBUS_HYVFD_0.enable 1")
-                    cfghal_data.append("net spindle0_speed spindle.0.speed-out-abs => rio.MODBUS_HYVFD_0.speed-command")
-                    cfghal_data.append("net spindle0_forward spindle.0.forward => rio.MODBUS_HYVFD_0.spindle-forward")
-                    cfghal_data.append("net spindle0_reverse spindle.0.reverse => rio.MODBUS_HYVFD_0.spindle-reverse")
-                    cfghal_data.append("net spindle0_on spindle.0.on => rio.MODBUS_HYVFD_0.spindle-on")
+                    cfghal_data.append(
+                        "net spindle0_speed spindle.0.speed-out-abs => rio.MODBUS_HYVFD_0.speed-command"
+                    )
+                    cfghal_data.append(
+                        "net spindle0_forward spindle.0.forward => rio.MODBUS_HYVFD_0.spindle-forward"
+                    )
+                    cfghal_data.append(
+                        "net spindle0_reverse spindle.0.reverse => rio.MODBUS_HYVFD_0.spindle-reverse"
+                    )
+                    cfghal_data.append(
+                        "net spindle0_on spindle.0.on => rio.MODBUS_HYVFD_0.spindle-on"
+                    )
                     cfghal_data.append("")
 
     if "hy_vfd" in project["jdata"]:
         hy_vfd_dev = project["jdata"]["hy_vfd"]
-        cfghal_data.append(f"loadusr -Wn vfd hy_vfd -n vfd -d {hy_vfd_dev} -p none -r 9600")
+        cfghal_data.append(
+            f"loadusr -Wn vfd hy_vfd -n vfd -d {hy_vfd_dev} -p none -r 9600"
+        )
         cfghal_data.append("setp vfd.enable 1")
-        cfghal_data.append("net spindle0_speed spindle.0.speed-out-abs => vfd.speed-command")
-        cfghal_data.append("net spindle0_forward spindle.0.forward => vfd.spindle-forward")
-        cfghal_data.append("net spindle0_reverse spindle.0.reverse => vfd.spindle-reverse")
+        cfghal_data.append(
+            "net spindle0_speed spindle.0.speed-out-abs => vfd.speed-command"
+        )
+        cfghal_data.append(
+            "net spindle0_forward spindle.0.forward => vfd.spindle-forward"
+        )
+        cfghal_data.append(
+            "net spindle0_reverse spindle.0.reverse => vfd.spindle-reverse"
+        )
         cfghal_data.append("net spindle0_on spindle.0.on => vfd.spindle-on")
         cfghal_data.append("")
 
     if project["jdata"].get("toolchange", "manual") == "manual":
         cfghal_data.append("loadusr -W hal_manualtoolchange")
-        cfghal_data.append("net tool-change      hal_manualtoolchange.change   <=  iocontrol.0.tool-change")
-        cfghal_data.append("net tool-changed     hal_manualtoolchange.changed  <=  iocontrol.0.tool-changed")
-        cfghal_data.append("net tool-prep-number hal_manualtoolchange.number   <=  iocontrol.0.tool-prep-number")
-        cfghal_data.append("net tool-prepare-loopback iocontrol.0.tool-prepare => iocontrol.0.tool-prepared")
+        cfghal_data.append(
+            "net tool-change      hal_manualtoolchange.change   <=  iocontrol.0.tool-change"
+        )
+        cfghal_data.append(
+            "net tool-changed     hal_manualtoolchange.changed  <=  iocontrol.0.tool-changed"
+        )
+        cfghal_data.append(
+            "net tool-prep-number hal_manualtoolchange.number   <=  iocontrol.0.tool-prep-number"
+        )
+        cfghal_data.append(
+            "net tool-prepare-loopback iocontrol.0.tool-prepare => iocontrol.0.tool-prepared"
+        )
         cfghal_data.append("")
 
     if num_pids > 0:
@@ -935,15 +985,51 @@ net user-request-enable <= iocontrol.0.user-request-enable	=> rio.SPI-reset
             "and2": ({"in0": "bit", "in1": "bit"}, {"out": "bit"}, {}),
             "maj3": ({"in1": "bit", "in2": "bit", "in3": "bit"}, {"out": "bit"}),
             "mult2": ({"in0": "float", "in1": "float"}, {"out": "float"}),
-            "sum2": ({"in0": "float", "in1": "float"}, {"out": "float"}, {"gain0": "float", "gain1": "float", "offset": "float"}),
-            "hypot": ({"in0": "float", "in1": "float", "in2": "float"}, {"out": "float"}),
-            "comp": ({"in0": "float", "in1": "float"}, {"out": "bit", "equal": "bit"}, {"hyst": "float"}),
-            "blend": ({"in1": "float", "in2": "float", "select": "float"}, {"out": "float"}, {"open": "bit"}),
-            "bitwise": ({"in0": "u32", "in1": "u32", "select": "u32"}, {"out-and": "u32", "out-or": "u32", "out-xor": "u32", "out-nand": "u32", "out-nor": "u32", "out-xnor": "u32"}),
+            "sum2": (
+                {"in0": "float", "in1": "float"},
+                {"out": "float"},
+                {"gain0": "float", "gain1": "float", "offset": "float"},
+            ),
+            "hypot": (
+                {"in0": "float", "in1": "float", "in2": "float"},
+                {"out": "float"},
+            ),
+            "comp": (
+                {"in0": "float", "in1": "float"},
+                {"out": "bit", "equal": "bit"},
+                {"hyst": "float"},
+            ),
+            "blend": (
+                {"in1": "float", "in2": "float", "select": "float"},
+                {"out": "float"},
+                {"open": "bit"},
+            ),
+            "bitwise": (
+                {"in0": "u32", "in1": "u32", "select": "u32"},
+                {
+                    "out-and": "u32",
+                    "out-or": "u32",
+                    "out-xor": "u32",
+                    "out-nand": "u32",
+                    "out-nor": "u32",
+                    "out-xnor": "u32",
+                },
+            ),
             "clarke2": ({"a": "float", "b": "float"}, {"x": "float", "y": "float"}),
-            "clarke3": ({"a": "float", "b": "float", "c": "float"}, {"x": "float", "y": "float", "h": "float"}),
-            "deadzone": ({"in": "float"}, {"out": "float"}, {"center": "float", "threshhold": "float"}),
-            "minmax": ({"in": "float", "reset": "bit"}, {"max": "float", "min": "float"}, {}),
+            "clarke3": (
+                {"a": "float", "b": "float", "c": "float"},
+                {"x": "float", "y": "float", "h": "float"},
+            ),
+            "deadzone": (
+                {"in": "float"},
+                {"out": "float"},
+                {"center": "float", "threshhold": "float"},
+            ),
+            "minmax": (
+                {"in": "float", "reset": "bit"},
+                {"max": "float", "min": "float"},
+                {},
+            ),
         },
         "data": {},
     }
@@ -954,9 +1040,12 @@ net user-request-enable <= iocontrol.0.user-request-enable	=> rio.SPI-reset
         for oname in msetup[1]:
             mtypeList.append(f"{mtypeBase}.{oname}")
         for mtype in mtypeList:
-            for key, inType in {"dinnames": ["bit"], "vinnames": ["float", "u32"]}.items():
+            for key, inType in {
+                "dinnames": ["bit"],
+                "vinnames": ["float", "u32"],
+            }.items():
                 for num, pin in enumerate(project[key]):
-                    pname = pin['_name']
+                    pname = pin["_name"]
                     pin_name = pin.get("name", pname)
                     pin_net = pin.get("net")
                     if pin_net and pin_net.lower().startswith(f"{mtype}:"):
@@ -967,74 +1056,103 @@ net user-request-enable <= iocontrol.0.user-request-enable	=> rio.SPI-reset
                             output = [msetup[1]][0]
                             mtypeReal = mtype
 
-                        if mtypeReal not in mixedInputs['data']:
-                            mixedInputs['data'][mtypeReal] = {}
+                        if mtypeReal not in mixedInputs["data"]:
+                            mixedInputs["data"][mtypeReal] = {}
                         options = pin_net.split(":")
                         target_net = options[-1]
                         target_name = target_net.replace(".", "-")
-                        if target_name not in mixedInputs['data'][mtypeReal]:
-                            mixedInputs['data'][mtypeReal][target_name] = {
+                        if target_name not in mixedInputs["data"][mtypeReal]:
+                            mixedInputs["data"][mtypeReal][target_name] = {
                                 "output": target_net,
                                 "inputs": {},
                                 "parameters": {},
                             }
                         inNames = list(msetup[0].keys())
                         paraNames = list(msetup[2].keys())
-                        inNum = len(mixedInputs['data'][mtypeReal][target_name]["inputs"])
+                        inNum = len(
+                            mixedInputs["data"][mtypeReal][target_name]["inputs"]
+                        )
                         inName = inNames[inNum]
                         if len(options) > 2:
                             inName = options[1]
                         pinSource = f"rio.{pname}"
                         if inName in inNames:
                             if msetup[0][inName] not in inType:
-                                print(f"ERROR: input pin has wrong type, must be: {msetup[0][inName]} for {target_name} ({mtypeReal})")
-                            if inName in mixedInputs['data'][mtypeReal][target_name]["inputs"]:
-                                print(f"ERROR: input pin allready set: {inName} for {target_name} ({mtypeReal})")
+                                print(
+                                    f"ERROR: input pin has wrong type, must be: {msetup[0][inName]} for {target_name} ({mtypeReal})"
+                                )
+                            if (
+                                inName
+                                in mixedInputs["data"][mtypeReal][target_name]["inputs"]
+                            ):
+                                print(
+                                    f"ERROR: input pin allready set: {inName} for {target_name} ({mtypeReal})"
+                                )
                                 exit(1)
                             if msetup[0][inName] in {"u32", "s32"}:
                                 pinSource = f"{pinSource}-s32"
-                            mixedInputs['data'][mtypeReal][target_name]["inputs"][inName] = {
+                            mixedInputs["data"][mtypeReal][target_name]["inputs"][
+                                inName
+                            ] = {
                                 "name": pin_name,
                                 "pin": pinSource,
                             }
                         elif inName in paraNames:
                             if msetup[2][inName] not in inType:
-                                print(f"ERROR: input pin has wrong type, must be: {msetup[2][inName]} for {target_name} ({mtypeReal})")
-                            if inName in mixedInputs['data'][mtypeReal][target_name]["parameters"]:
-                                print(f"ERROR: parameter pin allready set: {inName} for {target_name} ({mtypeReal})")
+                                print(
+                                    f"ERROR: input pin has wrong type, must be: {msetup[2][inName]} for {target_name} ({mtypeReal})"
+                                )
+                            if (
+                                inName
+                                in mixedInputs["data"][mtypeReal][target_name][
+                                    "parameters"
+                                ]
+                            ):
+                                print(
+                                    f"ERROR: parameter pin allready set: {inName} for {target_name} ({mtypeReal})"
+                                )
                                 exit(1)
-                            mixedInputs['data'][mtypeReal][target_name]["parameters"][inName] = {
+                            mixedInputs["data"][mtypeReal][target_name]["parameters"][
+                                inName
+                            ] = {
                                 "name": pin_name,
                                 "pin": pinSource,
                             }
                         else:
-                            print(f"ERROR: input pin not exist: {inName} for {target_name} ({mtypeReal})")
+                            print(
+                                f"ERROR: input pin not exist: {inName} for {target_name} ({mtypeReal})"
+                            )
                             exit(1)
 
-
-    for mtype, mdata in mixedInputs['data'].items():
+    for mtype, mdata in mixedInputs["data"].items():
         if mdata:
-            cfghal_data.append(f"loadrt {mtype} names={','.join([f'{mtype}-{name}' for name in mdata])}")
+            cfghal_data.append(
+                f"loadrt {mtype} names={','.join([f'{mtype}-{name}' for name in mdata])}"
+            )
             for name, setup in mdata.items():
                 cfghal_data.append(f"addf {mtype}-{name} servo-thread")
                 inNames = list(mixedInputs["setup"][mtype][0].keys())
                 if len(setup["inputs"]) != len(inNames):
-                    print(f"ERROR: each {mtype} component needs #{len(inNames)} inputs: {setup['inputs']}")
+                    print(
+                        f"ERROR: each {mtype} component needs #{len(inNames)} inputs: {setup['inputs']}"
+                    )
                     exit(1)
                 for inputName, inputPin in setup["inputs"].items():
-                    cfghal_data.append(f"net {inputPin['name']} {inputPin['pin']} => {mtype}-{name}.{inputName}")
+                    cfghal_data.append(
+                        f"net {inputPin['name']} {inputPin['pin']} => {mtype}-{name}.{inputName}"
+                    )
                 for inputName, inputPin in setup["parameters"].items():
-                    cfghal_data.append(f"net {inputPin['name']} {inputPin['pin']} => {mtype}-{name}.{inputName}")
+                    cfghal_data.append(
+                        f"net {inputPin['name']} {inputPin['pin']} => {mtype}-{name}.{inputName}"
+                    )
                 outNames = list(mixedInputs["setup"][mtype][1].keys())
                 cfghal_data.append(f"net {name} <= {mtype}-{name}.{outNames[0]}")
                 cfghal_data.append(f"net {name} => {setup['output']}")
-                netlist.append(setup['output'])
+                netlist.append(setup["output"])
             cfghal_data.append("")
 
-
-
     for num, vout in enumerate(project["voutnames"]):
-        vname = vout['_name']
+        vname = vout["_name"]
         vout_name = vout.get("name", vname)
         vout_net = vout.get("net")
         if vout_net:
@@ -1044,7 +1162,7 @@ net user-request-enable <= iocontrol.0.user-request-enable	=> rio.SPI-reset
             cfghal_data.append("")
 
     for num, din in enumerate(project["dinnames"]):
-        dname = project["dinnames"][num]['_name']
+        dname = project["dinnames"][num]["_name"]
         din_type = din.get("type")
         din_joint = din.get("joint", str(num))
         din_name = din.get("name", dname)
@@ -1060,7 +1178,9 @@ net user-request-enable <= iocontrol.0.user-request-enable	=> rio.SPI-reset
             cfghal_data.append("")
 
         elif din_net == "spindle.0.speed-out":
-            cfghal_data.append(f"net {din_name}-at-speed spindle.0.at-speed <= rio.{dname}")
+            cfghal_data.append(
+                f"net {din_name}-at-speed spindle.0.at-speed <= rio.{dname}"
+            )
             cfghal_data.append("")
 
         elif din_type == "alarm" and din_joint:
@@ -1083,7 +1203,7 @@ net user-request-enable <= iocontrol.0.user-request-enable	=> rio.SPI-reset
             cfghal_data.append("")
 
     for num, dout in enumerate(project["doutnames"]):
-        dname = dout['_name']
+        dname = dout["_name"]
         dout_name = dout.get("name", dname)
         dout_net = dout.get("net")
         if dout_net and dout_net != "spindle.0.speed-out":
@@ -1093,12 +1213,13 @@ net user-request-enable <= iocontrol.0.user-request-enable	=> rio.SPI-reset
             cfghal_data.append("")
 
     if f"iocontrol.0.emc-enable-in" not in netlist:
-        cfghal_data.append("net rio-status <= rio.SPI-status => iocontrol.0.emc-enable-in")
+        cfghal_data.append(
+            "net rio-status <= rio.SPI-status => iocontrol.0.emc-enable-in"
+        )
         cfghal_data.append("")
 
-
     for num, vin in enumerate(project["vinnames"]):
-        vname = vin['_name']
+        vname = vin["_name"]
         function = vin.get("function")
         vin_name = vin.get("name", vname)
         vin_net = vin.get("net")
@@ -1110,7 +1231,9 @@ net user-request-enable <= iocontrol.0.user-request-enable	=> rio.SPI-reset
             scale = vin.get("scale", 1.0)
             cfghal_data.append(f"setp rio.{vname}-scale {scale}")
             cfghal_data.append(f"net spindle-position rio.{vname} => spindle.0.revs")
-            cfghal_data.append(f"net spindle-index-enable rio.{vname}-index-enable <=> spindle.0.index-enable")
+            cfghal_data.append(
+                f"net spindle-index-enable rio.{vname}-index-enable <=> spindle.0.index-enable"
+            )
             cfghal_data.append("")
         if vin_net and vin_net != "spindle.0.speed-out":
             netlist.append(vin_net)
@@ -1119,9 +1242,10 @@ net user-request-enable <= iocontrol.0.user-request-enable	=> rio.SPI-reset
             cfghal_data.append("")
 
         elif vin_net == "spindle.0.speed-out":
-            cfghal_data.append(f"net {vin_name}-get-speed spindle.0.speed-in <= rio.{vname}")
+            cfghal_data.append(
+                f"net {vin_name}-get-speed spindle.0.speed-in <= rio.{vname}"
+            )
             cfghal_data.append("")
-
 
         elif function:
             pass
@@ -1184,25 +1308,21 @@ net j{num}enable 		<= joint.{num}.amp-enable-out 	=> rio.joint.{num}.enable
     )
 
 
-
-
-
 def generate_custom_postgui_hal(project):
     gui = project["jdata"].get("gui", "axis")
-    num_joints = min(project['joints'], 9)
+    num_joints = min(project["joints"], 9)
 
     if gui == "qtdragon":
         prefix = "qtdragon"
     else:
         prefix = "pyvcp"
 
-
     customhal_data = []
     customhal_data.append("")
 
     customhal_data.append(f"# doutnames")
     for num, dout in enumerate(project["doutnames"]):
-        dname = dout['_name']
+        dname = dout["_name"]
         dout_name = dout.get("name", dname)
         dout_net = dout.get("net")
         if dout_net:
@@ -1212,7 +1332,7 @@ def generate_custom_postgui_hal(project):
 
     customhal_data.append(f"# dinnames")
     for num, din in enumerate(project["dinnames"]):
-        dname = din['_name']
+        dname = din["_name"]
         din_type = din.get("type")
         din_joint = din.get("joint", str(num))
         din_name = din.get("name", dname)
@@ -1224,17 +1344,19 @@ def generate_custom_postgui_hal(project):
         elif din_type == "home" and din_joint:
             pass
         elif not dname.endswith("-index-enable-out"):
-            customhal_data.append(
-                f"net {dname} rio.{dname} {prefix}.{dname}"
-            )
+            customhal_data.append(f"net {dname} rio.{dname} {prefix}.{dname}")
 
     customhal_data.append(f"# voutnames")
     for num, vout in enumerate(project["voutnames"]):
-        vname = vout['_name']
+        vname = vout["_name"]
         vout_name = vout.get("name", f"vout{num}")
         vout_net = vout.get("net")
         if vout_net:
-            if vout_net == "spindle.0.speed-out" and gui == "qtdragon" and vout['type'] == "vfdbridge":
+            if (
+                vout_net == "spindle.0.speed-out"
+                and gui == "qtdragon"
+                and vout["type"] == "vfdbridge"
+            ):
                 customhal_data.append(f"# scale rpm display for qtdragon: rpm -> hz")
                 customhal_data.append(f"setp qtdragon.spindle-rpm-scale 0.016666666666")
             else:
@@ -1246,13 +1368,18 @@ def generate_custom_postgui_hal(project):
     customhal_data.append(f"# vinnames")
     jogwheel = False
     for num, vin in enumerate(project["vinnames"]):
-        vname = vin['_name']
+        vname = vin["_name"]
         vin_name = vin.get("name", f"vin{num}")
         vin_net = vin.get("net")
         function = vin.get("function")
         display = vin.get("display", {})
         display_type = display.get("type")
-        if vin_net in ["halui.feed-override", "halui.rapid-override", "halui.spindle.0.override", "halui.spindle.1.override"]:
+        if vin_net in [
+            "halui.feed-override",
+            "halui.rapid-override",
+            "halui.spindle.0.override",
+            "halui.spindle.1.override",
+        ]:
             function = vin_net.split(".")[-1]
         if function == "jogwheel" and not jogwheel:
             jogwheel = True
@@ -1264,8 +1391,12 @@ def generate_custom_postgui_hal(project):
                 customhal_data.append(f"setp mux8.0.in1 0.01")
                 customhal_data.append(f"setp mux8.0.in2 0.1")
                 customhal_data.append(f"setp mux8.0.in4 1.0")
-                customhal_data.append(f"net scale1 mux8.0.sel0 <= {prefix}.jog-scale.001")
-                customhal_data.append(f"net scale2 mux8.0.sel1 <= {prefix}.jog-scale.01")
+                customhal_data.append(
+                    f"net scale1 mux8.0.sel0 <= {prefix}.jog-scale.001"
+                )
+                customhal_data.append(
+                    f"net scale2 mux8.0.sel1 <= {prefix}.jog-scale.01"
+                )
                 customhal_data.append(f"net scale3 mux8.0.sel2 <= {prefix}.jog-scale.1")
                 customhal_data.append(f"net jog-scale <= mux8.0.out")
                 customhal_data.append(f"net jog-vel-mode <= {prefix}.jog-mode")
@@ -1274,24 +1405,39 @@ def generate_custom_postgui_hal(project):
                     if jnum >= num_joints:
                         continue
                     axis_str = axis_names[jnum].lower()
-                    customhal_data.append(f"net jog-vel-mode => joint.{jnum}.jog-vel-mode axis.{axis_str}.jog-vel-mode")
-                    customhal_data.append(f"net jog-scale => joint.{jnum}.jog-scale axis.{axis_str}.jog-scale")
-                    customhal_data.append(f"net jog-counts => joint.{jnum}.jog-counts axis.{axis_str}.jog-counts")
-                    #customhal_data.append(f"net jog-enable-{axis_str} axisui.jog.{axis_str} => joint.{jnum}.jog-enable axis.{axis_str}.jog-enable")
-                    customhal_data.append(f"net jog-enable-{axis_str} {prefix}.jog-axis.{axis_str} => joint.{jnum}.jog-enable axis.{axis_str}.jog-enable")
+                    customhal_data.append(
+                        f"net jog-vel-mode => joint.{jnum}.jog-vel-mode axis.{axis_str}.jog-vel-mode"
+                    )
+                    customhal_data.append(
+                        f"net jog-scale => joint.{jnum}.jog-scale axis.{axis_str}.jog-scale"
+                    )
+                    customhal_data.append(
+                        f"net jog-counts => joint.{jnum}.jog-counts axis.{axis_str}.jog-counts"
+                    )
+                    # customhal_data.append(f"net jog-enable-{axis_str} axisui.jog.{axis_str} => joint.{jnum}.jog-enable axis.{axis_str}.jog-enable")
+                    customhal_data.append(
+                        f"net jog-enable-{axis_str} {prefix}.jog-axis.{axis_str} => joint.{jnum}.jog-enable axis.{axis_str}.jog-enable"
+                    )
                 customhal_data.append(f"net jog-counts <= rio.{vname}-s32")
             customhal_data.append("")
-        elif function in ["feed-override", "rapid-override", "spindle.0.override", "spindle.1.override"]:
+        elif function in [
+            "feed-override",
+            "rapid-override",
+            "spindle.0.override",
+            "spindle.1.override",
+        ]:
             if gui != "qtdragon":
                 customhal_data.append("")
                 customhal_data.append(f"# {function}")
-                if vin['type'] == "ads1115":
+                if vin["type"] == "ads1115":
                     customhal_data.append(f"setp rio.{vname}-scale 0.3025")
                 else:
                     customhal_data.append(f"setp rio.{vname}-scale 1.0")
                 customhal_data.append(f"setp halui.{function}.direct-value 1")
                 customhal_data.append(f"setp halui.{function}.scale 0.01")
-                customhal_data.append(f"net {function} rio.{vname}-s32 => halui.{function}.counts")
+                customhal_data.append(
+                    f"net {function} rio.{vname}-s32 => halui.{function}.counts"
+                )
             customhal_data.append("")
         elif function:
             pass
@@ -1313,9 +1459,10 @@ def generate_custom_postgui_hal(project):
                 else:
                     customhal_data.append(f"net {vname} rio.{vname} {prefix}.{vname}")
 
-
         if vin.get("type") in {"vin_quadencoder", "vin_quadencoderz"}:
-            customhal_data.append(f"net {vname}-rpm rio.{vname}-rpm {prefix}.{vname}-rpm")
+            customhal_data.append(
+                f"net {vname}-rpm rio.{vname}-rpm {prefix}.{vname}-rpm"
+            )
 
     if gui != "qtdragon":
         customhal_data.append(f"net zeroxy halui.mdi-command-00 <= {prefix}.zeroxy")
@@ -1328,19 +1475,38 @@ def generate_custom_postgui_hal(project):
             if plugin["type"] == "modbus":
                 for protocol in plugin["protocols"]:
                     if protocol["type"] == "hyvfd":
-                        customhal_data.append(f"net {prefix}-spindle-at-speed   rio.MODBUS_HYVFD_0.spindle-at-speed      => {prefix}.spindle-at-speed")
-                        customhal_data.append(f"net {prefix}-spindle-speed_fb   rio.MODBUS_HYVFD_0.spindle-speed-fb      => {prefix}.spindle-speed")
-                        customhal_data.append(f"net {prefix}-hycomm-ok          rio.MODBUS_HYVFD_0.hycomm-ok             => {prefix}.hycomm-ok")
-                        customhal_data.append(f"#net {prefix}-spindle-voltage    rio.MODBUS_HYVFD_0.rated-motor-voltage   => {prefix}.spindle-voltage")
-                        customhal_data.append(f"#net {prefix}-spindle-current    rio.MODBUS_HYVFD_0.rated-motor-current   => {prefix}.spindle-current")
+                        customhal_data.append(
+                            f"net {prefix}-spindle-at-speed   rio.MODBUS_HYVFD_0.spindle-at-speed      => {prefix}.spindle-at-speed"
+                        )
+                        customhal_data.append(
+                            f"net {prefix}-spindle-speed_fb   rio.MODBUS_HYVFD_0.spindle-speed-fb      => {prefix}.spindle-speed"
+                        )
+                        customhal_data.append(
+                            f"net {prefix}-hycomm-ok          rio.MODBUS_HYVFD_0.hycomm-ok             => {prefix}.hycomm-ok"
+                        )
+                        customhal_data.append(
+                            f"#net {prefix}-spindle-voltage    rio.MODBUS_HYVFD_0.rated-motor-voltage   => {prefix}.spindle-voltage"
+                        )
+                        customhal_data.append(
+                            f"#net {prefix}-spindle-current    rio.MODBUS_HYVFD_0.rated-motor-current   => {prefix}.spindle-current"
+                        )
 
         if "hy_vfd" in project["jdata"]:
-            customhal_data.append(f"net {prefix}-spindle-at-speed   vfd.spindle-at-speed      => {prefix}.spindle-at-speed")
-            customhal_data.append(f"net {prefix}-spindle-speed_fb   vfd.spindle-speed-fb      => {prefix}.spindle-speed")
-            customhal_data.append(f"net {prefix}-hycomm-ok          vfd.hycomm-ok             => {prefix}.hycomm-ok")
-            customhal_data.append(f"#net {prefix}-spindle-voltage    vfd.rated-motor-voltage   => {prefix}.spindle-voltage")
-            customhal_data.append(f"#net {prefix}-spindle-current    vfd.rated-motor-current   => {prefix}.spindle-current")
-
+            customhal_data.append(
+                f"net {prefix}-spindle-at-speed   vfd.spindle-at-speed      => {prefix}.spindle-at-speed"
+            )
+            customhal_data.append(
+                f"net {prefix}-spindle-speed_fb   vfd.spindle-speed-fb      => {prefix}.spindle-speed"
+            )
+            customhal_data.append(
+                f"net {prefix}-hycomm-ok          vfd.hycomm-ok             => {prefix}.hycomm-ok"
+            )
+            customhal_data.append(
+                f"#net {prefix}-spindle-voltage    vfd.rated-motor-voltage   => {prefix}.spindle-voltage"
+            )
+            customhal_data.append(
+                f"#net {prefix}-spindle-current    vfd.rated-motor-current   => {prefix}.spindle-current"
+            )
 
     open(f"{project['LINUXCNC_PATH']}/ConfigSamples/rio/custom_postgui.hal", "w").write(
         "\n".join(customhal_data)
@@ -1348,15 +1514,15 @@ def generate_custom_postgui_hal(project):
 
     postgui_list = []
     postgui_list.append("source custom_postgui.hal")
-    open(f"{project['LINUXCNC_PATH']}/ConfigSamples/rio/postgui_call_list.hal", "w").write(
-        "\n".join(postgui_list)
-    )
+    open(
+        f"{project['LINUXCNC_PATH']}/ConfigSamples/rio/postgui_call_list.hal", "w"
+    ).write("\n".join(postgui_list))
 
 
 def generate_rio_gui(project):
 
     gui = project["jdata"].get("gui", "axis")
-    num_joints = min(project['joints'], 9)
+    num_joints = min(project["joints"], 9)
 
     if gui == "qtdragon":
         gui_gen = qtdragon()
@@ -1367,24 +1533,28 @@ def generate_rio_gui(project):
     cfgxml_data += gui_gen.draw_begin()
     cfgxml_data += gui_gen.draw_tabs_begin(["Status", "Inputs", "Outputs"])
 
-
     cfgxml_data += gui_gen.draw_tab_begin("Status")
 
     # jogging
     jogwheel = False
     for num, vin in enumerate(project["vinnames"]):
-        vname = vin['_name']
+        vname = vin["_name"]
         vin_name = vin.get("name", f"vin{num}")
         vin_net = vin.get("net")
         function = vin.get("function")
-        if vin_net in ["halui.feed-override", "halui.rapid-override", "halui.spindle.0.override", "halui.spindle.1.override"]:
+        if vin_net in [
+            "halui.feed-override",
+            "halui.rapid-override",
+            "halui.spindle.0.override",
+            "halui.spindle.1.override",
+        ]:
             function = vin_net.split(".")[-1]
         if function == "jogwheel" and not jogwheel:
             jogwheel = True
             if gui != "qtdragon":
-                cfgxml_data.append("  <labelframe text=\"Jog-Options\">")
+                cfgxml_data.append('  <labelframe text="Jog-Options">')
                 cfgxml_data.append("    <relief>RAISED</relief>")
-                cfgxml_data.append("    <font>(\"Helvetica\", 12)</font>")
+                cfgxml_data.append('    <font>("Helvetica", 12)</font>')
                 cfgxml_data.append("  <hbox>")
                 cfgxml_data.append("    <relief>RAISED</relief>")
                 cfgxml_data.append("    <bd>2</bd>")
@@ -1395,14 +1565,14 @@ def generate_rio_gui(project):
                     if jnum >= num_joints:
                         continue
                     axis_str = axis_names[jnum].lower()
-                    axislist.append(f"\"{axis_str}\"")
-                axislist_str = ','.join(axislist)
+                    axislist.append(f'"{axis_str}"')
+                axislist_str = ",".join(axislist)
                 cfgxml_data.append(f"		<choices>[{axislist_str}]</choices> ")
-                cfgxml_data.append("		<halpin>\"jog-axis\"</halpin> ")
+                cfgxml_data.append('		<halpin>"jog-axis"</halpin> ')
                 cfgxml_data.append("	</radiobutton>")
                 cfgxml_data.append("	<radiobutton>")
-                cfgxml_data.append("		<choices>[\"001\", \"01\", \"1\"]</choices> ")
-                cfgxml_data.append("		<halpin>\"jog-scale\"</halpin> ")
+                cfgxml_data.append('		<choices>["001", "01", "1"]</choices> ')
+                cfgxml_data.append('		<halpin>"jog-scale"</halpin> ')
                 cfgxml_data.append("	</radiobutton>")
                 cfgxml_data.append("    <checkbutton>")
                 cfgxml_data.append(f'      <halpin>"jog-mode"</halpin>')
@@ -1416,7 +1586,7 @@ def generate_rio_gui(project):
         elif vin_net == "spindle.0.speed-out":
             if gui != "qtdragon":
                 cfgxml_data += gui_gen.draw_number(f"{vname}", f"{vname}")
-    
+
         elif function:
             pass
 
@@ -1432,14 +1602,14 @@ def generate_rio_gui(project):
         hy_vfd_gui = 1
 
     if hy_vfd_gui:
-        cfgxml_data.append("<labelframe text=\"Spindle\">")
+        cfgxml_data.append('<labelframe text="Spindle">')
         cfgxml_data.append("    <relief>RAISED</relief>")
-        cfgxml_data.append("    <font>(\"Helvetica\", 12)</font>")
+        cfgxml_data.append('    <font>("Helvetica", 12)</font>')
         cfgxml_data.append("  <vbox>")
         cfgxml_data.append("    <hbox>")
         cfgxml_data.append("      <label>")
-        cfgxml_data.append("          <text>\"RPM\"</text>")
-        cfgxml_data.append("          <font>(\"Helvetica\",10)</font>")
+        cfgxml_data.append('          <text>"RPM"</text>')
+        cfgxml_data.append('          <font>("Helvetica",10)</font>')
         cfgxml_data.append("      </label>")
         cfgxml_data.append("      <number>")
         cfgxml_data.append('        <halpin>"spindle-speed"</halpin>')
@@ -1449,24 +1619,24 @@ def generate_rio_gui(project):
         cfgxml_data.append("      <vbox>")
         cfgxml_data.append("        <hbox>")
         cfgxml_data.append("          <led>")
-        cfgxml_data.append("            <halpin>\"hycomm-ok\"</halpin>")
-        cfgxml_data.append("            <size>\"10\"</size>")
-        cfgxml_data.append("            <on_color>\"green\"</on_color>")
-        cfgxml_data.append("            <off_color>\"red\"</off_color>")
+        cfgxml_data.append('            <halpin>"hycomm-ok"</halpin>')
+        cfgxml_data.append('            <size>"10"</size>')
+        cfgxml_data.append('            <on_color>"green"</on_color>')
+        cfgxml_data.append('            <off_color>"red"</off_color>')
         cfgxml_data.append("          </led>")
         cfgxml_data.append("          <label>")
-        cfgxml_data.append("            <text>\"Modbus\"</text>")
+        cfgxml_data.append('            <text>"Modbus"</text>')
         cfgxml_data.append("          </label>")
         cfgxml_data.append("        </hbox>")
         cfgxml_data.append("        <hbox>")
         cfgxml_data.append("          <led>")
-        cfgxml_data.append("            <halpin>\"spindle-at-speed\"</halpin>")
-        cfgxml_data.append("            <size>\"10\"</size>")
-        cfgxml_data.append("            <on_color>\"green\"</on_color>")
-        cfgxml_data.append("            <off_color>\"red\"</off_color>")
+        cfgxml_data.append('            <halpin>"spindle-at-speed"</halpin>')
+        cfgxml_data.append('            <size>"10"</size>')
+        cfgxml_data.append('            <on_color>"green"</on_color>')
+        cfgxml_data.append('            <off_color>"red"</off_color>')
         cfgxml_data.append("          </led>")
         cfgxml_data.append("          <label>")
-        cfgxml_data.append("            <text>\"at speed\"</text>")
+        cfgxml_data.append('            <text>"at speed"</text>')
         cfgxml_data.append("          </label>")
         cfgxml_data.append("        </hbox>")
         cfgxml_data.append("      </vbox>")
@@ -1475,7 +1645,7 @@ def generate_rio_gui(project):
         cfgxml_data.append("</labelframe>")
 
     for num, din in enumerate(project["dinnames"]):
-        dname = din['_name']
+        dname = din["_name"]
         if dname.endswith("-index-enable-out"):
             continue
         din_type = din.get("type")
@@ -1488,16 +1658,16 @@ def generate_rio_gui(project):
             cfgxml_data += gui_gen.draw_led(din_name, dname)
 
     for num, vout in enumerate(project["voutnames"]):
-        vname = vout['_name']
+        vname = vout["_name"]
         vout_name = vout.get("name", f"vout{num}")
         vout_net = vout.get("net")
         if vout_net:
             if "dir" in vout:
-                vmin = int(vout.get('min', vout.get('max', 100)) * -1)
-                vmax = vout.get('max', 100)
+                vmin = int(vout.get("min", vout.get("max", 100)) * -1)
+                vmax = vout.get("max", 100)
             else:
-                vmin = int(vout.get('min', 0))
-                vmax = vout.get('max', 100)
+                vmin = int(vout.get("min", 0))
+                vmax = vout.get("max", 100)
             if vout.get("type") == "pwm":
                 cfgxml_data += gui_gen.draw_bar(vout_name, vname, vmin=vmin, vmax=vmax)
             elif vout_net == "spindle.0.speed-out" and gui == "qtdragon":
@@ -1507,7 +1677,7 @@ def generate_rio_gui(project):
 
     jogwheel = False
     for num, vin in enumerate(project["vinnames"]):
-        vname = vin['_name']
+        vname = vin["_name"]
         vin_name = vin.get("name", f"vin{num}")
         vin_net = vin.get("net")
         function = vin.get("function")
@@ -1521,7 +1691,7 @@ def generate_rio_gui(project):
         elif not vin_net or vin_net != "spindle.0.speed-out":
             display = vin.get("display", {})
             display_type = display.get("type")
-                       
+
             if display_type == "meter":
                 display_text = display.get("text", vin_name)
                 cfgxml_data += gui_gen.draw_meter(display_text, vname, display)
@@ -1533,10 +1703,9 @@ def generate_rio_gui(project):
                 cfgxml_data += gui_gen.draw_number(display_text, vname, display)
     cfgxml_data += gui_gen.draw_tab_end()
 
-
     cfgxml_data += gui_gen.draw_tab_begin("Inputs")
     for num, din in enumerate(project["dinnames"]):
-        dname = din['_name']
+        dname = din["_name"]
         if dname.endswith("-index-enable-out"):
             continue
         din_type = din.get("type")
@@ -1548,7 +1717,7 @@ def generate_rio_gui(project):
 
     jogwheel = False
     for num, vin in enumerate(project["vinnames"]):
-        vname = vin['_name']
+        vname = vin["_name"]
         vin_name = vin.get("name", f"vin{num}")
         vin_net = vin.get("net")
         function = vin.get("function")
@@ -1568,10 +1737,9 @@ def generate_rio_gui(project):
 
     cfgxml_data += gui_gen.draw_tab_end()
 
-
     cfgxml_data += gui_gen.draw_tab_begin("Outputs")
     for num, dout in enumerate(project["doutnames"]):
-        dname = dout['_name']
+        dname = dout["_name"]
         dout_name = dout.get("name", dname)
         dout_net = dout.get("net")
         if dout_net:
@@ -1580,31 +1748,31 @@ def generate_rio_gui(project):
             cfgxml_data += gui_gen.draw_checkbutton(dout_name, dname)
 
     for num, vout in enumerate(project["voutnames"]):
-        vname = vout['_name']
+        vname = vout["_name"]
         vout_name = vout.get("name", f"vout{num}")
         vout_net = vout.get("net")
-        vmin = vout.get('min', 0)
-        vmax = vout.get('max', 100)
+        vmin = vout.get("min", 0)
+        vmax = vout.get("max", 100)
         if vout_net:
             continue
         vtype = vout.get("type")
         if vtype:
             vout_name = f"{vout_name} ({vtype})"
         if vout.get("type") == "vout_sine":
-            vmin = vout.get('min', -100)
-            vmax = vout.get('max', 100)
+            vmin = vout.get("min", -100)
+            vmax = vout.get("max", 100)
         elif vout.get("type") == "vout_pwm":
             if "dir" in vout:
-                vmin = int(vout.get('max', 100)) * -1
+                vmin = int(vout.get("max", 100)) * -1
             else:
-                vmin = vout.get('min', 0)
-            vmax = vout.get('max', 100)
+                vmin = vout.get("min", 0)
+            vmax = vout.get("max", 100)
         elif vout.get("type") == "vout_rcservo":
-            vmin = vout.get('min', -100)
-            vmax = vout.get('max', 100)
+            vmin = vout.get("min", -100)
+            vmax = vout.get("max", 100)
         else:
-            vmin = vout.get('min', 0)
-            vmax = vout.get('max', 10)
+            vmin = vout.get("min", 0)
+            vmax = vout.get("max", 10)
 
         cfgxml_data += gui_gen.draw_scale(vout_name, vname, vmin, vmax)
 
@@ -1614,50 +1782,49 @@ def generate_rio_gui(project):
 
     if gui != "qtdragon":
         # mdi-command buttons
-        cfgxml_data.append("  <labelframe text=\"MDI-Commands\">")
+        cfgxml_data.append('  <labelframe text="MDI-Commands">')
         cfgxml_data.append("    <relief>RAISED</relief>")
-        cfgxml_data.append("    <font>(\"Helvetica\", 12)</font>")
+        cfgxml_data.append('    <font>("Helvetica", 12)</font>')
         cfgxml_data.append("    <hbox>")
         cfgxml_data.append("      <relief>RIDGE</relief>")
         cfgxml_data.append("      <bd>2</bd>")
         cfgxml_data.append("      <button>")
         cfgxml_data.append("        <relief>RAISED</relief>")
         cfgxml_data.append("        <bd>3</bd>")
-        cfgxml_data.append("        <halpin>\"zeroxy\"</halpin><text>\"Zero XY\"</text>")
-        cfgxml_data.append("        <font>(\"Helvetica\", 12)</font>")
+        cfgxml_data.append('        <halpin>"zeroxy"</halpin><text>"Zero XY"</text>')
+        cfgxml_data.append('        <font>("Helvetica", 12)</font>')
         cfgxml_data.append("      </button>")
         cfgxml_data.append("      <button>")
         cfgxml_data.append("        <relief>RAISED</relief>")
         cfgxml_data.append("        <bd>3</bd>")
-        cfgxml_data.append("        <halpin>\"zeroz\"</halpin><text>\"Zero Z\"</text>")
-        cfgxml_data.append("        <font>(\"Helvetica\", 12)</font>")
+        cfgxml_data.append('        <halpin>"zeroz"</halpin><text>"Zero Z"</text>')
+        cfgxml_data.append('        <font>("Helvetica", 12)</font>')
         cfgxml_data.append("      </button>")
         if "motion.probe-input" in netlist:
             cfgxml_data.append("      <button>")
             cfgxml_data.append("        <relief>RAISED</relief>")
             cfgxml_data.append("        <bd>3</bd>")
-            cfgxml_data.append("        <halpin>\"ztouch\"</halpin><text>\"Touch Off\"</text>")
-            cfgxml_data.append("        <font>(\"Helvetica\", 12)</font>")
+            cfgxml_data.append(
+                '        <halpin>"ztouch"</halpin><text>"Touch Off"</text>'
+            )
+            cfgxml_data.append('        <font>("Helvetica", 12)</font>')
             cfgxml_data.append("      </button>")
         cfgxml_data.append("    </hbox>")
         cfgxml_data.append("  </labelframe>")
 
-
     cfgxml_data += gui_gen.draw_end()
 
     if gui == "qtdragon":
-        os.system(
-            f"mkdir -p {project['LINUXCNC_PATH']}/ConfigSamples/rio/rio_hd"
-        )
+        os.system(f"mkdir -p {project['LINUXCNC_PATH']}/ConfigSamples/rio/rio_hd")
         os.system(
             f"cp -a generators/linuxcnc_config/rio_hd/* {project['LINUXCNC_PATH']}/ConfigSamples/rio/rio_hd/"
         )
         os.system(
             f"cat generators/linuxcnc_config/rio_hd/rio_hd.ui.pre > {project['LINUXCNC_PATH']}/ConfigSamples/rio/rio_hd/rio_hd.ui"
         )
-        open(f"{project['LINUXCNC_PATH']}/ConfigSamples/rio/rio_hd/rio_hd.ui", "a").write(
-            "\n".join(cfgxml_data)
-        )
+        open(
+            f"{project['LINUXCNC_PATH']}/ConfigSamples/rio/rio_hd/rio_hd.ui", "a"
+        ).write("\n".join(cfgxml_data))
         os.system(
             f"cat generators/linuxcnc_config/rio_hd/rio_hd.ui.post >> {project['LINUXCNC_PATH']}/ConfigSamples/rio/rio_hd/rio_hd.ui"
         )
@@ -1666,12 +1833,6 @@ def generate_rio_gui(project):
         open(f"{project['LINUXCNC_PATH']}/ConfigSamples/rio/rio-gui.xml", "w").write(
             "\n".join(cfgxml_data)
         )
-
-
-
-
-
-
 
 
 def generate_tool_tbl(project):
@@ -1683,7 +1844,6 @@ def generate_tool_tbl(project):
     open(f"{project['LINUXCNC_PATH']}/ConfigSamples/rio/tool.tbl", "w").write(
         "\n".join(tool_tbl)
     )
-
 
 
 def generate(project):

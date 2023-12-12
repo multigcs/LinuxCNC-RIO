@@ -17,25 +17,23 @@ from struct import *
 from PyQt5.QtCore import QDateTime, Qt, QTimer
 from PyQt5.QtGui import QFont, QPixmap
 from PyQt5.QtWidgets import (
-    QPlainTextEdit,
     QApplication,
-    QTabWidget,
     QCheckBox,
     QComboBox,
     QGridLayout,
     QLabel,
     QLineEdit,
     QListWidget,
+    QPlainTextEdit,
     QPushButton,
     QSlider,
     QSpinBox,
+    QTabWidget,
     QWidget,
 )
 
 parser = argparse.ArgumentParser()
-parser.add_argument(
-    "configfile", help="json config file", type=str, default=None
-)
+parser.add_argument("configfile", help="json config file", type=str, default=None)
 
 args = parser.parse_args()
 
@@ -184,7 +182,6 @@ class WinForm(QWidget):
         label.setStyleSheet("border: 1px solid red;")
         self.layoutMain.addWidget(label, 1, 0)
 
-
         tabwidgetR = QTabWidget()
         self.layoutMain.addWidget(tabwidgetR, 2, 1)
 
@@ -198,13 +195,14 @@ class WinForm(QWidget):
                 tabwidgetR.addTab(img, name)
 
         else:
-            for ifile in glob.glob(f"{config_dir}/*.png") + glob.glob(f"{config_dir}/*.jpg"):
+            for ifile in glob.glob(f"{config_dir}/*.png") + glob.glob(
+                f"{config_dir}/*.jpg"
+            ):
                 img = QLabel()
                 pixmap = QPixmap(ifile)
                 pixmapResized = pixmap.scaledToHeight(600)
                 img.setPixmap(pixmapResized)
                 tabwidgetR.addTab(img, ifile.split("/")[-1].split(".")[0])
-
 
         self.preview = {}
         for filename, filepath in outputfiles.items():
@@ -213,7 +211,6 @@ class WinForm(QWidget):
             tabwidgetR.addTab(self.preview[filename], filename)
             fdata = open(filepath, "r").read()
             self.preview[filename].setPlainText(fdata)
-
 
         tabwidget = QTabWidget()
         self.layoutMain.addWidget(tabwidget, 2, 0)
@@ -265,7 +262,7 @@ class WinForm(QWidget):
                         QLabel(etype), self.layout_row, self.layout_col + 1
                     )
                     self.layout.addWidget(
-                        QLabel(','.join(pinlist)), self.layout_row, self.layout_col + 2
+                        QLabel(",".join(pinlist)), self.layout_row, self.layout_col + 2
                     )
 
                     editbutton = QPushButton("edit")
@@ -488,7 +485,6 @@ class EditAdd(QWidget):
 
         self.close()
         self.gui.load()
-
 
     def gen_setup_options(self, options, data, dpath=""):
         for name, option in options.items():

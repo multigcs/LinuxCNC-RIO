@@ -1,4 +1,3 @@
-
 def generate(project):
     if not project["jdata"]["interface"]:
         return
@@ -9,7 +8,9 @@ def generate(project):
     spitest_data.append("import time")
     spitest_data.append("from struct import *")
     spitest_data.append("import sys")
-    spitest_data.append("from PyQt5.QtWidgets import QWidget,QPushButton,QApplication,QListWidget,QGridLayout,QLabel,QSlider,QCheckBox")
+    spitest_data.append(
+        "from PyQt5.QtWidgets import QWidget,QPushButton,QApplication,QListWidget,QGridLayout,QLabel,QSlider,QCheckBox"
+    )
     spitest_data.append("from PyQt5.QtCore import QTimer,QDateTime, Qt")
     spitest_data.append("")
     spitest_data.append("SERIAL = ''")
@@ -30,7 +31,9 @@ def generate(project):
     spitest_data.append("    device = 1")
     spitest_data.append("    spi = spidev.SpiDev()")
     spitest_data.append("    spi.open(bus, device)")
-    spitest_data.append(f"    spi.max_speed_hz = {project['jdata']['interface'][0].get('max', 2000000)}")
+    spitest_data.append(
+        f"    spi.max_speed_hz = {project['jdata']['interface'][0].get('max', 2000000)}"
+    )
     spitest_data.append("    spi.mode = 0")
     spitest_data.append("    spi.lsbfirst = False")
     spitest_data.append("")
@@ -56,19 +59,19 @@ def generate(project):
     spitest_data.append("")
 
     spitest_data.append("joints = [")
-    for _num in range(project['joints']):
+    for _num in range(project["joints"]):
         spitest_data.append("    0,")
     spitest_data.append("]")
     spitest_data.append("")
 
     spitest_data.append("vouts = [")
-    for _num in range(project['vouts']):
+    for _num in range(project["vouts"]):
         spitest_data.append("    0,")
     spitest_data.append("]")
     spitest_data.append("")
 
     spitest_data.append("douts = [")
-    for _num in range(project['douts']):
+    for _num in range(project["douts"]):
         spitest_data.append("    0,")
     spitest_data.append("]")
     spitest_data.append("")
@@ -79,13 +82,21 @@ def generate(project):
     spitest_data.append("vinminmax = [")
     for num, vin in enumerate(project["vinnames"]):
         if vin.get("type") == "frequency":
-            spitest_data.append(f"    ({vin.get('min', -100)}, {vin.get('max', 100)}, 'frequency', 0),")
+            spitest_data.append(
+                f"    ({vin.get('min', -100)}, {vin.get('max', 100)}, 'frequency', 0),"
+            )
         elif vin.get("type") == "pwm":
-            spitest_data.append(f"    ({vin.get('min', -100)}, {vin.get('max', 100)}, 'pwm', 0),")
+            spitest_data.append(
+                f"    ({vin.get('min', -100)}, {vin.get('max', 100)}, 'pwm', 0),"
+            )
         elif vin.get("type") == "sonar":
-            spitest_data.append(f"    ({vin.get('min', 0)}, {vin.get('max', 100000)}, 'sonar', 0),")
+            spitest_data.append(
+                f"    ({vin.get('min', 0)}, {vin.get('max', 100000)}, 'sonar', 0),"
+            )
         else:
-            spitest_data.append(f"    ({vin.get('min', -100)}, {vin.get('max', 100)}, '', 0),")
+            spitest_data.append(
+                f"    ({vin.get('min', -100)}, {vin.get('max', 100)}, '', 0),"
+            )
 
     spitest_data.append("]")
     spitest_data.append("")
@@ -104,33 +115,50 @@ def generate(project):
 
     spitest_data.append("voutminmax = [")
     for num, vout in enumerate(project["voutnames"]):
-        if vout.get('type') == "vout_sine":
-            spitest_data.append(f"    ({vout.get('min', -100)}, {vout.get('max', 100)}, 'sine', 30),")
-        elif vout.get('type') == "pwm":
-            freq = vout.get('vout_frequency', 10000)
+        if vout.get("type") == "vout_sine":
+            spitest_data.append(
+                f"    ({vout.get('min', -100)}, {vout.get('max', 100)}, 'sine', 30),"
+            )
+        elif vout.get("type") == "pwm":
+            freq = vout.get("vout_frequency", 10000)
             if "dir" in vout:
-                spitest_data.append(f"    (0, {vout.get('max', 100)}, 'pwmdir', {freq}),")
+                spitest_data.append(
+                    f"    (0, {vout.get('max', 100)}, 'pwmdir', {freq}),"
+                )
             else:
-                spitest_data.append(f"    ({vout.get('min', 0)}, {vout.get('max', 100)}, 'pwm', {freq}),")
-        elif vout.get('type') == "vout_rcservo":
-            freq = vout.get('frequency', 100)
-            spitest_data.append(f"    ({vout.get('min', -100)}, {vout.get('max', 100)}, 'rcservo', {freq}),")
-        elif vout.get('type') == "vout_frequency":
-            spitest_data.append(f"    ({vout.get('min', 0)}, {vout.get('max', 100000)}, 'frequency', 0),")
-        elif vout.get('type') == "vout_udpoti":
-            spitest_data.append(f"    ({vout.get('min', 0)}, {vout.get('max', 100)}, 'udpoti', 0),")
-        elif vout.get('type') == "vout_spipoti":
-            spitest_data.append(f"    ({vout.get('min', 0)}, {vout.get('max', 255)}, 'spipoti', 0),")
+                spitest_data.append(
+                    f"    ({vout.get('min', 0)}, {vout.get('max', 100)}, 'pwm', {freq}),"
+                )
+        elif vout.get("type") == "vout_rcservo":
+            freq = vout.get("frequency", 100)
+            spitest_data.append(
+                f"    ({vout.get('min', -100)}, {vout.get('max', 100)}, 'rcservo', {freq}),"
+            )
+        elif vout.get("type") == "vout_frequency":
+            spitest_data.append(
+                f"    ({vout.get('min', 0)}, {vout.get('max', 100000)}, 'frequency', 0),"
+            )
+        elif vout.get("type") == "vout_udpoti":
+            spitest_data.append(
+                f"    ({vout.get('min', 0)}, {vout.get('max', 100)}, 'udpoti', 0),"
+            )
+        elif vout.get("type") == "vout_spipoti":
+            spitest_data.append(
+                f"    ({vout.get('min', 0)}, {vout.get('max', 255)}, 'spipoti', 0),"
+            )
         else:
-            spitest_data.append(f"    ({vout.get('min', 0)}, {vout.get('max', 10)}, 'scale', 1),")
+            spitest_data.append(
+                f"    ({vout.get('min', 0)}, {vout.get('max', 10)}, 'scale', 1),"
+            )
     spitest_data.append("]")
     spitest_data.append("")
     spitest_data.append(f"JOINT_ENABLE_BYTES = {project['joints_en_total'] // 8}")
     spitest_data.append(f"DIGITAL_OUTPUT_BYTES = {project['douts_total'] // 8}")
     spitest_data.append(f"DIGITAL_INPUT_BYTES = {project['dins_total'] // 8}")
     spitest_data.append("")
-    
-    spitest_data.append("""
+
+    spitest_data.append(
+        """
 
 class WinForm(QWidget):
     def __init__(self,parent=None):
@@ -498,9 +526,9 @@ if __name__ == '__main__':
     sys.exit(app.exec_())
 
 
-    """)
+    """
+    )
 
-    open(f"{project['GATEWARE_PATH']}/qt_spitest.py", "w").write("\n".join(spitest_data))
-
-
-
+    open(f"{project['GATEWARE_PATH']}/qt_spitest.py", "w").write(
+        "\n".join(spitest_data)
+    )

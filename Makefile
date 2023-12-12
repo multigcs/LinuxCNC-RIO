@@ -13,17 +13,17 @@ clean:
 	rm -rf Output/${TARGETNAME}
 
 format:
-	black buildtool.py plugins/*/*.py
+	black buildtool.py projectLoader.py qtsetup.py qt-testgui.py generators/*/*.py plugins/*/*.py
 	#astyle --style=gnu -A4  generators/linuxcnc_component/rio.c
 
 isort:
-	isort buildtool.py plugins/*/*.py
+	isort buildtool.py projectLoader.py qtsetup.py qt-testgui.py generators/*/*.py plugins/*/*.py
 
 flake8:
-	flake8 --ignore S605 --max-line-length 200 buildtool.py plugins/*/*.py
+	flake8 --ignore S605 --max-line-length 200 buildtool.py projectLoader.py qtsetup.py qt-testgui.py generators/*/*.py plugins/*/*.py
 
 mypy:
-	mypy buildtool.py generators/gateware/*.py plugins/*/*.py
+	mypy buildtool.py projectLoader.py qtsetup.py qt-testgui.py generators/*/*.py plugins/*/*.py
 
 check: isort flake8 mypy
 

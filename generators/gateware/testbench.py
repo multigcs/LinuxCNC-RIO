@@ -1,4 +1,3 @@
-
 def testbench(project):
     # experimental/uncompleted testbench generator
     top_arguments = []

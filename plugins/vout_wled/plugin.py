@@ -59,12 +59,8 @@ class Plugin:
         ret = []
         for num, data in enumerate(self.jdata["plugins"]):
             if data.get("type") == self.ptype:
-                name = data.get("name", f"SP.{num}")
-                nameIntern = name.replace(".", "").replace("-", "_").upper()
                 ret.append((f"VOUT{num}", data["pin"], "OUTPUT"))
             elif data.get("type") == self.ptype2:
-                name = data.get("name", f"DOUT.{num}")
-                nameIntern = name.replace(".", "").replace("-", "_").upper()
                 ret.append((f"DOUT{num}", data["pin"], "OUTPUT"))
         return ret
 

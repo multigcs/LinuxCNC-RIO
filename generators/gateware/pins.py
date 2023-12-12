@@ -11,10 +11,12 @@ def pins_lpf(project, diamond=False):
         lpf_data.append("BANK 5 VCCIO 3.3 V;")
         lpf_data.append("BANK 6 VCCIO 3.3 V;")
         lpf_data.append("IOBUF ALLPORTS IO_TYPE=LVCMOS33;")
-        lpf_data.append("SYSCONFIG JTAG_PORT=DISABLE  SDM_PORT=PROGRAMN  I2C_PORT=DISABLE  SLAVE_SPI_PORT=ENABLE  MCCLK_FREQ=10.23;")
+        lpf_data.append(
+            "SYSCONFIG JTAG_PORT=DISABLE  SDM_PORT=PROGRAMN  I2C_PORT=DISABLE  SLAVE_SPI_PORT=ENABLE  MCCLK_FREQ=10.23;"
+        )
         lpf_data.append("")
 
-    for pname, pins in project['pinlists'].items():
+    for pname, pins in project["pinlists"].items():
         if not pins:
             continue
         lpf_data.append(f"### {pname} ###")
@@ -22,7 +24,9 @@ def pins_lpf(project, diamond=False):
             if pin[1].startswith("EXPANSION"):
                 continue
             if pin[1] == "USRMCLK":
-                lpf_data.append(f'# this pin ({pin[0]}) is not available in the lpf file, have to use the USRMCLK primitive in the verilog')
+                lpf_data.append(
+                    f"# this pin ({pin[0]}) is not available in the lpf file, have to use the USRMCLK primitive in the verilog"
+                )
                 continue
 
             extra = ""
@@ -94,9 +98,10 @@ def pins_xdc(project):
         data.append("")
     open(f"{project['PINS_PATH']}/pins.xdc", "w").write("\n".join(data))
 
+
 def pins_qdf(project):
     data = []
-    data.append(f"set_global_assignment -name STRATIX_DEVICE_IO_STANDARD \"3.3-V LVTTL\"")
+    data.append(f'set_global_assignment -name STRATIX_DEVICE_IO_STANDARD "3.3-V LVTTL"')
     for pname, pins in project["pinlists"].items():
         if not pins:
             continue
@@ -106,10 +111,13 @@ def pins_qdf(project):
                 continue
             data.append(f"set_location_assignment {pin[1]} -to {pin[0]}")
             if len(pin) > 3 and pin[3]:
-                data.append(f"set_instance_assignment -name WEAK_PULL_UP_RESISTOR ON -to {pin[0]}")
+                data.append(
+                    f"set_instance_assignment -name WEAK_PULL_UP_RESISTOR ON -to {pin[0]}"
+                )
 
         data.append("")
     open(f"{project['PINS_PATH']}/pins.qdf", "w").write("\n".join(data))
+
 
 def pins_ucf(project):
     data = []
@@ -120,9 +128,9 @@ def pins_ucf(project):
         for pin in pins:
             if pin[1].startswith("EXPANSION"):
                 continue
-            #data.append(f"NET \"{pin[0]}\"       LOC = \"{pin[1]}\"   | IOSTANDARD=LVCMOS33;")
-            data.append(f"NET \"{pin[0]}\"       LOC = \"{pin[1]}\" ;")
-            #if len(pin) > 3 and pin[3]:
+            # data.append(f"NET \"{pin[0]}\"       LOC = \"{pin[1]}\"   | IOSTANDARD=LVCMOS33;")
+            data.append(f'NET "{pin[0]}"       LOC = "{pin[1]}" ;')
+            # if len(pin) > 3 and pin[3]:
             #    data.append(f"set_instance_assignment -name WEAK_PULL_UP_RESISTOR ON -to {pin[0]}")
 
         data.append("")

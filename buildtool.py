@@ -40,7 +40,7 @@ def main(configfile, outputdir=None):
         verilog_defines = []
         for key, value in project["verilog_defines"].items():
             verilog_defines.append(f"`define {key} {value}")
-        verilog_defines.append(f"")
+        verilog_defines.append("")
         open(f"{project['SOURCE_PATH']}/defines.v", "w").write(
             "\n".join(verilog_defines)
         )
@@ -89,7 +89,6 @@ def main(configfile, outputdir=None):
 
 
 if __name__ == "__main__":
-
     parser = argparse.ArgumentParser()
     parser.add_argument(
         "configfile", help="json config file", type=str, nargs="?", default=None

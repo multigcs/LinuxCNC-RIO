@@ -11,9 +11,6 @@ RealtimeIO for LinuxCNC based on an FPGA
 * using free FPGA-Toolchain
 * tested on ICE40UP5K, ICE40LP8K, ICE40HX8K, ECP5 and TangNano9K boards
 
-![tango](./files/tango.jpg)
-
-
 ## Sample-Configs:
 | Name | Description |
 | --- | --- |
@@ -53,6 +50,9 @@ RealtimeIO for LinuxCNC based on an FPGA
 | expansion | [shiftreg](plugins/expansion_shiftreg) | Expansion to add I/O's via shiftregister's |
 | expansion | [shiftreg](plugins/expansion_pcf8574) | Expansion to add I/O's via pcf8574 over I2C |
 | interface | [spislave](plugins/interface_spislave) | communication interface ( RPI(Master) <-SPI-> FPGA(Slave) ) |
+
+
+![overview](./files/overview.svg)
 
 
 ## FPGA-Toolchain:

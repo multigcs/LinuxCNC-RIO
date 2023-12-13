@@ -2,7 +2,7 @@
 #
 #
 
-cat <<EOF | dot -Tsvg
+cat <<EOF | dot -Tsvg > files/schema.svg
 
 digraph {
     "json-config" -> "buildtool.py"
@@ -43,3 +43,38 @@ digraph {
 }
 
 EOF
+
+cat <<EOF | dot -Tsvg > files/overview.svg
+
+digraph {
+    rankdir=LR;
+
+    "STEPPER" -> "STEP/DIR\nstepper-driver" -> "FPGA" [dir=back]
+    "UNIPOLAR" -> "GPIO\nuln2803" -> "FPGA" [dir=back]
+    "DC-Servo" -> "PWM/DIR\nh-bridge" -> "FPGA" [dir=back]
+    "RC-Servo" -> "PWM" -> "FPGA" [dir=back]
+
+    "HY-VFD" -> "MODBUS\nlevel-converter\n(MAX485)" -> "FPGA" [dir=both]
+
+    "Encoder\nOptical for joint feedback (closed-loop)\nmechanical for user inputs" -> "FPGA"
+    "ADC\n(tlc549c / ads1115)" -> "FPGA"
+    "Sensors\n(ds18b20 / lm75)" -> "FPGA"
+    "Counter\n(up/down/reset)" -> "FPGA"
+    "Digial-Input\n(switches/buttons/sensors/...)" -> "FPGA"
+    "Digial-Output\n(spindle/flood/LED's/...)" -> "FPGA" [dir=back]
+    "PWM-Output\n(spindle-speed/...)" -> "FPGA" [dir=back]
+
+    "extra GPIO's\n(Buttons/LED's)\n(do not use for realtime stuff)" -> "IO-Extensions\n(shiftreg/pcf8574)\n(for extra Digital-Ports)" -> "FPGA" [dir=both]
+
+    "FPGA" -> "SPI" [dir=both]
+
+    "SPI" -> "UDP2SPI-Bridge\noptional" -> "Ethernet" -> "LinuxCNC\n(RPI4/PC/Laptop)"[dir=both,color=lightgray]
+    "UDP2SPI-Bridge\noptional" [color=lightgray]
+    "Ethernet" [color=lightgray]
+
+    "SPI" -> "LinuxCNC\n(RPI4/PC/Laptop)"[dir=both]
+
+}
+
+EOF
+

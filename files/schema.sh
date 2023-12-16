@@ -68,9 +68,8 @@ digraph {
 
     "FPGA" -> "SPI" [dir=both]
 
-    "SPI" -> "UDP2SPI-Bridge\noptional" -> "Ethernet" -> "LinuxCNC\n(RPI4/PC/Laptop)"[dir=both,color=lightgray]
-    "UDP2SPI-Bridge\noptional" [color=lightgray]
-    "Ethernet" [color=lightgray]
+    "FPGA" -> "Ethernet\n(optional)" -> "LinuxCNC\n(RPI4/PC/Laptop)"[dir=both,color=lightgray]
+    "Ethernet\n(optional)" [color=lightgray]
 
     "SPI" -> "LinuxCNC\n(RPI4/PC/Laptop)"[dir=both]
 

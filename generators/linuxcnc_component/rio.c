@@ -1160,6 +1160,7 @@ void rio_transfer()
     tcflush(serial_fd, TCIOFLUSH);
     write(serial_fd, txData.txBuffer, SPIBUFSIZE);
     tcdrain(serial_fd);
+    tcflush(serial_fd, TCIFLUSH);
     int cnt = 0;
     int rec = 0;
     while((rec = read(serial_fd, rxBufferTmp, SPIBUFSIZE)) != SPIBUFSIZE && cnt++ < 190) {

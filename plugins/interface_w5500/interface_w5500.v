@@ -1,12 +1,13 @@
 
 module interface_w5500
     #(
-        parameter BUFFER_SIZE=64,
-        parameter MSGID=32'h74697277,
-        parameter TIMEOUT=32'd4800000,
-        parameter IP_ADDR={8'd192, 8'd168, 8'd10, 8'd193},
-        parameter PORT=2390
-    )
+         parameter BUFFER_SIZE=64,
+         parameter MSGID=32'h74697277,
+         parameter TIMEOUT=32'd4800000,
+         parameter IP_ADDR={8'd192, 8'd168, 8'd10, 8'd193},
+         parameter MAC_ADDR={8'hAA, 8'hAF, 8'hFA, 8'hCC, 8'hE3, 8'h1C},
+         parameter PORT=2390
+     )
      (
          input clk,
          output W5500_MOSI,
@@ -72,7 +73,7 @@ module interface_w5500
         end
     end
 
-    wiznet5500 #(.IP_ADDR(IP_ADDR), .PORT(PORT), .BUFFER_SIZE(BUFFER_SIZE)) eth_iface (
+    wiznet5500 #(.IP_ADDR(IP_ADDR), .MAC_ADDR(MAC_ADDR), .PORT(PORT), .BUFFER_SIZE(BUFFER_SIZE), .MSGID(MSGID)) eth_iface (
                    .clk(clk),
                    .miso(W5500_MISO),
                    .mosi(W5500_MOSI),
@@ -108,9 +109,11 @@ endmodule
 module wiznet5500
     #(
          parameter IP_ADDR = {8'd192, 8'd168, 8'd10, 8'd193},
+         parameter MAC_ADDR = {8'hAA, 8'hAF, 8'hFA, 8'hCC, 8'hE3, 8'h1C},
          parameter PORT = 2390,
          parameter DATA_READ_SIZE = 8,
-         parameter BUFFER_SIZE = 192
+         parameter BUFFER_SIZE = 192,
+         parameter MSGID=32'h74697277
      )
      (
          input clk,
@@ -135,8 +138,8 @@ module wiznet5500
          output reg data_read_valid = 1'b0,
    `endif
 
-        output reg data_reveived = 0,
-        output reg rx_found = 0,
+         output reg data_reveived = 0,
+         output reg rx_found = 0,
 
          output is_available
      );
@@ -155,12 +158,12 @@ module wiznet5500
     localparam SET_PHY_MODE = 32'b00000000_00101110_00000100_11011000;
 
     // Set/read our MAC address.
-    localparam SET_MAC_ADDRESS_BYTE_0  =  {8'h00, 8'b00001001, WRITE_REG, 8'hAA};
-    localparam SET_MAC_ADDRESS_BYTE_1  =  {8'h00, 8'b00001010, WRITE_REG, 8'hAF};
-    localparam SET_MAC_ADDRESS_BYTE_2  =  {8'h00, 8'b00001011, WRITE_REG, 8'hFA};
-    localparam SET_MAC_ADDRESS_BYTE_3  =  {8'h00, 8'b00001100, WRITE_REG, 8'hCC};
-    localparam SET_MAC_ADDRESS_BYTE_4  =  {8'h00, 8'b00001101, WRITE_REG, 8'hE3};
-    localparam SET_MAC_ADDRESS_BYTE_5  =  {8'h00, 8'b00001110, WRITE_REG, 8'h1C};
+    localparam SET_MAC_ADDRESS_BYTE_0  =  {8'h00, 8'b00001001, WRITE_REG};
+    localparam SET_MAC_ADDRESS_BYTE_1  =  {8'h00, 8'b00001010, WRITE_REG};
+    localparam SET_MAC_ADDRESS_BYTE_2  =  {8'h00, 8'b00001011, WRITE_REG};
+    localparam SET_MAC_ADDRESS_BYTE_3  =  {8'h00, 8'b00001100, WRITE_REG};
+    localparam SET_MAC_ADDRESS_BYTE_4  =  {8'h00, 8'b00001101, WRITE_REG};
+    localparam SET_MAC_ADDRESS_BYTE_5  =  {8'h00, 8'b00001110, WRITE_REG};
 
     // Set/read our IP address.
     localparam SET_SOURCE_IP_ADDRESS_0  =  {8'h00, 8'b00001111, WRITE_REG};
@@ -306,7 +309,7 @@ module wiznet5500
 
 
         end else if (state == STATE_RX_START) begin
-        
+
             rx_buffer_read_pointer <= rx_buffer_read_pointer + data_read[7:0];
 
             if (data_read[7:0] == (BUFFER_SIZE/8+8)) begin
@@ -322,15 +325,17 @@ module wiznet5500
                 state <= STATE_RX_WRITE_PTR1;
                 is_busy <= 1'b1;
             end
-            
+
 
         end else if (state == STATE_PULLING_DATA && spi_clock_count > (BUFFER_SIZE+HEADER_SIZE-1)) begin
             spi_chip_select_n <= 1'b1;
             state <= STATE_RX_WRITE_PTR1;
             is_busy <= 1'b1;
-            dst_ip <= rec_buffer[BUFFER_SIZE+HEADER_SIZE-HEADER_IP_OFFSET-1:BUFFER_SIZE+HEADER_SIZE-HEADER_IP_OFFSET-32];
-            dst_port <= rec_buffer[BUFFER_SIZE+HEADER_SIZE-HEADER_PORT_OFFSET-1:BUFFER_SIZE+HEADER_SIZE-HEADER_PORT_OFFSET-16];
-            data_output <= rec_buffer[BUFFER_SIZE-1:0];
+            if (rec_buffer[BUFFER_SIZE-1:BUFFER_SIZE-32] == MSGID) begin
+                dst_ip <= rec_buffer[BUFFER_SIZE+HEADER_SIZE-HEADER_IP_OFFSET-1:BUFFER_SIZE+HEADER_SIZE-HEADER_IP_OFFSET-32];
+                dst_port <= rec_buffer[BUFFER_SIZE+HEADER_SIZE-HEADER_PORT_OFFSET-1:BUFFER_SIZE+HEADER_SIZE-HEADER_PORT_OFFSET-16];
+                data_output <= rec_buffer[BUFFER_SIZE-1:0];
+            end
 
         end else if (state == STATE_RX_WRITE_PTR1) begin
             spi_clk <= 1'b0;
@@ -454,12 +459,12 @@ module wiznet5500
                 0: current_instruction <= SET_PHY_MODE;
 
                 // Set our MAC address
-                1: current_instruction <= SET_MAC_ADDRESS_BYTE_0;
-                2: current_instruction <= SET_MAC_ADDRESS_BYTE_1;
-                3: current_instruction <= SET_MAC_ADDRESS_BYTE_2;
-                4: current_instruction <= SET_MAC_ADDRESS_BYTE_3;
-                5: current_instruction <= SET_MAC_ADDRESS_BYTE_4;
-                6: current_instruction <= SET_MAC_ADDRESS_BYTE_5;
+                1: current_instruction <= {SET_MAC_ADDRESS_BYTE_0, MAC_ADDR[47:40]};
+                2: current_instruction <= {SET_MAC_ADDRESS_BYTE_1, MAC_ADDR[39:32]};
+                3: current_instruction <= {SET_MAC_ADDRESS_BYTE_2, MAC_ADDR[31:24]};
+                4: current_instruction <= {SET_MAC_ADDRESS_BYTE_3, MAC_ADDR[23:16]};
+                5: current_instruction <= {SET_MAC_ADDRESS_BYTE_4, MAC_ADDR[15:8]};
+                6: current_instruction <= {SET_MAC_ADDRESS_BYTE_5, MAC_ADDR[7:0]};
 
                 // Set our IP address
                 7: current_instruction <= {SET_SOURCE_IP_ADDRESS_0, local_ip[31:24]};

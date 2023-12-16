@@ -57,13 +57,20 @@ class Plugin:
         func_out = []
         for num, interface in enumerate(self.jdata.get("interface", [])):
             if interface["type"] == "w5500":
+                mac = interface.get("mac", "AA:AF:FA:CC:E3:1C").split(":")
+                mac_addr = f"{{8'h{mac[0]}, 8'h{mac[1]}, 8'h{mac[2]}, 8'h{mac[3]}, 8'h{mac[4]}, 8'h{mac[5]}}}"
                 ip = interface.get("ip", "192.168.10.193").split(".")
                 ip_addr = f"{{8'd{ip[0]}, 8'd{ip[1]}, 8'd{ip[2]}, 8'd{ip[3]}}}"
                 port = interface.get("port", 2390)
 
-                func_out.append(
-                    f"    interface_w5500 #(BUFFER_SIZE, 32'h74697277, 32'd{int(self.jdata['clock']['speed']) // 4}, {ip_addr}, {port}) w55001 ("
-                )
+                func_out.append("    interface_w5500 #(")
+                func_out.append("        .BUFFER_SIZE(BUFFER_SIZE),")
+                func_out.append("        .MSGID(32'h74697277),")
+                func_out.append(f"        .TIMEOUT(32'd{int(self.jdata['clock']['speed']) // 4}),")
+                func_out.append(f"        .MAC_ADDR({mac_addr}),")
+                func_out.append(f"        .IP_ADDR({ip_addr}),")
+                func_out.append(f"        .PORT({port})")
+                func_out.append("    ) w55001(")
                 func_out.append("        .clk (sysclk),")
                 func_out.append("        .W5500_SCK (INTERFACE_W5500_SCK),")
                 func_out.append("        .W5500_SSEL (INTERFACE_W5500_SSEL),")

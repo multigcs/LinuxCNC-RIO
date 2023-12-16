@@ -1132,9 +1132,11 @@ void rio_transfer()
 {
 
 #ifdef TRANSPORT_UDP
+    int i;
     int ret;
     long t1;
     long t2;
+    uint8_t rxBufferTmp[SPIBUFSIZE*2];
 
     // Send datagram
     ret = send(udpSocket, txData.txBuffer, SPIBUFSIZE, 0);
@@ -1142,8 +1144,8 @@ void rio_transfer()
     // Receive incoming datagram
     t1 = rtapi_get_time();
     do {
-        ret = recv(udpSocket, rxData.rxBuffer, SPIBUFSIZE, 0);
-        if(ret < 0) {
+        ret = recv(udpSocket, rxBufferTmp, SPIBUFSIZE*2, 0);
+        if (ret < 0) {
             rtapi_delay(READ_PCK_DELAY_NS);
         }
         t2 = rtapi_get_time();
@@ -1152,9 +1154,22 @@ void rio_transfer()
 
     if (ret > 0) {
         errCount = 0;
+
+        if (ret == SPIBUFSIZE) {
+            memcpy(rxData.rxBuffer, rxBufferTmp, SPIBUFSIZE);
+        } else {
+
+            rtapi_print("wronng size = %d\n", ret);
+            for (i = 0; i < ret; i++) {
+                rtapi_print("%d ",rxData.rxBuffer[i]);
+            }
+            rtapi_print("\n");
+
+        }
+
     } else {
         errCount++;
-        rtapi_print("Ethernet ERROR: N = %d\n", errCount);
+        rtapi_print("Ethernet ERROR: N = %d (ret: %d)\n", errCount, ret);
     }
 
     if (errCount > 2) {

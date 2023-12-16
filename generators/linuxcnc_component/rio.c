@@ -241,7 +241,7 @@ int rtapi_app_main(void)
 
 #ifdef TRANSPORT_UDP
     // Initialize the UDP socket
-    rtapi_print("Info: Initialize the UDP socket\n");
+    rtapi_print("Info: Initialize the UDP socket: %s\n", UDP_IP);
     if (UDP_init() < 0) {
         rtapi_print_msg(RTAPI_MSG_ERR, "Error: The board is unreachable\n");
         return -1;
@@ -249,13 +249,22 @@ int rtapi_app_main(void)
 #endif
 
 #ifdef TRANSPORT_SERIAL
-    rtapi_print("Info: Initialize serial connection\n");
+    rtapi_print("Info: Initialize serial connection: %s\n", SERIAL_PORT);
     serial_fd = open (SERIAL_PORT, O_RDWR | O_NOCTTY | O_SYNC);
     if (serial_fd < 0) {
         rtapi_print_msg(RTAPI_MSG_ERR,"usb setup error\n");
         return errno;
     }
     set_interface_attribs (serial_fd, SERIAL_SPEED, 0);
+
+    uint8_t rxBufferTmp[SPIBUFSIZE];
+    int cnt = 0;
+    int rec = 0;
+    while((rec = read(serial_fd, rxBufferTmp, SPIBUFSIZE)) <= SPIBUFSIZE && cnt++ < 190) {
+        usleep(100);
+    }
+
+
 #endif
 
 #ifdef TRANSPORT_SPI
@@ -1105,8 +1114,9 @@ void rio_readwrite()
 
                 rtapi_print("Bad interface payload = %x\n", rxData.header);
                 for (i = 0; i < SPIBUFSIZE; i++) {
-                	rtapi_print("%d\n",rxData.rxBuffer[i]);
+                	rtapi_print("%d ",rxData.rxBuffer[i]);
                 }
+                rtapi_print("\n");
                 break;
             }
         }
@@ -1157,23 +1167,17 @@ void rio_transfer()
 
     uint8_t rxBufferTmp[SPIBUFSIZE];
 
-    tcflush(serial_fd, TCIOFLUSH);
     write(serial_fd, txData.txBuffer, SPIBUFSIZE);
     tcdrain(serial_fd);
     tcflush(serial_fd, TCIFLUSH);
     int cnt = 0;
     int rec = 0;
-    while((rec = read(serial_fd, rxBufferTmp, SPIBUFSIZE)) != SPIBUFSIZE && cnt++ < 190) {
+    while((rec = read(serial_fd, rxBufferTmp, SPIBUFSIZE)) < SPIBUFSIZE && cnt++ < 250) {
         usleep(100);
     }
     if (rec == SPIBUFSIZE) {
         memcpy(rxData.rxBuffer, rxBufferTmp, SPIBUFSIZE);
     }
-
-    /*
-    write(serial_fd, txData.txBuffer, SPIBUFSIZE);
-    read(serial_fd, rxData.rxBuffer, SPIBUFSIZE);
-    */
 
 #endif
 

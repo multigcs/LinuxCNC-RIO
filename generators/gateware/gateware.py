@@ -109,7 +109,7 @@ def verilog_top(project):
         top_data.append("")
 
     if project["jdata"]["interface"]:
-        top_data.append(f"    parameter BUFFER_SIZE = {project['data_size']};")
+        top_data.append(f"    parameter BUFFER_SIZE = 16'd{project['data_size']};")
         top_data.append("")
 
         top_data.append(f"    wire[{project['data_size'] - 1}:0] rx_data;")
@@ -231,9 +231,9 @@ def verilog_top(project):
         top_data.append(f"    // rx_data {project['rx_data_size']}")
         pos = project["data_size"]
 
-        top_data.append("    wire [31:0] header_rx;")
+        top_data.append("    // wire [31:0] header_rx;")
         top_data.append(
-            f"    assign header_rx = {{rx_data[{pos-3*8-1}:{pos-3*8-8}], rx_data[{pos-2*8-1}:{pos-2*8-8}], rx_data[{pos-1*8-1}:{pos-1*8-8}], rx_data[{pos-1}:{pos-8}]}};"
+            f"    // assign header_rx = {{rx_data[{pos-3*8-1}:{pos-3*8-8}], rx_data[{pos-2*8-1}:{pos-2*8-8}], rx_data[{pos-1*8-1}:{pos-1*8-8}], rx_data[{pos-1}:{pos-8}]}};"
         )
         pos -= 32
 

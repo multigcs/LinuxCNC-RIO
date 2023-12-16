@@ -99,8 +99,11 @@ def pins_xdc(project):
 
 
 def pins_qdf(project):
-    data = []
-    data.append('set_global_assignment -name STRATIX_DEVICE_IO_STANDARD "3.3-V LVTTL"')
+    data = ['']
+    data.append('set_global_assignment -name STRATIX_DEVICE_IO_STANDARD "3.0-V LVTTL"')
+    data.append('set_global_assignment -name MIN_CORE_JUNCTION_TEMP 0')
+    data.append('set_global_assignment -name MAX_CORE_JUNCTION_TEMP 85')
+    data.append('')
     for pname, pins in project["pinlists"].items():
         if not pins:
             continue

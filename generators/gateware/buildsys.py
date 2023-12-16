@@ -501,6 +501,11 @@ def buildsys_diamond(project):
 def buildsys_quartus(project):
     pins_qdf(project)
 
+    if project["osc_clock"]:
+        clkname = "sysclk_in"
+    else:
+        clkname = "sysclk"
+
     family = project["jdata"]["family"]
     ftype = project["jdata"]["type"]
     verilogs = " ".join(project["verilog_files"])
@@ -592,6 +597,14 @@ def buildsys_quartus(project):
     makefile_data.append("")
     makefile_data.append("")
     open(f"{project['GATEWARE_PATH']}/Makefile", "w").write("\n".join(makefile_data))
+
+    sdc_data = []
+    sdc_data.append("")
+    sdc_data.append(f"create_clock -name {clkname} -period \"{float(project['jdata']['clock']['speed']) / 1000000} MHz\" [get_ports {clkname}]")
+    sdc_data.append("derive_pll_clocks")
+    sdc_data.append("derive_clock_uncertainty")
+    sdc_data.append("")
+    open(f"{project['GATEWARE_PATH']}/rio.sdc", "w").write("\n".join(sdc_data))
 
 
 def buildsys_verilator(project):

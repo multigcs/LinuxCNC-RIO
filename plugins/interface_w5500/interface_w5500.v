@@ -1,7 +1,7 @@
 
 module interface_w5500
     #(
-         parameter BUFFER_SIZE=64,
+         parameter BUFFER_SIZE=16'd64,
          parameter MSGID=32'h74697277,
          parameter TIMEOUT=32'd4800000,
          parameter IP_ADDR={8'd192, 8'd168, 8'd10, 8'd193},
@@ -22,8 +22,6 @@ module interface_w5500
 
 
     wire rx_found;
-    wire data_reveived;
-
 
     reg [15:0] counter = 16'd0;
     reg flush_requested = 1'b0;
@@ -87,17 +85,10 @@ module interface_w5500
                    .instruction_input_valid(instruction_input_valid),
                    .instruction_input(instruction_input),
     `endif
-
                    .is_available(ethernet_available),
-
                    .data_input(data_to_ethernet),
                    .data_input_valid(data_out_valid),
-
                    .data_output(rx_data),
-
-                   .data_reveived(data_reveived),
-
-
                    .rx_found(rx_found),
                    .flush_requested(flush_requested)
                );
@@ -122,25 +113,18 @@ module wiznet5500
          input instruction_input_valid,
          input [31:0] instruction_input,
    `endif
-
          input data_input_valid,
          input [BUFFER_SIZE-1:0] data_input,
          output reg [BUFFER_SIZE-1:0] data_output,
          input flush_requested,
-
          output reg mosi,
          output reg spi_clk = 1'b0,
          output reg spi_chip_select_n,
-
          output reg[DATA_READ_SIZE - 1:0] data_read = {(DATA_READ_SIZE - 1){1'b0}},
-
    `ifdef WIZNET5500_READ_DATA
          output reg data_read_valid = 1'b0,
    `endif
-
-         output reg data_reveived = 0,
          output reg rx_found = 0,
-
          output is_available
      );
 
@@ -200,8 +184,8 @@ module wiznet5500
     localparam SET_SOCKET_0_SRC_PORT_0 = {8'h00, 8'b00000100, WRITE_S0};
     localparam SET_SOCKET_0_SRC_PORT_1 = {8'h00, 8'b00000101, WRITE_S0};
 
-    // Set socket 0's TX buffer size to 8kilobytes
-    localparam SET_SOCKET_0_TX_BFR_SZ = {8'h00, 8'b00011111, WRITE_S0, 8'd8};
+    // Set socket 0's TX buffer size to 16kilobytes
+    localparam SET_SOCKET_0_TX_BFR_SZ = {8'h00, 8'b00011111, WRITE_S0, 8'd16};
 
     localparam OPEN_SOCKET_0 =       {8'h00, 8'b00000001, WRITE_S0, 8'b00000001};
     localparam READ_SOCKET_0_STATE = {8'h00, 8'b00000011, READ_S0,  8'b00100010};
@@ -251,7 +235,6 @@ module wiznet5500
     reg waiting_for_socket = 1'b0;
     reg is_initialized = 1'b0;
     reg is_check_rx = 0;
-    reg read_free_space_progress = 3'b000;
     reg [(BUFFER_SIZE+24-1):0] send_data_instruction;
 
 `ifdef WIZNET5500_ACCEPT_INSTRUCTIONS
@@ -263,7 +246,7 @@ module wiznet5500
     reg [31:0] local_ip = IP_ADDR;
     reg [31:0] dst_ip = {8'd192, 8'd168, 8'd10, 8'd0};
     reg [15:0] dst_port = 16'd2390;
-    reg [7:0] rx_timer = 8'd0;
+    reg [3:0] rx_timer = 4'd0;
     reg rx_buffer_valid = 0;
 
     reg [15:0] tx_buffer_write_pointer = 16'd0;
@@ -276,7 +259,7 @@ module wiznet5500
             spi_clk <= 1'b0;
             state <= STATE_SENDING_COMMAND;
             spi_chip_select_n <= 1'b0;
-            spi_clock_count <= 0;
+            spi_clock_count <= 10'd0;
             is_busy <= 1'b1;
             current_instruction <= {SET_S0_TX_WR1, tx_buffer_write_pointer[7:0]};
             next_state <= STATE_UPDATING_TX_PTR;
@@ -287,7 +270,7 @@ module wiznet5500
             spi_clk <= 1'b0;
             state <= STATE_SENDING_COMMAND;
             spi_chip_select_n <= 1'b0;
-            spi_clock_count <= 0;
+            spi_clock_count <= 10'd0;
             is_busy <= 1'b1;
             current_instruction <= {SET_S0_TX_WR0, tx_buffer_write_pointer[15:8]};
             next_state <= STATE_SENDING_PACKET;
@@ -298,7 +281,7 @@ module wiznet5500
             spi_clk <= 1'b0;
             state <= STATE_SENDING_COMMAND;
             spi_chip_select_n <= 1'b0;
-            spi_clock_count <= 0;
+            spi_clock_count <= 10'd0;
             is_busy <= 1'b1;
             current_instruction <= SEND_PACKET_SOCKET_0;
             next_state <= STATE_UNDEFINED;
@@ -318,7 +301,7 @@ module wiznet5500
                 spi_clk <= 1'b0;
                 state <= STATE_PULLING_DATA;
                 spi_chip_select_n <= 1'b0;
-                spi_clock_count <= 0;
+                spi_clock_count <= 10'd0;
                 is_busy <= 1'b1;
             end else begin
                 rx_buffer_valid <= 0;
@@ -341,7 +324,7 @@ module wiznet5500
             spi_clk <= 1'b0;
             state <= STATE_SENDING_COMMAND;
             spi_chip_select_n <= 1'b0;
-            spi_clock_count <= 0;
+            spi_clock_count <= 10'd0;
             is_busy <= 1'b1;
             current_instruction <= {SET_S0_RX_RD1, rx_buffer_read_pointer[7:0]};
             next_state <= STATE_RX_WRITE_PTR0;
@@ -350,7 +333,7 @@ module wiznet5500
             spi_clk <= 1'b0;
             state <= STATE_SENDING_COMMAND;
             spi_chip_select_n <= 1'b0;
-            spi_clock_count <= 0;
+            spi_clock_count <= 10'd0;
             is_busy <= 1'b1;
             current_instruction <= {SET_S0_RX_RD0, rx_buffer_read_pointer[15:8]};
             next_state <= STATE_RX_DONE;
@@ -359,7 +342,7 @@ module wiznet5500
             spi_clk <= 1'b0;
             state <= STATE_SENDING_COMMAND;
             spi_chip_select_n <= 1'b0;
-            spi_clock_count <= 0;
+            spi_clock_count <= 10'd0;
             is_busy <= 1'b1;
             current_instruction <= S0_CR_40;
 
@@ -374,7 +357,7 @@ module wiznet5500
             spi_clk <= 1'b0;
             state <= STATE_SENDING_COMMAND;
             spi_chip_select_n <= 1'b0;
-            spi_clock_count <= 0;
+            spi_clock_count <= 10'd0;
             is_busy <= 1'b1;
             current_instruction <= {SET_SOCKET_0_DST_IP_0, dst_ip[31:24]};
             next_state <= STATE_SET_IP_1;
@@ -383,7 +366,7 @@ module wiznet5500
             spi_clk <= 1'b0;
             state <= STATE_SENDING_COMMAND;
             spi_chip_select_n <= 1'b0;
-            spi_clock_count <= 0;
+            spi_clock_count <= 10'd0;
             is_busy <= 1'b1;
             current_instruction <= {SET_SOCKET_0_DST_IP_1, dst_ip[23:16]};
             next_state <= STATE_SET_IP_2;
@@ -392,7 +375,7 @@ module wiznet5500
             spi_clk <= 1'b0;
             state <= STATE_SENDING_COMMAND;
             spi_chip_select_n <= 1'b0;
-            spi_clock_count <= 0;
+            spi_clock_count <= 10'd0;
             is_busy <= 1'b1;
             current_instruction <= {SET_SOCKET_0_DST_IP_2, dst_ip[15:8]};
             next_state <= STATE_SET_IP_3;
@@ -401,7 +384,7 @@ module wiznet5500
             spi_clk <= 1'b0;
             state <= STATE_SENDING_COMMAND;
             spi_chip_select_n <= 1'b0;
-            spi_clock_count <= 0;
+            spi_clock_count <= 10'd0;
             is_busy <= 1'b1;
             current_instruction <= {SET_SOCKET_0_DST_IP_3, dst_ip[7:0]};
             next_state <= STATE_SET_PORT_0;
@@ -410,7 +393,7 @@ module wiznet5500
             spi_clk <= 1'b0;
             state <= STATE_SENDING_COMMAND;
             spi_chip_select_n <= 1'b0;
-            spi_clock_count <= 0;
+            spi_clock_count <= 10'd0;
             is_busy <= 1'b1;
             current_instruction <= {SET_SOCKET_0_DST_PRT_0, dst_port[15:8]};
             next_state <= STATE_SET_PORT_1;
@@ -419,7 +402,7 @@ module wiznet5500
             spi_clk <= 1'b0;
             state <= STATE_SENDING_COMMAND;
             spi_chip_select_n <= 1'b0;
-            spi_clock_count <= 0;
+            spi_clock_count <= 10'd0;
             is_busy <= 1'b1;
             current_instruction <= {SET_SOCKET_0_DST_PRT_1, dst_port[7:0]};
             next_state <= STATE_UNDEFINED;
@@ -438,7 +421,7 @@ module wiznet5500
                 spi_clk <= 1'b0;
                 state <= STATE_SENDING_COMMAND;
                 spi_chip_select_n <= 1'b0;
-                spi_clock_count <= 0;
+                spi_clock_count <= 10'd0;
                 is_busy <= 1'b1;
                 current_instruction <= READ_SOCKET_0_STATE;
          `ifdef WIZNET5500_READ_DATA         
@@ -450,7 +433,7 @@ module wiznet5500
             state <= STATE_SENDING_COMMAND;
             initialization_progress <= initialization_progress + 6'b000001;
             spi_chip_select_n <= 1'b0;
-            spi_clock_count <= 0;
+            spi_clock_count <= 10'd0;
             is_busy <= 1'b1;
 
             case (initialization_progress)
@@ -518,7 +501,7 @@ module wiznet5500
             spi_clk <= 1'b0;
             state <= STATE_SENDING_COMMAND;
             spi_chip_select_n <= 1'b0;
-            spi_clock_count <= 0;
+            spi_clock_count <= 10'd0;
             current_instruction <= instruction_input;
       `ifdef WIZNET5500_READ_DATA
             data_read_valid <= 1'b0;
@@ -530,7 +513,7 @@ module wiznet5500
             spi_clk <= 1'b0;
             state <= STATE_PUSHING_DATA;
             spi_chip_select_n <= 1'b0;
-            spi_clock_count <= 0;
+            spi_clock_count <= 10'd0;
             is_busy <= 1'b1;
         end else if (state == STATE_SENDING_COMMAND && spi_clock_count > 31) begin
             spi_chip_select_n <= 1'b1;
@@ -545,22 +528,22 @@ module wiznet5500
             end else begin
                 state <= STATE_INITIALIZING;
             end
-        end else if (state == STATE_PUSHING_DATA && spi_clock_count > (BUFFER_SIZE+24-1)) begin
+        end else if (state == STATE_PUSHING_DATA && spi_clock_count > (BUFFER_SIZE+16'd23)) begin
             spi_chip_select_n <= 1'b1;
             state <= STATE_IDLE;
             // n bytes are pushed per message
-            tx_buffer_write_pointer <= tx_buffer_write_pointer + (BUFFER_SIZE/8);
+            tx_buffer_write_pointer <= tx_buffer_write_pointer + (BUFFER_SIZE/16'd8);
             is_busy <= 1'b0;
         end else if (state == STATE_SENDING_COMMAND || state == STATE_PUSHING_DATA || state == STATE_PULLING_DATA) begin
             // We are effectively clocking the module at half the clock rate
             // of the FPGA itself.
             spi_clk <= ~spi_clk;
             if (spi_clk == 1'b0) begin
-                spi_clock_count <= spi_clock_count + 1;
+                spi_clock_count <= spi_clock_count + 10'd1;
             end
 
         end else if (state == STATE_IDLE) begin
-            if (rx_timer == 10) begin
+            if (rx_timer == 4'd10) begin
                 // check for new data
                 if (is_check_rx == 1) begin
                     is_busy <= 1'b0;
@@ -573,13 +556,13 @@ module wiznet5500
                     spi_clk <= 1'b0;
                     state <= STATE_SENDING_COMMAND;
                     spi_chip_select_n <= 1'b0;
-                    spi_clock_count <= 0;
+                    spi_clock_count <= 10'd0;
                     is_check_rx <= 1'b1;
                     is_busy <= 1'b1;
                     current_instruction <= GET_S0_RX_RSR1;
                 end
             end else begin
-                rx_timer <= rx_timer + 1;
+                rx_timer <= rx_timer + 4'd1;
             end
         end
 

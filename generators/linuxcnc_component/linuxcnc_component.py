@@ -18,8 +18,9 @@ def generate(project):
     transport = project["jdata"].get("transport", "SPI")
     if transport == "UDP":
         rio_data.append("#define TRANSPORT_UDP")
+        ip = project['jdata'].get('ip', project['jdata'].get('interface', {})[0].get('ip', '192.168.10.132'))
         rio_data.append(
-            f"#define UDP_IP \"{project['jdata'].get('ip', '192.168.10.132')}\""
+            f"#define UDP_IP \"{ip}\""
         )
     elif transport == "SERIAL":
         rio_data.append("#define TRANSPORT_SERIAL")

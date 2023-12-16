@@ -53,6 +53,8 @@ elif args.device and args.device != "":
     import socket
 
     UDPClientSocket = socket.socket(family=socket.AF_INET, type=socket.SOCK_DGRAM)
+    UDPClientSocket.bind(('0.0.0.0', args.port))
+
 else:
     import spidev
 
@@ -472,6 +474,7 @@ class WinForm(QWidget):
         self.error_counter_spi = 0
         self.error_counter_net = 0
         self.time_trx = 0
+        self.time_trx_max = 0
         self.vfd = {}
 
         # boutnames
@@ -606,9 +609,10 @@ class WinForm(QWidget):
             if dbyte == 0:
                 layout.addWidget(QLabel(f"DIN:"), gpy, 0)
             for dn in range(8):
-                layout.addWidget(
-                    QLabel(DIN_NAMES[dbyte * 8 + dn]["_name"]), gpy, dn + 3
-                )
+                if dbyte * 8 + dn < len(DIN_NAMES):
+                    layout.addWidget(
+                        QLabel(DIN_NAMES[dbyte * 8 + dn]["_name"]), gpy, dn + 3
+                    )
                 if dbyte * 8 + dn == DINS - 1:
                     break
             gpy += 1
@@ -686,6 +690,10 @@ class WinForm(QWidget):
         layout.addWidget(QLabel(f"TIME:"), gpy, 5)
         self.widgets["time_trx"] = QLabel("0")
         layout.addWidget(self.widgets["time_trx"], gpy, 6)
+
+        layout.addWidget(QLabel(f"MAX:"), gpy, 7)
+        self.widgets["time_trx_max"] = QLabel("0")
+        layout.addWidget(self.widgets["time_trx_max"], gpy, 8)
         gpy += 1
 
         self.setLayout(layout)
@@ -847,7 +855,8 @@ class WinForm(QWidget):
                 rec = spi.xfer2(data)
 
             self.time_trx = time.time() - start
-            print(f"Duration: {self.time_trx * 1000:02.02f}ms")
+            self.time_trx_max = max(self.time_trx, self.time_trx_max)
+            print(f"Duration: {self.time_trx * 1000:02.02f}ms / {self.time_trx_max * 1000:02.02f}ms")
             print("rx:", rec)
 
             jointFeedback = [0] * JOINTS
@@ -960,6 +969,7 @@ class WinForm(QWidget):
         self.widgets["errors_spi"].setText(str(self.error_counter_spi))
         self.widgets["errors_net"].setText(str(self.error_counter_net))
         self.widgets["time_trx"].setText(f"{self.time_trx * 1000:02.02f}ms")
+        self.widgets["time_trx_max"].setText(f"{self.time_trx_max * 1000:02.02f}ms")
 
 
 if __name__ == "__main__":

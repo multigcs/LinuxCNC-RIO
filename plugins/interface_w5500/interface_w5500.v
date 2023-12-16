@@ -19,9 +19,9 @@ module interface_w5500
      );
     reg [31:0] timeout_counter = 0;
 
-
     wire rx_found;
     wire data_reveived;
+    wire data_output_valid;
 
 
     reg [15:0] counter = 16'd0;
@@ -36,6 +36,16 @@ module interface_w5500
     reg do_transmit = 0;
 
     always @(posedge clk) begin
+        if (data_output_valid == 1) begin
+            //rx_data <= data_output;
+            timeout_counter <= 0;
+        end else if (timeout_counter < TIMEOUT) begin
+            timeout_counter <= timeout_counter + 1;
+            pkg_timeout <= 0;
+        end else begin
+            pkg_timeout <= 1;
+        end
+
         if (rx_found == 1) begin
             do_transmit <= 1;
         end else begin
@@ -60,7 +70,7 @@ module interface_w5500
         end
     end
 
-    wiznet5500 #(.IP_ADDR(IP_ADDR), .PORT(PORT), .DATA_WRITE_SIZE(BUFFER_SIZE)) eth_iface (
+    wiznet5500 #(.IP_ADDR(IP_ADDR), .PORT(PORT), .DATA_WRITE_SIZE(BUFFER_SIZE), .MSGID(MSGID)) eth_iface (
                    .clk(clk),
                    .miso(W5500_MISO),
                    .mosi(W5500_MOSI),
@@ -80,6 +90,7 @@ module interface_w5500
                    .data_input(data_to_ethernet),
                    .data_input_valid(data_out_valid),
 
+                   .data_output_valid(data_output_valid),
                    .data_output(rx_data),
 
                    .data_reveived(data_reveived),
@@ -95,10 +106,11 @@ endmodule
 // based on: https://github.com/harout/concurrent-data-capture
 module wiznet5500
     #(
-         parameter IP_ADDR = {8'd192, 8'd168, 8'd10, 8'd193},
-         parameter PORT = 2390,
-         parameter DATA_READ_SIZE = 8,
-         parameter DATA_WRITE_SIZE = 192
+         parameter IP_ADDR={8'd192, 8'd168, 8'd10, 8'd193},
+         parameter PORT=2390,
+         parameter DATA_READ_SIZE=8,
+         parameter DATA_WRITE_SIZE=192,
+         parameter MSGID=32'h74697277
      )
      (
          input clk,
@@ -110,7 +122,8 @@ module wiznet5500
 
          input data_input_valid,
          input [DATA_WRITE_SIZE-1:0] data_input,
-         output reg [DATA_WRITE_SIZE-1:0] data_output,
+         output reg data_output_valid = 0,
+         output reg [DATA_WRITE_SIZE-1:0] data_output = 0,
          input flush_requested,
 
          output reg mosi,
@@ -129,103 +142,102 @@ module wiznet5500
          output is_available
      );
 
-    parameter HEADER_SIZE  = 8'd88;
-    parameter HEADER_IP_OFFSET  = 8'd24;
-    parameter HEADER_PORT_OFFSET  = 8'd56;
+    localparam HEADER_SIZE  = 8'd88;
+    localparam HEADER_IP_OFFSET  = 8'd24;
+    localparam HEADER_PORT_OFFSET  = 8'd56;
 
-    parameter WRITE_S0  = 8'b00001100;
-    parameter READ_S0   = 8'b00001000;
-    parameter WRITE_REG = 8'b00000100;
+    localparam WRITE_S0  = 8'b00001100;
+    localparam READ_S0   = 8'b00001000;
+    localparam WRITE_REG = 8'b00000100;
 
-    parameter STAT_SOCK_UDP = 8'h22;
+    localparam STAT_SOCK_UDP = 8'h22;
 
     // Set PHY to 100 megabits / second, full duplex
-    parameter SET_PHY_MODE = 32'b00000000_00101110_00000100_11011000;
+    localparam SET_PHY_MODE = 32'b00000000_00101110_00000100_11011000;
 
     // Set/read our MAC address.
-    parameter SET_MAC_ADDRESS_BYTE_0  =  {8'h00, 8'b00001001, WRITE_REG, 8'hAA};
-    parameter SET_MAC_ADDRESS_BYTE_1  =  {8'h00, 8'b00001010, WRITE_REG, 8'hAF};
-    parameter SET_MAC_ADDRESS_BYTE_2  =  {8'h00, 8'b00001011, WRITE_REG, 8'hFA};
-    parameter SET_MAC_ADDRESS_BYTE_3  =  {8'h00, 8'b00001100, WRITE_REG, 8'hCC};
-    parameter SET_MAC_ADDRESS_BYTE_4  =  {8'h00, 8'b00001101, WRITE_REG, 8'hE3};
-    parameter SET_MAC_ADDRESS_BYTE_5  =  {8'h00, 8'b00001110, WRITE_REG, 8'h1C};
+    localparam SET_MAC_ADDRESS_BYTE_0  =  {8'h00, 8'b00001001, WRITE_REG, 8'hAA};
+    localparam SET_MAC_ADDRESS_BYTE_1  =  {8'h00, 8'b00001010, WRITE_REG, 8'hAF};
+    localparam SET_MAC_ADDRESS_BYTE_2  =  {8'h00, 8'b00001011, WRITE_REG, 8'hFA};
+    localparam SET_MAC_ADDRESS_BYTE_3  =  {8'h00, 8'b00001100, WRITE_REG, 8'hCC};
+    localparam SET_MAC_ADDRESS_BYTE_4  =  {8'h00, 8'b00001101, WRITE_REG, 8'hE3};
+    localparam SET_MAC_ADDRESS_BYTE_5  =  {8'h00, 8'b00001110, WRITE_REG, 8'h1C};
 
     // Set/read our IP address.
-    parameter SET_SOURCE_IP_ADDRESS_0  =  {8'h00, 8'b00001111, WRITE_REG};
-    parameter SET_SOURCE_IP_ADDRESS_1  =  {8'h00, 8'b00010000, WRITE_REG};
-    parameter SET_SOURCE_IP_ADDRESS_2  =  {8'h00, 8'b00010001, WRITE_REG};
-    parameter SET_SOURCE_IP_ADDRESS_3  =  {8'h00, 8'b00010010, WRITE_REG};
+    localparam SET_SOURCE_IP_ADDRESS_0  =  {8'h00, 8'b00001111, WRITE_REG};
+    localparam SET_SOURCE_IP_ADDRESS_1  =  {8'h00, 8'b00010000, WRITE_REG};
+    localparam SET_SOURCE_IP_ADDRESS_2  =  {8'h00, 8'b00010001, WRITE_REG};
+    localparam SET_SOURCE_IP_ADDRESS_3  =  {8'h00, 8'b00010010, WRITE_REG};
 
     // Set/read out gateway address.
-    parameter SET_GATEWAY_ADDRESS_0    = {8'h00, 8'b00000001, WRITE_REG, 8'd192};
-    parameter SET_GATEWAY_ADDRESS_1    = {8'h00, 8'b00000010, WRITE_REG, 8'd168};
-    parameter SET_GATEWAY_ADDRESS_2    = {8'h00, 8'b00000011, WRITE_REG, 8'd10};
-    parameter SET_GATEWAY_ADDRESS_3    = {8'h00, 8'b00000100, WRITE_REG, 8'd1};
+    localparam SET_GATEWAY_ADDRESS_0    = {8'h00, 8'b00000001, WRITE_REG, 8'd192};
+    localparam SET_GATEWAY_ADDRESS_1    = {8'h00, 8'b00000010, WRITE_REG, 8'd168};
+    localparam SET_GATEWAY_ADDRESS_2    = {8'h00, 8'b00000011, WRITE_REG, 8'd10};
+    localparam SET_GATEWAY_ADDRESS_3    = {8'h00, 8'b00000100, WRITE_REG, 8'd1};
 
     // Set/read out subnet mask.
-    parameter SET_SUBNET_MASK_0  = {8'h00, 8'b00000101, WRITE_REG, 8'd255};
-    parameter SET_SUBNET_MASK_1  = {8'h00, 8'b00000110, WRITE_REG, 8'd255};
-    parameter SET_SUBNET_MASK_2  = {8'h00, 8'b00000111, WRITE_REG, 8'd255};
-    parameter SET_SUBNET_MASK_3  = {8'h00, 8'b00001000, WRITE_REG, 8'd0};
+    localparam SET_SUBNET_MASK_0  = {8'h00, 8'b00000101, WRITE_REG, 8'd255};
+    localparam SET_SUBNET_MASK_1  = {8'h00, 8'b00000110, WRITE_REG, 8'd255};
+    localparam SET_SUBNET_MASK_2  = {8'h00, 8'b00000111, WRITE_REG, 8'd255};
+    localparam SET_SUBNET_MASK_3  = {8'h00, 8'b00001000, WRITE_REG, 8'd0};
 
     // Set the socket mode to UDP with no blocking
-    parameter SET_SOCKET_0_MODE  = {16'h0000, WRITE_S0, 8'b00000010};
+    localparam SET_SOCKET_0_MODE  = {16'h0000, WRITE_S0, 8'b00000010};
 
     // Set socket 0's destination IP address (169.254.0.123)
-    parameter SET_SOCKET_0_DST_IP_0 = {8'h00, 8'b00001100, WRITE_S0};
-    parameter SET_SOCKET_0_DST_IP_1 = {8'h00, 8'b00001101, WRITE_S0};
-    parameter SET_SOCKET_0_DST_IP_2 = {8'h00, 8'b00001110, WRITE_S0};
-    parameter SET_SOCKET_0_DST_IP_3 = {8'h00, 8'b00001111, WRITE_S0};
+    localparam SET_SOCKET_0_DST_IP_0 = {8'h00, 8'b00001100, WRITE_S0};
+    localparam SET_SOCKET_0_DST_IP_1 = {8'h00, 8'b00001101, WRITE_S0};
+    localparam SET_SOCKET_0_DST_IP_2 = {8'h00, 8'b00001110, WRITE_S0};
+    localparam SET_SOCKET_0_DST_IP_3 = {8'h00, 8'b00001111, WRITE_S0};
 
     // Set socket 0's destination port to 5000. Requires two commands.
-    parameter SET_SOCKET_0_DST_PRT_0 = {8'h00, 8'b00010000, WRITE_S0};
-    parameter SET_SOCKET_0_DST_PRT_1 = {8'h00, 8'b00010001, WRITE_S0};
+    localparam SET_SOCKET_0_DST_PRT_0 = {8'h00, 8'b00010000, WRITE_S0};
+    localparam SET_SOCKET_0_DST_PRT_1 = {8'h00, 8'b00010001, WRITE_S0};
 
     // Set the socket source port number to 5000. Requires two commands.
-    parameter SET_SOCKET_0_SRC_PORT_0 = {8'h00, 8'b00000100, WRITE_S0};
-    parameter SET_SOCKET_0_SRC_PORT_1 = {8'h00, 8'b00000101, WRITE_S0};
+    localparam SET_SOCKET_0_SRC_PORT_0 = {8'h00, 8'b00000100, WRITE_S0};
+    localparam SET_SOCKET_0_SRC_PORT_1 = {8'h00, 8'b00000101, WRITE_S0};
 
     // Set socket 0's TX buffer size to 8kilobytes
-    parameter SET_SOCKET_0_TX_BFR_SZ = {8'h00, 8'b00011111, WRITE_S0, 8'd8};
+    localparam SET_SOCKET_0_TX_BFR_SZ = {8'h00, 8'b00011111, WRITE_S0, 8'd8};
 
-    parameter OPEN_SOCKET_0 =       {8'h00, 8'b00000001, WRITE_S0, 8'b00000001};
-    parameter READ_SOCKET_0_STATE = {8'h00, 8'b00000011, READ_S0,  8'b00100010};
+    localparam OPEN_SOCKET_0 =       {8'h00, 8'b00000001, WRITE_S0, 8'b00000001};
+    localparam READ_SOCKET_0_STATE = {8'h00, 8'b00000011, READ_S0,  8'b00100010};
 
-    parameter SEND_PACKET_SOCKET_0 = {8'h00, 8'b00000001, WRITE_S0, 8'b00100000};
+    localparam SEND_PACKET_SOCKET_0 = {8'h00, 8'b00000001, WRITE_S0, 8'b00100000};
 
-    parameter GET_S0_RX_RSR0 = {16'h0026, READ_S0, 8'd0};
-    parameter GET_S0_RX_RSR1 = {16'h0027, READ_S0, 8'd0};
-    parameter S0_CR_40 = {16'h0001, WRITE_S0, 8'b01000000};
+    localparam GET_S0_RX_RSR0 = {16'h0026, READ_S0, 8'd0};
+    localparam GET_S0_RX_RSR1 = {16'h0027, READ_S0, 8'd0};
+    localparam S0_CR_40 = {16'h0001, WRITE_S0, 8'b01000000};
 
-    parameter SET_S0_RX_RD0 = {16'h0028, WRITE_S0};
-    parameter SET_S0_RX_RD1 = {16'h0029, WRITE_S0};
+    localparam SET_S0_RX_RD0 = {16'h0028, WRITE_S0};
+    localparam SET_S0_RX_RD1 = {16'h0029, WRITE_S0};
 
-    parameter SET_S0_TX_WR0 = {16'h0024, WRITE_S0};
-    parameter SET_S0_TX_WR1 = {16'h0025, WRITE_S0};
+    localparam SET_S0_TX_WR0 = {16'h0024, WRITE_S0};
+    localparam SET_S0_TX_WR1 = {16'h0025, WRITE_S0};
 
-    parameter BSB_S0_TX_RWB_WRITE = 8'b00010100;
-    parameter BSB_S0_RX_RWB_READ  = 8'b00011000;
+    localparam BSB_S0_TX_RWB_WRITE = 8'b00010100;
+    localparam BSB_S0_RX_RWB_READ  = 8'b00011000;
 
 
-
-    parameter STATE_UNDEFINED =			 5'd0;
-    parameter STATE_IDLE =               5'd1;
-    parameter STATE_SENDING_COMMAND =    5'd2;
-    parameter STATE_INITIALIZING =       5'd3;
-    parameter STATE_PUSHING_DATA =       5'd4;
-    parameter STATE_UPDATING_TX_PTR =    5'd5;
-    parameter STATE_SENDING_PACKET =	 5'd6;
-    parameter STATE_PULLING_DATA =	     5'd7;
-    parameter STATE_RX_START =	         5'd8;
-    parameter STATE_RX_WRITE_PTR1 =      5'd9;
-    parameter STATE_RX_WRITE_PTR0 =	     5'd10;
-    parameter STATE_RX_DONE =	         5'd11;
-    parameter STATE_SET_IP_0 =	         5'd12;
-    parameter STATE_SET_IP_1 =	         5'd13;
-    parameter STATE_SET_IP_2 =	         5'd14;
-    parameter STATE_SET_IP_3 =	         5'd15;
-    parameter STATE_SET_PORT_0 =	     5'd16;
-    parameter STATE_SET_PORT_1 =	     5'd17;
+    localparam STATE_UNDEFINED =		 5'd0;
+    localparam STATE_IDLE =              5'd1;
+    localparam STATE_SENDING_COMMAND =   5'd2;
+    localparam STATE_INITIALIZING =      5'd3;
+    localparam STATE_PUSHING_DATA =      5'd4;
+    localparam STATE_UPDATING_TX_PTR =   5'd5;
+    localparam STATE_SENDING_PACKET =	 5'd6;
+    localparam STATE_PULLING_DATA =	     5'd7;
+    localparam STATE_RX_START =	         5'd8;
+    localparam STATE_RX_WRITE_PTR1 =     5'd9;
+    localparam STATE_RX_WRITE_PTR0 =     5'd10;
+    localparam STATE_RX_DONE =	         5'd11;
+    localparam STATE_SET_IP_0 =	         5'd12;
+    localparam STATE_SET_IP_1 =	         5'd13;
+    localparam STATE_SET_IP_2 =	         5'd14;
+    localparam STATE_SET_IP_3 =	         5'd15;
+    localparam STATE_SET_PORT_0 =	     5'd16;
+    localparam STATE_SET_PORT_1 =	     5'd17;
 
 
     reg is_busy = 1'b0;
@@ -238,8 +250,7 @@ module wiznet5500
     reg waiting_for_socket = 1'b0;
     reg is_initialized = 1'b0;
     reg is_check_rx = 0;
-    reg read_free_space_progress = 3'b000;
-    reg [(DATA_WRITE_SIZE+24-1):0] send_data_instruction;
+    reg [DATA_WRITE_SIZE+24-1:0] send_data_instruction;
 
 `ifdef WIZNET5500_ACCEPT_INSTRUCTIONS
     assign is_available = !is_busy && !data_input_valid && !flush_requested && !instruction_input_valid;
@@ -257,6 +268,7 @@ module wiznet5500
 
     always @(posedge clk) begin
         rx_found <= 0;
+        data_output_valid <= 0;
 
         if (state == STATE_IDLE && flush_requested) begin
             spi_clk <= 1'b0;
@@ -305,11 +317,20 @@ module wiznet5500
 
         end else if (state == STATE_PULLING_DATA && spi_clock_count > (DATA_WRITE_SIZE+HEADER_SIZE-1)) begin
             spi_chip_select_n <= 1'b1;
-            state <= STATE_RX_WRITE_PTR1;
-            is_busy <= 1'b1;
-            dst_ip <= rec_buffer[DATA_WRITE_SIZE+HEADER_SIZE-HEADER_IP_OFFSET-1:DATA_WRITE_SIZE+HEADER_SIZE-HEADER_IP_OFFSET-32];
-            dst_port <= rec_buffer[DATA_WRITE_SIZE+HEADER_SIZE-HEADER_PORT_OFFSET-1:DATA_WRITE_SIZE+HEADER_SIZE-HEADER_PORT_OFFSET-16];
-            data_output <= rec_buffer[DATA_WRITE_SIZE-1:0];
+
+            if (rec_buffer[DATA_WRITE_SIZE-1:DATA_WRITE_SIZE-32] == MSGID) begin
+                state <= STATE_RX_WRITE_PTR1;
+                is_busy <= 1'b1;
+
+                dst_ip <= rec_buffer[DATA_WRITE_SIZE+HEADER_SIZE-HEADER_IP_OFFSET-1:DATA_WRITE_SIZE+HEADER_SIZE-HEADER_IP_OFFSET-32];
+                dst_port <= rec_buffer[DATA_WRITE_SIZE+HEADER_SIZE-HEADER_PORT_OFFSET-1:DATA_WRITE_SIZE+HEADER_SIZE-HEADER_PORT_OFFSET-16];
+                data_output <= rec_buffer[DATA_WRITE_SIZE-1:0];
+                data_output_valid <= 1;
+            end else begin
+                state <= STATE_UNDEFINED;
+                is_busy <= 1'b0;
+
+            end
 
         end else if (state == STATE_RX_WRITE_PTR1) begin
             spi_clk <= 1'b0;

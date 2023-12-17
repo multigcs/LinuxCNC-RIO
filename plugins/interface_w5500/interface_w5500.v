@@ -21,7 +21,7 @@ module interface_w5500
     reg [31:0] timeout_counter = 0;
 
 
-    wire rx_found;
+    wire data_output_valid;
 
     reg [15:0] counter = 16'd0;
     reg flush_requested = 1'b0;
@@ -36,20 +36,19 @@ module interface_w5500
 
     always @(posedge clk) begin
 
-        if (rx_found == 1) begin
+        if (data_output_valid == 1) begin
+            do_transmit <= 1;
             timeout_counter <= 0;
             pkg_timeout <= 0;
-        end else if (timeout_counter < TIMEOUT) begin
-            timeout_counter <= timeout_counter + 1;
-            pkg_timeout <= 0;
         end else begin
-            pkg_timeout <= 1;
-        end
 
+            if (timeout_counter < TIMEOUT) begin
+                timeout_counter <= timeout_counter + 1;
+                pkg_timeout <= 0;
+            end else begin
+                pkg_timeout <= 1;
+            end
 
-        if (rx_found == 1) begin
-            do_transmit <= 1;
-        end else begin
             if (do_transmit == 1) begin
                 if (ethernet_available) begin
                     if (counter < 1) begin
@@ -89,7 +88,7 @@ module interface_w5500
                    .data_input(data_to_ethernet),
                    .data_input_valid(data_out_valid),
                    .data_output(rx_data),
-                   .rx_found(rx_found),
+                   .data_output_valid(data_output_valid),
                    .flush_requested(flush_requested)
                );
 endmodule
@@ -124,7 +123,7 @@ module wiznet5500
    `ifdef WIZNET5500_READ_DATA
          output reg data_read_valid = 1'b0,
    `endif
-         output reg rx_found = 0,
+         output reg data_output_valid = 0,
          output is_available
      );
 
@@ -252,12 +251,11 @@ module wiznet5500
     reg [15:0] dst_port = 16'd2390;
     reg [3:0] rx_timer = 4'd0;
     reg rx_buffer_valid = 0;
-
     reg [15:0] tx_buffer_write_pointer = 16'd0;
     reg [15:0] rx_buffer_read_pointer = 16'd0;
 
     always @(posedge clk) begin
-        rx_found <= 0;
+        data_output_valid <= 0;
 
         if (state == STATE_IDLE && flush_requested) begin
             spi_clk <= 1'b0;
@@ -294,11 +292,8 @@ module wiznet5500
          `endif
 
 
-
         end else if (state == STATE_RX_START) begin
-
             rx_buffer_read_pointer <= rx_buffer_read_pointer + data_read[7:0];
-
             if (data_read[7:0] == ((BUFFER_SIZE+HEADER_SIZE)/8)) begin
                 rx_buffer_valid <= 1;
                 current_instruction <= {8'd0, rx_buffer_read_pointer, BSB_S0_RX_RWB_READ};
@@ -312,8 +307,6 @@ module wiznet5500
                 state <= STATE_RX_WRITE_PTR1;
                 is_busy <= 1'b1;
             end
-
-
         end else if (state == STATE_PULLING_DATA && spi_clock_count > (BUFFER_SIZE+HEADER_SIZE+24-1)) begin
             spi_chip_select_n <= 1'b1;
             state <= STATE_RX_WRITE_PTR1;
@@ -322,8 +315,8 @@ module wiznet5500
                 dst_ip <= rec_buffer[BUFFER_SIZE+HEADER_SIZE-HEADER_IP_OFFSET-1:BUFFER_SIZE+HEADER_SIZE-HEADER_IP_OFFSET-32];
                 dst_port <= rec_buffer[BUFFER_SIZE+HEADER_SIZE-HEADER_PORT_OFFSET-1:BUFFER_SIZE+HEADER_SIZE-HEADER_PORT_OFFSET-16];
                 data_output <= rec_buffer[BUFFER_SIZE-1:0];
+                data_output_valid <= 1;
             end
-
         end else if (state == STATE_RX_WRITE_PTR1) begin
             spi_clk <= 1'b0;
             state <= STATE_SENDING_COMMAND;
@@ -332,7 +325,6 @@ module wiznet5500
             is_busy <= 1'b1;
             current_instruction <= {SET_S0_RX_RD1, rx_buffer_read_pointer[7:0]};
             next_state <= STATE_RX_WRITE_PTR0;
-
         end else if (state == STATE_RX_WRITE_PTR0) begin
             spi_clk <= 1'b0;
             state <= STATE_SENDING_COMMAND;
@@ -341,7 +333,6 @@ module wiznet5500
             is_busy <= 1'b1;
             current_instruction <= {SET_S0_RX_RD0, rx_buffer_read_pointer[15:8]};
             next_state <= STATE_RX_DONE;
-
         end else if (state == STATE_RX_DONE) begin
             spi_clk <= 1'b0;
             state <= STATE_SENDING_COMMAND;
@@ -349,7 +340,6 @@ module wiznet5500
             spi_clock_count <= 10'd0;
             is_busy <= 1'b1;
             current_instruction <= S0_CR_40;
-
             if (rx_buffer_valid == 1) begin
                 next_state <= STATE_SET_IP_0;
             end else begin
@@ -365,7 +355,6 @@ module wiznet5500
             is_busy <= 1'b1;
             current_instruction <= {SET_SOCKET_0_DST_IP_0, dst_ip[31:24]};
             next_state <= STATE_SET_IP_1;
-
         end else if (state == STATE_SET_IP_1) begin
             spi_clk <= 1'b0;
             state <= STATE_SENDING_COMMAND;
@@ -374,7 +363,6 @@ module wiznet5500
             is_busy <= 1'b1;
             current_instruction <= {SET_SOCKET_0_DST_IP_1, dst_ip[23:16]};
             next_state <= STATE_SET_IP_2;
-
         end else if (state == STATE_SET_IP_2) begin
             spi_clk <= 1'b0;
             state <= STATE_SENDING_COMMAND;
@@ -383,7 +371,6 @@ module wiznet5500
             is_busy <= 1'b1;
             current_instruction <= {SET_SOCKET_0_DST_IP_2, dst_ip[15:8]};
             next_state <= STATE_SET_IP_3;
-
         end else if (state == STATE_SET_IP_3) begin
             spi_clk <= 1'b0;
             state <= STATE_SENDING_COMMAND;
@@ -392,7 +379,6 @@ module wiznet5500
             is_busy <= 1'b1;
             current_instruction <= {SET_SOCKET_0_DST_IP_3, dst_ip[7:0]};
             next_state <= STATE_SET_PORT_0;
-
         end else if (state == STATE_SET_PORT_0) begin
             spi_clk <= 1'b0;
             state <= STATE_SENDING_COMMAND;
@@ -401,7 +387,6 @@ module wiznet5500
             is_busy <= 1'b1;
             current_instruction <= {SET_SOCKET_0_DST_PRT_0, dst_port[15:8]};
             next_state <= STATE_SET_PORT_1;
-
         end else if (state == STATE_SET_PORT_1) begin
             spi_clk <= 1'b0;
             state <= STATE_SENDING_COMMAND;
@@ -410,8 +395,6 @@ module wiznet5500
             is_busy <= 1'b1;
             current_instruction <= {SET_SOCKET_0_DST_PRT_1, dst_port[7:0]};
             next_state <= STATE_UNDEFINED;
-            rx_found <= 1;
-
 
 
         end else if (state == STATE_INITIALIZING && waiting_for_socket == 1'b1) begin

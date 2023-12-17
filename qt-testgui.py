@@ -31,9 +31,7 @@ parser.add_argument(
 )
 args = parser.parse_args()
 
-
 project = projectLoader.load(args.json)
-print(args.baud)
 
 SHM_FILE = ""
 SERIAL = ""
@@ -54,6 +52,13 @@ elif args.device and args.device != "":
 
     UDPClientSocket = socket.socket(family=socket.AF_INET, type=socket.SOCK_DGRAM)
     UDPClientSocket.bind(('0.0.0.0', args.port))
+    # clear buffer
+    try:
+        UDPClientSocket.settimeout(0.2)
+        UDPClientSocket.recvfrom(100000)
+    except:
+        pass
+
 
 else:
     import spidev

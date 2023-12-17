@@ -842,8 +842,11 @@ class WinForm(QWidget):
             if NET_IP:
                 UDPClientSocket.sendto(bytes(data), (NET_IP, NET_PORT))
                 UDPClientSocket.settimeout(0.2)
-                msgFromServer = UDPClientSocket.recvfrom(len(data))
-                rec = list(msgFromServer[0])
+                msgFromServer = UDPClientSocket.recvfrom(len(data)*4)
+                if len(msgFromServer[0]) == len(data):
+                    rec = list(msgFromServer[0])
+                else:
+                    print(f"WRONG DATASIZE: {len(msgFromServer[0])} / {len(data)}")
             elif SERIAL:
                 ser.write(bytes(data))
                 msgFromServer = ser.read(len(data))

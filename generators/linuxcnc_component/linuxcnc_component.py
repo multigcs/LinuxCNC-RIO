@@ -102,6 +102,7 @@ def generate(project):
     rio_data.append("#define TYPE_VIN_ENCODER 5")
     rio_data.append("#define TYPE_VIN_NTC 6")
     rio_data.append("#define TYPE_VIN_DS18B20 7")
+    rio_data.append("#define TYPE_VIN_MAX6675 8")
 
     rio_data.append("#define JOINT_FB_REL 0")
     rio_data.append("#define JOINT_FB_ABS 1")
@@ -167,6 +168,8 @@ def generate(project):
             vins_type.append("TYPE_VIN_SONAR")
         elif vin.get("type") == "vin_ds18b20":
             vins_type.append("TYPE_VIN_DS18B20")
+        elif vin.get("type") == "vin_max6675":
+            vins_type.append("TYPE_VIN_MAX6675")
         elif vin.get("type") in ("vin_quadencoder", "vin_quadencoderz"):
             vins_type.append("TYPE_VIN_ENCODER")
         else:

@@ -1025,6 +1025,14 @@ void rio_readwrite()
                         *(data->processVariable[i]) = value;
                         *(data->processVariableS32[i]) = (int)value;
 
+                    } else if (vin_type[i] == TYPE_VIN_MAX6675) {
+                        value = value * 0.25;
+
+                        value += *(data->processVariableOffset[i]);
+                        value *= *(data->processVariableScale[i]);
+                        *(data->processVariable[i]) = value;
+                        *(data->processVariableS32[i]) = (int)value;
+
                     } else if (vin_type[i] == TYPE_VIN_ADC) {
                         value /= 1000.0; // to Volt
                         value += *(data->processVariableOffset[i]);

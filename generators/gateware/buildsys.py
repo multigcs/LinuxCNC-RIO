@@ -598,9 +598,10 @@ def buildsys_quartus(project):
     makefile_data.append("")
     open(f"{project['GATEWARE_PATH']}/Makefile", "w").write("\n".join(makefile_data))
 
+    clock = project['jdata']['clock'].get('osc', project['jdata']['clock']['speed'])
     sdc_data = []
     sdc_data.append("")
-    sdc_data.append(f"create_clock -name {clkname} -period \"{float(project['jdata']['clock']['speed']) / 1000000} MHz\" [get_ports {clkname}]")
+    sdc_data.append(f"create_clock -name {clkname} -period \"{float(clock) / 1000000} MHz\" [get_ports {clkname}]")
     sdc_data.append("derive_pll_clocks")
     sdc_data.append("derive_clock_uncertainty")
     sdc_data.append("")

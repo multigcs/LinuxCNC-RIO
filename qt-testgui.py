@@ -107,6 +107,8 @@ for num, vin in enumerate(project["vinnames"]):
         vinminmax.append((vin.get("min", 0), vin.get("max", 100000), "sonar", 0))
     elif vin.get("type") == "vin_ds18b20":
         vinminmax.append((vin.get("min", 0), vin.get("max", 100000), "ds18b20", 0))
+    elif vin.get("type") == "vin_max6675":
+        vinminmax.append((vin.get("min", 0), vin.get("max", 1500), "max6675", 0))
     else:
         vinminmax.append((vin.get("min", -100), vin.get("max", 100), "", 0))
 
@@ -948,6 +950,10 @@ class WinForm(QWidget):
                     if (value << 8) & 0x80:
                         value = ((value ^ 0xFFFF) + 1) * -1
                     value = value / 16
+
+                elif vinminmax[vn][2] == "max6675":
+                    unit = "°C"
+                    value = value * 0.25
 
                 self.widgets[key].setText(f"{round(value, 2)}{unit}")
 

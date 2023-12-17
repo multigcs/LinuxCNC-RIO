@@ -4,7 +4,7 @@ PWM Joint Output with DIR-Pin
 
 ```
 {
-    "type": "pwmdir",
+    "type": "joint_pwmdir",
     "cl": false,
     "pins": {
         "pwm": "R14",

@@ -1,5 +1,5 @@
 class Plugin:
-    ptype = "vin_counter"
+    ptype = "vin_pulsecounter"
 
     def __init__(self, jdata):
         self.jdata = jdata

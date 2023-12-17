@@ -9,6 +9,8 @@ Install: see INSTALL.md
 * sometimes i have problems with the opensource toolchain and extended configurations, like encoder value will not change
 * you can also using the gowin toolchain if you have problems with the opensource one, all required files are generated
 
+### LinuxCNC-RIO mixed joint types (on TangNano9K - FPGA)
+[![LinuxCNC-RIO mixed joint types (on TangNano9K - FPGA)](https://img.youtube.com/vi/ZfTr1BNUK_0/0.jpg)](https://www.youtube.com/shorts/ZfTr1BNUK_0 "LinuxCNC-RIO mixed joint types (on TangNano9K - FPGA)")
 
 ## BOB-Adapter SPI-Pins:
 

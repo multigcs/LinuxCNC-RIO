@@ -4,7 +4,7 @@ Variable-Output using digital poti with UpDown/Incr. Interface (like X9C104)
 
 ```
 {
-    "type": "udpoti",
+    "type": "vout_udpoti",
     "resolution": "100",
     "speed": "100000",
     "pins": {

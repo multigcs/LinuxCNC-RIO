@@ -4,7 +4,7 @@ Analog-Input (Temperatur)
 
 ```
 {
-    "type": "lm75",
+    "type": "vin_lm75",
     "pins": {
         "sda": "D1",
         "scl": "D2"

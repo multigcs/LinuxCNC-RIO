@@ -3,12 +3,11 @@
 ## Digital Input Pin (1bit)
 
 ```
-"din": [
-    {
-        "comment": "J1.1",
-        "pin": "C4"
-    }
-]
+{
+    "type": "din_bit",
+    "name": "SW1",
+    "pin": "PIN_120"
+},
 ```
 
 ##  extended setup:
@@ -19,6 +18,7 @@ you can also connect the pin to a hal-net
 
 ```
 {
+    "type": "din_bit",
     "name": "home-x",
     "net": "joint.0.home-sw-in",
     "invert": true,

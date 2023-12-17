@@ -3,12 +3,12 @@
 ## Digital Output Pin (1bit)
 
 ```
-"dout": [
-    {
-        "comment": "J5.1",
-        "pin": "G2"
-    }
-]
+{
+    "type": "dout_bit",
+    "name": "LED3",
+    "invert": "true",
+    "pin": "PIN_135"
+},
 ```
 
 ##  extended setup:
@@ -19,6 +19,7 @@ you can also connect the pin to a hal-net
 
 ```
 {
+    "type": "dout_bit",
     "name": "spindle-enable",
     "net": "spindle.0.on",
     "invert": true,

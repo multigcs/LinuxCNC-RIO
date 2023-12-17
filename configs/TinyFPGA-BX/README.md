@@ -4,12 +4,18 @@ https://tinyfpga.com/
 
 https://github.com/tinyfpga/TinyFPGA-BX/tree/master/board
 
-https://youtu.be/0nTmo4afwWs
-
 ![test](https://raw.githubusercontent.com/multigcs/LinuxCNC-RIO/main/configs/TinyFPGA-BX_BOB/tinybx-bob.jpg)
 
 ![test](https://raw.githubusercontent.com/multigcs/LinuxCNC-RIO/main/configs/TinyFPGA-BX_BOB/bob5.png)
 
+### LinuxCNC-RIO with TinyFPGA-BX and 5Axis BOB - ATC-Test
+[![LinuxCNC-RIO with TinyFPGA-BX and 5Axis BOB - ATC-Test](https://img.youtube.com/vi/G5V5OM_ORsk/0.jpg)](https://www.youtube.com/shorts/G5V5OM_ORsk "LinuxCNC-RIO with TinyFPGA-BX and 5Axis BOB - ATC-Test")
+
+### linuxcnc with tinyfpga-bx
+[![linuxcnc with tinyfpga-bx](https://img.youtube.com/vi/0nTmo4afwWs/0.jpg)](https://www.youtube.com/shorts/0nTmo4afwWs "linuxcnc with tinyfpga-bx")
+
+### LinuxCNC-RIO with TinyFPGA-BX and 5Axis BOB
+[![LinuxCNC-RIO with TinyFPGA-BX and 5Axis BOB](https://img.youtube.com/vi/urRHtw4bcsI/0.jpg)](https://www.youtube.com/watch?v=urRHtw4bcsI "LinuxCNC-RIO with TinyFPGA-BX and 5Axis BOB")
 
 # Pinouts:
 ```

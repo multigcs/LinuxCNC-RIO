@@ -239,7 +239,7 @@
             "type": "dout_bit"
         },
         {
-            "type": "vin_counter",
+            "type": "vin_pulsecounter",
             "pullup": true,
             "pins": {
                 "up": "3",

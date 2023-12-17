@@ -6,7 +6,7 @@ single Sine-Wave
 
 ```
 {
-    "type": "sine",
+    "type": "vout_sinepwm",
     "pin": "P5"
 }
 ```
@@ -15,7 +15,7 @@ single Sine-Wave
 
 ```
 {
-    "type": "sine",
+    "type": "vout_sinepwm",
     "pins": ["P5", "N6", "N7"]
 }
 ```

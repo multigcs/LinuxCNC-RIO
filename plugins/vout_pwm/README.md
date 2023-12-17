@@ -6,7 +6,7 @@ Variable-Output for PWM-Signals with optional DIR pin
 
 ```
 {
-    "type": "pwm",
+    "type": "vout_pwm",
     "frequency": "100000",
     "pin": "T3",
     "dir": "R4"
@@ -21,12 +21,12 @@ you can also connect the pin to a hal-net
 
 ```
 {
+    "type": "vout_pwm",
     "name": "spindle-speed",
     "net": "spindle.0.speed-out",
     "min": "0",
     "max": "10000",
     "invert": true,
-    "type": "pwm",
     "pin": "76"
 },
 ```

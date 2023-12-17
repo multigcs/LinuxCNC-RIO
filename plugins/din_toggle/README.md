@@ -3,11 +3,11 @@
 ## Digital Input Pin with toggle function (1bit)
 
 ```
-"din": [
-    {
-        "pin": "C4"
-    }
-]
+{
+    "type": "din_toggle",
+    "name": "SW1",
+    "pin": "PIN_120"
+},
 ```
 
 # din_toggle.v

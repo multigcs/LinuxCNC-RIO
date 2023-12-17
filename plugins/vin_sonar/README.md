@@ -2,9 +2,11 @@
 
 Variable-Input for distance measurement via ultrasonic sonar sensor (HC-SR04)
 
+maybe to check level of a water-tank
+
 ```
 {
-    "type": "sonar",
+    "type": "vin_sonar",
     "pin_trigger": "G5",
     "pin_echo": "G6"
 },

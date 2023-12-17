@@ -18,6 +18,9 @@ https://www.intel.de/content/www/de/de/products/details/fpga/development-kits/ma
 | GND | | | 6 |
 
 
+### LinuxCNC-Rio on MAX10 with CNC-Shield v3
+[![LinuxCNC-Rio on MAX10 with CNC-Shield v3](https://img.youtube.com/vi/DnB64Y6h2Go/0.jpg)](https://www.youtube.com/watch?v=DnB64Y6h2Go&t=1s "LinuxCNC-Rio on MAX10 with CNC-Shield v3")
+
 # Quickstart
 
 ## get the source

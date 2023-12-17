@@ -6,7 +6,7 @@ the freq_min is used to set the value to 0 if no signal detected
 
 ```
 {
-    "type": "frequency",
+    "type": "vin_frequency",
     "freq_min": "10",
     "pin": "G5"
 },

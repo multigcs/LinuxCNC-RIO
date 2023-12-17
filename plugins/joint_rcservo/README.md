@@ -4,7 +4,7 @@ RCSERVO Joint Output
 
 ```
 {
-    "type": "rcservo",
+    "type": "joint_rcservo",
     "cl": false,
     "pins": {
         "pwm": "C15",

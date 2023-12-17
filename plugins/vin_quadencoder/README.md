@@ -4,7 +4,7 @@ Variable-Input for Quad-Encoder (int32_t)
 
 ```
 {
-    "type": "quadencoder",
+    "type": "vin_quadencoder",
     "pin_a": "C1",
     "pin_b": "D1"
 },

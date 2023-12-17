@@ -10,6 +10,9 @@ RealtimeIO for LinuxCNC based on an FPGA
 * generated verilog-code / setup via json files (free pin-selection)
 * using free FPGA-Toolchain
 * runs on many FPGA's (like ICE40, ECP5, MAX10, Artix7, Gwin, CycloneIV, ...)
+* supports Open and Closed-Loop
+* multiple and mixed joint types (like Stepper, DC-Servo, RC-Servo)
+
 
 ## Sample-Configs:
 | Name | Description |

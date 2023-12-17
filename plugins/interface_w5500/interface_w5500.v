@@ -207,7 +207,6 @@ module wiznet5500
     localparam BSB_S0_TX_RWB_WRITE = 8'b00010100;
     localparam BSB_S0_RX_RWB_READ  = 8'b00011000;
 
-
     localparam STATE_UNDEFINED =	     5'd0;
     localparam STATE_IDLE =              5'd1;
     localparam STATE_SENDING_COMMAND =   5'd2;

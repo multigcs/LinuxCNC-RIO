@@ -299,7 +299,7 @@ module wiznet5500
 
             rx_buffer_read_pointer <= rx_buffer_read_pointer + data_read[7:0];
 
-            if (data_read[7:0] == (BUFFER_SIZE/8+8)) begin
+            if (data_read[7:0] == ((BUFFER_SIZE+HEADER_SIZE)/8)) begin
                 rx_buffer_valid <= 1;
                 current_instruction <= {8'd0, rx_buffer_read_pointer, BSB_S0_RX_RWB_READ};
                 spi_clk <= 1'b0;

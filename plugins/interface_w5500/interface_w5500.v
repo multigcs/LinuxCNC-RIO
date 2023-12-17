@@ -128,9 +128,9 @@ module wiznet5500
          output is_available
      );
 
-    localparam HEADER_SIZE  = 8'd88;
-    localparam HEADER_IP_OFFSET  = 8'd24;
-    localparam HEADER_PORT_OFFSET  = 8'd56;
+    localparam HEADER_SIZE  = 8'd64;
+    localparam HEADER_IP_OFFSET  = 8'd0;
+    localparam HEADER_PORT_OFFSET  = 8'd32;
 
     localparam WRITE_S0  = 8'b00001100;
     localparam READ_S0   = 8'b00001000;
@@ -185,7 +185,10 @@ module wiznet5500
     localparam SET_SOCKET_0_SRC_PORT_1 = {8'h00, 8'b00000101, WRITE_S0};
 
     // Set socket 0's TX buffer size to 16kilobytes
-    localparam SET_SOCKET_0_TX_BFR_SZ = {8'h00, 8'b00011111, WRITE_S0, 8'd16};
+    localparam S0_RXBUF_SIZE  = 16'h1E;
+    localparam SET_SOCKET_0_RX_BFR_SZ = {S0_RXBUF_SIZE, WRITE_S0, 8'd16};
+    localparam S0_TXBUF_SIZE  = 16'h1F;
+    localparam SET_SOCKET_0_TX_BFR_SZ = {S0_TXBUF_SIZE, WRITE_S0, 8'd16};
 
     localparam OPEN_SOCKET_0 =       {8'h00, 8'b00000001, WRITE_S0, 8'b00000001};
     localparam READ_SOCKET_0_STATE = {8'h00, 8'b00000011, READ_S0,  8'b00100010};
@@ -204,6 +207,7 @@ module wiznet5500
 
     localparam BSB_S0_TX_RWB_WRITE = 8'b00010100;
     localparam BSB_S0_RX_RWB_READ  = 8'b00011000;
+
 
     localparam STATE_UNDEFINED =	     5'd0;
     localparam STATE_IDLE =              5'd1;
@@ -226,7 +230,7 @@ module wiznet5500
 
 
     reg is_busy = 1'b0;
-    reg [BUFFER_SIZE+HEADER_SIZE-1:0] rec_buffer = 0;
+    reg [BUFFER_SIZE+HEADER_SIZE+24-1:0] rec_buffer = 0;
     reg [31:0] current_instruction;
     reg [9:0] spi_clock_count;
     reg [4:0] state = STATE_INITIALIZING;
@@ -310,7 +314,7 @@ module wiznet5500
             end
 
 
-        end else if (state == STATE_PULLING_DATA && spi_clock_count > (BUFFER_SIZE+HEADER_SIZE-1)) begin
+        end else if (state == STATE_PULLING_DATA && spi_clock_count > (BUFFER_SIZE+HEADER_SIZE+24-1)) begin
             spi_chip_select_n <= 1'b1;
             state <= STATE_RX_WRITE_PTR1;
             is_busy <= 1'b1;
@@ -470,28 +474,31 @@ module wiznet5500
                 // Set socket 0's mode
                 19: current_instruction <= SET_SOCKET_0_MODE;
 
+                // Set the size of socket 0's RX buffer
+                20: current_instruction <= SET_SOCKET_0_RX_BFR_SZ;
+
                 // Set the size of socket 0's TX buffer
-                20: current_instruction <= SET_SOCKET_0_TX_BFR_SZ;
+                21: current_instruction <= SET_SOCKET_0_TX_BFR_SZ;
 
                 // Set the source port for socket 0
-                21: current_instruction <= {SET_SOCKET_0_SRC_PORT_0, PORT[15:8]};
-                22: current_instruction <= {SET_SOCKET_0_SRC_PORT_1, PORT[7:0]};
+                22: current_instruction <= {SET_SOCKET_0_SRC_PORT_0, PORT[15:8]};
+                23: current_instruction <= {SET_SOCKET_0_SRC_PORT_1, PORT[7:0]};
 
                 // Send the command to open the socket
-                23: current_instruction <= OPEN_SOCKET_0;
+                24: current_instruction <= OPEN_SOCKET_0;
 
                 // Set the destination IP address for socket 0
-                24: current_instruction <= {SET_SOCKET_0_DST_IP_0, dst_ip[31:24]};
-                25: current_instruction <= {SET_SOCKET_0_DST_IP_1, dst_ip[23:16]};
-                26: current_instruction <= {SET_SOCKET_0_DST_IP_2, dst_ip[15:8]};
-                27: current_instruction <= {SET_SOCKET_0_DST_IP_3, dst_ip[7:0]};
+                25: current_instruction <= {SET_SOCKET_0_DST_IP_0, dst_ip[31:24]};
+                26: current_instruction <= {SET_SOCKET_0_DST_IP_1, dst_ip[23:16]};
+                27: current_instruction <= {SET_SOCKET_0_DST_IP_2, dst_ip[15:8]};
+                28: current_instruction <= {SET_SOCKET_0_DST_IP_3, dst_ip[7:0]};
 
                 // Set the destination port to socket 0
-                28: current_instruction <= {SET_SOCKET_0_DST_PRT_0, dst_port[15:8]};
-                29: current_instruction <= {SET_SOCKET_0_DST_PRT_1, dst_port[7:0]};
+                29: current_instruction <= {SET_SOCKET_0_DST_PRT_0, dst_port[15:8]};
+                30: current_instruction <= {SET_SOCKET_0_DST_PRT_1, dst_port[7:0]};
 
                 // Send the command to read the socket state
-                30: begin
+                31: begin
                     current_instruction <= READ_SOCKET_0_STATE;
                     waiting_for_socket <= 1'b1;
                 end
@@ -572,7 +579,7 @@ module wiznet5500
         if (spi_clk == 1'b0 && state == STATE_SENDING_COMMAND && spi_clock_count >= 24 && spi_clock_count <= 31) begin
             data_read <= {data_read[DATA_READ_SIZE - 2:0], miso};
         end else if (spi_clk == 1'b0 && state == STATE_PULLING_DATA && spi_clock_count) begin
-            rec_buffer <= {rec_buffer[BUFFER_SIZE+HEADER_SIZE - 2:0], miso};
+            rec_buffer <= {rec_buffer[BUFFER_SIZE+HEADER_SIZE+24 - 2:0], miso};
         end
     end
 

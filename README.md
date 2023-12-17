@@ -9,7 +9,7 @@ RealtimeIO for LinuxCNC based on an FPGA
 * communication via SPI (with Raspberry PI 4) or Ethernet
 * generated verilog-code / setup via json files (free pin-selection)
 * using free FPGA-Toolchain
-* tested on ICE40UP5K, ICE40LP8K, ICE40HX8K, ECP5 and TangNano9K boards
+* runs on many FPGA's (like ICE40, ECP5, MAX10, Artix7, Gwin, CycloneIV, ...)
 
 ## Sample-Configs:
 | Name | Description |

@@ -324,9 +324,19 @@ class qtdragon:
         cfgxml_data.append("        </property>")
         cfgxml_data.append('        <property name="color">')
         cfgxml_data.append("          <color>")
-        cfgxml_data.append("           <red>85</red>")
-        cfgxml_data.append("           <green>255</green>")
-        cfgxml_data.append("           <blue>0</blue>")
+        if halpin.endswith(".B"):
+            cfgxml_data.append("           <red>85</red>")
+            cfgxml_data.append("           <green>0</green>")
+            cfgxml_data.append("           <blue>255</blue>")
+        elif halpin.endswith(".R"):
+            cfgxml_data.append("           <red>255</red>")
+            cfgxml_data.append("           <green>85</green>")
+            cfgxml_data.append("           <blue>0</blue>")
+        else:
+            cfgxml_data.append("           <red>85</red>")
+            cfgxml_data.append("           <green>255</green>")
+            cfgxml_data.append("           <blue>0</blue>")
+
         cfgxml_data.append("          </color>")
         cfgxml_data.append("        </property>")
         cfgxml_data.append('        <property name="maximumSize">')
@@ -477,6 +487,29 @@ class axis:
         cfgxml_data.append("  </hbox>")
         return cfgxml_data
 
+    def draw_checkbutton_rgb(self, name, halpin_g, halpin_b, halpin_r):
+        cfgxml_data = []
+        cfgxml_data.append("  <hbox>")
+        cfgxml_data.append("    <relief>RAISED</relief>")
+        cfgxml_data.append("    <bd>2</bd>")
+        cfgxml_data.append("    <label>")
+        cfgxml_data.append(f'      <text>"{name}"</text>')
+        cfgxml_data.append("    </label>")
+        cfgxml_data.append("    <checkbutton>")
+        cfgxml_data.append(f'      <halpin>"{halpin_g}"</halpin>')
+        cfgxml_data.append(f'      <text>"G"</text>')
+        cfgxml_data.append("    </checkbutton>")
+        cfgxml_data.append("    <checkbutton>")
+        cfgxml_data.append(f'      <halpin>"{halpin_b}"</halpin>')
+        cfgxml_data.append(f'      <text>"B"</text>')
+        cfgxml_data.append("    </checkbutton>")
+        cfgxml_data.append("    <checkbutton>")
+        cfgxml_data.append(f'      <halpin>"{halpin_r}"</halpin>')
+        cfgxml_data.append(f'      <text>"R"</text>')
+        cfgxml_data.append("    </checkbutton>")
+        cfgxml_data.append("  </hbox>")
+        return cfgxml_data
+
     def draw_led(self, name, halpin):
         cfgxml_data = []
         cfgxml_data.append("  <hbox>")
@@ -485,7 +518,12 @@ class axis:
         cfgxml_data.append("    <led>")
         cfgxml_data.append(f'      <halpin>"{halpin}"</halpin>')
         cfgxml_data.append("      <size>16</size>")
-        cfgxml_data.append('      <on_color>"green"</on_color>')
+        if halpin.endswith(".R"):
+            cfgxml_data.append('      <on_color>"red"</on_color>')
+        elif halpin.endswith(".B"):
+            cfgxml_data.append('      <on_color>"blue"</on_color>')
+        else:
+            cfgxml_data.append('      <on_color>"green"</on_color>')
         cfgxml_data.append('      <off_color>"black"</off_color>')
         cfgxml_data.append("    </led>")
         cfgxml_data.append("    <label>")
@@ -1679,7 +1717,16 @@ def generate_rio_gui(project):
             elif display_type:
                 display_text = display.get("text", vin_name)
                 cfgxml_data += gui_gen.draw_number(display_text, vname, display)
+
+    for num, dout in enumerate(project["doutnames"]):
+        dname = dout["_name"]
+        dout_name = dout.get("name", dname)
+        dout_net = dout.get("net")
+        if dout_net:
+            cfgxml_data += gui_gen.draw_led(dout_name, dname)
+
     cfgxml_data += gui_gen.draw_tab_end()
+
 
     cfgxml_data += gui_gen.draw_tab_begin("Inputs")
     for num, din in enumerate(project["dinnames"]):
@@ -1718,10 +1765,12 @@ def generate_rio_gui(project):
         dname = dout["_name"]
         dout_name = dout.get("name", dname)
         dout_net = dout.get("net")
-        if dout_net:
-            cfgxml_data += gui_gen.draw_led(dout_name, dname)
-        else:
-            cfgxml_data += gui_gen.draw_checkbutton(dout_name, dname)
+        if not dout_net:
+            if dout.get("type") == "dout_wled" and gui != "qtdragon":
+                if dname.endswith(".G"):
+                    cfgxml_data += gui_gen.draw_checkbutton_rgb(dout_name.replace(".G", ""), dname, dname.replace(".G", ".B"), dname.replace(".G", ".R"))
+            else:
+                cfgxml_data += gui_gen.draw_checkbutton(dout_name, dname)
 
     for num, vout in enumerate(project["voutnames"]):
         vname = vout["_name"]

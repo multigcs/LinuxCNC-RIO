@@ -9,13 +9,11 @@ module vin_max6675
         output reg [31:0] temperature
     );
 
-
     reg [15:0] state = 0;
     reg [7:0] data_pos = 0;
     reg [31:0] counter = 0;
     reg [15:0] tmp_data = 0;
     reg mclk = 0;
-    reg next_clk = 0;
     always @(posedge clk) begin
         if (counter == 0) begin
             counter <= DIVIDER;
@@ -31,7 +29,6 @@ module vin_max6675
             spi_cs <= 0;
             data_pos <= 0;
             state <= 1;
-            next_clk <= 0;
         end else if (state == 1) begin
             if (spi_sclk == 0) begin
                 spi_sclk <= 1;

@@ -51,7 +51,7 @@ class Plugin:
             if data.get("type") == self.ptype:
                 pullup = data.get("pullup", True)
                 pinlist_out.append(
-                    (f"VIN{num}_MISO", data["pins"]["MISO"], "INOUT", pullup)
+                    (f"VIN{num}_MISO", data["pins"]["MISO"], "INPUT", pullup)
                 )
                 pinlist_out.append(
                     (f"VIN{num}_SCLK", data["pins"]["SCLK"], "OUTPUT", pullup)

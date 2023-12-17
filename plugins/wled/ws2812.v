@@ -10,11 +10,11 @@ module ws2812 (
     );
     parameter CLK_MHZ = 27;
     parameter NUM_LEDS = 1;
-    parameter t_on = $rtoi($ceil(CLK_MHZ*850/1000));
-    parameter t_off = $rtoi($ceil(CLK_MHZ*450/1000));
-    parameter t_reset = $rtoi($ceil(CLK_MHZ*280));
+    parameter t_on = (CLK_MHZ*850/1000);
+    parameter t_off = (CLK_MHZ*450/1000);
+    parameter t_reset = (CLK_MHZ*280);
 
-    localparam t_period = $rtoi($ceil(CLK_MHZ*1250/1000));
+    localparam t_period = (CLK_MHZ*1250/1000);
     localparam LED_BITS = $clog2(NUM_LEDS);
     localparam COUNT_BITS = $clog2(t_reset);
     localparam STATE_DATA  = 0;

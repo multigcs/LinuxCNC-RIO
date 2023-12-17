@@ -51,6 +51,7 @@ RealtimeIO for LinuxCNC based on an FPGA
 | expansion | [shiftreg](plugins/expansion_shiftreg) | Expansion to add I/O's via shiftregister's |
 | expansion | [shiftreg](plugins/expansion_pcf8574) | Expansion to add I/O's via pcf8574 over I2C |
 | interface | [spislave](plugins/interface_spislave) | communication interface ( RPI(Master) <-SPI-> FPGA(Slave) ) |
+| ... | [...](plugins) | and many more |
 
 
 ![overview](./files/overview.svg)

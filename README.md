@@ -24,6 +24,7 @@ RealtimeIO for LinuxCNC based on an FPGA
 | [Alhambra-II](configs/Alhambra-II) | Alhambra II FPGA board with 3 Axis SPI |
 | [Altera10M08Eval](configs/Altera10M08Eval) | Altera10M08Eval with Arduino CNC-Shield v3 |
 | [Arty-a7-35t](configs/Arty-a7-35t) | Arty-a7-35t with Arduino CNC-Shield v3 |
+| [...](configs) | and many more |
 
 
 ## Plugins:

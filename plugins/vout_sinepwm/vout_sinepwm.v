@@ -2,7 +2,7 @@
 /* verilator lint_off DECLFILENAME */
 
 module vout_sinepwm
-    #(parameter START = 0, parameter DIVIDER = 255)
+    #(parameter START = 0, parameter DIVIDER = 1000)
      (
          input clk,
          input signed [31:0] freq,
@@ -14,7 +14,18 @@ module vout_sinepwm
     reg [7:0] cnt = START;
     reg [7:0] dty = 0;
 
-    always@ (posedge(clk))
+    reg [31:0] counter = 0;
+    reg pwmclk = 0;
+    always @(posedge clk) begin
+        if (counter == 0) begin
+            counter <= DIVIDER;
+            pwmclk <= ~pwmclk;
+        end else begin
+            counter <= counter - 1;
+        end
+    end
+
+    always@ (posedge(pwmclk))
     begin
         clk_cnt = clk_cnt + 1;
         if (freq > 0) begin
@@ -78,8 +89,8 @@ module vout_sinepwm
     end
 
     wire dir1;
-    vout_sine_pwm #(DIVIDER) vout_sine_pwm1 (
-                      .clk (clk),
+    vout_sine_pwm vout_sine_pwm1 (
+                      .clk (pwmclk),
                       .dty ({24'h000000, dty}),
                       .dir (dir1),
                       .pwm (pwm_out)

@@ -6,6 +6,8 @@ each color is one output (Green/Blue/Red)
 
 you can also using strips with many LED's
 
+[![LinuxCNC-RIO mit ws2812 stripe an einem Max10 FPGA](https://img.youtube.com/vi/wu29vGSSK_0/0.jpg)](https://www.youtube.com/shorts/wu29vGSSK_0 "LinuxCNC-RIO mit ws2812 stripe an einem Max10 FPGA")
+
 
 ```
 {

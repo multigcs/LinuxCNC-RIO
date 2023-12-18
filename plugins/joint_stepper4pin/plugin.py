@@ -6,7 +6,7 @@ class Plugin:
         return [
             {
                 "basetype": "joints",
-                "subtype": "joint_unistepper",
+                "subtype": "joint_stepper4pin",
                 "options": {
                     "cl": {
                         "type": "bool",
@@ -70,7 +70,7 @@ class Plugin:
 
     def entry_info(self, joint):
         info = ""
-        if joint.get("type") == "joint_unistepper":
+        if joint.get("type") == "joint_stepper4pin":
             if joint.get("cl"):
                 info += "CL-Stepper ("
             else:
@@ -84,18 +84,18 @@ class Plugin:
     def pinlist(self):
         pinlist_out = []
         for num, joint in enumerate(self.jdata["plugins"]):
-            if joint["type"] == "joint_unistepper":
+            if joint["type"] == "joint_stepper4pin":
                 pinlist_out.append(
-                    (f"JOINT{num}_STEPPER_A1", joint["pins"]["a1"], "OUTPUT")
+                    (f"JOINT{num}_STEPPER_A1", joint["pins"]["1a"], "OUTPUT")
                 )
                 pinlist_out.append(
-                    (f"JOINT{num}_STEPPER_A2", joint["pins"]["a2"], "OUTPUT")
+                    (f"JOINT{num}_STEPPER_A2", joint["pins"]["2a"], "OUTPUT")
                 )
                 pinlist_out.append(
-                    (f"JOINT{num}_STEPPER_B1", joint["pins"]["b1"], "OUTPUT")
+                    (f"JOINT{num}_STEPPER_B1", joint["pins"]["1b"], "OUTPUT")
                 )
                 pinlist_out.append(
-                    (f"JOINT{num}_STEPPER_B2", joint["pins"]["b2"], "OUTPUT")
+                    (f"JOINT{num}_STEPPER_B2", joint["pins"]["2b"], "OUTPUT")
                 )
                 if joint.get("cl") and "enc_a" in joint["pins"]:
                     pullup = joint["pins"].get("pullup", False)
@@ -120,7 +120,7 @@ class Plugin:
     def jointnames(self):
         ret = []
         for num, data in enumerate(self.jdata["plugins"]):
-            if data.get("type") == "joint_unistepper":
+            if data.get("type") == "joint_stepper4pin":
                 name = data.get("name", f"JOINT.{num}")
                 nameIntern = name.replace(".", "").replace("-", "_").upper()
                 data["_name"] = name
@@ -131,9 +131,10 @@ class Plugin:
     def funcs(self):
         func_out = []
         for num, joint in enumerate(self.jdata["plugins"]):
-            if joint["type"] == "joint_unistepper":
+            if joint["type"] == "joint_stepper4pin":
                 name = joint.get("name", f"JOINT.{num}")
                 nameIntern = name.replace(".", "").replace("-", "_").upper()
+                steptype = joint.get("steptype", 1)
 
                 if joint.get("cl") and "enc_a" in joint["pins"]:
                     func_out.append(f"    quad_encoder quad{num} (")
@@ -142,7 +143,7 @@ class Plugin:
                     func_out.append(f"        .quadB (JOINT{num}_STEPPER_ENCB),")
                     func_out.append(f"        .pos ({nameIntern}Feedback)")
                     func_out.append("    );")
-                    func_out.append(f"    joint_unistepper_nf joint_unistepper{num} (")
+                    func_out.append(f"    joint_stepper4pin_nf #(.STEPTYPE({steptype})) joint_stepper4pin{num} (")
                     func_out.append("        .clk (sysclk),")
                     func_out.append(
                         f"        .jointEnable ({nameIntern}Enable && !ERROR),"
@@ -150,7 +151,7 @@ class Plugin:
                     func_out.append(f"        .jointFreqCmd ({nameIntern}FreqCmd),")
 
                 else:
-                    func_out.append(f"    joint_unistepper joint_unistepper{num} (")
+                    func_out.append(f"    joint_stepper4pin #(.STEPTYPE({steptype})) joint_stepper4pin{num} (")
                     func_out.append("        .clk (sysclk),")
                     func_out.append(
                         f"        .jointEnable ({nameIntern}Enable && !ERROR),"
@@ -168,6 +169,6 @@ class Plugin:
 
     def ips(self):
         for num, joint in enumerate(self.jdata["plugins"]):
-            if joint["type"] in ["joint_unistepper"]:
-                return ["quad_encoder.v", "joint_unistepper.v", "joint_unistepper_nf.v"]
+            if joint["type"] in ["joint_stepper4pin"]:
+                return ["quad_encoder.v", "joint_stepper4pin.v", "joint_stepper4pin_nf.v"]
         return []

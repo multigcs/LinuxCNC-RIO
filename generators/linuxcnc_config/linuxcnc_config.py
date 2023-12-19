@@ -579,6 +579,8 @@ def generate_rio_ini(project):
                 exit(1)
             aio_max = max(aio_max, int(aio_num) + 1)
 
+    kinematics = project["jdata"].get("kinematics", "trivkins")
+
     basic_setup = {
         "EMC": {
             "MACHINE": "Rio",
@@ -618,7 +620,7 @@ def generate_rio_ini(project):
         },
         "KINS": {
             "JOINTS": num_joints,
-            "KINEMATICS": f"trivkins coordinates={''.join(traj_axis_list)}",
+            "KINEMATICS": f"{kinematics} coordinates={''.join(traj_axis_list)}",
         },
         "FILTER": {
             "PROGRAM_EXTENSION": [

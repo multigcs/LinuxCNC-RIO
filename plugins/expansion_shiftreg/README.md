@@ -36,8 +36,8 @@ you can use this extra IO's like this:
 ```
 
 
-### LinuxCNC-RIO mit Unipolar Steppern über Schieberegister am FPGA 
-[![LinuxCNC-RIO mit Unipolar Steppern über Schieberegister am FPGA ](https://img.youtube.com/vi/NlLd5CRCOac/0.jpg)](https://www.youtube.com/shorts/NlLd5CRCOac "LinuxCNC-RIO mit Unipolar Steppern über Schieberegister am FPGA ")
+### LinuxCNC-RIO with Unipolar Stepper's over Shiftreg to the FPGA
+[![LinuxCNC-RIO with Unipolar Stepper's over Shiftreg to the FPGA](https://img.youtube.com/vi/NlLd5CRCOac/0.jpg)](https://www.youtube.com/shorts/NlLd5CRCOac "LinuxCNC-RIO with Unipolar Stepper's over Shiftreg to the FPGA")
 
 
 ## Output-Expansion with 74HC595:

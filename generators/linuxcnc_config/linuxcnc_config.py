@@ -795,7 +795,8 @@ def generate_rio_ini(project):
         INPUT_SCALE = float(joint.get("enc_scale", OUTPUT_SCALE))
         scales = f"SCALE = {OUTPUT_SCALE}"
 
-        cfgini_data.append(f"[JOINT_{num}] # -> {AXIS_NAME}")
+        cfgini_data.append(f"# JOINT_{num} -> {AXIS_NAME}")
+        cfgini_data.append(f"[JOINT_{num}]")
         if joint.get("cl", False):
             for key, default in {
                 "P": "1.0",

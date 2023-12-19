@@ -2,7 +2,7 @@
 module expansion_shiftreg
     #(
          parameter WIDTH = 8,
-         parameter SPEED = 100000
+         parameter DIVIDER = 100000
      )
      (
          input clk,
@@ -20,7 +20,7 @@ module expansion_shiftreg
 
     always @(posedge clk) begin
         if (counter == 0) begin
-            counter <= SPEED;
+            counter <= DIVIDER;
 
             if (state == 0) begin
                 if (delay == 1) begin

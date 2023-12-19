@@ -155,7 +155,7 @@ class Plugin:
                 bits = int(expansion.get("bits", 8))
                 invert = expansion.get("invert", False)
                 speed = int(expansion.get("speed", 100000))
-                divider = int(self.jdata["clock"]["speed"]) // speed // 2
+                divider = int(self.jdata["clock"]["speed"]) // speed // 4
 
                 func_out.append(f"    wire [{bits-1}:0] EXPANSION{num}_INPUT_RAW;")
                 mapping_inputs = expansion.get("mapping", {}).get("inputs")
@@ -177,7 +177,7 @@ class Plugin:
                 )
 
                 func_out.append(
-                    f"    expansion_shiftreg #({bits}, {divider}) expansion_shiftreg{num} ("
+                    f"    expansion_shiftreg #(.WIDTH({bits}), .DIVIDER({divider})) expansion_shiftreg{num} ("
                 )
                 func_out.append("       .clk (sysclk),")
                 if invert:

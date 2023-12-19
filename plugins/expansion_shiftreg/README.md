@@ -8,6 +8,7 @@ Expansion to add I/O's via shiftregister's
     {
         "type": "shiftreg",
         "speed": "1000000",
+        "bits": "8",
         "pins": {
             "clock": "G2",
             "load": "G1",
@@ -17,6 +18,26 @@ Expansion to add I/O's via shiftregister's
     }
 ],
 ```
+
+you can use this extra IO's like this:
+```
+        {
+            "type": "dout_bit",
+            "name": "LED0",
+            "invert": "true",
+            "pin": "EXPANSION0_OUTPUT[0]"
+        },
+        {
+            "type": "dout_bit",
+            "name": "LED1",
+            "invert": "true",
+            "pin": "EXPANSION0_OUTPUT[0]"
+        },
+```
+
+
+### LinuxCNC-RIO mit Unipolar Steppern über Schieberegister am FPGA 
+[![LinuxCNC-RIO mit Unipolar Steppern über Schieberegister am FPGA ](https://img.youtube.com/vi/NlLd5CRCOac/0.jpg)](https://www.youtube.com/shorts/NlLd5CRCOac "LinuxCNC-RIO mit Unipolar Steppern über Schieberegister am FPGA ")
 
 
 ## Output-Expansion with 74HC595:

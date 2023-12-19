@@ -510,8 +510,12 @@ class WinForm(QWidget):
         for jn in range(JOINTS):
             key = f"jcs{jn}"
             self.widgets[key] = QSlider(Qt.Horizontal)
-            self.widgets[key].setMinimum(-2000)
-            self.widgets[key].setMaximum(2000)
+            if JOINT_TYPES[jn] == "joint_rcservo":
+                self.widgets[key].setMinimum(-100)
+                self.widgets[key].setMaximum(100)
+            else:
+                self.widgets[key].setMinimum(-2000)
+                self.widgets[key].setMaximum(2000)
             self.widgets[key].setValue(0)
             layout.addWidget(self.widgets[key], gpy, jn + 3)
         gpy += 1

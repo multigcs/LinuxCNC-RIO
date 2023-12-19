@@ -557,7 +557,6 @@ def generate_rio_ini(project):
         if AXIS_NAME not in axis_str:
             continue
         if num >= len(traj_axis_list):
-            print("append")
             traj_axis_list.append(AXIS_NAME)
         else:
             traj_axis_list[num] = AXIS_NAME
@@ -737,24 +736,21 @@ def generate_rio_ini(project):
                 cfgini_data.append(f"{key} = {value}")
         cfgini_data.append("")
 
+
     for num, axis in enumerate(axis_str):
         for joint in project["jointnames"]:
             AXIS_NAME = joint.get("axis", axis_names[num])
-
             if AXIS_NAME == axis:
-                if joint.get("type") == "rcservo":
-                    SCALE = 80.0
+                if joint.get("type") == "joint_rcservo":
                     MIN_LIMIT = -110
                     MAX_LIMIT = 110
                 else:
                     if AXIS_NAME in "ACBUVW":
-                        SCALE = 223.0
-                        MIN_LIMIT = -360
-                        MAX_LIMIT = 360
+                        MIN_LIMIT = -110
+                        MAX_LIMIT = 110
                     else:
-                        SCALE = 400.0
-                        MIN_LIMIT = -360
-                        MAX_LIMIT = 360
+                        MIN_LIMIT = -110
+                        MAX_LIMIT = 110
 
                 MIN_LIMIT = joint.get("min_limit", MIN_LIMIT)
                 MAX_LIMIT = joint.get("max_limit", MAX_LIMIT)
@@ -776,8 +772,8 @@ def generate_rio_ini(project):
 
         AXIS_NAME = joint.get("axis", axis_names[num])
 
-        if joint.get("type") == "rcservo":
-            SCALE = 80.0
+        if joint.get("type") == "joint_rcservo":
+            SCALE = 10.0
             MIN_LIMIT = -110
             MAX_LIMIT = 110
             MAX_VELOCITY = 40
@@ -787,8 +783,8 @@ def generate_rio_ini(project):
             MAX_ACCELERATION = 70
             if AXIS_NAME in "ACBUVW":
                 SCALE = 223.0
-                MIN_LIMIT = -360
-                MAX_LIMIT = 360
+                MIN_LIMIT = -110
+                MAX_LIMIT = 110
             else:
                 SCALE = 400.0
                 MIN_LIMIT = -1300
@@ -797,7 +793,7 @@ def generate_rio_ini(project):
         INPUT_SCALE = float(joint.get("enc_scale", OUTPUT_SCALE))
         scales = f"SCALE = {OUTPUT_SCALE}"
 
-        cfgini_data.append(f"[JOINT_{num}]")
+        cfgini_data.append(f"[JOINT_{num}] # -> {AXIS_NAME}")
         if joint.get("cl", False):
             for key, default in {
                 "P": "1.0",
@@ -886,6 +882,8 @@ def generate_rio_hal(project):
         if num >= num_axis:
             continue
         axis_str += axis_names[num]
+        if "axis" not in project["jointnames"][num]:
+            project["jointnames"][num]["axis"] = axis_names[num]
         traj_axis_list.append(axis_names[num])
 
     for num, joint in enumerate(project["jointnames"]):
@@ -1298,8 +1296,8 @@ setp rio.joint.{num}.fb-scale 	[JOINT_{num}]INPUT_SCALE
 setp rio.joint.{num}.maxaccel 	[JOINT_{num}]STEPGEN_MAXACCEL
 setp rio.joint.{num}.deadband 	[JOINT_{num}]STEPGEN_DEADBAND
 
-net {axis_names[num]}vel-cmd 		<= pid.{pidn}.output 	=> rio.joint.{num}.vel-cmd  
-net {axis_names[num]}pos-cmd 		<= joint.{num}.motor-pos-cmd 	=> pid.{pidn}.command
+net j{num}vel-cmd 		<= pid.{pidn}.output 	=> rio.joint.{num}.vel-cmd  
+net j{num}pos-cmd 		<= joint.{num}.motor-pos-cmd 	=> pid.{pidn}.command
 net j{num}pos-fb 		<= rio.joint.{num}.pos-fb 	=> joint.{num}.motor-pos-fb
 net j{num}pos-fb 		=> pid.{pidn}.feedback
 
@@ -1319,7 +1317,7 @@ setp rio.joint.{num}.scale 		[JOINT_{num}]SCALE
 setp rio.joint.{num}.maxaccel 	[JOINT_{num}]STEPGEN_MAXACCEL
 setp rio.joint.{num}.deadband 	[JOINT_{num}]STEPGEN_DEADBAND
 
-net {axis_names[num]}pos-cmd 		<= joint.{num}.motor-pos-cmd 	=> rio.joint.{num}.pos-cmd  
+net j{num}pos-cmd 		<= joint.{num}.motor-pos-cmd 	=> rio.joint.{num}.pos-cmd  
 net j{num}pos-fb 		<= rio.joint.{num}.pos-fb 	=> joint.{num}.motor-pos-fb
 net j{num}enable 		<= joint.{num}.amp-enable-out 	=> rio.joint.{num}.enable
 

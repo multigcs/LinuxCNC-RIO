@@ -54,6 +54,14 @@ class Plugin:
             if joint["type"] == "joint_rcservo":
                 name = joint.get("name", f"JOINT.{num}")
                 nameIntern = name.replace(".", "").replace("-", "_").upper()
+                rate = joint.get("rate", 50)
+                center = joint.get("center", 1.5)
+                diff = joint.get("range", 0.5)
+
+                rate_divider = int(sysclk / rate)
+                center_divider = int(sysclk * center / 1000)
+                diff_divider = int(sysclk * diff / 1000)
+
                 if joint.get("invert", False):
                     func_out.append(f"    wire JOINT{num}_RCSERVO_INV;")
                     func_out.append(
@@ -65,10 +73,11 @@ class Plugin:
                         f"    assign JOINT{num}_EN = jointEnable{num} && ~ERROR;"
                     )
                 func_out.append(
-                    "    // output at 100Hz(10ms), center: 1.5ms, range: +-0.5ms"
+                    f"    // output at {rate}Hz, center: {center}ms, range: +-{diff}ms"
                 )
+
                 func_out.append(
-                    f"    joint_rcservo #({int(sysclk / 1000 * 10)}, {int(sysclk / 1000 * 1.5)}, {int(sysclk / 1000 * 0.5)}) joint_rcservo{num} ("
+                    f"    joint_rcservo #({rate_divider}, {center_divider}, {diff_divider}) joint_rcservo{num} ("
                 )
                 func_out.append("        .clk (sysclk),")
                 func_out.append(f"        .jointFreqCmd ({nameIntern}FreqCmd),")

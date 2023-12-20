@@ -120,6 +120,9 @@ make CONFIG=configs/TinyFPGA-BX/config.json build
 ### LinuxCNC-Rio on MAX10 with CNC-Shield v3
 [![LinuxCNC-Rio on MAX10 with CNC-Shield v3](https://img.youtube.com/vi/DnB64Y6h2Go/0.jpg)](https://www.youtube.com/watch?v=DnB64Y6h2Go&t=1s "LinuxCNC-Rio on MAX10 with CNC-Shield v3")
 
+### LINUXCNC-RIO with W5500 on Max10 via UDP
+[![LINUXCNC-RIO with W5500 on Max10 via UDP](https://img.youtube.com/vi/xcC7Dun8vxE/0.jpg)](https://www.youtube.com/shorts/xcC7Dun8vxE "LINUXCNC-RIO with W5500 on Max10 via UDP")
+
 ### LinuxCNC-RIO with TinyFPGA-BX and 5Axis BOB - ATC-Test
 [![LinuxCNC-RIO with TinyFPGA-BX and 5Axis BOB - ATC-Test](https://img.youtube.com/vi/G5V5OM_ORsk/0.jpg)](https://www.youtube.com/shorts/G5V5OM_ORsk "LinuxCNC-RIO with TinyFPGA-BX and 5Axis BOB - ATC-Test")
 

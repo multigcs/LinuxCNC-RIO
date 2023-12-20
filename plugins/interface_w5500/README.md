@@ -19,3 +19,5 @@ UDP communication interface based on Wiznet W5500 ( HOST <-> UDP <-> W5500 <-> S
     }
 ],
 ```
+### LINUXCNC-RIO with W5500 on Max10 via UDP
+[![LINUXCNC-RIO with W5500 on Max10 via UDP](https://img.youtube.com/vi/xcC7Dun8vxE/0.jpg)](https://www.youtube.com/shorts/xcC7Dun8vxE "LINUXCNC-RIO with W5500 on Max10 via UDP")

@@ -85,7 +85,7 @@ class Plugin:
                     net = [net]
                 for led in range(num_leds):
                     netn = led * 3
-                    name = data.get("name", f"WLED.{num}.{led:02d}") + ".G"
+                    name = data.get("name", f"WLED.{num}") + f".{led:02d}.G"
                     nameIntern = name.replace(".", "").replace("-", "_").upper()
                     if len(net) > netn:
                         data["net"] = net[netn]
@@ -94,7 +94,7 @@ class Plugin:
                     data["_name"] = name
                     data["_prefix"] = nameIntern
                     ret.append(data.copy())
-                    name = data.get("name", f"WLED.{num}.{led:02d}") + ".B"
+                    name = data.get("name", f"WLED.{num}") + f".{led:02d}.B"
                     nameIntern = name.replace(".", "").replace("-", "_").upper()
                     if len(net) > netn+1:
                         data["net"] = net[netn+1]
@@ -103,7 +103,7 @@ class Plugin:
                     data["_name"] = name
                     data["_prefix"] = nameIntern
                     ret.append(data.copy())
-                    name = data.get("name", f"WLED.{num}.{led:02d}") + ".R"
+                    name = data.get("name", f"WLED.{num}") + f".{led:02d}.R"
                     nameIntern = name.replace(".", "").replace("-", "_").upper()
                     if len(net) > netn+2:
                         data["net"] = net[netn+2]
@@ -114,11 +114,24 @@ class Plugin:
                     ret.append(data.copy())
         return ret
 
+    def defs(self):
+        ret = []
+        for num, data in enumerate(self.jdata["plugins"]):
+            if data.get("type") == self.ptype2:
+                name = data.get("name", f"WLED.{num}")
+                nameIntern = name.replace(".", "").replace("-", "_").upper()
+                num_leds = int(data.get("leds", 1))
+                for led in range(num_leds):
+                    ret.append(f"    wire {nameIntern}{led:02d}G;")
+                    ret.append(f"    wire {nameIntern}{led:02d}B;")
+                    ret.append(f"    wire {nameIntern}{led:02d}R;")
+        return ret
+
     def funcs(self):
         ret = []
         for num, data in enumerate(self.jdata["plugins"]):
             if data.get("type") == self.ptype:
-                name = data.get("name", f"SP.{num}")
+                name = data.get("name", f"WLED.{num}")
                 nameIntern = name.replace(".", "").replace("-", "_").upper()
                 ret.append(
                     f"    vout_wled #({int(self.jdata['clock']['speed']) // 1000000}) vout_wled{num} ("
@@ -136,9 +149,9 @@ class Plugin:
                 ret.append(f"    wire [{num_leds-1}:0] {nameIntern}B;")
                 ret.append(f"    wire [{num_leds-1}:0] {nameIntern}R;")
                 for led in range(num_leds):
-                    ret.append(f"    assign WLED{num}G[{led:02d}] = {nameIntern}{led:02d}G;")
-                    ret.append(f"    assign WLED{num}B[{led:02d}] = {nameIntern}{led:02d}B;")
-                    ret.append(f"    assign WLED{num}R[{led:02d}] = {nameIntern}{led:02d}R;")
+                    ret.append(f"    assign WLED{num}G[{led:d}] = {nameIntern}{led:02d}G;")
+                    ret.append(f"    assign WLED{num}B[{led:d}] = {nameIntern}{led:02d}B;")
+                    ret.append(f"    assign WLED{num}R[{led:d}] = {nameIntern}{led:02d}R;")
 
                 ret.append(
                     f"    dout_wled #(.CLK_MHZ({int(self.jdata['clock']['speed']) // 1000000}), .NUM_LEDS({num_leds})) dout_wled{num} ("

@@ -56,8 +56,8 @@ module interface_udp_tangprimer20k
             .ip_adr(IP),
             .mac_adr(MAC),
 
-            .arp_refresh_interval(50000000*15), // 15 seconds
-            .arp_max_life_time(50000000*30) // 30 seconds
+            .arp_refresh_interval(50000000*30), // 30 seconds
+            .arp_max_life_time(50000000*50) // 50 seconds
         )udp_inst(
             .clk1m(clk1m),
             .rst(soft_rst),
@@ -120,7 +120,7 @@ module interface_udp_tangprimer20k
                 // wait for end of rx
                 if (eth_rx_state == 4'd4) begin
                     // check and save rx data
-                    if (rx_data_buffer[BUFFER_SIZE-1:BUFFER_SIZE-32] == MSGID) begin
+                    if (eth_rx_counter >= BUFFER_SIZE/8 && rx_data_buffer[BUFFER_SIZE-1:BUFFER_SIZE-32] == MSGID) begin
                         rx_data <= rx_data_buffer;
                         timeout_counter <= 0;
                         // trigger next tx
@@ -183,10 +183,10 @@ module interface_udp_tangprimer20k
                 end
                 2:begin
                     // send data
-                    if (eth_tx_counter <= BUFFER_SIZE-1) begin
+                    if (eth_tx_counter < BUFFER_SIZE/8) begin
                         eth_tx_data_av <= 1;
-                        eth_tx_data <= tx_data_buffer[BUFFER_SIZE-1:BUFFER_SIZE-1-7];
-                        tx_data_buffer <= {tx_data_buffer[BUFFER_SIZE-1-8:0], 8'd0};
+                        eth_tx_data <= tx_data_buffer[BUFFER_SIZE-1:BUFFER_SIZE-8];
+                        tx_data_buffer <= {tx_data_buffer[BUFFER_SIZE-9:0], 8'd0};
                         eth_tx_counter = eth_tx_counter + 8'd1;
                     end else begin
                         eth_tx_data_av <= 0;

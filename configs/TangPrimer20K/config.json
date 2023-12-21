@@ -1,9 +1,8 @@
 {
-    "name": "TangPrimer20K",
+    "name": "TangPrimer20K_udp",
     "description": "TangPrimer20K",
     "boardcfg": "TangPrimer20K",
     "transport": "UDP",
-    "ip": "192.168.10.15",
     "axis": 3,
     "interface": [
         {

@@ -853,6 +853,7 @@ class WinForm(QWidget):
                     rec = list(msgFromServer[0])
                 else:
                     print(f"WRONG DATASIZE: {len(msgFromServer[0])} / {len(data)}")
+                    rec = list(msgFromServer[0])
             elif SERIAL:
                 ser.write(bytes(data))
                 msgFromServer = ser.read(len(data))

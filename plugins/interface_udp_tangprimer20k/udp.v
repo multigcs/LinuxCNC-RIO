@@ -50,6 +50,7 @@ module udp (
     parameter signed [31:0] arp_refresh_interval = 100000000;
     parameter signed [31:0] arp_max_life_time = 500000000;
     parameter [71:0] arp_head = 72'h080600010800060400;
+    parameter [15:0] FIFOSIZE = 16'd2047;
     input clk1m;
     input rst;
     output wire clk50m;
@@ -252,7 +253,7 @@ module udp (
     reg signed [15:0] rx_data_fifo_head_int;
     reg signed [15:0] rx_data_fifo_head;
     reg signed [15:0] rx_data_fifo_tail = 0;
-    reg [7:0] rx_data_fifo [8191:0];
+    reg [7:0] rx_data_fifo [FIFOSIZE:0];
     reg [7:0] rx_data_fifo_i_port;
     reg rx_data_fifo_i_en;
     reg [12:0] rx_data_fifo_i_adr;
@@ -263,7 +264,7 @@ module udp (
             rx_data_fifo_i_en <= 1'b1;
             rx_data_fifo_i_adr <= rx_data_fifo_head_int[12:0];
             rx_data_fifo_head_int <= rx_data_fifo_head_int + 16'd1;
-            if (rx_data_fifo_head_int == 8191)
+            if (rx_data_fifo_head_int == FIFOSIZE)
                 rx_data_fifo_head_int <= 0;
         end
     endtask
@@ -337,7 +338,7 @@ module udp (
                 20: begin
                     if ((((rx_data_fifo_tail + 127) - rx_data_fifo_head_int) % 128) < 4)
                         ethernet_resolve_status <= 100;
-                    if ((((rx_data_fifo_tail + 8191) - rx_data_fifo_head_int) % 8192) < 1600)
+                    if ((((rx_data_fifo_tail + FIFOSIZE) - rx_data_fifo_head_int) % (FIFOSIZE+1)) < 1600)
                         ethernet_resolve_status <= 100;
                     if (rx_data_byte_cnt == 20) begin
                         if (rx_info_buf[47:44] != 4'd4)
@@ -390,7 +391,7 @@ module udp (
                                 ethernet_resolve_status <= 29;
                                 rx_head_fifo_head <= rx_head_fifo_head_int;
                                 if (udp_len != 8)
-                                    rx_data_fifo_head <= (rx_data_fifo_head_int == 8191 ? 16'd0 : rx_data_fifo_head_int + 16'd1);
+                                    rx_data_fifo_head <= (rx_data_fifo_head_int == FIFOSIZE ? 16'd0 : rx_data_fifo_head_int + 16'd1);
                             end
                         end
                         else if (((((checksum[17:0] + {2'd0, rx_info_buf[15:0]}) + udp_len) != 18'h0ffff) && (((checksum[17:0] + {2'd0, rx_info_buf[15:0]}) + udp_len) != 18'h1fffe)) && (((checksum[17:0] + {2'd0, rx_info_buf[15:0]}) + udp_len) != 18'h2fffd))
@@ -399,7 +400,7 @@ module udp (
                             ethernet_resolve_status <= 29;
                             rx_head_fifo_head <= rx_head_fifo_head_int;
                             if (udp_len != 8)
-                                rx_data_fifo_head <= (rx_data_fifo_head_int == 8191 ? 16'd0 : rx_data_fifo_head_int + 16'd1);
+                                rx_data_fifo_head <= (rx_data_fifo_head_int == FIFOSIZE ? 16'd0 : rx_data_fifo_head_int + 16'd1);
                         end
                     end
                 end
@@ -479,12 +480,12 @@ module udp (
                 rx_head_o <= rx_head_fifo[(rx_head_fifo_tail + 1) % 128];
             rx_data_av_o <= rx_data_fifo_head != rx_data_fifo_tail;
             if (read_data)
-                rx_data_av_o <= rx_data_fifo_head != ((rx_data_fifo_tail + 1) % 8192);
+                rx_data_av_o <= rx_data_fifo_head != ((rx_data_fifo_tail + 1) % (FIFOSIZE+1));
             if (read_data)
-                rx_data_fifo_tail <= (rx_data_fifo_tail + 1) % 16'd8192;
+                rx_data_fifo_tail <= (rx_data_fifo_tail + 1) % (FIFOSIZE+1);
             rx_data_o <= rx_data_fifo[rx_data_fifo_tail];
             if (read_data)
-                rx_data_o <= rx_data_fifo[(rx_data_fifo_tail + 1) % 8192];
+                rx_data_o <= rx_data_fifo[(rx_data_fifo_tail + 1) % (FIFOSIZE+1)];
         end
     CRC_check crc(
                   .clk(clk50m),
@@ -523,7 +524,7 @@ module udp (
     reg [31:0] tx_head_data_o_port;
     wire tx_head_data_i_en;
     wire [6:0] tx_head_data_i_adr;
-    reg [7:0] tx_data_fifo [8191:0];
+    reg [7:0] tx_data_fifo [FIFOSIZE:0];
     reg signed [15:0] tx_data_fifo_head = 0;
     reg signed [15:0] tx_data_fifo_tail = 0;
     wire [7:0] tx_data_data_i_port;
@@ -671,7 +672,7 @@ module udp (
                     if ((arp_rpy_cnt >= 12) && (arp_rpy_cnt < len_buf))
                         test_data <= tx_data_data_o_port;
                     if ((arp_rpy_cnt >= 11) && (arp_rpy_cnt < (len_buf - 1)))
-                        tx_data_fifo_tail <= (tx_data_fifo_tail + 1) % 16'd8192;
+                        tx_data_fifo_tail <= (tx_data_fifo_tail + 1) % (FIFOSIZE+1);
                     if (arp_rpy_cnt == (len_buf - 1))
                         arp_rpy_stauts <= 10;
                 end
@@ -728,11 +729,11 @@ module udp (
             if (ob_fin) begin
                 head_cnt <= 0;
                 data_cnt <= 0;
-                tx_data_fifo_head <= (tx_data_fifo_head + data_cnt) % 16'd8192;
+                tx_data_fifo_head <= (tx_data_fifo_head + data_cnt) % (FIFOSIZE+1);
                 tx_head_fifo_head <= (tx_head_fifo_head + head_cnt) % 16'd64;
             end
             if (ob_data_en)
-                tx_data_fifo[(tx_data_fifo_head + data_cnt) % 8192] <= ob_data_o;
+                tx_data_fifo[(tx_data_fifo_head + data_cnt) % (FIFOSIZE+1)] <= ob_data_o;
             if (ob_head_en)
                 tx_head_fifo[(tx_head_fifo_head + head_cnt) % 64] <= ob_head_o;
         end

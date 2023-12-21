@@ -28,7 +28,8 @@ class Plugin:
         for num, interface in enumerate(self.jdata.get("interface", [])):
             if interface["type"] == "udp_tangprimer20k":
                 pins = interface["pins"]
-                pinlist_out.append(("phyrst", pins["phyrst"], "OUTPUT"))
+                if "phyrst" in pins:
+                    pinlist_out.append(("phyrst", pins["phyrst"], "OUTPUT"))
                 pinlist_out.append(("netrmii_txd_1", pins["netrmii_txd_1"], "OUTPUT"))
                 pinlist_out.append(("netrmii_txd_0", pins["netrmii_txd_0"], "OUTPUT"))
                 pinlist_out.append(("netrmii_txen", pins["netrmii_txen"], "OUTPUT"))
@@ -48,6 +49,7 @@ class Plugin:
                 MAC = ",".join([f"8'h{part}" for part in MAC_STR.split(":")])
                 IP_STR = interface.get("ip", "192.168.10.14")
                 IP = ",".join([f"8'd{part}" for part in IP_STR.split(".")])
+                pins = interface["pins"]
 
                 func_out.append("    wire clk1m;")
                 func_out.append("    wire clk6m;")
@@ -57,6 +59,8 @@ class Plugin:
                 func_out.append("        .clkin(sysclk)")
                 func_out.append("    );")
                 func_out.append("")
+                if "phyrst" not in pins:
+                    func_out.append("    wire phyrst;")
                 func_out.append(
                     f"    interface_udp_tangprimer20k #(BUFFER_SIZE, 32'h74697277, {{{MAC}}}, {{{IP}}}, 32'd{50000000 // 4}) udp1 ("
                 )

@@ -1,19 +1,11 @@
 {
     "name": "Tangoboard",
     "description": "Tangoboard with TangNano9K over SPI",
+    "board": "TangNano9K",
     "images": {
         "board": "tango.png",
         "pinout": "tangnano9k-board-pinout.png",
         "fpgaboard": "TangNano9K-pinout.png"
-    },
-    "board": "TangNano9K",
-    "type": "GW1NR-LV9QN88PC6/I5",
-    "family": "GW1N-9C",
-    "toolchain": "icestorm",
-    "package": "",
-    "clock": {
-        "speed": "27000000",
-        "pin": "52"
     },
     "transport": "UDP",
     "ip": "192.168.10.14",
@@ -30,13 +22,6 @@
             }
         }
     ],
-    "blink": {
-        "pin": "10"
-    },
-    "error": {
-        "invert": true,
-        "pin": "11"
-    },
     "enable": {
         "invert": true,
         "pin": "73"

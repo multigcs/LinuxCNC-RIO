@@ -1,15 +1,7 @@
 {
     "name": "TinyFPGA-BX",
     "description": "TinyFPGA-BX_BOB with cheap 5axis-BOB",
-    "toolchain": "icestorm",
-    "family": "ice40",
-    "type": "lp8k",
-    "package": "cm81",
-    "clock": {
-        "osc": "16000000",
-        "speed": "48000000",
-        "pin": "B2"
-    },
+    "board": "TinyFPGA-BX",
     "interface": [
         {
             "type": "spi",
@@ -23,9 +15,6 @@
         }
     ],
     "____blink": {
-        "pin": "B3"
-    },
-    "error": {
         "pin": "B3"
     },
     "enable": {

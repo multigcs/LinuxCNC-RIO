@@ -1,6 +1,6 @@
 {
     "name": "Olimex-ICE40HX8K-EVB",
-    "description": "minimal configuration for Olimex-ICE40HX8K-EVB",
+    "description": "Olimex-ICE40HX8K-EVB with cheap 5axis-BOB",
     "toolchain": "icestorm",
     "family": "ice40",
     "type": "hx8k",
@@ -9,8 +9,7 @@
         "speed": "100000000",
         "pin": "J3"
     },
-    "plugins": [],
-    "blink": {
+    "error": {
         "pin": "R16"
     }
 }

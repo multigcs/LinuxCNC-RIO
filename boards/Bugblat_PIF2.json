@@ -1,6 +1,6 @@
 {
     "name": "Bugblat_PIF2",
-    "description": "minimal configuration for Bugblat_PIF2",
+    "description": "do not work / only for testing",
     "toolchain": "diamond",
     "family": "LCMXO2",
     "type": "LCMXO2-7000HC-5TG144C",
@@ -12,6 +12,5 @@
     },
     "blink": {
         "pin": "113"
-    },
-    "plugins": []
+    }
 }

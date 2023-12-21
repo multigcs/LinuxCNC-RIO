@@ -1,17 +1,21 @@
 {
     "name": "ICEBreakerV1.0e",
-    "description": "minimal configuration for ICEBreakerV1.0e",
+    "description": "Small and low cost FPGA educational and development board",
     "toolchain": "icestorm",
     "family": "ice40",
     "type": "up5k",
     "package": "sg48",
     "flashcmd": "openFPGALoader -b ice40_generic rio.bin -f",
     "clock": {
-        "speed": "12000000",
+        "osc": "12000000",
+        "speed": "50250000",
         "pin": "35"
     },
     "blink": {
-        "pin": "27"
+        "pin": "37"
     },
-    "plugins": []
+    "error": {
+        "invert": true,
+        "pin": "11"
+    }
 }

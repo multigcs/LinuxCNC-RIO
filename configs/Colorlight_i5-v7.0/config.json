@@ -1,16 +1,8 @@
 {
     "name": "Colorlight_i5-v7.0",
     "description": "only for testing",
-    "toolchain": "icestorm",
-    "family": "ecp5",
-    "type": "25k",
-    "package": "CABGA381",
+    "board": "Colorlight_i5-v7.0",
     "transport": "SPI",
-    "clock": {
-        "osc": "25000000",
-        "speed": "100000000",
-        "pin": "P3"
-    },
     "interface": [
         {
             "type": "spi",
@@ -22,9 +14,6 @@
             }
         }
     ],
-    "blink": {
-        "pin": "U16"
-    },
     "plugins": [
         {
             "invert": true,

@@ -1,6 +1,6 @@
 {
     "name": "OpenBench_LogicSniffer",
-    "description": "minimal configuration for OpenBench_LogicSniffer",
+    "description": "xc3s250e - testing",
     "toolchain": "ise",
     "family": "xc3",
     "type": "xc3s250e-4-vq100",
@@ -11,6 +11,5 @@
     },
     "blink": {
         "pin": "P36"
-    },
-    "plugins": []
+    }
 }

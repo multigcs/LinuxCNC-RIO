@@ -1,20 +1,7 @@
 {
     "name": "Arty-a7-35t",
     "description": "Arty a7-35t - testing",
-    "toolchain": "vivado",
-    "family": "xc7",
-    "type": "xc7a35ticsg324-1l",
-    "package": "csg324",
-    "clock": {
-        "speed": "100000000",
-        "pin": "E3"
-    },
-    "blink": {
-        "pin": "T9"
-    },
-    "error": {
-        "pin": "T10"
-    },
+    "board": "Arty-a7-35t",
     "slots": [
         {
             "comment": "ChipKit/Arduino Header",

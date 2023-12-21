@@ -1,0 +1,12 @@
+{
+    "name": "Verilator",
+    "description": "Verilator test",
+    "toolchain": "verilator",
+    "clock": {
+        "speed": "1000000",
+        "pin": "35"
+    },
+    "blink": {
+        "pin": "27"
+    }
+}

@@ -1,15 +1,7 @@
 {
     "name": "Lattice-iCE40HX8K",
     "description": "Lattice-ICE40HX8K_BOB with cheap 5axis-BOB",
-    "toolchain": "icestorm",
-    "family": "ice40",
-    "type": "hx8k",
-    "package": "ct256",
-    "clock": {
-        "osc": "12000000",
-        "speed": "48000000",
-        "pin": "J3"
-    },
+    "board": "Lattice-iCE40HX8K",
     "interface": [
         {
             "type": "spi",
@@ -21,14 +13,8 @@
             }
         }
     ],
-    "error": {
-        "pin": "R15"
-    },
     "enable": {
         "pin": "P15"
-    },
-    "blink": {
-        "pin": "P16"
     },
     "plugins": [
         {

@@ -1,6 +1,6 @@
 {
     "name": "Alhambra-II",
-    "description": "minimal configuration for Alhambra-II",
+    "description": "Alhambra II FPGA board with 3 Axis SPI",
     "board": "Alhambra-II",
     "toolchain": "icestorm",
     "family": "ice40",
@@ -10,11 +10,11 @@
         "speed": "12000000",
         "pin": "49"
     },
-    "transport": "UDP",
-    "ip": "192.168.10.28",
-    "axis": 3,
     "blink": {
         "pin": "37"
     },
-    "plugins": []
+    "error": {
+        "invert": true,
+        "pin": "38"
+    }
 }

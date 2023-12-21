@@ -37,6 +37,18 @@ def load(configfile):
         print("ERROR: old json config format, please run 'python3 convert-configs.py'")
         sys.exit(1)
 
+    # loading board data
+    board = project["jdata"].get("board")
+    if board:
+        print(f"loading board setup: {board}")
+        bdata = open(f"boards/{board}.json", "r").read()
+        project["board"] = json.loads(bdata)
+        if "name" in project["board"]:
+            project["board"]["boardname"] = project["board"]["name"]
+            del project["board"]["name"]
+        for key, value in project["board"].items():
+            project["jdata"][key] = value
+
     # loading modules
     project["modules"] = {}
     for path in glob.glob("modules/*.json"):

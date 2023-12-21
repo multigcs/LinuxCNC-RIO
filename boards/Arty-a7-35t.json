@@ -1,6 +1,6 @@
 {
     "name": "Arty-a7-35t",
-    "description": "minimal configuration for Arty-a7-35t",
+    "description": "Arty a7-35t - testing",
     "toolchain": "vivado",
     "family": "xc7",
     "type": "xc7a35ticsg324-1l",
@@ -12,5 +12,7 @@
     "blink": {
         "pin": "T9"
     },
-    "plugins": []
+    "error": {
+        "pin": "T10"
+    }
 }

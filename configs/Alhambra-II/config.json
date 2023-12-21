@@ -1,7 +1,7 @@
 {
     "name": "Alhambra-II",
     "description": "Alhambra II FPGA board with 3 Axis SPI",
-    "board": "Alhambra-II",
+    "boardcfg": "Alhambra-II",
     "transport": "UDP",
     "ip": "192.168.10.28",
     "axis": 3,

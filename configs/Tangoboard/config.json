@@ -1,7 +1,7 @@
 {
     "name": "Tangoboard",
     "description": "Tangoboard with TangNano9K over SPI",
-    "board": "TangNano9K",
+    "boardcfg": "TangNano9K",
     "images": {
         "board": "tango.png",
         "pinout": "tangnano9k-board-pinout.png",

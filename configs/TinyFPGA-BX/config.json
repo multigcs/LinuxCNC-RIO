@@ -1,7 +1,7 @@
 {
     "name": "TinyFPGA-BX",
     "description": "TinyFPGA-BX_BOB with cheap 5axis-BOB",
-    "board": "TinyFPGA-BX",
+    "boardcfg": "TinyFPGA-BX",
     "interface": [
         {
             "type": "spi",

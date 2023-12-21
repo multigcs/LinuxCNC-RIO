@@ -1,7 +1,7 @@
 {
     "name": "TangNano9K",
     "description": "TangNano9K with 5Axis BOB over SPI (4Axis+Relais)",
-    "board": "TangNano9K",
+    "boardcfg": "TangNano9K",
     "transport": "SPI",
     "axis": 4,
     "interface": [

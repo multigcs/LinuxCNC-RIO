@@ -1,7 +1,7 @@
 {
     "name": "OpenBench_LogicSniffer",
     "description": "xc3s250e - testing",
-    "board": "OpenBench_LogicSniffer",
+    "boardcfg": "OpenBench_LogicSniffer",
     "interface": [
         {
             "type": "uart",

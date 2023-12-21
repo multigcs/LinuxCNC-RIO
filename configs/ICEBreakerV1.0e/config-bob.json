@@ -1,7 +1,7 @@
 {
     "name": "ICEBreakerV1.0e",
     "description": "Small and low cost FPGA educational and development board",
-    "board": "ICEBreakerV1.0e",
+    "boardcfg": "ICEBreakerV1.0e",
     "interface": [
         {
             "type": "spi",

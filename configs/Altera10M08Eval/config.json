@@ -1,7 +1,7 @@
 {
     "name": "Altera10M08Eval",
     "description": "Altera10M08Eval",
-    "board": "Altera10M08Eval",
+    "boardcfg": "Altera10M08Eval",
     "transport": "SPI",
     "rpispi": {
         "MOSI": 10,

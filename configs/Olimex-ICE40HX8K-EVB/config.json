@@ -1,7 +1,7 @@
 {
     "name": "Olimex-ICE40HX8K-EVB",
     "description": "Olimex-ICE40HX8K-EVB with cheap 5axis-BOB",
-    "board": "Olimex-ICE40HX8K-EVB",
+    "boardcfg": "Olimex-ICE40HX8K-EVB",
     "interface": [
         {
             "type": "spi",

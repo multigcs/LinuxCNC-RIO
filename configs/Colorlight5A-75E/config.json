@@ -1,7 +1,7 @@
 {
     "name": "Colorlight5A-75E",
     "description": "only for testing",
-    "board": "Colorlight5A-75E",
+    "boardcfg": "Colorlight5A-75E",
     "transport": "SPI",
     "interface": [
         {

@@ -1,7 +1,7 @@
 {
     "name": "Lattice-iCE40HX8K",
     "description": "Lattice-ICE40HX8K_BOB with cheap 5axis-BOB",
-    "board": "Lattice-iCE40HX8K",
+    "boardcfg": "Lattice-iCE40HX8K",
     "interface": [
         {
             "type": "spi",

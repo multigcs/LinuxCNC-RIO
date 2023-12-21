@@ -1,7 +1,7 @@
 {
     "name": "TangNano20K",
     "description": "TangNano20K with 3 stepper Axis SPI",
-    "board": "TangNano20K",
+    "boardcfg": "TangNano20K",
     "transport": "SPI",
     "axis": 3,
     "interface": [

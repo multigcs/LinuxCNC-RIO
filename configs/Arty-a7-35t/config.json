@@ -1,7 +1,7 @@
 {
     "name": "Arty-a7-35t",
     "description": "Arty a7-35t - testing",
-    "board": "Arty-a7-35t",
+    "boardcfg": "Arty-a7-35t",
     "slots": [
         {
             "comment": "ChipKit/Arduino Header",

@@ -38,7 +38,7 @@ def load(configfile):
         sys.exit(1)
 
     # loading board data
-    board = project["jdata"].get("board")
+    board = project["jdata"].get("boardcfg")
     if board:
         print(f"loading board setup: {board}")
         bdata = open(f"boards/{board}.json", "r").read()

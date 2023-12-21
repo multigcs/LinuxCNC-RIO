@@ -1,6 +1,6 @@
 {
     "name": "Bugblat_PIF2",
     "description": "do not work / only for testing",
-    "board": "Bugblat_PIF2",
+    "boardcfg": "Bugblat_PIF2",
     "plugins": []
 }

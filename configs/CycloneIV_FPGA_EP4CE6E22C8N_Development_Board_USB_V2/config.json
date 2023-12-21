@@ -1,7 +1,7 @@
 {
     "name": "CycloneIV_FPGA_EP4CE6E22C8N_Development_Board_USB_V2",
     "description": "EP4CE6E22C8 on china devboard - Cyclone IV E",
-    "board": "CycloneIV_FPGA_EP4CE6E22C8N_Development_Board_USB_V2",
+    "boardcfg": "CycloneIV_FPGA_EP4CE6E22C8N_Development_Board_USB_V2",
     "interface": [
         {
             "type": "uart",

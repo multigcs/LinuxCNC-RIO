@@ -1,7 +1,7 @@
 {
     "name": "Colorlight_i5-v7.0",
     "description": "only for testing",
-    "board": "Colorlight_i5-v7.0",
+    "boardcfg": "Colorlight_i5-v7.0",
     "transport": "SPI",
     "interface": [
         {

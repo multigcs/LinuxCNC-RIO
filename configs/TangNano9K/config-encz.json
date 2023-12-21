@@ -1,7 +1,7 @@
 {
     "name": "TangNano9K",
     "description": "TangNano9K with 5Axis BOB over SPI",
-    "board": "TangNano9K",
+    "boardcfg": "TangNano9K",
     "transport": "UDP",
     "ip": "192.168.10.71",
     "interface": [

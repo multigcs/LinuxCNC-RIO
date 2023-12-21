@@ -1,0 +1,101 @@
+{
+    "name": "TangPrimer20K",
+    "description": "TangPrimer20K Ext-Lite",
+    "boardcfg": "TangPrimer20K-lite",
+    "transport": "SERIAL",
+    "axis": 3,
+    "interface": [
+        {
+            "type": "uart",
+            "baud": 115200,
+            "pins": {
+                "RX": "T13",
+                "TX": "M11"
+            }
+        }
+    ],
+    "enable": {
+        "pin": "R13"
+    },
+    "plugins": [
+        {
+            "type": "din_bit",
+            "name": "SW1",
+            "invert": true,
+            "pin": "T10"
+        },
+        {
+            "type": "din_bit",
+            "name": "SW2",
+            "invert": true,
+            "pin": "T2"
+        },
+        {
+            "type": "din_bit",
+            "name": "SW6",
+            "invert": true,
+            "pin": "D7"
+        },
+        {
+            "type": "din_bit",
+            "name": "SW7",
+            "invert": true,
+            "pin": "C7"
+        }
+    ],
+    "slots": [
+        {
+            "comment": "SLOT1 J8",
+            "pins": {
+                "P1": "R16",
+                "P2": "P16",
+                "P3": "N16",
+                "P4": "L16",
+                "P7": "P15",
+                "P8": "N15",
+                "P9": "N14",
+                "P10": "L14"
+            }
+        },
+        {
+            "comment": "SLOT2 J7",
+            "pins": {
+                "P1": "T6",
+                "P2": "T7",
+                "P3": "T8",
+                "P4": "T9",
+                "P7": "P6",
+                "P8": "R8",
+                "P9": "P8",
+                "P10": "P9"
+            }
+        },
+        {
+            "comment": "SLOT3 J2",
+            "pins": {
+                "P1": "F15",
+                "P2": "D16",
+                "P3": "C9",
+                "P4": "L12",
+                "P7": "E16",
+                "P8": "E14",
+                "P9": "A9",
+                "P10": "J11"
+            },
+            "module": "icebreaker_led_sw"
+        },
+        {
+            "comment": "SLOT4 J6",
+            "pins": {
+                "P1": "L8",
+                "P2": "P7",
+                "P3": "E10",
+                "P4": "D11",
+                "P7": "M6",
+                "P8": "R7",
+                "P9": "D10",
+                "P10": "F10"
+            }
+        }
+    ]
+}

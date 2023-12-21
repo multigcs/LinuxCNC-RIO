@@ -12,5 +12,9 @@
     },
     "blink": {
         "pin": "113"
+    },
+    "error": {
+        "invert": true,
+        "pin": "112"
     }
 }

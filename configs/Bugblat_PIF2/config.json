@@ -1,6 +1,44 @@
 {
     "name": "Bugblat_PIF2",
-    "description": "do not work / only for testing",
+    "description": "only for testing",
     "boardcfg": "Bugblat_PIF2",
-    "plugins": []
+    "transport": "SPI",
+    "interface": [
+        {
+            "type": "spi",
+            "pins": {
+                "MOSI": "71",
+                "MISO": "45",
+                "SCK": "44",
+                "SEL": "4"
+            }
+        }
+    ],
+    "plugins": [
+        {
+            "type": "joint_stepper",
+            "cl": false,
+            "scale": 800,
+            "pins": {
+                "step": "73",
+                "dir": "74"
+            }
+        },
+        {
+            "type": "joint_stepper",
+            "cl": false,
+            "pins": {
+                "step": "75",
+                "dir": "76"
+            }
+        },
+        {
+            "type": "joint_stepper",
+            "cl": false,
+            "pins": {
+                "step": "77",
+                "dir": "78"
+            }
+        }
+    ]
 }

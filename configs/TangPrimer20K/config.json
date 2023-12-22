@@ -1,5 +1,5 @@
 {
-    "name": "TangPrimer20K_udp",
+    "name": "TangPrimer20K",
     "description": "TangPrimer20K",
     "boardcfg": "TangPrimer20K",
     "transport": "UDP",
@@ -26,6 +26,16 @@
     "_enable": {
         "pin": "R13"
     },
+    "modules": [
+        {
+            "slot": "SLOT1",
+            "module": "icebreaker_led_sw"
+        },
+        {
+            "slot": "SLOT2",
+            "module": "joint3+dout1"
+        }
+    ],
     "plugins": [
         {
             "type": "din_bit",
@@ -110,62 +120,6 @@
             "name": "BLED5",
             "invert": true,
             "pin": "L16"
-        }
-    ],
-    "slots": [
-        {
-            "comment": "SLOT1 MIC ARRAY",
-            "pins": {
-                "P1": "P6",
-                "P2": "R8",
-                "P3": "P8",
-                "P4": "T9",
-                "P7": "T6",
-                "P8": "T7",
-                "P9": "T8",
-                "P10": "P9"
-            },
-            "module": "icebreaker_led_sw"
-        },
-        {
-            "comment": "SLOT2 TVP",
-            "pins": {
-                "P1": "P11",
-                "P2": "R11",
-                "P3": "M15",
-                "P4": "J16",
-                "P7": "T11",
-                "P8": "T12",
-                "P9": "M14",
-                "P10": "J14"
-            },
-            "module": "joint3+dout1"
-        },
-        {
-            "comment": "SLOT3 RGB",
-            "pins": {
-                "P1": "E15",
-                "P2": "A15",
-                "P3": "A14",
-                "P4": "C12",
-                "P7": "D14",
-                "P8": "B14",
-                "P9": "B13",
-                "P10": "B12"
-            }
-        },
-        {
-            "comment": "SLOT4 LCD",
-            "pins": {
-                "P1": "B11",
-                "P2": "D11",
-                "P3": "N7",
-                "P4": "N8",
-                "P7": "A11",
-                "P8": "N6",
-                "P9": "N9",
-                "P10": "L9"
-            }
         }
     ]
 }

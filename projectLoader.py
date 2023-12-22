@@ -61,12 +61,33 @@ def load(configfile):
             project["jdata"][ftype] = []
 
     # import module data
-    for slot in project["jdata"].get("slots", []):
-        module = slot.get("module")
+    for slot_n, slot in enumerate(project["jdata"].get("slots", [])):
         spins = slot["pins"]
-        if module:
+        slotname = slot.get("name", f"slot{slot_n}")
+        modules = []
+        # check old config style
+        if "module" in slot:
+            module = slot.get("module")
+            ssetup = slot.get("setup")
+            print(f"WARNING: found old config style for slot modules, please update: {module}")
+            modules.append({
+                {
+                    "slot": slotname,
+                    "module": module,
+                    "setup": ssetup,
+                }
+            })
+
+        # check new config style
+        modules += project["jdata"].get("modules", {})
+
+        # merge modules
+        for modulesetup in modules:
+            if modulesetup.get("slot") != slotname:
+                continue
+            module = modulesetup.get("module")
+            ssetup = modulesetup.get("setup")
             if module in project["modules"]:
-                ssetup = slot.get("setup")
                 module_data = copy.deepcopy(project["modules"][module])
                 if "enable" in module_data:
                     project["jdata"]["enable"] = module_data["enable"]

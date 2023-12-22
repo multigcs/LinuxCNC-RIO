@@ -49,29 +49,50 @@ cat <<EOF | dot -Tsvg > files/overview.svg
 digraph {
     rankdir=LR;
 
-    "STEPPER" -> "STEP/DIR\nstepper-driver" -> "FPGA" [dir=back]
-    "UNIPOLAR" -> "GPIO\nuln2803" -> "FPGA" [dir=back]
-    "DC-Servo" -> "PWM/DIR\nh-bridge" -> "FPGA" [dir=back]
-    "RC-Servo" -> "PWM" -> "FPGA" [dir=back]
+	subgraph cluster_0 {
+        "FPGA" [shape=Msquare]
+        "STEP/DIR" [shape=square]
+        "PWM/DIR" [shape=square]
+        "PWM" [shape=square]
+        "GPIO" [shape=square]
+        "MODBUS" [shape=square]
+        "COUNTER" [shape=square]
+        "SPI" [shape=square]
+        "SPI/I2C/1Wire" [shape=square]
 
-    "HY-VFD" -> "MODBUS\nlevel-converter\n(MAX485)" -> "FPGA" [dir=both]
+        "STEP/DIR" -> "FPGA" [dir=back]
+        "PWM/DIR" -> "FPGA" [dir=back]
+        "PWM" -> "FPGA" [dir=back]
+        "GPIO" -> "FPGA" [dir=both]
+        "MODBUS" -> "FPGA" [dir=both]
+        "COUNTER" -> "FPGA"
+        "SPI/I2C/1Wire" -> "FPGA" [dir=both]
+        "FPGA" -> "SPI" [dir=both]
+    }
 
-    "Encoder\nOptical for joint feedback (closed-loop)\nmechanical for user inputs" -> "FPGA"
-    "ADC\n(tlc549c / ads1115)" -> "FPGA"
-    "Sensors\n(ds18b20 / lm75)" -> "FPGA"
-    "Counter\n(up/down/reset)" -> "FPGA"
-    "Digial-Input\n(switches/buttons/sensors/...)" -> "FPGA"
-    "Digial-Output\n(spindle/flood/LED's/...)" -> "FPGA" [dir=back]
-    "PWM-Output\n(spindle-speed/...)" -> "FPGA" [dir=back]
+    "STEPPER" -> "Stepper-Driver" -> "STEP/DIR" [dir=back]
+    "UNIPOLAR" -> "ULN2803" -> "GPIO" [dir=back]
+    "DC-Servo" -> "H-Bridge" -> "PWM/DIR" [dir=back]
+    "RC-Servo" -> "PWM" [dir=back]
 
-    "extra GPIO's\n(Buttons/LED's)\n(do not use for realtime stuff)" -> "IO-Extensions\n(shiftreg/pcf8574)\n(for extra Digital-Ports)" -> "FPGA" [dir=both]
+    "HY-VFD" -> "MAX485" -> "MODBUS" [dir=both]
 
-    "FPGA" -> "SPI" [dir=both]
+    "Encoder\nOptical for joint feedback (closed-loop)\nmechanical for user inputs" -> "COUNTER"
+    "ADC\n(tlc549c / ads1115)" -> "SPI/I2C/1Wire"
+    "Sensors\n(ds18b20 / lm75)" -> "SPI/I2C/1Wire"
+    "Counter\n(up/down/reset)" -> "COUNTER"
+    "Digial-Input\n(switches/buttons/sensors/...)" -> "GPIO"
+    "Digial-Output\n(spindle/flood/LED's/...)" -> "GPIO" [dir=back]
+    "PWM-Output\n(spindle-speed/...)" -> "PWM/DIR" [dir=back]
 
-    "FPGA" -> "Ethernet\n(optional)" -> "LinuxCNC\n(RPI4/PC/Laptop)"[dir=both,color=lightgray]
-    "Ethernet\n(optional)" [color=lightgray]
+    "extra GPIO's\n(Buttons/LED's)\n(do not use for realtime stuff)" -> "IO-Extensions\n(shiftreg/pcf8574)\n(for extra Digital-Ports)" -> "SPI/I2C/1Wire" [dir=both]
 
-    "SPI" -> "LinuxCNC\n(RPI4/PC/Laptop)"[dir=both]
+    "SPI" -> "W5500"[dir=both,color=lightgray, label=spi]
+    "W5500" -> "LinuxCNC\n(RPI4/PC/Laptop)"[dir=both,color=lightgray, label=udp]
+    "SPI" -> "UDP2SPI Bridge" [dir=both,color=lightgray, label=spi]
+    "UDP2SPI Bridge" -> "LinuxCNC\n(RPI4/PC/Laptop)"[dir=both,color=lightgray, label=udp]
+
+    "SPI" -> "LinuxCNC\n(RPI4/PC/Laptop)" [dir=both,color=lightgray, label=spi]
 
 }
 

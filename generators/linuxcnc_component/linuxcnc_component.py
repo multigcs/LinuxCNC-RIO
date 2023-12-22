@@ -51,7 +51,7 @@ def generate(project):
         rio_data.append(f"#define SPI_PIN_CS {rpi_spi_cs}")
         rio_data.append(f"#define SPI_SPEED BCM2835_SPI_CLOCK_DIVIDER_{rpi_spi_prescaler}")
     else:
-        print("ERROR: UNKNOWN transport protocol:", transport)
+        print(f"ERROR: UNKNOWN transport protocol: {transport} (UDP, SPI, SERIAL)")
         sys.exit(1)
 
     rio_data.append("")

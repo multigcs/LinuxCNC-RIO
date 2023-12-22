@@ -2,7 +2,6 @@
     "name": "Bugblat_PIF2",
     "description": "only for testing",
     "boardcfg": "Bugblat_PIF2",
-    "transport": "SPI",
     "interface": [
         {
             "type": "spi",

@@ -47,7 +47,8 @@ def load(configfile):
             project["board"]["boardname"] = project["board"]["name"]
             del project["board"]["name"]
         for key, value in project["board"].items():
-            project["jdata"][key] = value
+            if key not in project["jdata"]:
+                project["jdata"][key] = value
 
     # loading modules
     project["modules"] = {}
@@ -66,16 +67,15 @@ def load(configfile):
         slotname = slot.get("name", f"slot{slot_n}")
         modules = []
         # check old config style
+        print(slot)
         if "module" in slot:
             module = slot.get("module")
             ssetup = slot.get("setup")
             print(f"WARNING: found old config style for slot modules, please update: {module}")
             modules.append({
-                {
-                    "slot": slotname,
-                    "module": module,
-                    "setup": ssetup,
-                }
+                "slot": slotname,
+                "module": module,
+                "setup": ssetup,
             })
 
         # check new config style

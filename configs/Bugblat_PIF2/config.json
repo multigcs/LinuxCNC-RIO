@@ -2,6 +2,7 @@
     "name": "Bugblat_PIF2",
     "description": "only for testing",
     "boardcfg": "Bugblat_PIF2",
+    "rpi_flashcmd": "openFPGALoader -c libgpiod --pins=19:26:13:6 /tmp/rio_build.bit",
     "interface": [
         {
             "type": "spi",

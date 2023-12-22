@@ -426,24 +426,19 @@ def generate(project):
     # build files (makefiles/scripts/projects)
     board = project["jdata"].get("board")
 
+    # generate makefiles
     if board in {"TangNano9K", "TangNano20K", "TangPrimer20K"}:
         buildsys_gowin(project)
-
     elif project["jdata"].get("toolchain") == "icestorm":
         buildsys_icestorm(project)
-
     elif project["jdata"].get("toolchain") == "vivado":
         buildsys_vivado(project)
-
     elif project["jdata"].get("toolchain") == "ise":
         buildsys_ise(project)
-
     elif project["jdata"].get("toolchain") == "quartus":
         buildsys_quartus(project)
-
     elif project["jdata"].get("toolchain") == "diamond":
         buildsys_diamond(project)
-
     elif project["jdata"].get("toolchain") == "verilator":
         buildsys_verilator(project)
 

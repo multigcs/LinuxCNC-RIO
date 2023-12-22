@@ -1,5 +1,6 @@
 import os
 import sys
+import json
 
 from .buildsys import *
 from .testbench import testbench
@@ -445,3 +446,6 @@ def generate(project):
 
     elif project["jdata"].get("toolchain") == "verilator":
         buildsys_verilator(project)
+
+    # backup active configuration
+    open(f"{project['SOURCE_PATH']}/config.json", "w").write(json.dumps(project["jdata"], indent=2))

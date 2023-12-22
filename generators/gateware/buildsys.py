@@ -500,6 +500,50 @@ def buildsys_diamond(project):
     makefile_data.append("")
     open(f"{project['GATEWARE_PATH']}/Makefile", "w").write("\n".join(makefile_data))
 
+    """
+    bitfileName = "$(PROJECT).bit"
+    verilogs = " ".join(project["verilog_files"])
+    makefile_data = []
+    makefile_data.append("")
+    makefile_data.append("# Toolchain: Icestorm")
+    makefile_data.append("")
+    makefile_data.append("PROJECT  := rio")
+    makefile_data.append("TOP      := rio")
+    makefile_data.append(f"FAMILY   := {project['jdata']['family']}")
+    makefile_data.append(f"TYPE     := {project['jdata']['type']}")
+    makefile_data.append(f"PACKAGE  := {project['jdata']['package']}")
+    makefile_data.append(f"VERILOGS := {verilogs}")
+    makefile_data.append("")
+    makefile_data.append(f"all: {bitfileName}")
+    makefile_data.append("")
+    makefile_data.append("$(PROJECT).json: $(VERILOGS)")
+    makefile_data.append(
+        "	yosys -q -l yosys.log -p 'synth_lattice -family xo2 -top $(TOP) -json $(PROJECT).json' $(VERILOGS)"
+    )
+    makefile_data.append("")
+    makefile_data.append("$(PROJECT).config: $(PROJECT).json pins.lpf")
+    makefile_data.append(
+        "	nextpnr-machxo2 -q -l nextpnr.log --device ${TYPE} --json $(PROJECT).json --lpf pins.lpf --textcfg $(PROJECT).config"
+    )
+    makefile_data.append('	@echo ""')
+    makefile_data.append('	@grep -B 1 "%$$" nextpnr.log')
+    makefile_data.append('	@echo ""')
+    makefile_data.append("")
+    makefile_data.append(f"{bitfileName}: $(PROJECT).config")
+    makefile_data.append(
+        f"	ecppack --svf $(PROJECT).svf $(PROJECT).config {bitfileName}"
+    )
+    makefile_data.append("")
+    makefile_data.append(f"$(PROJECT).svf: {bitfileName}")
+    makefile_data.append("")
+    makefile_data.append("clean:")
+    makefile_data.append(
+        f"	rm -rf {bitfileName} $(PROJECT).svf $(PROJECT).config $(PROJECT).json yosys.log nextpnr.log"
+    )
+    makefile_data.append("")
+    open(f"{project['GATEWARE_PATH']}/Makefile.yosys", "w").write("\n".join(makefile_data))
+    """
+
 
 def buildsys_quartus(project):
     pins_qdf(project)

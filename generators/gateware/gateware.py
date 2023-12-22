@@ -73,7 +73,12 @@ def verilog_top(project):
     if project["osc_clock"]:
         top_data.append("    wire sysclk;")
         top_data.append("    wire locked;")
-        top_data.append("    pll mypll(sysclk_in, sysclk, locked);")
+
+        if project["jdata"]["family"] == "MAX 10":
+            top_data.append("    pll mypll(.inclk0(sysclk_in), .c0(sysclk), .locked(locked));")
+        else:
+            top_data.append("    pll mypll(sysclk_in, sysclk, locked);")
+
         top_data.append("")
 
     for pname, pins in project["pinlists"].items():
@@ -403,6 +408,10 @@ def generate(project):
         elif project["jdata"]["family"] == "GW1N-9C":
             os.system(
                 f"python3 files/gowin-pll.py -d 'GW1NR-9 C6/I5' -f '{project['SOURCE_PATH']}/pll.v' -i {float(project['osc_clock']) / 1000000} -o {float(project['jdata']['clock']['speed']) / 1000000}"
+            )
+        elif project["jdata"]["family"] == "MAX 10":
+            os.system(
+                f"files/quartus-pll.sh \"{project['jdata']['family']}\" {float(project['osc_clock']) / 1000000} {float(project['jdata']['clock']['speed']) / 1000000} '{project['SOURCE_PATH']}/pll.v'"
             )
         else:
             os.system(

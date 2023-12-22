@@ -60,39 +60,38 @@ digraph {
         "SPI" [shape=square]
         "SPI/I2C/1Wire" [shape=square]
 
-        "STEP/DIR" -> "FPGA" [dir=back]
-        "PWM/DIR" -> "FPGA" [dir=back]
-        "PWM" -> "FPGA" [dir=back]
-        "GPIO" -> "FPGA" [dir=both]
-        "MODBUS" -> "FPGA" [dir=both]
-        "COUNTER" -> "FPGA"
-        "SPI/I2C/1Wire" -> "FPGA" [dir=both]
-        "FPGA" -> "SPI" [dir=both]
+        "FPGA" -> "STEP/DIR" [dir=forward]
+        "FPGA" -> "PWM/DIR" [dir=forward]
+        "FPGA" -> "PWM" [dir=forward]
+        "FPGA" -> "GPIO" [dir=both]
+        "FPGA" -> "MODBUS" [dir=both]
+        "FPGA" -> "COUNTER" [dir=back]
+        "FPGA" -> "SPI/I2C/1Wire" [dir=both]
+        "SPI" -> "FPGA" [dir=both]
     }
 
-    "STEPPER" -> "Stepper-Driver" -> "STEP/DIR" [dir=back]
-    "UNIPOLAR" -> "ULN2803" -> "GPIO" [dir=back]
-    "DC-Servo" -> "H-Bridge" -> "PWM/DIR" [dir=back]
-    "RC-Servo" -> "PWM" [dir=back]
+    "STEP/DIR" -> "Stepper-Driver" -> "STEPPER" [dir=forward]
+    "GPIO" -> "ULN2803" -> "UNIPOLAR" [dir=forward]
+    "PWM/DIR" -> "H-Bridge" -> "DC-Servo" [dir=forward]
+    "PWM" -> "RC-Servo" [dir=forward]
 
-    "HY-VFD" -> "MAX485" -> "MODBUS" [dir=both]
+    "MODBUS" -> "MAX485" -> "HY-VFD" [dir=both]
 
-    "Encoder\nOptical for joint feedback (closed-loop)\nmechanical for user inputs" -> "COUNTER"
-    "ADC\n(tlc549c / ads1115)" -> "SPI/I2C/1Wire"
-    "Sensors\n(ds18b20 / lm75)" -> "SPI/I2C/1Wire"
-    "Counter\n(up/down/reset)" -> "COUNTER"
-    "Digial-Input\n(switches/buttons/sensors/...)" -> "GPIO"
-    "Digial-Output\n(spindle/flood/LED's/...)" -> "GPIO" [dir=back]
-    "PWM-Output\n(spindle-speed/...)" -> "PWM/DIR" [dir=back]
+    "COUNTER" -> "Encoder\nOptical for joint feedback (closed-loop)\nmechanical for user inputs" [dir=back]
+    "SPI/I2C/1Wire" -> "ADC\n(tlc549c / ads1115)" [dir=back]
+    "SPI/I2C/1Wire" -> "Sensors\n(ds18b20 / lm75)" [dir=back]
+    "COUNTER" -> "Counter\n(up/down/reset)" [dir=back]
+    "GPIO" -> "Digial-Input\n(switches/buttons/sensors/...)" [dir=back]
+    "GPIO" -> "Digial-Output\n(spindle/flood/LED's/...)" [dir=forward]
+    "PWM/DIR" -> "PWM-Output\n(spindle-speed/...)" [dir=forward]
 
-    "extra GPIO's\n(Buttons/LED's)\n(do not use for realtime stuff)" -> "IO-Extensions\n(shiftreg/pcf8574)\n(for extra Digital-Ports)" -> "SPI/I2C/1Wire" [dir=both]
+    "SPI/I2C/1Wire" -> "IO-Extensions\n(shiftreg/pcf8574)\n(for extra Digital-Ports)" -> "extra GPIO's\n(Buttons/LED's)\n(do not use for realtime stuff)" [dir=both]
 
-    "SPI" -> "W5500"[dir=both,color=lightgray, label=spi]
-    "W5500" -> "LinuxCNC\n(RPI4/PC/Laptop)"[dir=both,color=lightgray, label=udp]
-    "SPI" -> "UDP2SPI Bridge" [dir=both,color=lightgray, label=spi]
-    "UDP2SPI Bridge" -> "LinuxCNC\n(RPI4/PC/Laptop)"[dir=both,color=lightgray, label=udp]
-
-    "SPI" -> "LinuxCNC\n(RPI4/PC/Laptop)" [dir=both,color=lightgray, label=spi]
+    "W5500" -> "SPI" [dir=both,color=lightgray, label=spi]
+    "LinuxCNC\n(RPI4/PC/Laptop)" -> "W5500" [dir=both,color=lightgray, label=udp]
+    "UDP2SPI Bridge" -> "SPI" [dir=both,color=lightgray, label=spi]
+    "LinuxCNC\n(RPI4/PC/Laptop)" -> "UDP2SPI Bridge" [dir=both,color=lightgray, label=udp]
+    "LinuxCNC\n(RPI4/PC/Laptop)" -> "SPI" [dir=both,color=lightgray, label=spi]
 
 }
 

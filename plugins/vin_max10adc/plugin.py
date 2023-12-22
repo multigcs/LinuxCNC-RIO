@@ -57,6 +57,7 @@ class Plugin:
                     data_copy = data.copy()
                     data_copy["_name"] = f"{name}.{vnum}"
                     data_copy["_prefix"] = f"{nameIntern}_{vnum}"
+                    data_copy["_bits"] = 16
                     if isinstance(functions, list):
                         data_copy["function"] = functions[vnum]
                     if isinstance(sensors, list):

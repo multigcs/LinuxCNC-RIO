@@ -6,7 +6,7 @@ module vin_tlc549c
          input		adc_data_in,
          output 		adc_clk,
          output reg	adc_cs_n,
-         output reg	[7:0]adc_data
+         output reg	[7:0] adc_data
      );
 
     reg	[7:0] adc_data_buf;

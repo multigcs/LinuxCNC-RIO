@@ -54,6 +54,7 @@ class Plugin:
             if data.get("type") == self.ptype:
                 name = data.get("name", f"PV.{num}")
                 nameIntern = name.replace(".", "").replace("-", "_").upper()
+                data["_bits"] = 16
                 data["_name"] = name
                 data["_prefix"] = nameIntern
                 ret.append(data)

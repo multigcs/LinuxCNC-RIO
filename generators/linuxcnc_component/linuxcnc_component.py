@@ -58,7 +58,20 @@ def generate(project):
     rio_data.append(f"#define JOINTS               {project['joints']}")
     rio_data.append(f"#define JOINT_ENABLE_BYTES   {project['joints_en_total'] // 8}")
     rio_data.append(f"#define VARIABLE_OUTPUTS     {project['vouts']}")
-    rio_data.append(f"#define VARIABLE_INPUTS      {project['vins']}")
+
+    vinBits = {
+        32: 0,
+        16: 0,
+        8: 0,
+    }
+    for vin in project['vinnames']:
+        bits = vin.get("_bits", 32)
+        vinBits[bits] += 1
+
+    for bits, num in vinBits.items():
+        rio_data.append(f"#define VARIABLE_INPUTS_{bits}   {num}")
+    rio_data.append(f"#define VARIABLE_INPUTS      {sum(vinBits.values())}")
+
     rio_data.append(
         f"#define VARIABLES            {max(project['vins'], project['vouts'])}"
     )
@@ -158,34 +171,12 @@ def generate(project):
         else:
             vouts_type.append("TYPE_VOUT_RAW")
 
-    vins_type = []
-    for vin in project["vinnames"]:
-        if vin.get("type") == "vin_frequency":
-            vins_type.append("TYPE_VIN_FREQ")
-        elif vin.get("type") == "vin_pwmcounter":
-            vins_type.append("TYPE_VIN_TIME")
-        elif vin.get("type") == "vin_ads1115" and vin.get("sensor") == "NTC":
-            vins_type.append("TYPE_VIN_NTC")
-        elif vin.get("type") == "vin_ads1115":
-            vins_type.append("TYPE_VIN_ADC")
-        elif vin.get("type") == "vin_sonar":
-            vins_type.append("TYPE_VIN_SONAR")
-        elif vin.get("type") == "vin_ds18b20":
-            vins_type.append("TYPE_VIN_DS18B20")
-        elif vin.get("type") == "vin_max6675":
-            vins_type.append("TYPE_VIN_MAX6675")
-        elif vin.get("type") in ("vin_quadencoder", "vin_quadencoderz"):
-            vins_type.append("TYPE_VIN_ENCODER")
-        else:
-            vins_type.append("TYPE_VIN_RAW")
-
     rio_data.append(f"float vout_min[VARIABLE_OUTPUTS] = {{{', '.join(vouts_min)}}};")
     rio_data.append(f"float vout_max[VARIABLE_OUTPUTS] = {{{', '.join(vouts_max)}}};")
     rio_data.append(f"float vout_freq[VARIABLE_OUTPUTS] = {{{', '.join(vouts_freq)}}};")
     rio_data.append(
         f"uint8_t vout_type[VARIABLE_OUTPUTS] = {{{', '.join(vouts_type)}}};"
     )
-    rio_data.append(f"uint8_t vin_type[VARIABLE_INPUTS] = {{{', '.join(vins_type)}}};")
     rio_data.append("")
 
     joints_fb_type = []
@@ -233,9 +224,13 @@ def generate(project):
     rio_data.append("    struct {")
     rio_data.append("        int32_t header;")
     rio_data.append("        int32_t jointFeedback[JOINTS];")
-    rio_data.append("        int32_t processVariable[VARIABLE_INPUTS];")
+
+    for bits, num in vinBits.items():
+        rio_data.append(f"        int{bits}_t processVariable{bits}[VARIABLE_INPUTS_{bits}];")
+
     for num, bins in enumerate(project["binnames"]):
         rio_data.append(f"        uint8_t {bins['_prefix']}[{bins['size'] // 8}];")
+
     rio_data.append("        uint8_t inputs[DIGITAL_INPUT_BYTES];")
     rio_data.append("    };")
     rio_data.append("} rxData_t;")
@@ -243,10 +238,53 @@ def generate(project):
     rio_data.append("#endif")
     rio_data.append("")
 
+    rio_data.append("const char vin_type[] = {")
+    for bitsize, num in vinBits.items():
+        for num in range(project["vins"]):
+            vin = project["vinnames"][num]
+            dname = vin["_name"]
+            bits = vin.get("_bits", 32)
+            if bits == bitsize:
+                if vin.get("type") == "vin_frequency":
+                    rio_data.append("    TYPE_VIN_FREQ,")
+                elif vin.get("type") == "vin_pwmcounter":
+                    rio_data.append("    TYPE_VIN_TIME,")
+                elif vin.get("type") == "vin_ads1115" and vin.get("sensor") == "NTC":
+                    rio_data.append("    TYPE_VIN_NTC,")
+                elif vin.get("type") == "vin_ads1115":
+                    rio_data.append("    TYPE_VIN_ADC,")
+                elif vin.get("type") == "vin_sonar":
+                    rio_data.append("    TYPE_VIN_SONAR,")
+                elif vin.get("type") == "vin_ds18b20":
+                    rio_data.append("    TYPE_VIN_DS18B20,")
+                elif vin.get("type") == "vin_max6675":
+                    rio_data.append("    TYPE_VIN_MAX6675,")
+                elif vin.get("type") in ("vin_quadencoder", "vin_quadencoderz"):
+                    rio_data.append("    TYPE_VIN_ENCODER,")
+                else:
+                    rio_data.append("    TYPE_VIN_RAW,")
+    rio_data.append("};")
+    rio_data.append("")
+
     rio_data.append("const char vin_names[][32] = {")
-    for num in range(project["vins"]):
-        dname = project["vinnames"][num]["_name"]
-        rio_data.append(f'    "{dname}",')
+    for bitsize, num in vinBits.items():
+        for num in range(project["vins"]):
+            vin = project["vinnames"][num]
+            dname = vin["_name"]
+            bits = vin.get("_bits", 32)
+            if bits == bitsize:
+                rio_data.append(f'    "{dname}",')
+    rio_data.append("};")
+    rio_data.append("")
+
+    rio_data.append("const uint8_t vin_bits[] = {")
+    for bitsize, num in vinBits.items():
+        for num in range(project["vins"]):
+            vin = project["vinnames"][num]
+            dname = vin["_name"]
+            bits = vin.get("_bits", 32)
+            if bits == bitsize:
+                rio_data.append(f'    {bits},')
     rio_data.append("};")
     rio_data.append("")
 

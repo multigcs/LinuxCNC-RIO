@@ -1700,7 +1700,8 @@ def generate_rio_gui(project):
         function = vin.get("function")
         vtype = vin.get("type")
         if vtype:
-            vin_name = f"{vin_name} ({vtype})"
+            # vin_name = f"{vin_name} ({vtype})"
+            vin_name = f"{vin_name}"
         if function == "jogwheel" and not jogwheel:
             jogwheel = True
         elif function:
@@ -1747,7 +1748,8 @@ def generate_rio_gui(project):
         function = vin.get("function")
         vtype = vin.get("type")
         if vtype:
-            vin_name = f"{vin_name} ({vtype})"
+            # vin_name = f"{vin_name} ({vtype})"
+            vin_name = f"{vin_name}"
         if function == "jogwheel" and not jogwheel:
             jogwheel = True
         elif function:
@@ -1783,7 +1785,8 @@ def generate_rio_gui(project):
             continue
         vtype = vout.get("type")
         if vtype:
-            vout_name = f"{vout_name} ({vtype})"
+            # vout_name = f"{vout_name} ({vtype})"
+            vout_name = f"{vout_name}"
         if vout.get("type") == "vout_sine":
             vmin = vout.get("min", -100)
             vmax = vout.get("max", 100)

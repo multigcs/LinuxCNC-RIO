@@ -885,9 +885,20 @@ class WinForm(QWidget):
                 jointFeedback[num] = unpack("<i", bytes(rec[pos : pos + 4]))[0]
                 pos += 4
 
-            for num in range(VINS):
-                processVariable[num] = unpack("<i", bytes(rec[pos : pos + 4]))[0]
-                pos += 4
+            for bitsize in (32, 16, 8):
+                for num in range(VINS):
+                    vin = project["vinnames"][num]
+                    bits = vin.get("_bits", 32)
+                    if bitsize != bits:
+                        continue
+                    size = (bits // 8)
+                    diff = (4 - size)
+                    if diff > 0:
+                        block = rec[pos : pos + size] + ([0] * diff)
+                    else:
+                        block = rec[pos : pos + size]
+                    processVariable[num] = unpack("<i", bytes(block))[0]
+                    pos += size
 
             # binnames
             binValues = {}

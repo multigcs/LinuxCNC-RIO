@@ -5,7 +5,7 @@ module vin_lm75 (
         input clk,
         inout i2cSda,
         output i2cScl,
-        output reg [31:0] temperature
+        output reg [15:0] temperature
     );
 
     localparam STATE_TRIGGER_CONV = 0;

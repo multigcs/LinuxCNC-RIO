@@ -67,7 +67,6 @@ def load(configfile):
         slotname = slot.get("name", f"slot{slot_n}")
         modules = []
         # check old config style
-        print(slot)
         if "module" in slot:
             module = slot.get("module")
             ssetup = slot.get("setup")
@@ -118,7 +117,7 @@ def load(configfile):
 
     # loading plugins
     project["plugins"] = {}
-    for path in glob.glob("plugins/*"):
+    for path in sorted(glob.glob("plugins/*")):
         plugin = path.split("/")[1]
         if os.path.isfile(f"plugins/{plugin}/plugin.py"):
             vplugin = importlib.import_module(".plugin", f"plugins.{plugin}")
@@ -218,7 +217,11 @@ def load(configfile):
 
     project["tx_data_size"] = 32
     project["tx_data_size"] += project["joints"] * 32
-    project["tx_data_size"] += project["vins"] * 32
+
+    for vin in project["vinnames"]:
+        bits = vin.get("_bits", 32)
+        project["tx_data_size"] += bits
+
     project["tx_data_size"] += project["dins_total"]
     if "binnames" in project:
         for binpart in project["binnames"]:

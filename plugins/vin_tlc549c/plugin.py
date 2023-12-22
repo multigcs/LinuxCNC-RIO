@@ -60,6 +60,7 @@ class Plugin:
                 name = data.get("name", f"PV.{num}")
                 nameIntern = name.replace(".", "").replace("-", "_").upper()
                 data["_name"] = name
+                data["_bits"] = 8
                 data["_prefix"] = nameIntern
                 ret.append(data)
         return ret

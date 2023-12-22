@@ -115,7 +115,7 @@ def verilog_top(project):
         top_data.append("")
 
     if project["jdata"]["interface"]:
-        top_data.append(f"    parameter BUFFER_SIZE = 16'd{project['data_size']};")
+        top_data.append(f"    parameter BUFFER_SIZE = 16'd{project['data_size']}; // {project['data_size']// 8} bytes")
         top_data.append("")
 
         top_data.append(f"    wire[{project['data_size'] - 1}:0] rx_data;")
@@ -206,7 +206,8 @@ def verilog_top(project):
     if project["vinnames"]:
         top_data.append(f"    // vins {project['vins']}")
         for num, vin in enumerate(project["vinnames"]):
-            top_data.append(f"    wire signed [31:0] {vin['_prefix']};")
+            bits = vin.get("_bits", 32)
+            top_data.append(f"    wire signed [{bits-1}:0] {vin['_prefix']};")
         top_data.append("")
 
     if project["jointnames"]:
@@ -297,10 +298,15 @@ def verilog_top(project):
                 f"        {joint['_prefix']}Feedback[7:0], {joint['_prefix']}Feedback[15:8], {joint['_prefix']}Feedback[23:16], {joint['_prefix']}Feedback[31:24],"
             )
 
-        for num, vin in enumerate(project["vinnames"]):
-            top_data.append(
-                f"        {vin['_prefix']}[7:0], {vin['_prefix']}[15:8], {vin['_prefix']}[23:16], {vin['_prefix']}[31:24],"
-            )
+        for bitsize in (32, 16, 8):
+            for num, vin in enumerate(project["vinnames"]):
+                bits = vin.get("_bits", 32)
+                if bitsize != bits:
+                    continue
+                block = []
+                for bit in range(0, bits, 8):
+                    block.append(f"{vin['_prefix']}[{bit+7}:{bit}]")
+                top_data.append(f"        {', '.join(block)}, ")
 
         for num, bins in enumerate(project["binnames"]):
             binsize = bins["size"]

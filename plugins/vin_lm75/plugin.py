@@ -61,6 +61,7 @@ class Plugin:
                 nameIntern = name.replace(".", "").replace("-", "_").upper()
                 function = data.get("function")
 
+                data["_bits"] = 16
                 data["_name"] = name + ".0"
                 data["_prefix"] = nameIntern + "_0"
                 if isinstance(function, list):

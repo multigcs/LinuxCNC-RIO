@@ -69,6 +69,7 @@ class Plugin:
 
                 for vnum in range(4):
                     data_copy = data.copy()
+                    data_copy["_bits"] = 16
                     data_copy["_name"] = f"{name}.{vnum}"
                     data_copy["_prefix"] = f"{nameIntern}_{vnum}"
                     if isinstance(functions, list):

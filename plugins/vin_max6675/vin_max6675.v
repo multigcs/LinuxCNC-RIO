@@ -6,7 +6,7 @@ module vin_max6675
         input spi_miso,
         output reg spi_sclk = 0,
         output reg spi_cs = 1,
-        output reg [31:0] temperature
+        output reg [15:0] temperature
     );
 
     reg [15:0] state = 0;

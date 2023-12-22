@@ -8,10 +8,10 @@ module vin_ads1115 (
         input clk,
         inout i2cSda,
         output i2cScl,
-        output reg [31:0] adc0,
-        output reg [31:0] adc1,
-        output reg [31:0] adc2,
-        output reg [31:0] adc3
+        output reg [15:0] adc0,
+        output reg [15:0] adc1,
+        output reg [15:0] adc2,
+        output reg [15:0] adc3
     );
 
     localparam STATE_TRIGGER_CONV = 0;

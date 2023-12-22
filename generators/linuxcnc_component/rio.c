@@ -988,7 +988,15 @@ void rio_readwrite()
 
                 // Feedback
                 for (i = 0; i < VARIABLE_INPUTS; i++) {
-                    float value = rxData.processVariable[i];
+                    float value = 0;
+                    if (vin_bits[i] == 32) {
+                        value = (float)rxData.processVariable32[i];
+                    } else if (vin_bits[i] == 16) {
+                        value = (float)rxData.processVariable16[i - VARIABLE_INPUTS_32];
+                    } else if (vin_bits[i] == 8) {
+                        value = (float)rxData.processVariable8[i - VARIABLE_INPUTS_32 - VARIABLE_INPUTS_16];
+                    }
+
                     if (vin_type[i] == TYPE_VIN_FREQ) {
                         if (value != 0) {
                             value = (float)PRU_OSC / value;
@@ -1039,10 +1047,7 @@ void rio_readwrite()
                         value *= *(data->processVariableScale[i]);
                         *(data->processVariable[i]) = value;
                         *(data->processVariableS32[i]) = (int)(value * 100); // to mV
-
-
                     } else if (vin_type[i] == TYPE_VIN_NTC) {
-
                         value /= 1000.0;
                         float Rt = 10.0 * value / (3.3 - value);
                         float tempK = 1.0 / (log(Rt / 10.0) / 3950.0 + 1.0 / (273.15 + 25.0));
@@ -1053,9 +1058,6 @@ void rio_readwrite()
                         value *= *(data->processVariableScale[i]);
                         *(data->processVariable[i]) = value;
                         *(data->processVariableS32[i]) = (int)(value);
-
-
-
                     } else if (vin_type[i] == TYPE_VIN_ENCODER) {
                         value += *(data->processVariableOffset[i]);
                         value /= *(data->processVariableScale[i]);
@@ -1066,8 +1068,6 @@ void rio_readwrite()
                         float last = *(data->processVariableExtra[i][1]);
                         *(data->processVariableExtra[i][0]) = (value - last) * (1000000000.0 / (float)duration) * 60;
                         *(data->processVariableExtra[i][1]) = value;
-
-
                     } else {
                         value += *(data->processVariableOffset[i]);
                         value *= *(data->processVariableScale[i]);

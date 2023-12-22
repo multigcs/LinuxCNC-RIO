@@ -1,22 +1,17 @@
 
 module vin_max10adc (
         input clk,
-        output reg [31:0] adc0,
-        output reg [31:0] adc1,
-        output reg [31:0] adc2,
-        output reg [31:0] adc3,
-        output reg [31:0] adc4,
-        output reg [31:0] adc5,
-        output reg [31:0] adc6,
-        output reg [31:0] adc7,
-        output reg [31:0] adc8,
-        output reg [31:0] adc9,
-        output reg [31:0] adc10,
-        output reg [31:0] adc11
+        output reg [15:0] adc0,
+        output reg [15:0] adc1,
+        output reg [15:0] adc2,
+        output reg [15:0] adc3,
+        output reg [15:0] adc4,
+        output reg [15:0] adc5,
+        output reg [15:0] adc6,
+        output reg [15:0] adc7
     );
 
     wire sys_clk;
-    wire command_valid;
     wire command_ready;
     wire response_valid;
     wire [4:0] response_channel;
@@ -25,8 +20,7 @@ module vin_max10adc (
     wire response_endofpacket;
     reg [4:0] command_channel = 0;
 
-    always @ (posedge sys_clk)
-    begin
+    always @ (posedge sys_clk) begin
         if (response_valid) begin
             command_channel <= command_channel + 1;
             case (response_channel)
@@ -41,7 +35,7 @@ module vin_max10adc (
                 9: command_channel <= 0;
             endcase
         end
-    end			
+    end
 
     max10adc max10adc0 (
         .clk_clk                              (clk),

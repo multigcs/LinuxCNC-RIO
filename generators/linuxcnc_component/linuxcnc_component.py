@@ -27,6 +27,9 @@ def generate(project):
             f"#define UDP_IP \"{ip}\""
         )
     elif transport == "SERIAL":
+        print("#####################################################################")
+        print("# WARNING: do not use serial for real systems, this will not work ! #")
+        print("#####################################################################")
         rio_data.append("#define TRANSPORT_SERIAL")
         rio_data.append(
             f"#define SERIAL_PORT \"{project['jdata'].get('tty', '/dev/ttyUSB1')}\""
@@ -50,6 +53,11 @@ def generate(project):
         rio_data.append(f"#define SPI_PIN_CLK {rpi_spi_clk}")
         rio_data.append(f"#define SPI_PIN_CS {rpi_spi_cs}")
         rio_data.append(f"#define SPI_SPEED BCM2835_SPI_CLOCK_DIVIDER_{rpi_spi_prescaler}")
+    elif transport == "FTDI":
+        print("##################################################################")
+        print("# WARNING: do not use usb for real systems, this will not work ! #")
+        print("##################################################################")
+        rio_data.append("#define TRANSPORT_FTDI")
     else:
         print(f"ERROR: UNKNOWN transport protocol: {transport} (UDP, SPI, SERIAL)")
         sys.exit(1)

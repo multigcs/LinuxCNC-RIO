@@ -52,6 +52,30 @@
 #include "bcm2835.h"
 #include "bcm2835.c"
 #endif
+#ifdef TRANSPORT_FTDI
+#include <ftdi.h>
+#include <usb.h>
+#include <stdio.h>
+#include <string.h>
+
+#define VENDOR 		0x0403
+#define PRODUCT 	0x6010
+#define CK  0x01 // AD0 SPI clock
+#define DO 	0x02 // AD1 SPI data out
+#define DI  0x04 // AD2 SPI data in
+#define CS  0x08 // AD3 SPI chip select
+#define L0  0x10 // AD4 GPIOL0
+#define L1  0x20 // AD5 GPIOL1
+#define L2  0x40 // AD6 GPIOL2
+#define L3  0x80 // AD7 GPIOL3
+
+static uint8_t outpins = CS | DO | CK;
+struct ftdi_context* ftdi;
+int spi_init(void);
+int spi_exit(void);
+int spi_rw_buffer(uint8_t* pBuffer, uint8_t* rxBuffer, int numBytes);
+
+#endif
 
 #define MODNAME "rio"
 #define PREFIX "rio"
@@ -288,6 +312,11 @@ int rtapi_app_main(void)
     bcm2835_spi_setDataMode(BCM2835_SPI_MODE0);
     bcm2835_spi_setClockDivider(SPI_SPEED);
     bcm2835_spi_chipSelect(BCM2835_SPI_CS_NONE);
+#endif
+
+#ifdef TRANSPORT_FTDI
+    rtapi_print("Info: Initialize FTDI-SPI connection\n");
+	spi_init();
 #endif
 
     retval = hal_pin_bit_newf(HAL_IN, &(data->SPIenable),
@@ -695,6 +724,84 @@ exit:
         bcm2835_close();
 
     return ok;
+}
+
+#endif
+
+#ifdef TRANSPORT_FTDI
+
+int spi_init(void) {
+    int ftdi_status = 0;
+    ftdi = ftdi_new();
+    if ( ftdi == NULL ) {
+        fprintf(stderr, "Failed to initialize device\r\n");
+        return 1;
+    }
+    ftdi_status = ftdi_usb_open(ftdi, VENDOR, PRODUCT);
+    if ( ftdi_status != 0 ) {
+        fprintf(stderr, "Can't open device. Got error %s\r\n", ftdi_get_error_string(ftdi));
+        return 1;
+    }
+    ftdi_usb_reset(ftdi);
+    ftdi_set_interface(ftdi, INTERFACE_B);
+    ftdi_set_bitmode(ftdi, 0, 0); // reset
+    ftdi_set_bitmode(ftdi, 0, BITMODE_MPSSE); // enable mpsse on all bits
+    ftdi_usb_purge_buffers(ftdi);
+    usleep(50000); // sleep 50 ms for setup to complete
+    return 0;
+}
+
+int spi_exit(void) {
+    ftdi_usb_reset(ftdi);
+    ftdi_usb_close(ftdi);
+    return 0;
+}
+
+int spi_rw_buffer(uint8_t* pBuffer, uint8_t* rxBuffer, int numBytes) {
+	int inx = 0;
+	uint8_t buf[1024] = {0};
+
+	// assert CS (active low)
+	buf[inx++] = SET_BITS_LOW;
+	buf[inx++] = 0;
+	buf[inx++] = outpins;
+
+	// commands to write and read n bytes in SPI0 (polarity = phase = 0) mode
+	buf[inx++] = MPSSE_DO_WRITE | MPSSE_WRITE_NEG | MPSSE_DO_READ;
+	buf[inx++] = (numBytes - 1) & 0xff; // length-1 low byte
+	buf[inx++] = ((numBytes - 1)>>8) & 0xff; // length-1 high byte
+	memcpy(buf+inx, pBuffer, numBytes);
+	inx += numBytes;
+
+	// de-assert CS
+	buf[inx++] = SET_BITS_LOW;
+	buf[inx++] = CS;
+	buf[inx++] = outpins;
+
+	ftdi_usb_purge_tx_buffer(ftdi);
+	if ( ftdi_write_data(ftdi, buf, inx) != inx ) {
+        fprintf(stderr, "spi write failed\r\n");
+        return -1;
+    }
+
+	uint8_t readBuf[1024] = {0};
+	if ( ftdi_read_data(ftdi, readBuf, numBytes) != numBytes ) {
+		fprintf(stderr, "spi read failed\r\n");
+        return -1;
+    } else {
+        memcpy(rxBuffer, readBuf, numBytes);
+    }
+
+    /*
+    int n = 0;
+    printf("%d - ", numBytes);
+    for (n = 0; n < numBytes; n++) {
+        printf("%d ", rxBuffer[n]);
+    }
+    printf("\n");
+    */
+
+	return 0;
 }
 
 #endif
@@ -1214,6 +1321,12 @@ void rio_transfer()
         rxData.rxBuffer[i] = bcm2835_spi_transfer(txData.txBuffer[i]);
     }
     bcm2835_gpio_write(SPI_PIN_CS, HIGH);
+#endif
+
+#ifdef TRANSPORT_FTDI
+    int i;
+	uint8_t rwbuf[18] = {116, 105, 114, 119, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 255, 0};
+	spi_rw_buffer(txData.txBuffer, rxData.rxBuffer, SPIBUFSIZE);
 #endif
 
 }

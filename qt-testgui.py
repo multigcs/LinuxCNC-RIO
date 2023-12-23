@@ -5,6 +5,7 @@ from functools import partial
 from struct import *
 
 
+from PyQt5 import QtGui
 from PyQt5.QtCore import QDateTime, Qt, QTimer
 from PyQt5.QtWidgets import (
     QApplication,
@@ -21,6 +22,7 @@ import projectLoader
 
 parser = argparse.ArgumentParser()
 parser.add_argument("json", help="json config", type=str, default=None)
+parser.add_argument("--graph", "-g", help="graph", type=bool, default=False)
 parser.add_argument("--baud", "-b", help="baudrate", type=int, default=1000000)
 parser.add_argument("--port", "-p", help="udp port", type=int, default=2390)
 parser.add_argument(
@@ -273,8 +275,8 @@ voutminmax = []
 for num, vout in enumerate(project["voutnames"]):
     if vout.get("type") == "vout_sine":
         voutminmax.append((vout.get("min", -100), vout.get("max", 100), "sine", 30))
-    elif vout.get("type") == "pwm":
-        freq = vout.get("vout_frequency", 10000)
+    elif vout.get("type") == "vout_pwm":
+        freq = int(vout.get("frequency", 100000))
         if "dir" in vout:
             voutminmax.append((0, vout.get("max", 100), "pwmdir", freq))
         else:
@@ -622,6 +624,8 @@ class WinForm(QWidget):
         self.listFile = QListWidget()
         layout = QGridLayout()
         self.widgets = {}
+        self.vbuffer = {}
+        self.vminmax = {}
         self.animation = 0
         self.doutcounter = 0
         self.error_counter_spi = 0
@@ -742,6 +746,17 @@ class WinForm(QWidget):
             self.widgets[key] = QLabel(f"vin: {vn}")
             layout.addWidget(self.widgets[key], gpy, vn + 3)
         gpy += 1
+
+        if args.graph:
+            layout.addWidget(QLabel(f"Graph"), gpy, 1)
+            for vn in range(VINS):
+                key = f"vi{vn}_g"
+                self.widgets[key] = QLabel()
+                self.vbuffer[key] = [0] * 100
+                self.vminmax[key] = [100000000, -100000000]
+                layout.addWidget(self.widgets[key], gpy, vn + 3)
+            gpy += 1
+
         layout.addWidget(QLabel(""), gpy, 1)
         gpy += 1
 
@@ -1125,6 +1140,28 @@ class WinForm(QWidget):
                     value = value * 0.25
 
                 self.widgets[key].setText(f"{round(value, 2)}{unit}")
+
+                if args.graph:
+                    key = f"vi{vn}_g"
+                    self.vbuffer[key].pop(0)
+                    self.vbuffer[key].append(value)
+                    for px, val in enumerate(self.vbuffer[key]):
+                        self.vminmax[key][0] = min(self.vminmax[key][0], val)
+                        self.vminmax[key][1] = max(self.vminmax[key][1], val)
+                    vdiff = max(1, self.vminmax[key][1] - self.vminmax[key][0])
+
+                    canvas = QtGui.QPixmap(100, 100)
+                    canvas.fill(Qt.white)
+                    self.widgets[key].setPixmap(canvas)
+                    painter = QtGui.QPainter(self.widgets[key].pixmap())
+                    last = 0
+                    for px, val in enumerate(self.vbuffer[key]):
+                        py = int(99 - (val * 99 / vdiff))
+                        if px > 0:
+                            painter.setPen(Qt.red)
+                            painter.drawLine(px-1, last, px, py)
+                        last = py
+                    painter.end()
 
             for dbyte in range(DIGITAL_INPUT_BYTES):
                 for dn in range(8):

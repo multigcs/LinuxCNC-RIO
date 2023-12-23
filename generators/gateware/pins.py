@@ -11,7 +11,7 @@ def pins_lpf(project, diamond=False):
         lpf_data.append("BANK 6 VCCIO 3.3 V;")
         lpf_data.append("IOBUF ALLPORTS IO_TYPE=LVCMOS33;")
         lpf_data.append(
-            "SYSCONFIG JTAG_PORT=ENABLE  SDM_PORT=PROGRAMN  I2C_PORT=DISABLE  SLAVE_SPI_PORT=DISABLE  MCCLK_FREQ=133.0;"
+            f"SYSCONFIG JTAG_PORT=ENABLE  SDM_PORT=PROGRAMN  I2C_PORT=DISABLE  SLAVE_SPI_PORT=DISABLE  MCCLK_FREQ={int(project['jdata']['clock']['speed']) / 1000000};"
         )
         lpf_data.append("")
 

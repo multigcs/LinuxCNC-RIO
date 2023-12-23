@@ -5,9 +5,11 @@ Variable-Input for Quad-Encoder with Z-Pin (int32_t)
 ```
 {
     "type": "vin_quadencoderz",
-    "pin_a": "C1",
-    "pin_b": "D1"
-    "pin_z": "E1"
+    "pins" {
+        "a": "C1",
+        "b": "D1",
+        "z": "E1"
+    }
 },
 ```
 

@@ -16,5 +16,9 @@
     "error": {
         "invert": true,
         "pin": "112"
+    },
+    "pinmapping": {
+        "RC0": "75",
+        "RC1": "78"
     }
 }

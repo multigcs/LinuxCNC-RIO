@@ -197,6 +197,17 @@ def load(configfile):
         print("")
         exit(1)
 
+    # pinmapping
+    pinmapping = project["jdata"].get("pinmapping", {})
+    for pname, pins in project["pinlists"].items():
+        project["pinlists"][pname] = list(project["pinlists"][pname])
+        if pins:
+            pins = list(pins)
+            for pn, pin in enumerate(pins):
+                project["pinlists"][pname][pn] = list(project["pinlists"][pname][pn])
+                if project["pinlists"][pname][pn][1] in pinmapping:
+                    project["pinlists"][pname][pn][1] = pinmapping[project["pinlists"][pname][pn][1]]
+
     for dtype in ("vin", "vout", "din", "dout", "joint", "bin", "bout"):
         tname = f"{dtype}names"
         if tname not in project:

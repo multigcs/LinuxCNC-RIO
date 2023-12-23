@@ -168,19 +168,28 @@ project = projectLoader.load(args.json)
 SHM_FILE = ""
 SERIAL = ""
 NET_IP = ""
-USB = None
+SPI_CH341 = None
+SPI_FTDI = None
 if args.device and args.device.startswith("/dev/tty"):
     import serial
-
     SERIAL = args.device
     BAUD = args.baud
     ser = serial.Serial(SERIAL, BAUD, timeout=0.001)
+
 elif args.device and args.device.startswith("/dev/shm/"):
     SHM_FILE = args.device
-elif args.device and args.device.startswith("USB"):
+
+elif args.device and args.device.startswith("CH341"):
     import usb.core
     import usb.util
-    USB = CH341()
+    SPI_CH341 = CH341()
+
+elif args.device and args.device.startswith("FTDI"):
+    from pyftdi.spi import SpiController
+    spi = SpiController(cs_count=2)
+    spi.configure('ftdi://ftdi:2232h/2')
+    SPI_FTDI = spi.get_port(cs=0, freq=1E6, mode=0)
+
 elif args.device and args.device != "":
     NET_IP = args.device
     NET_PORT = args.port
@@ -996,9 +1005,11 @@ class WinForm(QWidget):
                 msgFromServer = ser.read(len(data))
                 rec = list(msgFromServer)
 
-            elif USB is not None:
-                print("USB")
-                rec = USB.spi_trans(data)
+            elif SPI_CH341 is not None:
+                rec = SPI_CH341.spi_trans(data)
+
+            elif SPI_FTDI is not None:
+                rec = list(SPI_FTDI.exchange(data, duplex=True))
 
             elif SHM_FILE:
                 fd = open(f"{SHM_FILE}.tx", "wb")

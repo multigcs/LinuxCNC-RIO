@@ -176,7 +176,7 @@ if args.device and args.device.startswith("/dev/tty"):
     import serial
     SERIAL = args.device
     BAUD = args.baud
-    ser = serial.Serial(SERIAL, BAUD, timeout=0.001)
+    ser = serial.Serial(SERIAL, BAUD, timeout=0.01)
 
 elif args.device and args.device.startswith("/dev/shm/"):
     SHM_FILE = args.device
@@ -275,12 +275,14 @@ voutminmax = []
 for num, vout in enumerate(project["voutnames"]):
     if vout.get("type") == "vout_sine":
         voutminmax.append((vout.get("min", -100), vout.get("max", 100), "sine", 30))
+    elif vout.get("type") == "vout_7seg":
+        voutminmax.append((vout.get("min", 0), vout.get("max", 9999), "7seg", 0))
     elif vout.get("type") == "vout_pwm":
         freq = int(vout.get("frequency", 100000))
         if "dir" in vout:
             voutminmax.append((0, vout.get("max", 100), "pwmdir", freq))
         else:
-            voutminmax.append((vout.get("min", 0), vout.get("max", 100), "pwm", freq))
+            voutminmax.append((int(vout.get("min", 0)), int(vout.get("max", 100)), "pwm", freq))
     elif vout.get("type") == "vout_rcservo":
         freq = vout.get("frequency", 100)
         voutminmax.append(
@@ -1016,6 +1018,9 @@ class WinForm(QWidget):
                     print(f"WRONG DATASIZE: {len(msgFromServer[0])} / {len(data)}")
                     rec = list(msgFromServer[0])
             elif SERIAL:
+                # clean_buffer
+                while ser.inWaiting() > 0:
+                    ser.read(1)
                 ser.write(bytes(data))
                 msgFromServer = ser.read(len(data))
                 rec = list(msgFromServer)

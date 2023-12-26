@@ -877,6 +877,7 @@ def generate_rio_hal(project):
     limit_axis = int(project["jdata"].get("axis", 9))
     num_axis = min(project["joints"], limit_axis)
     num_joints = min(project["joints"], 9)
+    corexy = project["jdata"].get("corexy", False)
 
     axis_str = ""
     traj_axis_list = []
@@ -934,6 +935,12 @@ net user-enable-out 	<= iocontrol.0.user-enable-out		=> rio.SPI-enable
 net user-request-enable <= iocontrol.0.user-request-enable	=> rio.SPI-reset
 """
     )
+
+    if corexy:
+        cfghal_data.append("# load corexy support")
+        cfghal_data.append("loadrt corexy_by_hal names=corexy")
+        cfghal_data.append("addf corexy servo-thread")
+        cfghal_data.append("")
 
     # wcomp test #
     # loadrt wcomp count=1
@@ -1280,6 +1287,7 @@ net user-request-enable <= iocontrol.0.user-request-enable	=> rio.SPI-reset
         # limit axis configurations
         if num >= num_joints:
             continue
+        AXIS_NAME = joint.get("axis", axis_names[num])
         if joint.get("cl", False):
             cfghal_data.append(
                 f"""# Joint {num} setup
@@ -1312,20 +1320,37 @@ net j{num}enable 		=> pid.{pidn}.enable
 
             pidn += 1
         else:
-
             cfghal_data.append(
                 f"""# Joint {num} setup
 
 setp rio.joint.{num}.scale 		[JOINT_{num}]SCALE
 setp rio.joint.{num}.maxaccel 	[JOINT_{num}]STEPGEN_MAXACCEL
 setp rio.joint.{num}.deadband 	[JOINT_{num}]STEPGEN_DEADBAND
+""")
+            if corexy and AXIS_NAME in {"X", "Y"}:
+                abMapping = {"X":"alpha", "Y": "beta"}
+                cfghal_data.append(
+                    f"""
+net j{num}motor-cmd		<= joint.{num}.motor-pos-cmd 		=> corexy.j{num}-motor-pos-cmd
+net {abMapping[AXIS_NAME]}-cmd 		<= corexy.{abMapping[AXIS_NAME]}-cmd         => rio.joint.{num}.pos-cmd 
+net {abMapping[AXIS_NAME]}-fb 		<= rio.joint.{num}.pos-fb       => corexy.{abMapping[AXIS_NAME]}-fb
+net j{num}motor-fb 		<= corexy.j{num}-motor-pos-fb 		=> joint.{num}.motor-pos-fb
+net j{num}enable 		<= joint.{num}.amp-enable-out 		=> rio.joint.{num}.enable
 
+""")
+            else:
+                cfghal_data.append(
+                    f"""
 net j{num}pos-cmd 		<= joint.{num}.motor-pos-cmd 	=> rio.joint.{num}.pos-cmd  
 net j{num}pos-fb 		<= rio.joint.{num}.pos-fb 	=> joint.{num}.motor-pos-fb
 net j{num}enable 		<= joint.{num}.amp-enable-out 	=> rio.joint.{num}.enable
 
-"""
-            )
+""")
+
+
+
+
+
     open(f"{project['LINUXCNC_PATH']}/ConfigSamples/rio/rio.hal", "w").write(
         "\n".join(cfghal_data)
     )

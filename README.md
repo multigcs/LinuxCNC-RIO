@@ -147,6 +147,8 @@ make CONFIG=configs/TinyFPGA-BX/config.json build
 ### Linuxcnc RIO with Tang Nano 20k FPGA with esp32 and w5500 Ethernet
 [![Linuxcnc RIO with Tang Nano 20k FPGA with esp32 and w5500 Ethernet](https://img.youtube.com/vi/inAFxSs9Hak/0.jpg)](https://www.youtube.com/watch?v=inAFxSs9Hak "Linuxcnc RIO with Tang Nano 20k FPGA with esp32 and w5500 Ethernet")
 
+### LinuxCNC-RIO mit CoreXY und Laser am PWM
+[![LinuxCNC-RIO mit CoreXY und Laser am PWM](https://img.youtube.com/vi/ANdgskkGQqc/0.jpg)](https://www.youtube.com/shorts/ANdgskkGQqc "LinuxCNC-RIO mit CoreXY und Laser am PWM")
 
 ---
 Thanks to the https://github.com/scottalford75/Remora Project, i'm using a modified version of it's Linux-Component

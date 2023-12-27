@@ -725,6 +725,13 @@ def generate_rio_ini(project):
             for key, value in sdata.items():
                 basic_setup[section][key] = value
 
+    # override ini defaults from json
+    for section, sdata in project["jdata"].get("INI", {}).items():
+        for key, value in sdata.items():
+            if section not in section:
+                basic_setup[section] = {}
+            basic_setup[section][key] = value
+
     cfgini_data = []
     cfgini_data.append("# Basic LinuxCNC config for testing RIO gateware")
     cfgini_data.append("")
@@ -844,11 +851,14 @@ def generate_rio_ini(project):
         if int(OUTPUT_SCALE) < 0:
             REV = -1.0
 
+        if joint.get("home_reverse", False):
+            REV *= -1.0
+
         home_options = {
             "HOME_SEQUENCE": joint.get("home_sequence", 10),
-            "HOME_SEARCH_VEL": joint.get("home_search_vel", 10.0 * REV),
-            "HOME_LATCH_VEL": joint.get("home_latch_vel", 3.0 * REV),
-            "HOME_FINAL_VEL": joint.get("home_final_vel", -5.0 * REV),
+            "HOME_SEARCH_VEL": int(joint.get("home_search_vel", 10.0)) * REV,
+            "HOME_LATCH_VEL": int(joint.get("home_latch_vel", 3.0)) * REV,
+            "HOME_FINAL_VEL": int(joint.get("home_final_vel", -5.0)) * REV,
             "HOME_IGNORE_LIMITS": "YES",
             "HOME_USE_INDEX": "NO",
             "HOME_OFFSET": joint.get("home_offset", 0.0),
@@ -1202,6 +1212,9 @@ net user-request-enable <= iocontrol.0.user-request-enable	=> rio.SPI-reset
             continue
 
         if din_net and din_net != "spindle.0.speed-out":
+            # no Z home in we have only 2 axis
+            if din_net == "joint.2.home-sw-in" and num_axis < 3:
+                continue
             netlist.append(din_net)
             cfghal_data.append(f"net {din_name} <= rio.{dname}")
             cfghal_data.append(f"net {din_name} => {din_net}")
@@ -1329,6 +1342,8 @@ setp rio.joint.{num}.deadband 	[JOINT_{num}]STEPGEN_DEADBAND
 """)
             if corexy and AXIS_NAME in {"X", "Y"}:
                 abMapping = {"X":"alpha", "Y": "beta"}
+                if corexy == "swapped":
+                    abMapping = {"Y":"alpha", "X": "beta"}
                 cfghal_data.append(
                     f"""
 net j{num}motor-cmd		<= joint.{num}.motor-pos-cmd 		=> corexy.j{num}-motor-pos-cmd
@@ -1358,6 +1373,8 @@ net j{num}enable 		<= joint.{num}.amp-enable-out 	=> rio.joint.{num}.enable
 
 def generate_custom_postgui_hal(project):
     gui = project["jdata"].get("gui", "axis")
+    limit_axis = int(project["jdata"].get("axis", 9))
+    num_axis = min(project["joints"], limit_axis)
     num_joints = min(project["joints"], 9)
 
     if gui == "qtdragon":
@@ -1510,9 +1527,10 @@ def generate_custom_postgui_hal(project):
 
     if gui != "qtdragon":
         customhal_data.append(f"net zeroxy halui.mdi-command-00 <= {prefix}.zeroxy")
-        customhal_data.append(f"net zeroz halui.mdi-command-01 <= {prefix}.zeroz")
-        if "motion.probe-input" in netlist:
-            customhal_data.append(f"net ztouch halui.mdi-command-02 <= {prefix}.ztouch")
+        if num_axis >= 3:
+            customhal_data.append(f"net zeroz halui.mdi-command-01 <= {prefix}.zeroz")
+            if "motion.probe-input" in netlist:
+                customhal_data.append(f"net ztouch halui.mdi-command-02 <= {prefix}.ztouch")
 
         # spindle.0
         for plugin in project["jdata"]["plugins"]:
@@ -1564,8 +1582,9 @@ def generate_custom_postgui_hal(project):
 
 
 def generate_rio_gui(project):
-
     gui = project["jdata"].get("gui", "axis")
+    limit_axis = int(project["jdata"].get("axis", 9))
+    num_axis = min(project["joints"], limit_axis)
     num_joints = min(project["joints"], 9)
 
     if gui == "qtdragon":
@@ -1848,21 +1867,22 @@ def generate_rio_gui(project):
         cfgxml_data.append('        <halpin>"zeroxy"</halpin><text>"Zero XY"</text>')
         cfgxml_data.append('        <font>("Helvetica", 12)</font>')
         cfgxml_data.append("      </button>")
-        cfgxml_data.append("      <button>")
-        cfgxml_data.append("        <relief>RAISED</relief>")
-        cfgxml_data.append("        <bd>3</bd>")
-        cfgxml_data.append('        <halpin>"zeroz"</halpin><text>"Zero Z"</text>')
-        cfgxml_data.append('        <font>("Helvetica", 12)</font>')
-        cfgxml_data.append("      </button>")
-        if "motion.probe-input" in netlist:
+        if num_axis >= 3:
             cfgxml_data.append("      <button>")
             cfgxml_data.append("        <relief>RAISED</relief>")
             cfgxml_data.append("        <bd>3</bd>")
-            cfgxml_data.append(
-                '        <halpin>"ztouch"</halpin><text>"Touch Off"</text>'
-            )
+            cfgxml_data.append('        <halpin>"zeroz"</halpin><text>"Zero Z"</text>')
             cfgxml_data.append('        <font>("Helvetica", 12)</font>')
             cfgxml_data.append("      </button>")
+            if "motion.probe-input" in netlist:
+                cfgxml_data.append("      <button>")
+                cfgxml_data.append("        <relief>RAISED</relief>")
+                cfgxml_data.append("        <bd>3</bd>")
+                cfgxml_data.append(
+                    '        <halpin>"ztouch"</halpin><text>"Touch Off"</text>'
+                )
+                cfgxml_data.append('        <font>("Helvetica", 12)</font>')
+                cfgxml_data.append("      </button>")
         cfgxml_data.append("    </hbox>")
         cfgxml_data.append("  </labelframe>")
 

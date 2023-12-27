@@ -2,6 +2,11 @@
 
 Variable-Output for PWM-Signals with optional DIR pin
 
+
+### LinuxCNC-RIO Laser on PWM-Output
+[![LinuxCNC-RIO Laser on PWM-Output](https://img.youtube.com/vi/ANdgskkGQqc/0.jpg)](https://www.youtube.com/shorts/ANdgskkGQqc "LinuxCNC-RIO Laser on PWM-Output")
+
+
 ## 100kHz PWM with DIR-Pin
 
 ```

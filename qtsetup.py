@@ -40,9 +40,9 @@ if "plugins" not in jdata:
     sys.exit(1)
 
 
-print("family:", jdata["family"])
-print("type:", jdata["type"])
-print("package", jdata["package"])
+print("family:", jdata.get("family"))
+print("type:", jdata.get("type"))
+print("package", jdata.get("package"))
 
 pinlist = {"": "IO"}
 dsourcelist = [
@@ -78,7 +78,7 @@ outputfiles = {
     "rio.h": "/tmp/qtsetup-temp/LinuxCNC/Components/rio.h",
 }
 
-if os.path.isfile(f"chipdata/{jdata['family']}.json"):
+if os.path.isfile(f"chipdata/{jdata.get('family')}.json"):
     chiptype_mapping = {
         "25k": "LFE5U-25F",
         "up5k": "5k",

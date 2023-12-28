@@ -44,8 +44,8 @@ class Plugin:
     def vminmax(self, setup):
         return (-100, 100)
 
-    def calculation_vout(self, osc, setup, value):
-        value = int(((value + 300)) * (osc / 200000))
+    def calculation_vout(self, setup, value):
+        value = int(((value + 300)) * (int(self.jdata["clock"]["speed"]) / 200000))
         return value
 
     def pinlist(self):

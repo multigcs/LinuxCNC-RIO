@@ -43,7 +43,7 @@ class Plugin:
     def calculation_vin(self, setup, value):
         unit = "mm"
         if value != 0:
-            value = 1000 / setup["osc"] / 20 * value * 343.2
+            value = 1000 / int(self.jdata["clock"]["speed"]) / 20 * value * 343.2
         return (value, unit)
 
     def pinlist(self):

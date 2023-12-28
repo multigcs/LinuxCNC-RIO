@@ -33,9 +33,9 @@ class Plugin:
     def vminmax(self, setup):
         return (-100, 100)
 
-    def calculation_vout(self, osc, setup, value):
+    def calculation_vout(self, setup, value):
         if value != 0:
-            value = int(osc / value / 30)
+            value = int(self.jdata["clock"]["speed"] / value / 30)
         else:
             value = 0
         return value

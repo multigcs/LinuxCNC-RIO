@@ -44,7 +44,7 @@ class Plugin:
     def calculation_vin(self, setup, value):
         unit = "Hz"
         if value != 0:
-            value = setup["osc"] / value
+            value = int(self.jdata["clock"]["speed"]) / value
         return (value, unit)
 
     def pinlist(self):

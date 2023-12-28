@@ -57,19 +57,19 @@ class Plugin:
         else:
             return (int(setup.get("min", 0)), int(setup.get("max", 100)))
 
-    def calculation_vout(self, osc, setup, value):
+    def calculation_vout(self, setup, value):
         freq = int(setup.get("frequency", 100000))
         vmax = int(setup.get("max", 100))
         if "dir" in setup:
             vmin = 0
             value = int(
-                (value) * (PRU_OSC / freq) / (vmax)
+                (value) * (int(self.jdata["clock"]["speed"]) / freq) / (vmax)
             )
         else:
             vmin = int(setup.get("min", 0))
             value = int(
                 (value - vmin)
-                * (osc / freq)
+                * (int(self.jdata["clock"]["speed"]) / freq)
                 / (vmax - vmin)
             )
         return value

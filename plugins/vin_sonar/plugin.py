@@ -46,6 +46,13 @@ class Plugin:
             value = 1000 / int(self.jdata["clock"]["speed"]) / 20 * value * 343.2
         return (value, unit)
 
+    def calculation_vin_c(self, setup):
+        return """
+    if (value != 0) {
+        value = 1000.0 / (float)PRU_OSC / 20.0 * value * 343.2;
+    }
+        """
+
     def pinlist(self):
         pinlist_out = []
         for num, data in enumerate(self.jdata["plugins"]):

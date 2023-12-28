@@ -36,10 +36,15 @@ class Plugin:
 
     def calculation_vout(self, setup, value):
         if value != 0:
-            value = int(self.jdata["clock"]["speed"] / value)
-        else:
-            value = 0
+            value = int(self.jdata["clock"]["speed"]) / value
         return value
+
+    def calculation_vout_c(self, setup):
+        return """
+    if (value != 0) {
+        value = PRU_OSC / value;
+    }
+        """
 
     def pinlist(self):
         pinlist_out = []

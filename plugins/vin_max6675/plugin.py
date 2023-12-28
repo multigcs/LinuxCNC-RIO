@@ -50,6 +50,11 @@ class Plugin:
         value = value * 0.25
         return (value, unit)
 
+    def calculation_vin_c(self, setup):
+        return """
+    value = value * 0.25;
+        """
+
     def pinlist(self):
         pinlist_out = []
         for num, data in enumerate(self.jdata["plugins"]):

@@ -60,19 +60,31 @@ class Plugin:
     def calculation_vout(self, setup, value):
         freq = int(setup.get("frequency", 100000))
         vmax = int(setup.get("max", 100))
+        vmin = int(setup.get("min", 0))
         if "dir" in setup:
-            vmin = 0
             value = int(
                 (value) * (int(self.jdata["clock"]["speed"]) / freq) / (vmax)
             )
         else:
-            vmin = int(setup.get("min", 0))
             value = int(
                 (value - vmin)
                 * (int(self.jdata["clock"]["speed"]) / freq)
                 / (vmax - vmin)
             )
         return value
+
+    def calculation_vout_c(self, setup):
+        freq = int(setup.get("frequency", 100000))
+        vmax = int(setup.get("max", 100))
+        vmin = int(setup.get("min", 0))
+        if "dir" in setup:
+            return f"""
+    value = value * (PRU_OSC / {freq}) / {vmax};
+            """
+        else:
+            return f"""
+    value = (value - {vmin}) * (PRU_OSC / {freq}) / ({vmax} - {vmin});
+            """
 
     def pinlist(self):
         pinlist_out = []

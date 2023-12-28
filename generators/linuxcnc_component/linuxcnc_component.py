@@ -243,36 +243,6 @@ def generate(project):
     rio_data.append("    };")
     rio_data.append("} rxData_t;")
     rio_data.append("")
-    rio_data.append("#endif")
-    rio_data.append("")
-
-    rio_data.append("const char vin_type[] = {")
-    for bitsize, num in vinBits.items():
-        for num in range(project["vins"]):
-            vin = project["vinnames"][num]
-            dname = vin["_name"]
-            bits = vin.get("_bits", 32)
-            if bits == bitsize:
-                if vin.get("type") == "vin_frequency":
-                    rio_data.append("    TYPE_VIN_FREQ,")
-                elif vin.get("type") == "vin_pwmcounter":
-                    rio_data.append("    TYPE_VIN_TIME,")
-                elif vin.get("type") == "vin_ads1115" and vin.get("sensor") == "NTC":
-                    rio_data.append("    TYPE_VIN_NTC,")
-                elif vin.get("type") == "vin_ads1115":
-                    rio_data.append("    TYPE_VIN_ADC,")
-                elif vin.get("type") == "vin_sonar":
-                    rio_data.append("    TYPE_VIN_SONAR,")
-                elif vin.get("type") == "vin_ds18b20":
-                    rio_data.append("    TYPE_VIN_DS18B20,")
-                elif vin.get("type") == "vin_max6675":
-                    rio_data.append("    TYPE_VIN_MAX6675,")
-                elif vin.get("type") in ("vin_quadencoder", "vin_quadencoderz"):
-                    rio_data.append("    TYPE_VIN_ENCODER,")
-                else:
-                    rio_data.append("    TYPE_VIN_RAW,")
-    rio_data.append("};")
-    rio_data.append("")
 
     rio_data.append("const char vin_names[][32] = {")
     for bitsize, num in vinBits.items():
@@ -364,6 +334,57 @@ def generate(project):
         rio_data.append("#define BIN_CALLBACKS \\")
         rio_data.append(" \\\n".join(bin_callbacks))
         rio_data.append("")
+
+    rio_data.append("typedef float (*calc)(float);")
+    rio_data.append("")
+
+    for bitsize, num in vinBits.items():
+        for num in range(project["vins"]):
+            vin = project["vinnames"][num]
+            plugin_name = vin["_plugin"]
+            bits = vin.get("_bits", 32)
+            if bits == bitsize:
+                rio_data.append(f"float calc_{plugin_name}{num}(float value) {{")
+                if hasattr(project["plugins"][plugin_name], "calculation_vin_c"):
+                    func = project["plugins"][plugin_name].calculation_vin_c(vin).strip()
+                    rio_data.append(f"    {func}")
+                rio_data.append("    return value;")
+                rio_data.append("}")
+                rio_data.append("")
+
+    for num in range(project["vouts"]):
+        vout = project["voutnames"][num]
+        plugin_name = vout["_plugin"]
+        rio_data.append(f"float calc_{plugin_name}{num}(float value) {{")
+        if hasattr(project["plugins"][plugin_name], "calculation_vout_c"):
+            func = project["plugins"][plugin_name].calculation_vout_c(vout).strip()
+            rio_data.append(f"    {func}")
+        rio_data.append("    return value;")
+        rio_data.append("}")
+        rio_data.append("")
+
+    rio_data.append("const calc vin_calc[] = {")
+    for bitsize, num in vinBits.items():
+        for num in range(project["vins"]):
+            vin = project["vinnames"][num]
+            plugin_name = vin["_plugin"]
+            bits = vin.get("_bits", 32)
+            if bits == bitsize:
+                rio_data.append(f"    &calc_{plugin_name}{num},")
+    rio_data.append("};")
+    rio_data.append("")
+
+    rio_data.append("const calc vout_calc[] = {")
+    for num in range(project["vouts"]):
+        vout = project["voutnames"][num]
+        plugin_name = vout["_plugin"]
+        rio_data.append(f"    &calc_{plugin_name}{num},")
+    rio_data.append("};")
+    rio_data.append("")
+
+
+    rio_data.append("#endif")
+    rio_data.append("")
 
     open(f"{project['LINUXCNC_PATH']}/Components/rio.h", "w").write("\n".join(rio_data))
 

@@ -48,6 +48,11 @@ class Plugin:
         value = int(((value + 300)) * (int(self.jdata["clock"]["speed"]) / 200000))
         return value
 
+    def calculation_vout_c(self, setup):
+        return """
+    value = ((value + 300)) * (PRU_OSC / 200000);
+        """
+
     def pinlist(self):
         pinlist_out = []
         for num, data in enumerate(self.jdata["plugins"]):

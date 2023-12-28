@@ -42,6 +42,14 @@ class Plugin:
         value = value / 16
         return (value, unit)
 
+    def calculation_vin_c(self, setup):
+        return """
+    if (((int)value<<8) & 0x80) {
+        value = (((int)value ^ 0xffff) + 1) * -1;
+    }
+    value = value / 16;
+        """
+
     def pinlist(self):
         pinlist_out = []
         for num, data in enumerate(self.jdata["plugins"]):

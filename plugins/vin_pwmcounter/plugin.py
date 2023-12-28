@@ -38,10 +38,23 @@ class Plugin:
         ]
 
     def calculation_vin(self, setup, value):
-        unit = "ms"
-        if value != 0:
-            value = 1000 / (int(self.jdata["clock"]["speed"]) / value)
+        unit = "V"
+        value /= 1000.0;
         return (value, unit)
+
+    def calculation_vin_c(self, setup):
+        if setup.get("sensor") == "NTC":
+            return """
+    value /= 1000.0;
+    float Rt = 10.0 * value / (3.3 - value);
+    float tempK = 1.0 / (log(Rt / 10.0) / 3950.0 + 1.0 / (273.15 + 25.0));
+    float tempC = tempK - 273.15;
+    value = tempC;
+            """
+        else:
+            return """
+    value /= 1000.0;
+            """
 
     def pinlist(self):
         pinlist_out = []

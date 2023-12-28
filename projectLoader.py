@@ -215,7 +215,11 @@ def load(configfile):
         for plugin in project["plugins"]:
             if hasattr(project["plugins"][plugin], tname):
                 func = getattr(project["plugins"][plugin], tname)
-                project[tname] += func()
+                ndata = func()
+                if ndata:
+                    for part in ndata:
+                        part["_plugin"] = plugin
+                    project[tname] += ndata
 
         project[f"{dtype}s"] = len(project[tname])
         project[f"{dtype}s_total"] = max((len(project[tname]) + 7) // 8 * 8, 8)

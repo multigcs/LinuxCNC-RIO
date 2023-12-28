@@ -40,6 +40,13 @@ class Plugin:
             value = 0
         return value
 
+    def calculation_vout_c(self, setup):
+        return """
+    if (value != 0) {
+        value = PRU_OSC / value / 30;
+    }
+        """
+
     def pinlist(self):
         pinlist_out = []
         for num, data in enumerate(self.jdata["plugins"]):

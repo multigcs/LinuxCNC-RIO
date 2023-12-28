@@ -37,6 +37,12 @@ class Plugin:
             }
         ]
 
+    def calculation_vin(self, setup, value):
+        unit = "ms"
+        if value != 0:
+            value = 1000 / (setup["osc"] / value)
+        return (value, unit)
+
     def pinlist(self):
         pinlist_out = []
         for num, data in enumerate(self.jdata["plugins"]):

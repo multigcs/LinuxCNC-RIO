@@ -53,6 +53,9 @@ class Plugin:
             }
         ]
 
+    def vminmax(self, setup):
+        return (0, 100)
+
     def pinlist(self):
         pinlist_out = []
         for num, data in enumerate(self.jdata["plugins"]):

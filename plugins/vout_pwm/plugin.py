@@ -51,6 +51,29 @@ class Plugin:
             }
         ]
 
+    def vminmax(self, setup):
+        if "dir" in setup:
+            return (int(setup.get("max", 100)) * -1, int(setup.get("max", 100)))
+        else:
+            return (int(setup.get("min", 0)), int(setup.get("max", 100)))
+
+    def calculation_vout(self, osc, setup, value):
+        freq = int(setup.get("frequency", 100000))
+        vmax = int(setup.get("max", 100))
+        if "dir" in setup:
+            vmin = 0
+            value = int(
+                (value) * (PRU_OSC / freq) / (vmax)
+            )
+        else:
+            vmin = int(setup.get("min", 0))
+            value = int(
+                (value - vmin)
+                * (osc / freq)
+                / (vmax - vmin)
+            )
+        return value
+
     def pinlist(self):
         pinlist_out = []
         for num, data in enumerate(self.jdata["plugins"]):

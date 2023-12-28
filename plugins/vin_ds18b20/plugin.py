@@ -35,6 +35,13 @@ class Plugin:
             }
         ]
 
+    def calculation_vin(self, setup, value):
+        unit = "°C"
+        if (value << 8) & 0x80:
+            value = ((value ^ 0xFFFF) + 1) * -1
+        value = value / 16
+        return (value, unit)
+
     def pinlist(self):
         pinlist_out = []
         for num, data in enumerate(self.jdata["plugins"]):

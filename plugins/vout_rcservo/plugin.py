@@ -41,6 +41,13 @@ class Plugin:
             }
         ]
 
+    def vminmax(self, setup):
+        return (-100, 100)
+
+    def calculation_vout(self, osc, setup, value):
+        value = int(((value + 300)) * (osc / 200000))
+        return value
+
     def pinlist(self):
         pinlist_out = []
         for num, data in enumerate(self.jdata["plugins"]):

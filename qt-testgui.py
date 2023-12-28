@@ -3,7 +3,7 @@ import sys
 import time
 from functools import partial
 from struct import *
-
+import traceback
 
 from PyQt5 import QtGui
 from PyQt5.QtCore import QDateTime, Qt, QTimer
@@ -668,11 +668,11 @@ class WinForm(QWidget):
         gpy += 1
         for vn in range(VOUTS):
             plugin_data = VOUT_NAMES[vn]
-            plugin = plugin_data["type"]
+            plugin_name = plugin_data["_plugin"]
             vmin = 0
             vmax = 100
-            if hasattr(project["plugins"][plugin], "vminmax"):
-                (vmin, vmax) = project["plugins"][plugin].vminmax(plugin_data)
+            if hasattr(project["plugins"][plugin_name], "vminmax"):
+                (vmin, vmax) = project["plugins"][plugin_name].vminmax(plugin_data)
 
             key = f"vos{vn}"
             self.widgets[key] = QSlider(Qt.Horizontal)
@@ -903,7 +903,7 @@ class WinForm(QWidget):
                     if JOINT_TYPES[jn] == "joint_pwmdir":
                         value = value
                     else:
-                        value = int(PRU_OSC / value)
+                        value = int(PRU_OSC / value / 2)
 
                 key = f"jc{jn}"
                 self.widgets[key].setText(str(value))
@@ -917,7 +917,7 @@ class WinForm(QWidget):
                 plugin_data = VOUT_NAMES[vn]
                 plugin = plugin_data["type"]
                 if hasattr(project["plugins"][plugin], "calculation_vout"):
-                    value = project["plugins"][plugin].calculation_vout(plugin_data, value)
+                    value = int(project["plugins"][plugin].calculation_vout(plugin_data, value))
 
                 vout = list(pack("<i", (value)))
                 for byte in range(4):
@@ -1077,11 +1077,11 @@ class WinForm(QWidget):
                 value = processVariable[vn]
 
                 plugin_data = VIN_NAMES[vn]
-                plugin = plugin_data["type"]
-                if hasattr(project["plugins"][plugin], "calculation_vin"):
-                    (value, unit) = project["plugins"][plugin].calculation_vin(plugin_data, value)
+                plugin_name = plugin_data["_plugin"]
+                if hasattr(project["plugins"][plugin_name], "calculation_vin"):
+                    (value, unit) = project["plugins"][plugin_name].calculation_vin(plugin_data, value)
 
-                self.widgets[key].setText(f"{round(value, 2)}{unit}")
+                self.widgets[key].setText(f"{value:0.3f}{unit}")
 
                 if args.graph:
                     key = f"vi{vn}_g"
@@ -1124,6 +1124,7 @@ class WinForm(QWidget):
 
         except Exception as e:
             print("ERROR", e)
+            print(traceback.format_exc())
             self.error_counter_net += 1
             self.widgets["connection"].setText(f"ERROR: {e}")
             self.widgets["connection"].setStyleSheet("background-color: red")

@@ -23,7 +23,7 @@ module vin_pwmcounter
         end else begin
             freq_cnt <= freq_cnt + 1;
             if (freq_cnt > RESET_CNT) begin
-                freq <= 0;
+                freq <= RESET_CNT;
                 freq_cnt <= 0;
             end
         end

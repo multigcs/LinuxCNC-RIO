@@ -1,0 +1,193 @@
+{
+    "name": "CycloneIV_FPGA_EP4CE6E22C8N_Development_Board_USB_V2",
+    "description": "EP4CE6E22C8 on china devboard - Cyclone IV E",
+    "boardcfg": "CycloneIV_FPGA_EP4CE6E22C8N_Development_Board_USB_V2",
+    "interface": [
+        {
+            "type": "uart",
+            "pins": {
+                "RX": "PIN_87",
+                "TX": "PIN_86"
+            }
+        }
+    ],
+    "plugins": [
+        {
+            "name": "FREQ",
+            "type": "vin_frequency",
+            "freq_min": "10",
+            "pin": "PIN_125"
+        },
+        {
+            "name": "PWMFREQ",
+            "type": "vin_frequency",
+            "freq_min": "10",
+            "pin": "PIN_121"
+        },
+        {
+            "name": "PWM_WITH",
+            "type": "vin_pwm",
+            "pin": "PIN_119"
+        },
+        {
+            "name": "RCSERVO_WITH",
+            "type": "vin_pwm",
+            "pin": "PIN_114"
+        },
+        {
+            "name": "J_RCSERVO",
+            "type": "vin_pwm",
+            "pin": "PIN_110"
+        },
+        {
+            "name": "J_STEPPER_STEP",
+            "type": "vin_frequency",
+            "freq_min": "10",
+            "pin": "PIN_112"
+        },
+        {
+            "name": "J_STEPPER_DIR",
+            "type": "din_bit",
+            "pin": "PIN_106"
+        },
+
+
+        {
+            "name": "J_PWM_WITH",
+            "type": "vin_pwm",
+            "freq_min": "10",
+            "pin": "PIN_103"
+        },
+        {
+            "name": "J_PWM_DIR",
+            "type": "din_bit",
+            "pin": "PIN_99"
+        },
+
+
+        {
+            "name": "FREQ_OUT1",
+            "type": "vout_frequency",
+            "pin": "PIN_126"
+        },
+        {
+            "name": "PWM_OUT1",
+            "type": "vout_pwm",
+            "frequency": "100000",
+            "pins": {
+                "pwm": "PIN_124"
+            }
+        },
+        {
+            "name": "PWM_OUT2",
+            "type": "vout_pwm",
+            "frequency": "1000",
+            "pins": {
+                "pwm": "PIN_120"
+            }
+        },
+
+        {
+            "name": "RC100",
+            "type": "vout_rcservo",
+            "frequency": "100",
+            "pin": "PIN_113"
+        },
+
+        {
+            "type": "joint_rcservo",
+            "cl": false,
+            "rate": 100,
+            "center": 1.5,
+            "range": 0.5,
+            "pins": {
+                "pwm": "PIN_115"
+            }
+        },
+
+        {
+            "type": "joint_stepper",
+            "cl": false,
+            "pins": {
+                "step": "PIN_111",
+                "dir": "PIN_104"
+            }
+        },
+
+
+        {
+            "type": "joint_pwmdir",
+            "frequency": 1500,
+            "cl": false,
+            "pins": {
+                "pwm": "PIN_105",
+                "dir": "PIN_98"
+            }
+        },
+
+
+
+        {
+            "name": "SW1",
+            "pin": "PIN_88",
+            "invert": true,
+            "type": "din_bit"
+        },
+        {
+            "name": "SW2",
+            "pin": "PIN_91",
+            "invert": true,
+            "type": "din_bit"
+        },
+        {
+            "name": "SW3",
+            "pin": "PIN_90",
+            "invert": true,
+            "type": "din_bit"
+        },
+        {
+            "name": "SW4",
+            "pin": "PIN_89",
+            "invert": true,
+            "type": "din_bit"
+        },
+        {
+            "name": "SOUND",
+            "type": "vout_frequency",
+            "pin": "PIN_85"
+        },
+        {
+            "name": "IR",
+            "type": "vin_ir",
+            "pins": {
+                "ir": "PIN_132"
+            }
+        },
+        {
+            "name": "ADC",
+            "type": "vin_tlc549c",
+            "pins": {
+                "miso": "PIN_128",
+                "sclk": "PIN_127",
+                "cs": "PIN_129"
+            }
+        },
+        {
+            "name": "DISP",
+            "type": "vout_7seg",
+            "pins": {
+                "en1": "PIN_137",
+                "en2": "PIN_135",
+                "en3": "PIN_136",
+                "en4": "PIN_133",
+                "seg_a": "PIN_143",
+                "seg_b": "PIN_144",
+                "seg_c": "PIN_1",
+                "seg_d": "PIN_141",
+                "seg_e": "PIN_142",
+                "seg_f": "PIN_138",
+                "seg_g": "PIN_2"
+            }
+        }
+    ]
+}

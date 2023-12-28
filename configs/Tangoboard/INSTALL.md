@@ -19,12 +19,12 @@ cd LinuxCNC-RIO
 ## patching the oss-cad-suite
 to fix a bug in oss-cad-suite, please run this patch command:
 ```
-bash patching-oss-cad-suite.sh PATH_TO_OSS_CAD_SUITE
+bash files/patching-oss-cad-suite.sh PATH_TO_OSS_CAD_SUITE
 ```
 
 in my case:
 ```
-bash patching-oss-cad-suite.sh /opt/oss-cad-suite
+bash files/patching-oss-cad-suite.sh /opt/oss-cad-suite
 ```
 
 ### copy default config to avoid errors during update

@@ -3,7 +3,9 @@
 UDP communication interface based on Wiznet W5500 ( HOST <-> UDP <-> W5500 <-> SPI <-> FPGA )
 
 !!! experimental !!!
+
 still has an error rate of 0.02%,
+
 but only the 0.2ms duration, thus much faster than the UDP2SPI bridges
 
 

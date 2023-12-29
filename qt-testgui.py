@@ -222,7 +222,7 @@ else:
     spi.mode = 0
     spi.lsbfirst = False
 
-INTERVAL = 1
+INTERVAL = 100
 
 
 data = [0] * (project["data_size"] // 8)

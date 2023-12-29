@@ -181,6 +181,9 @@ if args.device and args.device.startswith("/dev/tty"):
 
 elif args.device and args.device.startswith("/dev/shm/"):
     SHM_FILE = args.device
+    fd = open(f"{SHM_FILE}.rx", "wb")
+    fd.write(b'0'*10)
+    fd.close()
 
 elif args.device and args.device.startswith("CH341"):
     import usb.core

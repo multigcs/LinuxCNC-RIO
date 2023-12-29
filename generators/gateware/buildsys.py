@@ -695,116 +695,113 @@ def buildsys_verilator(project):
     print(top_arguments)
 
     main_cpp = []
-    main_cpp.append('#include "Vrio.h"')
-    main_cpp.append('#include "verilated.h"')
-    main_cpp.append("")
-    main_cpp.append("#include <stdio.h>")
-    main_cpp.append("#include <sys/types.h>")
-    main_cpp.append("#include <sys/stat.h>")
-    main_cpp.append("#include <fcntl.h>")
-    main_cpp.append("#include <unistd.h>")
-    main_cpp.append("")
-    main_cpp.append(f"#define BUFFER_BIT {project['data_size']}")
-    main_cpp.append("#define BUFFER_BYTES (BUFFER_BIT / 8)")
-    main_cpp.append("")
-    main_cpp.append("int main(int argc, char** argv) {")
-    main_cpp.append("")
-    main_cpp.append("    uint8_t spi_tx[BUFFER_BYTES] = {0x74, 0x69, 0x72, 0x77};")
-    main_cpp.append("    uint8_t spi_rx[BUFFER_BYTES];")
-    main_cpp.append("    int spi_rx_num = 0;")
-    main_cpp.append("    int spi_rx_bit = 0;")
-    main_cpp.append("    int spi_rx_cs = 1;")
-    main_cpp.append("")
-    main_cpp.append("    VerilatedContext* contextp = new VerilatedContext;")
-    main_cpp.append("    contextp->commandArgs(argc, argv);")
-    main_cpp.append("    Vrio* rio = new Vrio{contextp};")
-    for argument in top_arguments:
-        main_cpp.append(f"    rio->{argument['name']} = 0;")
-    main_cpp.append("    rio->eval();")
-    main_cpp.append("")
-    main_cpp.append("    int counter = 0;")
-    main_cpp.append("    int last = 0;")
-    main_cpp.append("    while (!contextp->gotFinish()) {")
-    main_cpp.append("        rio->sysclk = 1 - rio->sysclk;")
-    main_cpp.append("        rio->eval();")
-    main_cpp.append("        rio->sysclk = 1 - rio->sysclk;")
-    main_cpp.append("        rio->eval();")
-    main_cpp.append("")
-    main_cpp.append("        if (rio->BLINK_LED != last) {")
-    for argument in top_arguments:
-        if argument["dir"] == "output":
-            main_cpp.append(
-                f"            fprintf(stdout, \"{argument['name']}=%i \", rio->{argument['name']});"
-            )
-    main_cpp.append(f'            fprintf(stdout, "\\n");')
-    main_cpp.append("        }")
-    main_cpp.append("        last = rio->BLINK_LED;")
-    main_cpp.append("        ")
-    main_cpp.append("        if (counter++ > 10000) {")
-    main_cpp.append("            counter = 0;")
-    main_cpp.append("            if (rio->INTERFACE_SPI_SSEL == 0) {")
-    main_cpp.append("                if (rio->INTERFACE_SPI_SCK == 0) {")
-    main_cpp.append("                    if (spi_rx_bit < 8) {")
-    main_cpp.append(
-        "                        if ((spi_tx[spi_rx_num] & (1<<(7-spi_rx_bit))) > 0) {"
-    )
-    main_cpp.append("                            rio->INTERFACE_SPI_MOSI = 1;")
-    main_cpp.append("                        } else {")
-    main_cpp.append("                            rio->INTERFACE_SPI_MOSI = 0;")
-    main_cpp.append("                        }")
-    main_cpp.append("                    }")
-    main_cpp.append("                    rio->INTERFACE_SPI_SCK = 1;")
-    main_cpp.append("                } else if (spi_rx_num < BUFFER_BYTES) {")
-    main_cpp.append("                    if (spi_rx_bit < 8) {")
-    main_cpp.append(
-        "                        spi_rx[spi_rx_num] |= (rio->INTERFACE_SPI_MISO<<(7-spi_rx_bit));"
-    )
-    main_cpp.append("                        spi_rx_bit++;")
-    main_cpp.append("                    }")
-    main_cpp.append("                    if (spi_rx_bit == 8) {")
-    main_cpp.append(
-        '                        //printf("#spi_rx_num: %i 0x%X %i\\n", spi_rx_num, spi_rx[spi_rx_num], 0);'
-    )
-    main_cpp.append("")
-    main_cpp.append(
-        '                        int fd_rx = open("/dev/shm/verilog.rx", O_WRONLY);'
-    )
-    main_cpp.append("                        write(fd_rx, spi_rx, BUFFER_BYTES);")
-    main_cpp.append("                        close(fd_rx);")
-    main_cpp.append("                        ")
-    main_cpp.append("                        spi_rx_bit = 0;")
-    main_cpp.append("                        spi_rx_num++;")
-    main_cpp.append("                    }")
-    main_cpp.append("                    if (spi_rx_num < BUFFER_BYTES) {")
-    main_cpp.append("                        rio->INTERFACE_SPI_SCK = 0;")
-    main_cpp.append("                    }")
-    main_cpp.append("                } else {")
-    main_cpp.append("                    rio->INTERFACE_SPI_SSEL = 1;")
-    main_cpp.append("                    spi_rx_bit = 0;")
-    main_cpp.append("                    spi_rx_num = 0;")
-    main_cpp.append("                }")
-    main_cpp.append("            } else if (rio->INTERFACE_SPI_SSEL == 1) {")
-    main_cpp.append(
-        '                int fd_tx = open("/dev/shm/verilog.tx", O_RDONLY);'
-    )
-    main_cpp.append("                read(fd_tx, spi_tx, BUFFER_BYTES);")
-    main_cpp.append("                close(fd_tx);")
-    main_cpp.append("")
-    main_cpp.append("                spi_rx_bit = 0;")
-    main_cpp.append("                spi_rx_num = 0;")
-    main_cpp.append("                rio->INTERFACE_SPI_SSEL = 0;")
-    main_cpp.append("                rio->INTERFACE_SPI_SCK = 0;")
-    main_cpp.append("            }")
-    main_cpp.append("")
-    main_cpp.append("        }")
-    main_cpp.append("")
-    main_cpp.append("    }")
-    main_cpp.append("")
-    main_cpp.append("    delete rio;")
-    main_cpp.append("    delete contextp;")
-    main_cpp.append("    return 0;")
-    main_cpp.append("}")
-    main_cpp.append("")
-    main_cpp.append("")
+    main_cpp.append("""
+#include "Vrio.h"
+#include "verilated.h"
+
+#include <stdio.h>
+#include <sys/types.h>
+#include <sys/stat.h>
+#include <fcntl.h>
+#include <unistd.h>
+
+#define BUFFER_BIT 40
+#define BUFFER_BYTES (BUFFER_BIT / 8)
+
+int main(int argc, char** argv) {
+
+    uint8_t spi_tx[BUFFER_BYTES] = {0x74, 0x69, 0x72, 0x77};
+    uint8_t spi_rx[BUFFER_BYTES];
+    int spi_rx_num = 0;
+    int spi_rx_bit = 0;
+    int spi_rx_cs = 1;
+
+    VerilatedContext* contextp = new VerilatedContext;
+    contextp->commandArgs(argc, argv);
+    Vrio* rio = new Vrio{contextp};
+    rio->BLINK_LED = 0;
+    rio->DIN0 = 0;
+    rio->DOUT0 = 0;
+    rio->DOUT1 = 0;
+    rio->INTERFACE_SPI_MOSI = 0;
+    rio->INTERFACE_SPI_MISO = 0;
+    rio->INTERFACE_SPI_SCK = 0;
+    rio->INTERFACE_SPI_SSEL = 0;
+    rio->sysclk = 0;
+    rio->eval();
+
+    int counter = 0;
+    int last = 0;
+    while (!contextp->gotFinish()) {
+        rio->sysclk = 1 - rio->sysclk;
+        rio->eval();
+        rio->sysclk = 1 - rio->sysclk;
+        rio->eval();
+
+        if (rio->BLINK_LED != last) {
+            fprintf(stdout, "BLINK_LED=%i ", rio->BLINK_LED);
+            fprintf(stdout, "DOUT0=%i ", rio->DOUT0);
+            fprintf(stdout, "DOUT1=%i ", rio->DOUT1);
+            fprintf(stdout, "INTERFACE_SPI_MISO=%i ", rio->INTERFACE_SPI_MISO);
+            fprintf(stdout, "\\n");
+        }
+        last = rio->BLINK_LED;
+
+        if (counter++ > 100000) {
+            counter = 0;
+            if (rio->INTERFACE_SPI_SSEL == 0) {
+                if (rio->INTERFACE_SPI_SCK == 0) {
+                    if (spi_rx_bit < 8) {
+                        if ((spi_tx[spi_rx_num] & (1<<(7-spi_rx_bit))) > 0) {
+                            rio->INTERFACE_SPI_MOSI = 1;
+                        } else {
+                            rio->INTERFACE_SPI_MOSI = 0;
+                        }
+                    }
+                    rio->INTERFACE_SPI_SCK = 1;
+                } else if (spi_rx_num < BUFFER_BYTES) {
+                    if (spi_rx_bit < 8) {
+                        if (rio->INTERFACE_SPI_MISO == 1) {
+                            spi_rx[spi_rx_num] |= (1<<(7-spi_rx_bit));
+                        }
+                        spi_rx_bit++;
+                        if (spi_rx_bit == 8) {
+                            spi_rx_bit = 0;
+                            spi_rx_num++;
+                            if (spi_rx_num == BUFFER_BYTES) {
+                                int fd_rx = open("/dev/shm/verilog.rx", O_WRONLY);
+                                write(fd_rx, spi_rx, BUFFER_BYTES);
+                                close(fd_rx);
+                            } else {
+                                spi_rx[spi_rx_num] = 0;
+                            }
+                        }
+                    }
+                    if (spi_rx_num < BUFFER_BYTES) {
+                        rio->INTERFACE_SPI_SCK = 0;
+                    }
+                } else {
+                    rio->INTERFACE_SPI_SSEL = 1;
+                    spi_rx_bit = 0;
+                    spi_rx_num = 0;
+                }
+            } else if (rio->INTERFACE_SPI_SSEL == 1) {
+                int fd_tx = open("/dev/shm/verilog.tx", O_RDONLY);
+                read(fd_tx, spi_tx, BUFFER_BYTES);
+                close(fd_tx);
+                spi_rx_bit = 0;
+                spi_rx_num = 0;
+                spi_rx[spi_rx_num] = 0;
+                rio->INTERFACE_SPI_SSEL = 0;
+                rio->INTERFACE_SPI_SCK = 0;
+            }
+        }
+    }
+    delete rio;
+    delete contextp;
+    return 0;
+}
+
+    """)
 
     open(f"{project['GATEWARE_PATH']}/main.cpp", "w").write("\n".join(main_cpp))

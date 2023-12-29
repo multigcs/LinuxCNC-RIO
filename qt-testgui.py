@@ -595,8 +595,8 @@ class WinForm(QWidget):
         self.time_trx = 0
         self.time_trx_max = 0
         self.vfd = {}
-        self.pkg_in = 0
-        self.pkg_out = 0
+        self.pkg_in = 1
+        self.pkg_out = 1
 
         # boutnames
         for num, bout in enumerate(project["boutnames"]):

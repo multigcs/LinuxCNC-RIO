@@ -31,7 +31,7 @@ you can also connect the pin to a hal-net
     "net": "spindle.0.speed-out",
     "min": "0",
     "max": "10000",
-    "invert": true,
+    "invert_pwm": true,
     "pin": "76"
 },
 ```

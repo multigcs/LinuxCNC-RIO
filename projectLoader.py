@@ -42,6 +42,15 @@ def load(configfile):
     if board:
         print(f"loading board setup: {board}")
         bdata = open(f"boards/{board}.json", "r").read()
+        project["board_data"] = json.loads(bdata)
+        if "name" in project["board_data"]:
+            project["board"] = project["board_data"]["name"]
+        for key, value in project["board_data"].items():
+            if key not in project["jdata"]:
+                project["jdata"][key] = value
+
+        print(f"loading board setup: {board}")
+        bdata = open(f"boards/{board}.json", "r").read()
         project["board"] = json.loads(bdata)
         if "name" in project["board"]:
             project["board"]["boardname"] = project["board"]["name"]

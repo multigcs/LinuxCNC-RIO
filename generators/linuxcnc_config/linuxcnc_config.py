@@ -1273,7 +1273,7 @@ net user-request-enable <= iocontrol.0.user-request-enable	=> rio.SPI-reset
         if function == "spindle-index":
             scale = vin.get("scale", 1.0)
             cfghal_data.append(f"setp rio.{vname}-scale {scale}")
-            cfghal_data.append("net spindle-position rio.{vname} => spindle.0.revs")
+            cfghal_data.append(f"net spindle-position rio.{vname} => spindle.0.revs")
             cfghal_data.append(
                 f"net spindle-index-enable rio.{vname}-index-enable <=> spindle.0.index-enable"
             )

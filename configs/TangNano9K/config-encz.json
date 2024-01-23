@@ -207,14 +207,15 @@
         },
         {
             "type": "vin_quadencoderz",
-            "debounce": false,
+            "name": "spindle_encoder",
             "pullup": true,
+            "function": "spindle-index",
+            "scale": 600.0,
             "pins": {
                 "a": "86",
                 "b": "85",
                 "z": "84"
-            },
-            "name": "VIN0"
+            }
         },
         {
             "type": "vout_pwm",

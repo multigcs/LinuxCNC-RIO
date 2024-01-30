@@ -1520,11 +1520,6 @@ def generate_custom_postgui_hal(project):
                 else:
                     customhal_data.append(f"net {vname} rio.{vname} {prefix}.{vname}")
 
-        if vin.get("type") in {"vin_quadencoder", "vin_quadencoderz"}:
-            customhal_data.append(
-                f"net {vname}-rpm rio.{vname}-rpm {prefix}.{vname}-rpm"
-            )
-
     if gui != "qtdragon":
         customhal_data.append(f"net zeroxy halui.mdi-command-00 <= {prefix}.zeroxy")
         if num_axis >= 3:

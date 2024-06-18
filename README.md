@@ -14,6 +14,17 @@ RealtimeIO for LinuxCNC based on an FPGA
 * multiple and mixed joint types (like Stepper, DC-Servo, RC-Servo)
 
 
+```
+BTW: there is a rewrite of RIO that is slowly getting ready for testing:
+```
+https://github.com/multigcs/riocore
+
+https://github.com/multigcs/riogui
+
+
+
+
+
 ## Sample-Configs:
 | Name | Description |
 | --- | --- |
